@@ -1,0 +1,853 @@
+%YAML 1.2
+---
+# see http://www.sublimetext.com/docs/3/syntax.html for a good, but incomplete, explanation of how this syntax works
+name: ConTeXt
+file_extensions:
+  - ctx
+  - tex
+scope: text.tex.context
+# the tricks i know to make the syntax highlighting work (in Monokai Extended):
+#   'string' - (light) yellow
+#   'variable.parameter' - orange, italic
+#   'keyword' - red
+#   'markup.bold' - red, bold
+#   'markup.italic' - red, italic
+#   'constant.(other|numeric|character|...)' - purple
+#   'support.function' (or 'meta.diff') - blue
+#   'entity' - green
+#   'comment' - grey(ed out)
+# honestly though this facet of the syntax highlighting is the one i least understand
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                                    VARIABLES
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+variables:
+  # we have a copy of the builtins from the TeX Math sublime-syntax file, which we use to guess whether a body of text is in math mode or not
+  math_builtin:      '({{math_builtins_1}}|{{math_builtins_2}}|{{math_builtins_3}})'
+  math_builtins_1:   '(sum|prod|coprod|int|oint|bigcap|bigcup|bigsqcup|bigvee|bigwedge|bigodot|bigotimes|bogoplus|biguplus)'
+  math_builtins_2:
+    '(arccos|arcsin|arctan|arg|cos|cosh|cot|coth|csc|deg|det|dim|exp|gcd|hom|inf|ker|lg|lim|liminf|limsup|ln|log|max|min|pr|sec|sin|sinh|sup|tan|
+     tanh)'
+  math_builtins_3:
+    '(s(s(earrow|warrow|lash)|h(ort(downarrow|uparrow|parallel|leftarrow|rightarrow|mid)|arp)|tar|i(gma|m(eq)?)|u(cc(sim|n(sim|approx)|curlyeq|eq|
+     approx)?|pset(neq(q)?|plus(eq)?|eq(q)?)?|rd|m|bset(neq(q)?|plus(eq)?|eq(q)?)?)|p(hericalangle|adesuit)|e(tminus|arrow)|q(su(pset(eq)?|bset(eq)?)
+     |c(up|ap)|uare)|warrow|m(ile|all(s(etminus|mile)|frown)))|h(slash|ook(leftarrow|rightarrow)|eartsuit|bar)|R(sh|ightarrow|e|bag)|Gam(e|ma)|n(s(
+     hort(parallel|mid)|im|u(cc(eq)?|pseteq(q)?|bseteq))|Rightarrow|n(earrow|warrow)|cong|triangle(left(eq(slant)?)?|right(eq(slant)?)?)|i(plus)?|u|p
+     (lus|arallel|rec(eq)?)|e(q|arrow|g|xists)|v(dash|Dash)|warrow|le(ss|q(slant|q)?|ft(arrow|rightarrow))|a(tural|bla)|VDash|rightarrow|g(tr|eq(
+     slant|q)?)|mid|Left(arrow|rightarrow))|c(hi|irc(eq|le(d(circ|S|dash|ast)|arrow(left|right)))?|o(ng|prod|lon|mplement)|dot(s|p)?|u(p|r(vearrow(
+     left|right)|ly(eq(succ|prec)|vee(downarrow|uparrow)?|wedge(downarrow|uparrow)?)))|enterdot|lubsuit|ap)|Xi|Maps(to(char)?|from(char)?)|B(ox|umpeq
+     |bbk)|t(h(ick(sim|approx)|e(ta|refore))|imes|op|wohead(leftarrow|rightarrow)|a(u|lloblong)|riangle(down|q|left(eq(slant)?)?|right(eq(slant)?)?)?
+     )|i(n(t(er(cal|leave))?|plus|fty)?|ota|math)|S(igma|u(pset|bset))|zeta|o(slash|times|int|dot|plus|vee|wedge|lessthan|greaterthan|m(inus|ega)|b(
+     slash|long|ar))|d(i(v(ideontimes)?|a(g(down|up)|mond(suit)?)|gamma)|o(t(plus|eq(dot)?)|ublebarwedge|wn(harpoon(left|right)|downarrows|arrow))|d(
+     ots|agger)|elta|a(sh(v|leftarrow|rightarrow)|leth|gger))|Y(down|up|left|right)|C(up|ap)|u(n(lhd|rhd)|p(silon|harpoon(left|right)|downarrow|
+     uparrows|lus|arrow)|lcorner|rcorner)|jmath|Theta|Im|p(si|hi|i(tchfork)?|erp|ar(tial|allel)|r(ime|o(d|pto)|ec(sim|n(sim|approx)|curlyeq|eq|approx
+     )?)|m)|e(t(h|a)|psilon|q(slant(less|gtr)|circ|uiv)|ll|xists|mptyset)|Omega|D(iamond|ownarrow|elta)|v(d(ots|ash)|ee(bar)?|Dash|ar(s(igma|u(
+     psetneq(q)?|bsetneq(q)?))|nothing|curly(vee|wedge)|t(heta|imes|riangle(left|right)?)|o(slash|circle|times|dot|plus|vee|wedge|lessthan|ast|
+     greaterthan|minus|b(slash|ar))|p(hi|i|ropto)|epsilon|kappa|rho|bigcirc))|kappa|Up(silon|downarrow|arrow)|Join|f(orall|lat|a(t(s(emi|lash)|bslash
+     )|llingdotseq)|rown)|P(si|hi|i)|w(p|edge|r)|l(hd|n(sim|eq(q)?|approx)|ceil|times|ightning|o(ng(left(arrow|rightarrow)|rightarrow|maps(to|from))|
+     zenge|oparrow(left|right))|dot(s|p)|e(ss(sim|dot|eq(qgtr|gtr)|approx|gtr)|q(slant|q)?|ft(slice|harpoon(down|up)|threetimes|leftarrows|arrow(t(
+     ail|riangle))?|right(squigarrow|harpoons|arrow(s|triangle|eq)?))|adsto)|vertneqq|floor|l(c(orner|eil)|floor|l|bracket)?|a(ngle|mbda)|rcorner|bag
+     )|a(s(ymp|t)|ngle|pprox(eq)?|l(pha|eph)|rrownot|malg)|V(dash|vdash)|r(h(o|d)|ceil|times|i(singdotseq|ght(s(quigarrow|lice)|harpoon(down|up)|
+     threetimes|left(harpoons|arrows)|arrow(t(ail|riangle))?|rightarrows))|floor|angle|r(ceil|parenthesis|floor|bracket)|bag)|g(n(sim|eq(q)?|approx)|
+     tr(sim|dot|eq(qless|less)|less|approx)|imel|eq(slant|q)?|vertneqq|amma|g(g)?)|Finv|xi|m(ho|i(nuso|d)|o(o|dels)|u(ltimap)?|p|e(asuredangle|rge)|
+     aps(to|from(char)?))|b(i(n(dnasrepma|ampersand)|g(s(tar|qc(up|ap))|nplus|c(irc|u(p|rly(vee|wedge))|ap)|triangle(down|up)|interleave|o(times|dot|
+     plus)|uplus|parallel|vee|wedge|box))|o(t|wtie|x(slash|circle|times|dot|plus|empty|ast|minus|b(slash|ox|ar)))|u(llet|mpeq)|e(cause|t(h|ween|a))|
+     lack(square|triangle(down|left|right)?|lozenge)|a(ck(s(im(eq)?|lash)|prime|epsilon)|r(o|wedge))|bslash)|L(sh|ong(left(arrow|rightarrow)|
+     rightarrow|maps(to|from))|eft(arrow|rightarrow)|leftarrow|ambda|bag)|Arrownot)'
+  tex_keyword:
+    '(?:backmatter|else|fi|frontmatter|ftrue|mainmatter|if(?:case|cat|dim|eof|false|hbox|hmode|inner|mmode|num|odd|undefined|vbox|vmode|void|x)?)'
+  unit:              '(pt|pc|in|bp|cm|mm|cc|sp|em|ex)'
+  uns_int:           '\d+'
+  uns_real:          '(\d+\.\d*|\d*\.\d+)'
+  uns_number:        '({{uns_real}}|{{uns_int}})'
+  number:            '[\+\-]*{{uns_number}}'
+  lua_functions:     '(tex.s?print)|context'
+  tikz_path_op:      '(draw|fill(draw)?|path|node)'
+  tikz_draw_cmd:     '(--|rectangle|node)'
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                                    MAIN
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+contexts:
+  main:
+  - include: tex
+  - include: lua
+  - include: tikz
+  - include: math
+  - include: context
+  - include: default
+
+  prototype:
+  - include: comments
+
+  comments:
+  - match: '\%.*'
+    scope: comment
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                                    TEX
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+  tex:
+  - include: tex.keyword
+  - include: tex.def
+
+  tex.keyword:
+  - match: '\\{{tex_keyword}}\b'
+    scope: keyword.tex
+
+  tex.def:
+  - match: '\\[egx]?def\b'
+    scope: support.function.control-word.tex
+    push: [
+      tex.def.group/,
+      tex.def.parameters*/,
+      tex.def.assignable/,
+    ]
+
+  tex.def.assignable/:
+  - match: '\\[a-zA-Z]+'
+    scope: support.function.control-word.tex
+    pop: true
+  - match: '\\[^a-zA-Z]'
+    scope: constant.other.control-symbol.tex
+    pop: true
+  - match: '[^\s]'
+    scope: constant.character.active-character.tex
+    pop: true
+
+  tex.def.parameters*/:
+  - match: '\#([1-9]|(?=\{))'
+    scope: variable.parameter.tex-parameter.tex
+  - match: '(?=\{)'
+    pop: true
+
+  tex.def.group:
+  - match: '\{'
+    push: tex.def.group.core/
+
+  tex.def.group/:
+  - match: '\{'
+    set: tex.def.group.core/
+
+  tex.def.group*/: # just for fun, we don't actually need this variant
+  - include: tex.def.group/
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  tex.def.groups*/: # nor this variant
+  - include: tex.def.group
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  tex.def.group.core/:
+  - meta_scope: def.group.tex
+  - match: '\}'
+    pop: true
+  - match: '\#[1-9]'
+    scope: variable.parameter.tex
+  - include: tex.def.group # we need to make sure to handle nested groups {...} ourselves before main does, so that we can highlight parameters #n
+  - include: main
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                                    LUA
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+  lua:
+  - include: lua.block
+  - include: lua.inline
+
+  lua.block:
+  - match: '\\start(lua(code)?)\b'
+    scope: entity
+    push:
+    - match: '\\stop(\1)\b'
+      scope: entity
+      pop: true
+    - include: lua.main
+
+  lua.inline:
+  - match: '\\(directlua|ctxlua)\b'
+    scope: support.function
+    push: lua.group/
+
+  lua.main:
+  - include: lua.group
+  - include: lua.context
+  - include: 'Packages/Lua/Lua.sublime-syntax'
+
+  lua.context:
+  - match: '\b{{lua_functions}}\b'
+    scope: support.function
+
+  lua.group:
+  - match: '\{'
+    push: lua.group.core/
+
+  lua.group/:
+  - match: '\{'
+    set: lua.group.core/
+
+  lua.group*/:
+  - include: lua.group/
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  lua.groups*/:
+  - include: lua.group
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  lua.group.core/:
+  - meta_scope: lua.group.tex
+  - match: '\}'
+    pop: true
+  - include: lua.main
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                                    TIKZ
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+  # tikz:
+  # - include: tikz.block
+  # - include: tikz.inline
+
+  # tikz.block:
+  # - match: '\\start(tikzpicture)\b'
+  #   scope: entity
+  #   push: [
+  #     tikz.block.main/,
+  #     tikz.lists*/,
+  #   ]
+
+  # tikz.block.main/:
+  # - match: '\\stop(\1)\b'
+  #   scope: entity
+  #   pop: true
+  # - include: tikz.core
+
+  # tikz.inline:
+  # - match: '\\tikz\b'
+  #   scope: support.function
+  #   push: [
+  #     tikz.inline.main/,
+  #     tikz.lists*/,
+  #   ]
+
+  # tikz.inline.main/:
+  # - match: '(?<=;)'
+  #   pop: true
+  # - include: tikz.core
+
+  # tikz.core:
+  # - include: tikz.scope
+  # - include: tikz.foreach
+  # - include: tikz.draw
+  # - include: main
+
+  # tikz.scope:
+  # - match: '\\start(scope)\b'
+  #   scope: entity
+  #   push: [
+  #     tikz.scope.main/,
+  #     tikz.lists*/,
+  #   ]
+
+  # tikz.scope.main/:
+  # - match: '\\stop(\1)\b'
+  #   scope: entity
+  #   pop: true
+  # - include: tikz.core
+
+  # tikz.foreach:
+  # - match: '\\foreach\b'
+  #   scope: keyword
+  #   push: [
+  #     tikz.foreach.loop/,
+  #     tikz.foreach.iterable/,
+  #     tikz.foreach.variables/,
+  #   ]
+
+  # tikz.foreach.variables/:
+  # - match: '\bin\b'
+  #   scope: keyword
+  #   pop: true
+  # - match: '\\[a-zA-Z]+'
+  #   scope: support.function
+
+  # tikz.foreach.iterable/:
+  # - match: '\\[a-zA-Z]+'
+  #   scope: support.function
+  #   pop: true
+  # - match: '\{'
+  #   set:
+  #   - match: '\}'
+  #     pop: true
+  #   - match: '\.{3}'
+  #   - match: '/'
+  #   - include: tikz.math_expr
+  #   - include: main
+
+  # tikz.foreach.loop/:
+  # - match: '\{'
+  #   set:
+  #   - match: '\}'
+  #     pop: true
+  #   - include: tikz.core
+  # - match: '(?=\\{{tikz_draw_cmd}}\b)'
+  #   set: tikz.inline.main/
+
+  # tikz.draw:
+  # - match: '\\{{tikz_draw_cmd}}\b'
+  #   scope: support.function
+  #   push: [
+  #     tikz.draw.main/,
+  #     tikz.lists*/,
+  #   ]
+
+  # tikz.draw.main/:
+  # - match: ';'
+  #   pop: true
+  # - match: '(\+{1,2})?\s*\('
+  #   captures:
+  #     '1': keyword
+  #   push:
+  #   - match: '\)'
+  #     pop: true
+  #   - include: tikz.math_expr
+  #   - include: main
+  # - match: '{{tikz_path_op}}'
+  #   push: [
+  #     default.group*/,
+  #     tikz.lists*/,
+  #   ]
+
+  # tikz.list/:
+  # - match: '\['
+  #   set:
+  #   - match: '\]'
+  #     pop: true
+  #   - match: '([a-zA-Z]+(?:[\sa-zA-Z])*)\s*([<>]?=)'
+  #     captures:
+  #       '1': variable.parameter
+  #       '2': keyword
+  #     push:
+  #     - match: '(?=[,\]])'
+  #       pop: true
+  #     - include: tikz.math_expr
+  #     - include: main
+  #   - include: main
+
+  # tikz.list*/:
+  # - match: '(?=[\[])'
+  #   set: tikz.list/
+  # - match: '(?=[^\s\[])'
+  #   pop: true
+
+  # tikz.lists*/:
+  # - match: '(?=[\[])'
+  #   push: tikz.list/
+  # - match: '(?=[^\s\[])'
+  #   pop: true
+
+  # tikz.math_expr:
+  # - match: '[\+\-\/\*]'
+  #   scope: keyword
+  # - match: '{{uns_number}}'
+  #   scope: constant.numeric
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                                    MATH
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+  math:
+  - include: math.displays
+  - include: math.display
+  - include: math.inline
+
+  math.inline:
+  - match: '\\(m|math|mathematics)\b'
+    scope: support.function
+    push: math.group/
+  - match: '(\$)'
+    scope: entity
+    push:
+    - match: '(\1)'
+      scope: entity
+      pop: true
+    - include: math.main
+
+  math.display:
+  - match: '\\start(formula)\b'
+    scope: entity
+    push:
+    - match: '\\stop(\1)\b'
+      scope: entity
+      pop: true
+    - include: math.main
+  - match: '(\$\$)'
+    scope: entity
+    push:
+    - match: '(\1)'
+      scope: entity
+      pop: true
+    - include: math.main
+
+  math.displays:
+  - match: '\\start(formulas)\b'
+    scope: entity
+    push:
+    - match: '\\stop(\1)\b'
+      scope: entity
+      pop: true
+    - include: math.display
+
+  math.main:
+  - include: math.align
+  - include: math.cases
+  - include: math.group
+  - include: math.substack
+  - include: math.text
+  - include: lua.inline # sure, why not
+  - include: math.default
+
+  math.default:
+  - match: '{{number}}'
+    scope: constant.numeric
+  - include: default
+  - match: '.'
+    scope: string.math.tex
+
+  math.text:
+  - match: '\\text\b'
+    scope: support.function
+    push: default.group/
+  - match: '\\start(intertext)\b'
+    scope: entity
+    push:
+    - match: '\\stop(\1)\b'
+      scope: entity
+      pop: true
+    - include: main
+
+  math.substack:
+  - match: '\\start(substack)\b'
+    scope: entity
+    push:
+    - match: '\\stop(\1)\b'
+      scope: entity
+      pop: true
+    - match: '\\NR\b'
+      scope: keyword
+    - include: math.main
+
+  math.cases:
+  - match: '\\start(mathcases)\b'
+    scope: entity
+    push: [
+      math.cases.main/,
+      default.list*/,
+    ]
+
+  math.cases.main/:
+  - match: '\\stop(\1)\b'
+    scope: entity
+    pop: true
+  - match: '\\NC\b'
+    scope: keyword
+    push: [
+      math.cases.two/,
+      math.cases.one/,
+    ]
+
+  math.cases.one/:
+  - match: '(?=\\[NM]C\b)'
+    pop: true
+  - include: math.main
+
+  math.cases.two/:
+  - match: '\\NC\b'
+    scope: keyword
+    set:
+    - include: math.cases.two.core/
+    - include: main
+  - match: '\\MC\b'
+    scope: keyword
+    set:
+    - include: math.cases.two.core/
+    - include: math.main
+
+  math.cases.two.core/:
+  - match: '\\NR\b'
+    scope: keyword
+    pop: true
+
+  math.align:
+  - match: '\\start(align|mathalignment)\b'
+    scope: entity
+    push: [
+      math.align.core/,
+      default.list*/,
+    ]
+
+  math.align.core/:
+  - match: '\\stop(\1)\b'
+    scope: entity
+    pop: true
+  - match: '\\N[CR]\b'
+    scope: keyword
+  - include: math.main
+
+  math.group:
+  - match: '\{'
+    push: math.group.core/
+
+  math.group/:
+  - match: '\{'
+    set: math.group.core/
+
+  math.group*/:
+  - include: math.group/
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  math.groups*/:
+  - include: math.group
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  math.group.core/:
+  - meta_scope: math.group.tex
+  - match: '\}'
+    pop: true
+  - include: math.main
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                                    CONTEXT
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+  context:
+  - include: context.tables
+  - include: context.itemize
+  - include: context.def
+
+  context.def:
+  - include: context.texdef
+  - include: context.define
+
+  context.texdef:
+  - match: '\\start(texdefinition)\b'
+    scope: entity
+    push: [
+      context.texdef.main/,
+      context.texdef.arguments*/,
+      context.texdef.name/,
+      context.texdef.prefixes*/,
+    ]
+
+  context.texdef.prefixes*/:
+  - match: '\b(global|(un)?expanded)\b'
+    scope: constant.other
+  - match: '(?=[^\s])'
+    pop: true
+
+  context.texdef.name/:
+  - match: '[a-zA-Z]+'
+    scope: support.function
+    pop: true
+
+  context.texdef.arguments*/:
+  - match: '\#([1-9]|[a-zA-Z]+)'
+    scope: variable.parameter.tex
+  - match: '(?=[^\s])'
+    pop: true
+
+  context.texdef.main/:
+  - meta_include_prototype: false
+  - match: '\\stop(\1)\b'
+    scope: entity
+    pop: true
+  - match: '\#([1-9]|[a-zA-Z]+)'
+    scope: variable.parameter.tex
+  - include: context.texdef.comment
+  - include: context.texdef.group
+  - include: main
+
+  context.texdef.comment:
+  - meta_include_prototype: false
+  - match: '\%\s*\%.*'
+    scope: comment
+
+  context.texdef.group:
+  - meta_include_prototype: false
+  - match: '\{'
+    push: context.texdef.group.core/
+
+  context.texdef.group.core/:
+  - meta_include_prototype: false
+  - meta_scope: def.group.tex
+  - match: '\}'
+    pop: true
+  - match: '\#([1-9]|[a-zA-Z]+)'
+    scope: variable.parameter.tex
+  - include: context.texdef.comment
+  - include: context.texdef.group
+  - include: main
+
+  context.define:
+  - match: '\\define\b'
+    scope: support.function
+    push: [
+      tex.def.group/,
+      tex.def.assignable/,
+      context.count.list*/,
+    ]
+
+  context.itemize:
+  - match: '\\start(itemize)\b'
+    scope: entity.control-word.tex
+    push: [
+      context.itemize.core/,
+      default.lists*/,
+    ]
+
+  context.itemize.core/:
+  - match: '\\stop(\1)\b'
+    scope: entity.control-word.tex
+    pop: true
+  - match: '\\(item|head)\b'
+    scope: keyword.tex
+  - include: main
+
+  context.tables:
+  - include: context.table
+  - include: context.TABLE
+
+  context.TABLE:
+  - match: '\\bTABLE\b'
+    scope: entity.control-word.tex
+  - match: '\\eTABLE\b'
+    scope: entity.control-word.tex
+  - match: '\\[eb]T[RD]\b'
+    scope: entity.control-word.tex
+    push: default.lists*/
+
+  context.table:
+  - match: '\\start(table)\b'
+    scope: entity.control-word.tex
+    push: [
+      context.table.core/,
+      context.table.spec.list*/,
+    ]
+
+  context.table.core/:
+  - match: '\\stop(\1)\b'
+    scope: entity.control-word.tex
+    pop: true
+  - match: '(?=((?!\\([HV]L|NC|[FMLSNA]R)\b).)*?\\{{math_builtin}}\b)'
+    push:
+    - include: context.table.entry
+    - include: math.main
+  - match: ''
+    push:
+    - include: context.table.entry/
+    - include: main
+
+  context.table.entry/:
+  - match: '(?=\\([HV]L|NC|[FMLSNA]R)\b)'
+    pop: true
+  - match: '\\([HV]L|NC|[FMLSNA]R)\b'
+    scope: keyword.tex
+  - match: '\\Use\b'
+    scope: support.function.control-word.tex
+    push: [
+      context.guess.group/,
+      context.table.spec.list/,
+      context.count.group/,
+    ]
+  - match: '\\(REF|ReFormat)\b'
+    scope: support.function.control-word.tex
+    push: [
+      context.guess.group/,
+      context.table.spec.list/,
+    ]
+
+  context.count.group/:
+  - match: '\{'
+    set:
+    - match: '\}'
+      pop: true
+    - match: '{{uns_int}}'
+      scope: constant.numeric
+
+  context.count.list*/:
+  - match: '\['
+    set:
+    - match: '\]'
+      pop: true
+    - match: '{{uns_int}}'
+      scope: constant.numeric
+  - match: '(?=[^\s\[])'
+    pop: true
+
+  context.table.spec.list:
+  - match: '\['
+    push: context.table.spec.list.core/
+
+  context.table.spec.list/:
+  - match: '\['
+    set: context.table.spec.list.core/
+
+  context.table.spec.list*/:
+  - include: context.table.spec.list/
+  - match: '(?=[^\s\[])'
+    pop: true
+
+  context.table.spec.lists*/:
+  - include: context.table.spec.list
+  - match: '(?=[^\s\[])'
+    pop: true
+
+  context.table.spec.list.core/:
+  - meta_scope: table.spec.list.tex
+  - match: '\]'
+    pop: true
+  - include: context.table.spec
+  - include: main
+
+  context.guess.group:
+  - match: '\{'
+    push: context.guess.group.core/
+
+  context.guess.group/:
+  - match: '\{'
+    set: context.guess.group.core/
+
+  context.guess.group*/:
+  - include: context.guess.group/
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  context.guess.groups*/:
+  - include: context.guess.group
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  context.guess.group.core/:
+  - match: '(?=[^\{\}]*?\\{{math_builtin}}\b)'
+    set:
+    - meta_scope: context.guess.math.group.tex
+    - match: '\}'
+      pop: true
+    - include: math.main
+  - match: ''
+    set:
+    - meta_scope: context.guess.text.group.tex
+    - match: '\}'
+      pop: true
+    - include: main
+
+  context.table.spec:
+  - match: '([lcrx])?([wp]\({{number}}\))'
+    captures:
+      '1': keyword
+      '2': support.function
+  - match: '[lcr]'
+    scope: keyword
+  - match: '[BISRT]'
+    scope: string
+  - match: '[f]'
+    scope: string
+    push: default.group/
+  - match: '[mM]'
+    scope: constant.other
+  - match: '[nN]{{uns_int}}\.{{uns_int}} '
+    scope: entity
+  - match: '[qQ]{{uns_int}}\,{{uns_int}} '
+    scope: entity
+  - match: '[soijk](\{{{uns_int}}\}|\({{number}}{{unit}}\)|\d)'
+    scope: variable.parameter
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+#                                                                    DEFAULT
+# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+  default:
+  - include: default.if
+  - include: default.group
+  - include: default.start_stop
+  - include: default.control_word
+  - include: default.control_symbol
+
+  default.if:
+  - match: '\\if[a-zA-Z]+'
+    scope: keyword
+  - match: '\\(else|fi)\b'
+    scope: keyword
+
+  default.control_symbol:
+  - match: '\\[^a-zA-Z]'
+    scope: constant.character
+
+  default.start_stop:
+  - match: '\\(start|stop)[a-zA-Z]+'
+    scope: entity
+    push: default.lists*/
+
+  default.control_word:
+  - match: '\\[a-zA-Z]+'
+    scope: support.function
+    push: default.lists*/
+
+  default.group:
+  - match: '\{'
+    push: default.group.core/
+
+  default.group/:
+  - match: '\{'
+    set: default.group.core/
+
+  default.group*/:
+  - include: default.group/
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  default.groups*/:
+  - include: default.group
+  - match: '(?=[^\s\{])'
+    pop: true
+
+  default.group.core/:
+  - meta_scope: default.group.tex
+  - match: '\}'
+    pop: true
+  - include: main
+
+  default.list:
+  - match: '\['
+    push: default.list.core/
+
+  default.list/:
+  - match: '\['
+    set: default.list.core/
+
+  default.list*/:
+  - include: default.list/
+  - match: '(?=[^\s\[])'
+    pop: true
+
+  default.lists*/:
+  - include: default.list
+  - match: '(?=[^\s\[])'
+    pop: true
+
+  default.list.core/: # could be better, but I like this compromise between complexity and effectiveness
+  - meta_scope: default.list.tex
+  - match: '\]'
+    pop: true
+  - match: '\,'
+  - match: '{{number}}(\s*{{unit}})?'
+    scope: constant.numeric
+  - match: '([a-zA-Z]+)(=)'
+    captures:
+      '1': variable.parameter
+      '2': keyword
+  - match: ':'
+    scope: variable.parameter
+  - include: main
+  - match: '.'
+    scope: string
