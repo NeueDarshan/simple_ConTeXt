@@ -12,11 +12,13 @@ scope: text.tex.context
 #   'keyword' - red
 #   'markup.bold' - red, bold
 #   'markup.italic' - red, italic
+#   'markup.heading' - orange
 #   'constant.(other|numeric|character|...)' - purple
 #   'support.function' (or 'meta.diff') - blue
 #   'entity' - green
 #   'comment' - grey(ed out)
-# honestly though this facet of the syntax highlighting is the one i least understand
+# honestly though this facet of the syntax highlighting is the one i least understand... looking at the scopes that come up in markdown highlighting,
+# i see a lot of interesting things.
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------- #
 #                                                                    VARIABLES
