@@ -1,9 +1,8 @@
 {
   "cmd":
   [
-    "py", // "py -3" is the simplest way on my system to force py 3
-    "-3",
-    "$packages\\User\\My TeX Stuff\\context_build.py",
+    "python",
+    "$packages/ConTeXtTools/ConTeXt_build.py",
     "$file_name"
   ],
   "selector":
