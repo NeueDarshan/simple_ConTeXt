@@ -1,10 +1,8 @@
 %YAML 1.2
 ---
-# see http://www.sublimetext.com/docs/3/syntax.html for a good, but incomplete, explanation of how this syntax works
+# see http://www.sublimetext.com/docs/3/syntax.html for a good, albeit incomplete, explanation of how this syntax works
 name: ConTeXt
-file_extensions:
-  - ctx
-  - tex
+file_extensions: tex
 scope: text.tex.context
 # the tricks i know to make the syntax highlighting work (in Monokai Extended):
 #   'string' - (light) yellow
