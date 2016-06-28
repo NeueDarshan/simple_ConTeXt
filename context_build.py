@@ -25,7 +25,7 @@ def prep_path(settings):
   if platform.system() == "Windows":
     pass
   elif platform.system() == "Darwin":
-    tex_bin_path = os.path.join(os.path.sep, *settings.mac.tex_binaries_location)
+    tex_bin_path = os.path.join(os.path.sep, *settings["mac"]["tex_binaries_location"])
     os.environ["PATH"] = ":".join(os.environ["PATH"].split(":") + [tex_bin_path])
   else:
     raise PlatformNotRecognizedError("Operating system not recognized!")
@@ -38,11 +38,13 @@ def prep_path(settings):
 #        "stopping"
 #      ])
 
-def open_pdf(tex_file, pdf_app):
+def open_pdf(tex_file, settings):
   pdf_name = os.path.splitext(os.path.basename(tex_file))[0] + ".pdf"
   if platform.system() == "Windows":
+    pdf_app = settings["windows"]["PDF_viewer"]
     cmd = [pdf_app, pdf_name]
   elif platform.system() == "Darwin":
+    pdf_app = settings["mac"]["PDF_viewer"]
     cmd = ["open", pdf_name, "-a", pdf_app]
   else:
     raise PlatformNotRecognizedError("Operating system not recognized!")
@@ -73,11 +75,10 @@ def main():
   if process.returncode == 0:
     print("success!")
     sys.stdout.flush()
-    open_pdf(args.file)
+    open_pdf(args.file, settings)
   else:
     print("error:")#, parse_error(out))
     print(out)
 
 if __name__ == "__main__":
-  pass
-  #main()
+  main()
