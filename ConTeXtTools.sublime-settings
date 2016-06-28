@@ -1,0 +1,15 @@
+{
+  "windows":
+  {
+    "PDF_viewer": "sumatraPDF"
+  },
+  "mac":
+  {
+    "PDF_viewer": "Skim",
+    "tex_binaries_location":
+    [
+      "usr",
+      "texbin"
+    ]
+  }
+}

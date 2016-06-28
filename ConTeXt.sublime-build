@@ -3,6 +3,7 @@
     [
       "python",
       "$packages/ConTeXtTools/context_build.py",
+      "$packages",
       "$file_name"
     ],
   "selector":
