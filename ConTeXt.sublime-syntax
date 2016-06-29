@@ -1,10 +1,11 @@
 %YAML 1.2
 ---
-# see http://www.sublimetext.com/docs/3/syntax.html for a good, albeit incomplete, explanation of how this syntax works
+# See http://www.sublimetext.com/docs/3/syntax.html for a good, albeit
+# incomplete, explanation of how this syntax works.
 name: ConTeXt
 file_extensions: tex
 scope: text.tex.context
-# the tricks i know to make the syntax highlighting work (in Monokai Extended):
+# The tricks I know to make the syntax highlighting work (in Monokai Extended):
 #   'string' - (light) yellow
 #   'variable.parameter' - orange, italic
 #   'keyword' - red
@@ -15,78 +16,147 @@ scope: text.tex.context
 #   'support.function' (or 'meta.diff') - blue
 #   'entity' - green
 #   'comment' - grey(ed out)
-# honestly though this facet of the syntax highlighting is the one i least understand... looking at the scopes that come up in markdown highlighting,
-# i see a lot of interesting things.
+# Honestly though this facet of the syntax highlighting is the one I least
+# understand... looking at the scopes that come up in markdown highlighting, I
+# see a lot of interesting things.
+#   If I get round to adding snippets and other such fancy things to
+# ConTeXtTools, then I'll have to rework this stuff.
 
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
-#                                                                    VARIABLES
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# VARIABLES
+# -----------------------------------------------------------------------------
+# Variables are nice; unfortunately they can't be used everywhere (you can't
+# do 'scope: {{var}}' for example). But you can use them in matches, and to do
+# so you simply write {{variable_name}} inside the regex for the match. (Make
+# sure to use quotes if you do use a variable - the YAML syntax generally
+# doesn't mind whether you use quotes or not as long its unambiguous, but it
+# will be very unhappy with you if don't quote something with a '{{var}}' in
+# it.)
 variables:
-  # we have a copy of the builtins from the TeX Math sublime-syntax file, which we use to guess whether a body of text is in math mode or not
-  math_builtin:      '({{math_builtins_1}}|{{math_builtins_2}}|{{math_builtins_3}})'
-  math_builtins_1:   '(sum|prod|coprod|int|oint|bigcap|bigcup|bigsqcup|bigvee|bigwedge|bigodot|bigotimes|bogoplus|biguplus)'
+  # We have a copy of the builtins from the TeX Math sublime-syntax file,
+  # which we use to guess whether a body of text is in math mode or not.
+  math_builtin: '({{math_builtins_1}}|{{math_builtins_2}}|{{math_builtins_3}})'
+  math_builtins_1:
+    '(sum|prod|coprod|int|oint|bigcap|bigcup|bigsqcup|bigvee|bigwedge|bigodot|
+      bigotimes|bogoplus|biguplus)'
   math_builtins_2:
-    '(arccos|arcsin|arctan|arg|cos|cosh|cot|coth|csc|deg|det|dim|exp|gcd|hom|inf|ker|lg|lim|liminf|limsup|ln|log|max|min|pr|sec|sin|sinh|sup|tan|
-     tanh)'
+    '(arccos|arcsin|arctan|arg|cos|cosh|cot|coth|csc|deg|det|dim|exp|gcd|hom|
+      inf|ker|lg|lim|liminf|limsup|ln|log|max|min|pr|sec|sin|sinh|sup|tan|
+      tanh)'
   math_builtins_3:
-    '(s(s(earrow|warrow|lash)|h(ort(downarrow|uparrow|parallel|leftarrow|rightarrow|mid)|arp)|tar|i(gma|m(eq)?)|u(cc(sim|n(sim|approx)|curlyeq|eq|
-     approx)?|pset(neq(q)?|plus(eq)?|eq(q)?)?|rd|m|bset(neq(q)?|plus(eq)?|eq(q)?)?)|p(hericalangle|adesuit)|e(tminus|arrow)|q(su(pset(eq)?|bset(eq)?)
-     |c(up|ap)|uare)|warrow|m(ile|all(s(etminus|mile)|frown)))|h(slash|ook(leftarrow|rightarrow)|eartsuit|bar)|R(sh|ightarrow|e|bag)|Gam(e|ma)|n(s(
-     hort(parallel|mid)|im|u(cc(eq)?|pseteq(q)?|bseteq))|Rightarrow|n(earrow|warrow)|cong|triangle(left(eq(slant)?)?|right(eq(slant)?)?)|i(plus)?|u|p
-     (lus|arallel|rec(eq)?)|e(q|arrow|g|xists)|v(dash|Dash)|warrow|le(ss|q(slant|q)?|ft(arrow|rightarrow))|a(tural|bla)|VDash|rightarrow|g(tr|eq(
-     slant|q)?)|mid|Left(arrow|rightarrow))|c(hi|irc(eq|le(d(circ|S|dash|ast)|arrow(left|right)))?|o(ng|prod|lon|mplement)|dot(s|p)?|u(p|r(vearrow(
-     left|right)|ly(eq(succ|prec)|vee(downarrow|uparrow)?|wedge(downarrow|uparrow)?)))|enterdot|lubsuit|ap)|Xi|Maps(to(char)?|from(char)?)|B(ox|umpeq
-     |bbk)|t(h(ick(sim|approx)|e(ta|refore))|imes|op|wohead(leftarrow|rightarrow)|a(u|lloblong)|riangle(down|q|left(eq(slant)?)?|right(eq(slant)?)?)?
-     )|i(n(t(er(cal|leave))?|plus|fty)?|ota|math)|S(igma|u(pset|bset))|zeta|o(slash|times|int|dot|plus|vee|wedge|lessthan|greaterthan|m(inus|ega)|b(
-     slash|long|ar))|d(i(v(ideontimes)?|a(g(down|up)|mond(suit)?)|gamma)|o(t(plus|eq(dot)?)|ublebarwedge|wn(harpoon(left|right)|downarrows|arrow))|d(
-     ots|agger)|elta|a(sh(v|leftarrow|rightarrow)|leth|gger))|Y(down|up|left|right)|C(up|ap)|u(n(lhd|rhd)|p(silon|harpoon(left|right)|downarrow|
-     uparrows|lus|arrow)|lcorner|rcorner)|jmath|Theta|Im|p(si|hi|i(tchfork)?|erp|ar(tial|allel)|r(ime|o(d|pto)|ec(sim|n(sim|approx)|curlyeq|eq|approx
-     )?)|m)|e(t(h|a)|psilon|q(slant(less|gtr)|circ|uiv)|ll|xists|mptyset)|Omega|D(iamond|ownarrow|elta)|v(d(ots|ash)|ee(bar)?|Dash|ar(s(igma|u(
-     psetneq(q)?|bsetneq(q)?))|nothing|curly(vee|wedge)|t(heta|imes|riangle(left|right)?)|o(slash|circle|times|dot|plus|vee|wedge|lessthan|ast|
-     greaterthan|minus|b(slash|ar))|p(hi|i|ropto)|epsilon|kappa|rho|bigcirc))|kappa|Up(silon|downarrow|arrow)|Join|f(orall|lat|a(t(s(emi|lash)|bslash
-     )|llingdotseq)|rown)|P(si|hi|i)|w(p|edge|r)|l(hd|n(sim|eq(q)?|approx)|ceil|times|ightning|o(ng(left(arrow|rightarrow)|rightarrow|maps(to|from))|
-     zenge|oparrow(left|right))|dot(s|p)|e(ss(sim|dot|eq(qgtr|gtr)|approx|gtr)|q(slant|q)?|ft(slice|harpoon(down|up)|threetimes|leftarrows|arrow(t(
-     ail|riangle))?|right(squigarrow|harpoons|arrow(s|triangle|eq)?))|adsto)|vertneqq|floor|l(c(orner|eil)|floor|l|bracket)?|a(ngle|mbda)|rcorner|bag
-     )|a(s(ymp|t)|ngle|pprox(eq)?|l(pha|eph)|rrownot|malg)|V(dash|vdash)|r(h(o|d)|ceil|times|i(singdotseq|ght(s(quigarrow|lice)|harpoon(down|up)|
-     threetimes|left(harpoons|arrows)|arrow(t(ail|riangle))?|rightarrows))|floor|angle|r(ceil|parenthesis|floor|bracket)|bag)|g(n(sim|eq(q)?|approx)|
-     tr(sim|dot|eq(qless|less)|less|approx)|imel|eq(slant|q)?|vertneqq|amma|g(g)?)|Finv|xi|m(ho|i(nuso|d)|o(o|dels)|u(ltimap)?|p|e(asuredangle|rge)|
-     aps(to|from(char)?))|b(i(n(dnasrepma|ampersand)|g(s(tar|qc(up|ap))|nplus|c(irc|u(p|rly(vee|wedge))|ap)|triangle(down|up)|interleave|o(times|dot|
-     plus)|uplus|parallel|vee|wedge|box))|o(t|wtie|x(slash|circle|times|dot|plus|empty|ast|minus|b(slash|ox|ar)))|u(llet|mpeq)|e(cause|t(h|ween|a))|
-     lack(square|triangle(down|left|right)?|lozenge)|a(ck(s(im(eq)?|lash)|prime|epsilon)|r(o|wedge))|bslash)|L(sh|ong(left(arrow|rightarrow)|
-     rightarrow|maps(to|from))|eft(arrow|rightarrow)|leftarrow|ambda|bag)|Arrownot)'
+    '(s(s(earrow|warrow|lash)|h(ort(downarrow|uparrow|parallel|leftarrow|
+      rightarrow|mid)|arp)|tar|i(gma|m(eq)?)|u(cc(sim|n(sim|approx)|curlyeq|eq|
+      approx)?|pset(neq(q)?|plus(eq)?|eq(q)?)?|rd|m|bset(neq(q)?|plus(eq)?|eq(q
+      )?)?)|p(hericalangle|adesuit)|e(tminus|arrow)|q(su(pset(eq)?|bset(eq)?)|c
+      (up|ap)|uare)|warrow|m(ile|all(s(etminus|mile)|frown)))|h(slash|ook(
+      leftarrow|rightarrow)|eartsuit|bar)|R(sh|ightarrow|e|bag)|Gam(e|ma)|n(s(
+      hort(parallel|mid)|im|u(cc(eq)?|pseteq(q)?|bseteq))|Rightarrow|n(earrow|
+      warrow)|cong|triangle(left(eq(slant)?)?|right(eq(slant)?)?)|i(plus)?|u|p
+      (lus|arallel|rec(eq)?)|e(q|arrow|g|xists)|v(dash|Dash)|warrow|le(ss|q(
+      slant|q)?|ft(arrow|rightarrow))|a(tural|bla)|VDash|rightarrow|g(tr|eq(
+      slant|q)?)|mid|Left(arrow|rightarrow))|c(hi|irc(eq|le(d(circ|S|dash|ast)|
+      arrow(left|right)))?|o(ng|prod|lon|mplement)|dot(s|p)?|u(p|r(vearrow(left
+      |right)|ly(eq(succ|prec)|vee(downarrow|uparrow)?|wedge(downarrow|uparrow)
+      ?)))|enterdot|lubsuit|ap)|Xi|Maps(to(char)?|from(char)?)|B(ox|umpeq|bbk)|
+      t(h(ick(sim|approx)|e(ta|refore))|imes|op|wohead(leftarrow|rightarrow)|a(
+      u|lloblong)|riangle(down|q|left(eq(slant)?)?|right(eq(slant)?)?)?)|i(n(t(
+      er(cal|leave))?|plus|fty)?|ota|math)|S(igma|u(pset|bset))|zeta|o(slash|
+      times|int|dot|plus|vee|wedge|lessthan|greaterthan|m(inus|ega)|b(slash|
+      long|ar))|d(i(v(ideontimes)?|a(g(down|up)|mond(suit)?)|gamma)|o(t(plus|eq
+      (dot)?)|ublebarwedge|wn(harpoon(left|right)|downarrows|arrow))|d(ots|
+      agger)|elta|a(sh(v|leftarrow|rightarrow)|leth|gger))|Y(down|up|left|right
+      )|C(up|ap)|u(n(lhd|rhd)|p(silon|harpoon(left|right)|downarrow|uparrows|
+      lus|arrow)|lcorner|rcorner)|jmath|Theta|Im|p(si|hi|i(tchfork)?|erp|ar(
+      tial|allel)|r(ime|o(d|pto)|ec(sim|n(sim|approx)|curlyeq|eq|approx)?)|m)|e
+      (t(h|a)|psilon|q(slant(less|gtr)|circ|uiv)|ll|xists|mptyset)|Omega|D(
+      iamond|ownarrow|elta)|v(d(ots|ash)|ee(bar)?|Dash|ar(s(igma|u(psetneq(q)?|
+      bsetneq(q)?))|nothing|curly(vee|wedge)|t(heta|imes|riangle(left|right)?)|
+      o(slash|circle|times|dot|plus|vee|wedge|lessthan|ast|greaterthan|minus|b(
+      slash|ar))|p(hi|i|ropto)|epsilon|kappa|rho|bigcirc))|kappa|Up(silon|
+      downarrow|arrow)|Join|f(orall|lat|a(t(s(emi|lash)|bslash)|llingdotseq)|
+      rown)|P(si|hi|i)|w(p|edge|r)|l(hd|n(sim|eq(q)?|approx)|ceil|times|
+      ightning|o(ng(left(arrow|rightarrow)|rightarrow|maps(to|from))|zenge|
+      oparrow(left|right))|dot(s|p)|e(ss(sim|dot|eq(qgtr|gtr)|approx|gtr)|q(
+      slant|q)?|ft(slice|harpoon(down|up)|threetimes|leftarrows|arrow(t(ail|
+      riangle))?|right(squigarrow|harpoons|arrow(s|triangle|eq)?))|adsto)|
+      vertneqq|floor|l(c(orner|eil)|floor|l|bracket)?|a(ngle|mbda)|rcorner|bag)
+      |a(s(ymp|t)|ngle|pprox(eq)?|l(pha|eph)|rrownot|malg)|V(dash|vdash)|r(h(o|
+      d)|ceil|times|i(singdotseq|ght(s(quigarrow|lice)|harpoon(down|up)|
+      threetimes|left(harpoons|arrows)|arrow(t(ail|riangle))?|rightarrows))|
+      floor|ange|r(ceil|parenthesis|floor|bracket)|bag)|g(n(sim|eq(q)?|approx)|
+      tr(sim|dot|eq(qless|less)|less|approx)|imel|eq(slant|q)?|vertneqq|amma|g(
+      g)?)|Finv|xi|m(ho|i(nuso|d)|o(o|dels)|u(ltimap)?|p|e(asuredangle|rge)|aps
+      (to|from(char)?))|b(i(n(dnasrepma|ampersand)|g(s(tar|qc(up|ap))|nplus|c(
+      irc|u(p|rly(vee|wedge))|ap)|triangle(down|up)|interleave|o(times|dot|plus
+      )|uplus|parallel|vee|wedge|box))|o(t|wtie|x(slash|circle|times|dot|plus|
+      empty|ast|minus|b(slash|ox|ar)))|u(llet|mpeq)|e(cause|t(h|ween|a))|lack(
+      square|triangle(down|left|right)?|lozenge)|a(ck(s(im(eq)?|lash)|prime|
+      epsilon)|r(o|wedge))|bslash)|L(sh|ong(left(arrow|rightarrow)|rightarrow|
+      maps(to|from))|eft(arrow|rightarrow)|leftarrow|ambda|bag)|Arrownot)'
   tex_keyword:
-    '(?:backmatter|else|fi|frontmatter|ftrue|mainmatter|if(?:case|cat|dim|eof|false|hbox|hmode|inner|mmode|num|odd|undefined|vbox|vmode|void|x)?)'
-  unit:              '(pt|pc|in|bp|cm|mm|cc|sp|em|ex)'
-  uns_int:           '\d+'
-  uns_real:          '(\d+\.\d*|\d*\.\d+)'
-  uns_number:        '({{uns_real}}|{{uns_int}})'
-  number:            '[\+\-]*{{uns_number}}'
+    '(?:backmatter|else|fi|frontmatter|ftrue|mainmatter|if(?:case|cat|dim|eof|
+      false|hbox|hmode|inner|mmode|num|odd|undefined|vbox|vmode|void|x)?)'
+  unit:       '(pt|pc|in|bp|cm|mm|cc|sp|em|ex)' # valid TeX units
+  uns_int:    '\d+'
+  uns_real:   '(\d+\.\d*|\d*\.\d+)'
+  uns_number: '({{uns_real}}|{{uns_int}})'
+  number:     '[\+\-]*{{uns_number}}'
+  # To be continued: this should list all (most?) of the Lua functions that
+  # ConTeXt provides, so we can highlight them appropriately inside Lua code.
   lua_functions:     '(tex.s?print)|context'
+  # Also needs some TLC, but eventually these variables (or ones like them)
+  # should let us highlight TikZ syntax nicely. The problem is, the TikZ
+  # grammar is pretty big, and I'm not well versed enough in it to know how
+  # best to highlight it.
   tikz_path_op:      '(draw|fill(draw)?|path|node)'
   tikz_draw_cmd:     '(--|rectangle|node)'
 
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
-#                                                                    MAIN
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# MAIN
+# -----------------------------------------------------------------------------
+# A note on the naming convention I've been using for contexts (we have the
+# unfortunate coincidence that the term 'context' is used to refer to a 'block
+# of code'/'function' in sublime-syntax files, and the syntax we wish to
+# highlight goes by 'ConTeXt' - hopefully which is meant will be clear based on
+# the situation at hand):
+#   * if it ends in a '/' then it pops off when (and only when) it finds a
+#       match (what a 'match' means will depend on the particular context, but
+#       e.g. 'group/' is looking to match something like '{...}')
+#   * ending in '*/' means the same as '/', except that it will pop off if it
+#       can't find any match - it is optional. (I wanted to use '?' for this
+#       purpose, but it is not allowed in a context name)
+#   * otherwise it never pops, it just remains at the current level of scope -
+#       generally these are the ones intended for 'include'-ing (which you can
+#       think of as just 'copy-paste'-ing that contexts code wherever the
+#       include statement occurs)
+# Oh, one more note: the characters that can be used in a context name are
+# quite generous - you can use more of the ASCII character set than you'd
+# expect! So I've been using '.' to pretend that I have namespaces, but don't
+# be fooled, there is only the global namespace (as far as I know).
 contexts:
   main:
   - include: tex
   - include: lua
   - include: tikz
   - include: math
+  # To be clear, this is the bit matching ConTeXt specific syntax.
   - include: context
+  # The 'default' context is intended to match any leftovers that haven't been
+  # caught by 'tex', 'lua', ..., or 'context'.
   - include: default
 
   prototype:
   - include: comments
 
   comments:
+  # Because these matches are applied one line at a time, we can use this very
+  # simple regex instead of something like '\%.*?$'.
   - match: '\%.*'
-    scope: comment
+    scope: comment.tex
 
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
-#                                                                    TEX
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# TEX
+# -----------------------------------------------------------------------------
   tex:
   - include: tex.keyword
   - include: tex.def
@@ -98,6 +168,10 @@ contexts:
   tex.def:
   - match: '\\[egx]?def\b'
     scope: support.function.control-word.tex
+    # Things are pushed onto the stack in the order they are written, so that
+    # after this 'push', 'tex.def.assignable/' will be on top of the stack,
+    # with 'tex.def.parameters*/' just below it and 'tex.def.group/' below
+    # that.
     push: [
       tex.def.group/,
       tex.def.parameters*/,
@@ -105,6 +179,8 @@ contexts:
     ]
 
   tex.def.assignable/:
+  # although usually you '\def' a control word, it is also possible to '\def' a
+  # control symbol or an active character
   - match: '\\[a-zA-Z]+'
     scope: support.function.control-word.tex
     pop: true
@@ -121,6 +197,13 @@ contexts:
   - match: '(?=\{)'
     pop: true
 
+  # For completeness sake we have
+  #   tex.def.group
+  #   tex.def.group/
+  #   tex.def.group*/
+  #   tex.def.groups*/
+  # although we only need one or two of these. It's nice and fairly easy to
+  # provide them all though, so why not.
   tex.def.group:
   - match: '\{'
     push: tex.def.group.core/
@@ -129,12 +212,12 @@ contexts:
   - match: '\{'
     set: tex.def.group.core/
 
-  tex.def.group*/: # just for fun, we don't actually need this variant
+  tex.def.group*/:
   - include: tex.def.group/
   - match: '(?=[^\s\{])'
     pop: true
 
-  tex.def.groups*/: # nor this variant
+  tex.def.groups*/:
   - include: tex.def.group
   - match: '(?=[^\s\{])'
     pop: true
@@ -145,12 +228,15 @@ contexts:
     pop: true
   - match: '\#[1-9]'
     scope: variable.parameter.tex
-  - include: tex.def.group # we need to make sure to handle nested groups {...} ourselves before main does, so that we can highlight parameters #n
+  # We need to make sure to handle nested groups {...} ourselves before main
+  # does, so that we can highlight parameters '#n'. Thus we 'include'
+  # tex.def.group just before 'include'-ing main.
+  - include: tex.def.group
   - include: main
 
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
-#                                                                    LUA
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# LUA
+# -----------------------------------------------------------------------------
   lua:
   - include: lua.block
   - include: lua.inline
@@ -159,6 +245,8 @@ contexts:
   - match: '\\start(lua(code)?)\b'
     scope: entity
     push:
+    # The '(\1)' references the first capture group of the match below it on
+    # the stack (so in this case, it will simply refer to 'lua' or 'luacode').
     - match: '\\stop(\1)\b'
       scope: entity
       pop: true
@@ -172,6 +260,8 @@ contexts:
   lua.main:
   - include: lua.group
   - include: lua.context
+  # This bit is where we include the default Lua syntax highlighting that
+  # Sublime Text provides.
   - include: 'Packages/Lua/Lua.sublime-syntax'
 
   lua.context:
@@ -202,9 +292,12 @@ contexts:
     pop: true
   - include: lua.main
 
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
-#                                                                    TIKZ
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# TIKZ
+# -----------------------------------------------------------------------------
+# For the moment, I've commented this section out (which doesn't break the
+# line '- include: tikz' inside the main context, it just silently fails). It
+# could do with some work.
   # tikz:
   # - include: tikz.block
   # - include: tikz.inline
@@ -353,10 +446,14 @@ contexts:
   # - match: '{{uns_number}}'
   #   scope: constant.numeric
 
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
-#                                                                    MATH
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# MATH
+# -----------------------------------------------------------------------------
   math:
+  # It is important that math.display comes before math.inline, so that '$$'
+  # gets interpreted as beginning TeX-style display math mode instead of
+  # entering and immediately exiting TeX-style inline math mode. That said,
+  # you really shouldn't be using $$...$$ (TeX-style display math) in ConTeXt.
   - include: math.displays
   - include: math.display
   - include: math.inline
@@ -399,18 +496,23 @@ contexts:
     - include: math.display
 
   math.main:
+  # This context is the main workhorse of math highlighting.
   - include: math.align
   - include: math.cases
   - include: math.group
   - include: math.substack
   - include: math.text
-  - include: lua.inline # sure, why not
+  # Sure, why not include lua.inline, it can be nice to properly highlight an
+  # inline Lua call.
+  - include: lua.inline
   - include: math.default
 
   math.default:
   - match: '{{number}}'
     scope: constant.numeric
   - include: default
+    # This match is what makes plain text within math mode highlight like a
+    # string
   - match: '.'
     scope: string.math.tex
 
@@ -438,6 +540,11 @@ contexts:
     - include: math.main
 
   math.cases:
+  # This context is setup to match \startmathcases[optional square brackets,
+  # pass some options] ... \stopmathcases, and between them it will match
+  # rows: so highlight the first bit of a row '\NC ...' as math. The second bit
+  # can be either '\NC ... \NR' or '\MC ... \NR', which will be highlighted as
+  # text and math respectively (NC = new column and MC = math column).
   - match: '\\start(mathcases)\b'
     scope: entity
     push: [
@@ -518,15 +625,17 @@ contexts:
     pop: true
   - include: math.main
 
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
-#                                                                    CONTEXT
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# CONTEXT
+# -----------------------------------------------------------------------------
+# This section is devoted to matching syntax unique to ConTeXt
   context:
   - include: context.tables
   - include: context.itemize
   - include: context.def
 
   context.def:
+  # Match some ConTeXt specific variations of '\def'
   - include: context.texdef
   - include: context.define
 
@@ -558,6 +667,8 @@ contexts:
     pop: true
 
   context.texdef.main/:
+  # Inside a 'texdefinition', ConTeXt treats comments differently - now '%%'
+  # denotes a comment, and '%' is just a literal percentage sign
   - meta_include_prototype: false
   - match: '\\stop(\1)\b'
     scope: entity
@@ -586,6 +697,9 @@ contexts:
   - match: '\#([1-9]|[a-zA-Z]+)'
     scope: variable.parameter.tex
   - include: context.texdef.comment
+  # Just like with tex.def.group.core/, we have to make sure to intercept any
+  # groups {...} before main gets to them, if we want to highlight parameters
+  # '#n' inside nested groups
   - include: context.texdef.group
   - include: main
 
@@ -615,6 +729,12 @@ contexts:
   - include: main
 
   context.tables:
+  # ConTeXt has many ways to create tables (for historical reasons), some of
+  # which are simply deprecated and others just have pros and cons. In fact
+  # 'table's are deprecated, but I didn't know that before writing some (now
+  # rather messy) support for them, so it's here now.
+  #   Also included so far (with very very basic support) is the 'TABLE' way of
+  # doings tables.
   - include: context.table
   - include: context.TABLE
 
@@ -710,6 +830,11 @@ contexts:
   - include: context.table.spec
   - include: main
 
+  # This variation of the 'group' looks inside the group (as far as it simply
+  # can, which is for the rest of the line (because Sublime Text applies
+  # match regexes one line at a time) or until the first '}', whichever comes
+  # first) and tries to guess whether its contents are math or plain text - it
+  # then applies highlighting accordingly.
   context.guess.group:
   - match: '\{'
     push: context.guess.group.core/
@@ -729,7 +854,7 @@ contexts:
     pop: true
 
   context.guess.group.core/:
-  - match: '(?=[^\{\}]*?\\{{math_builtin}}\b)'
+  - match: '(?=[^\}]*?\\{{math_builtin}}\b)'
     set:
     - meta_scope: context.guess.math.group.tex
     - match: '\}'
@@ -763,9 +888,11 @@ contexts:
   - match: '[soijk](\{{{uns_int}}\}|\({{number}}{{unit}}\)|\d)'
     scope: variable.parameter
 
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
-#                                                                    DEFAULT
-# ------------------------------------------------------------------------------------------------------------------------------------------------- #
+# -----------------------------------------------------------------------------
+# DEFAULT
+# -----------------------------------------------------------------------------
+# This section applies matches very broadly, and only gets the chance to match
+# stuff if no other match has been found.
   default:
   - include: default.if
   - include: default.group
@@ -817,6 +944,11 @@ contexts:
     pop: true
   - include: main
 
+  # I've taken to calling these 'lists', what they are is simply something
+  # like '[...]'. That is, a square-bracket delimited thing. Inside the list,
+  # we do some very simple matches, e.g. take care of key=value style syntax,
+  # and finally (this bit is debatable) colour any leftover plain text as a
+  # string.
   default.list:
   - match: '\['
     push: default.list.core/
@@ -835,7 +967,7 @@ contexts:
   - match: '(?=[^\s\[])'
     pop: true
 
-  default.list.core/: # could be better, but I like this compromise between complexity and effectiveness
+  default.list.core/:
   - meta_scope: default.list.tex
   - match: '\]'
     pop: true
