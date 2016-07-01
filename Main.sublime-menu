@@ -16,15 +16,21 @@
             "children":
             [
               {
+                "caption": "README",
                 "command": "open_file",
-                "args": {"file": "${packages}/ConTeXtTools/README.md"},
-                "caption": "README"
+                "args":
+                {
+                  "file": "${packages}/ConTeXtTools/README.md"
+                },
               },
-              { "caption": "-" },
+              {"caption": "-"},
               {
+                "caption": "Settings",
                 "command": "open_file",
-                "args": {"file": "${packages}/ConTeXtTools/ConTeXtTools.sublime-settings"},
-                "caption": "Settings"
+                "args":
+                {
+                  "file": "${packages}/ConTeXtTools/ConTeXtTools.sublime-settings"
+                },
               },
             ]
           }

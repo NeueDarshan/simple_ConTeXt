@@ -4,6 +4,7 @@ import argparse
 import json
 import sys
 import os
+import io
 
 class PlatformNotRecognizedError(Exception):
     pass
@@ -23,7 +24,7 @@ def parse_args():
     return parser.parse_args()
 
 def load_settings(packages_dir):
-    with open(os.path.join(
+    with io.open(os.path.join(
         packages_dir,
         "ConTeXtTools",
         "ConTeXtTools.sublime-settings")) \
@@ -79,7 +80,7 @@ def main():
     # if things worked then open the PDF, if not then report what errors
     # occurred
     if process.returncode == 0:
-        print("success!")
+        print("success! opening PDF now...")
         sys.stdout.flush()
         open_pdf(args.file, settings)
     else:
