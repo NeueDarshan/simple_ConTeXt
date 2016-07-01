@@ -1,13 +1,13 @@
 {
   "cmd":
-    [
-      "python",
-      "$packages/ConTeXtTools/context_build.py",
-      "$packages",
-      "$file_name"
-    ],
+  [
+    "python",
+    "$packages/ConTeXtTools/context_build.py",
+    "$packages",
+    "$file_name",
+  ],
   "selector":
-    [
-      "text.tex.context"
-    ]
+  [
+    "text.tex.context",
+  ]
 }

@@ -1,6 +1,9 @@
-# Ignore compiled Python files
-*.pyc
-# Ignore cache files
-*.cache
+# Don't track package metadata
 package-metadata.json
+
+# ignore mac stuff
 .DS_Store
+
+# ignore sublime stuff
+*.sublime-project
+*.sublime-workspace
