@@ -65,8 +65,11 @@ contexts:
   - include: TeX.def
 
   TeX.def:
-  - match: '\\[egx]?def\b'
-    scope: {{@TEX_DEF}}
+  - match: '(\\)([egx]?)(def)\b'
+    captures:
+      '1': {{@TEX_DEF}}
+      '2': {{@TEX_DEF_PREFIX}}
+      '3': {{@TEX_DEF}}
     # Things are pushed onto the stack in the order they are written, so that
     # after this 'push', 'TeX.def.assignable/' will be on top of the stack,
     # with 'TeX.def.parameters*/' just below it and 'TeX.def.group/' below
@@ -250,12 +253,12 @@ contexts:
 
   TikZ.calc:
   - match: '\(\$'
-    scope: {{@MATH_TOGGLE}}
+    scope: {{@TIKZ_CALC_TOGGLE}}
     push: TikZ.calc.core/
 
   TikZ.calc.core/:
   - match: '\$\)'
-    scope: {{@MATH_TOGGLE}}
+    scope: {{@TIKZ_CALC_TOGGLE}}
     pop: true
   - match: '{{tikz_math_operator}}'
     scope:  {{@TIKZ_MATH_OPERATOR}}
@@ -266,9 +269,9 @@ contexts:
 
   TikZ.keyword:
   - match: '\\foreach\b'
-    scope: {{@TIKZ_KEYWORD}}
+    scope: {{@KEYWORD}}
   - match: '\b{{tikz_keywords}}\b'
-    scope: {{@TIKZ_KEYWORD}}
+    scope: {{@KEYWORD}}
 
   TikZ.scope:
   - match: '(\\start)(scope)\b'
@@ -329,8 +332,8 @@ contexts:
   TikZ.options.core:
   - match: '([a-zA-Z][a-zA-Z0-9\s\./\->]*)(=)'
     captures:
-      '1': {{@TIKZ_KEY}}
-      '2': {{@TIKZ_EQUALS}}
+      '1': {{@KEY}}
+      '2': {{@EQUALS}}
   - match: '{{number}}\s*{{unit}}?'
     scope: {{@NUMBER}}
   - match: '\\[a-zA-Z]+'
@@ -412,9 +415,9 @@ contexts:
   - match: '{{number}}'
     scope: {{@NUMBER}}
   - match: '\\[a-zA-Z]+'
-    scope: {{@MATH_CONTROL_WORD}}
+    scope: {{@CONTROL_WORD}}
   - match: '\\[^a-zA-Z]'
-    scope: {{@MATH_CONTROL_SYMBOL}}
+    scope: {{@CONTROL_SYMBOL}}
   - include: default
     # This match is what makes plain text within math mode highlight like a
     # string
@@ -492,7 +495,7 @@ contexts:
     - include: math.cases.right.core/
     - include: main
   - match: '\\MC\b'
-    scope: {{@NEW_MATH_COLUMN}}
+    scope: {{@NEW_COLUMN}}
     set:
     - include: math.cases.right.core/
     - include: math.main
@@ -563,6 +566,7 @@ contexts:
   - include: ConTeXt.default.start_stop
   - include: ConTeXt.default.define
   - include: ConTeXt.default.setup
+  - include: ConTeXt.default.place
 
   ConTeXt.default.define:
   - match: '(\\define)([a-zA-Z]+)'
@@ -578,6 +582,13 @@ contexts:
       '2': {{@SETUP_NAME}}
     push: default.lists*/
 
+  ConTeXt.default.place:
+  - match: '(\\place)([a-zA-Z]+)'
+    captures:
+      '1': {{@PLACE}}
+      '2': {{@PLACE_NAME}}
+    push: default.lists*/
+
   ConTeXt.default.start_stop:
   - match: '(\\start)([a-zA-Z]+)'
     captures:
@@ -591,7 +602,7 @@ contexts:
 
   ConTeXt.usemodule:
   - match: '\\usemodule\b'
-    scope: {{@CONTEXT_KEYWORD}}
+    scope: {{@USE_MODULE}}
     push: ConTeXt.usemodule.list*/
 
   ConTeXt.usemodule.list*/:
@@ -605,7 +616,7 @@ contexts:
   - match: '\]'
     pop: true
   - match: '[a-zA-Z]+'
-    scope: {{@CONTEXT_MODULE}}
+    scope: {{@MODULE_NAME}}
 
   ConTeXt.defs:
   # Match some ConTeXt specific variations of '\def'
@@ -775,21 +786,12 @@ contexts:
   - match: '{{uns_int}}'
     scope: {{@NUMBER}}
 
-  ConTeXt.table.spec.list:
-  - match: '\['
-    push: ConTeXt.table.spec.list.core/
-
   ConTeXt.table.spec.list/:
   - match: '\['
     set: ConTeXt.table.spec.list.core/
 
   ConTeXt.table.spec.list*/:
   - include: ConTeXt.table.spec.list/
-  - match: '(?=[^\s\[])'
-    pop: true
-
-  ConTeXt.table.spec.lists*/:
-  - include: ConTeXt.table.spec.list
   - match: '(?=[^\s\[])'
     pop: true
 
@@ -836,7 +838,7 @@ contexts:
   - include: default.control_symbol
 
   default.if:
-  - match: '\\(if[a-zA-Z]+|else|fi)\b'
+  - match: '\\(if[a-zA-Z]*|else|fi)\b'
     scope: {{@KEYWORD}}
 
   default.control_symbol:
@@ -909,5 +911,3 @@ contexts:
   - match: ':'
     scope: {{@COLON}}
   - include: main
-  - match: '.'
-    scope: {{@LIST_TEXT}}

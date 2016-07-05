@@ -1,18 +1,10 @@
 %YAML 1.2
 ---
-# See http://www.sublimetext.com/docs/3/syntax.html for a good, albeit
-# incomplete, explanation of how this syntax works.
 name: ConTeXt
 file_extensions: tex
 scope: text.tex.context
-# -----------------------------------------------------------------------------
-# VARIABLES
-# -----------------------------------------------------------------------------
-# Variables are nice! In addition to the ones here, we also have some variables
-# in syntax_pre_process.json - to reference them, simply type {{@var_name}}.
-# Then the python preprocessor will replace them with the corresponding values.
 variables:
-  unit: '(pt|pc|in|bp|cm|mm|cc|sp|em|ex)' # valid TeX units
+  unit: '(pt|pc|in|bp|cm|mm|cc|sp|em|ex)'
   uns_int: '\d+'
   uns_real: '(\d+\.\d*|\d*\.\d+)'
   uns_number: '({{uns_real}}|{{uns_int}})'
@@ -22,24 +14,6 @@ variables:
   tikz_math_operator: '([\+\-\*\/\^!><\?:]|[=><!]=|&&|\|\|)'
   tikz_math_function: '(abs|acos|add|and|array|asin|atan|atan2|bin|ceil|cos|cosec|cosh|cot|deg|depth|div|divide|e|equal|factorial|false|floor|frac|gcd|greater|height|hex|Hex|int|ifthenelse|iseven|isodd|isprime|less|ln|log10|log2|max|min|mod|Mod|multiply|neg|not|notequal|notgreater|notless|oct|or|pi|pow|rad|rand|random|real|rnd|round|sec|sin|sinh|sqrt|subtract|tan|tanh|true|veclen|width)'
 
-# -----------------------------------------------------------------------------
-# MAIN
-# -----------------------------------------------------------------------------
-# A note on the naming convention I've been using for contexts:
-#   * if it ends in a '/' then it pops off when (and only when) it finds a
-#       match (what a 'match' means will depend on the particular context, but
-#       e.g. 'group/' is looking to match something like '{...}')
-#   * ending in '*/' means the same as '/', except that it will pop off if it
-#       can't find any match - it is optional. (I wanted to use '?' for this
-#       purpose, but it is not allowed in a context name)
-#   * otherwise it never pops, it just remains at the current level of scope -
-#       generally these are the ones intended for 'include'-ing (which you can
-#       think of as just 'copy-paste'-ing that contexts code wherever the
-#       include statement occurs)
-# Oh, one more note: the characters that can be used in a context name are
-# quite generous - you can use more of the ASCII character set than you'd
-# expect! So I've been using '.' to pretend that I have namespaces, but don't
-# be fooled, there is only the global namespace (as far as I know).
 contexts:
   main:
   - include: TeX
@@ -53,24 +27,18 @@ contexts:
   - include: comments
 
   comments:
-  # Because these matches are applied one line at a time, we can use this very
-  # simple regex instead of something like '\%.*?$'.
   - match: '\%.*'
     scope: comment.tex
 
-# -----------------------------------------------------------------------------
-# TEX
-# -----------------------------------------------------------------------------
   TeX:
   - include: TeX.def
 
   TeX.def:
-  - match: '\\[egx]?def\b'
-    scope: support.function.tex
-    # Things are pushed onto the stack in the order they are written, so that
-    # after this 'push', 'TeX.def.assignable/' will be on top of the stack,
-    # with 'TeX.def.parameters*/' just below it and 'TeX.def.group/' below
-    # that.
+  - match: '(\\)([egx]?)(def)\b'
+    captures:
+      '1': support.function.tex
+      '2': constant.other.tex
+      '3': support.function.tex
     push: [
       TeX.def.group/,
       TeX.def.parameters*/,
@@ -78,8 +46,6 @@ contexts:
     ]
 
   TeX.def.assignable/:
-  # although usually you '\def' a control word, it is also possible to '\def' a
-  # control symbol or an active character
   - match: '\\[a-zA-Z]+'
     scope: support.function.tex
     pop: true
@@ -96,13 +62,6 @@ contexts:
   - match: '(?=\{)'
     pop: true
 
-  # For completeness sake we have
-  #   TeX.def.group
-  #   TeX.def.group/
-  #   TeX.def.group*/
-  #   TeX.def.groups*/
-  # although we only need one or two of these. It's nice and fairly easy to
-  # provide them all though, so why not.
   TeX.def.group:
   - match: '\{'
     push: TeX.def.group.core/
@@ -127,15 +86,9 @@ contexts:
     pop: true
   - match: '\#[1-9]'
     scope: variable.parameter.tex
-  # We need to make sure to handle nested groups {...} ourselves before main
-  # does, so that we can highlight parameters '#n'. Thus we 'include'
-  # TeX.def.group just before 'include'-ing main.
   - include: TeX.def.group
   - include: main
 
-# -----------------------------------------------------------------------------
-# LUA
-# -----------------------------------------------------------------------------
   lua:
   - include: lua.inline
   - include: lua.block
@@ -151,8 +104,6 @@ contexts:
       '1': support.function.tex
       '2': variable.parameter.tex
     push:
-    # The '(\1)' references the first capture group of the match below it on
-    # the stack (so in this case, it will simply refer to 'lua' or 'luacode').
     - match: '(\\stop)(\2)\b'
       captures:
         '1': support.function.tex
@@ -163,13 +114,11 @@ contexts:
   lua.main:
   - include: lua.group
   - include: lua.ConTeXt
-  # This bit is where we include the default Lua syntax highlighting that
-  # Sublime Text provides.
   - include: 'Packages/Lua/Lua.sublime-syntax'
 
   lua.ConTeXt:
   - match: '\b{{lua_context_functions}}\b'
-    scope: support.function.lua
+    scope: support.function.tex
 
   lua.group:
   - match: '\{'
@@ -195,9 +144,6 @@ contexts:
     pop: true
   - include: lua.main
 
-# -----------------------------------------------------------------------------
-# TIKZ
-# -----------------------------------------------------------------------------
   TikZ:
   - include: TikZ.block
   - include: TikZ.inline
@@ -250,12 +196,12 @@ contexts:
 
   TikZ.calc:
   - match: '\(\$'
-    scope: string.math.tex
+    scope: string.tex
     push: TikZ.calc.core/
 
   TikZ.calc.core/:
   - match: '\$\)'
-    scope: string.math.tex
+    scope: string.tex
     pop: true
   - match: '{{tikz_math_operator}}'
     scope:  keyword.tex
@@ -339,14 +285,7 @@ contexts:
     scope: constant.other.tex
   - include: math
 
-# -----------------------------------------------------------------------------
-# MATH
-# -----------------------------------------------------------------------------
   math:
-  # It is important that math.display comes before math.inline, so that '$$'
-  # gets interpreted as beginning TeX-style display math mode instead of
-  # entering and immediately exiting TeX-style inline math mode. That said,
-  # you really shouldn't be using $$...$$ (TeX-style display math) in ConTeXt.
   - include: math.displays
   - include: math.display
   - include: math.inline
@@ -397,14 +336,11 @@ contexts:
     - include: math.display
 
   math.main:
-  # This context is the main workhorse of math highlighting.
   - include: math.align
   - include: math.cases
   - include: math.group
   - include: math.substack
   - include: math.text
-  # Sure, why not include lua.inline, it can be nice to properly highlight an
-  # inline Lua call.
   - include: lua.inline
   - include: math.default
 
@@ -414,10 +350,8 @@ contexts:
   - match: '\\[a-zA-Z]+'
     scope: support.function.tex
   - match: '\\[^a-zA-Z]'
-    scope: support.function.tex
+    scope: constant.other.tex
   - include: default
-    # This match is what makes plain text within math mode highlight like a
-    # string
   - match: '.'
     scope: string.math.tex
 
@@ -453,11 +387,6 @@ contexts:
     - include: math.main
 
   math.cases:
-  # This context is setup to match \startmathcases[optional square brackets,
-  # pass some options] ... \stopmathcases, and between them it will match
-  # rows: so highlight the first bit of a row '\NC ...' as math. The second bit
-  # can be either '\NC ... \NR' or '\MC ... \NR', which will be highlighted as
-  # text and math respectively (NC = new column and MC = math column).
   - match: '(\\start)(mathcases)\b'
     captures:
       '1': support.function.tex
@@ -548,10 +477,6 @@ contexts:
     pop: true
   - include: math.main
 
-# -----------------------------------------------------------------------------
-# CONTEXT
-# -----------------------------------------------------------------------------
-# This section is devoted to matching syntax unique to ConTeXt
   ConTeXt:
   - include: ConTeXt.usemodule
   - include: ConTeXt.defs
@@ -563,6 +488,7 @@ contexts:
   - include: ConTeXt.default.start_stop
   - include: ConTeXt.default.define
   - include: ConTeXt.default.setup
+  - include: ConTeXt.default.place
 
   ConTeXt.default.define:
   - match: '(\\define)([a-zA-Z]+)'
@@ -573,6 +499,13 @@ contexts:
 
   ConTeXt.default.setup:
   - match: '(\\setup)([a-zA-Z]+)'
+    captures:
+      '1': support.function.tex
+      '2': support.function.tex
+    push: default.lists*/
+
+  ConTeXt.default.place:
+  - match: '(\\place)([a-zA-Z]+)'
     captures:
       '1': support.function.tex
       '2': support.function.tex
@@ -608,7 +541,6 @@ contexts:
     scope: support.class.tex
 
   ConTeXt.defs:
-  # Match some ConTeXt specific variations of '\def'
   - include: ConTeXt.texdef
   - include: ConTeXt.define
 
@@ -642,8 +574,6 @@ contexts:
     pop: true
 
   ConTeXt.texdef.main/:
-  # Inside a 'texdefinition', ConTeXt treats comments differently - now '%%'
-  # denotes a comment, and '%' is just a literal percentage sign
   - meta_include_prototype: false
   - match: '(\\stop)(\2)\b'
     captures:
@@ -674,9 +604,6 @@ contexts:
   - match: '\#([1-9]|[a-zA-Z]+)'
     scope: variable.parameter.tex
   - include: ConTeXt.texdef.comment
-  # Just like with TeX.def.group.core/, we have to make sure to intercept any
-  # groups {...} before main gets to them, if we want to highlight parameters
-  # '#n' inside nested groups
   - include: ConTeXt.texdef.group
   - include: main
 
@@ -703,12 +630,6 @@ contexts:
     scope: keyword.tex
 
   ConTeXt.tables:
-  # ConTeXt has many ways to create tables (for historical reasons), some of
-  # which are simply deprecated and others just have pros and cons. In fact
-  # 'table's are deprecated, but I didn't know that before writing some (now
-  # rather messy) support for them, so it's here now.
-  #   Also included so far (with very very basic support) is the 'TABLE' way of
-  # doings tables.
   - include: ConTeXt.table
   - include: ConTeXt.TABLE
 
@@ -775,21 +696,12 @@ contexts:
   - match: '{{uns_int}}'
     scope: constant.numeric.tex
 
-  ConTeXt.table.spec.list:
-  - match: '\['
-    push: ConTeXt.table.spec.list.core/
-
   ConTeXt.table.spec.list/:
   - match: '\['
     set: ConTeXt.table.spec.list.core/
 
   ConTeXt.table.spec.list*/:
   - include: ConTeXt.table.spec.list/
-  - match: '(?=[^\s\[])'
-    pop: true
-
-  ConTeXt.table.spec.lists*/:
-  - include: ConTeXt.table.spec.list
   - match: '(?=[^\s\[])'
     pop: true
 
@@ -824,11 +736,6 @@ contexts:
       '1': ''
       '2': constant.numeric.tex
 
-# -----------------------------------------------------------------------------
-# DEFAULT
-# -----------------------------------------------------------------------------
-# This section applies matches very broadly, and only gets the chance to match
-# stuff if no other match has been found.
   default:
   - include: default.if
   - include: default.group
@@ -836,7 +743,7 @@ contexts:
   - include: default.control_symbol
 
   default.if:
-  - match: '\\(if[a-zA-Z]+|else|fi)\b'
+  - match: '\\(if[a-zA-Z]*|else|fi)\b'
     scope: keyword.tex
 
   default.control_symbol:
@@ -872,11 +779,6 @@ contexts:
     pop: true
   - include: main
 
-  # I've taken to calling these 'lists', what they are is simply something
-  # like '[...]'. That is, a square-bracket delimited thing. Inside the list,
-  # we do some very simple matches, e.g. take care of key=value style syntax,
-  # and finally (this bit is debatable) colour any leftover plain text as a
-  # string.
   default.list:
   - match: '\['
     push: default.list.core/
@@ -909,5 +811,3 @@ contexts:
   - match: ':'
     scope: ''
   - include: main
-  - match: '.'
-    scope: ''

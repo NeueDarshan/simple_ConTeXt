@@ -1,55 +1,77 @@
+/* The tricks I know to make the syntax highlighting work (in Monokai
+ * Extended):
+ *   'string' - (light) yellow
+ *   'variable.parameter' - orange, italic
+ *   'keyword' - red
+ *   'markup.bold' - red, bold
+ *   'markup.italic' - red, italic
+ *   'markup.heading' - orange
+ *   'constant.(other|numeric|character|...)' - purple
+ *   'support.function' (or 'meta.diff'?) - blue
+ *   'entity' - green
+ *   'comment' - grey(ed out)
+ *   'support.entity' - green, italic
+ * Honestly though this facet of the syntax highlighting is the one I least
+ * understand... looking at the scopes that come up in markdown highlighting, I
+ * see a lot of interesting things.
+ *   If I get round to adding snippets and other such fancy things to
+ * ConTeXtTools, then I'll have to rework this stuff.
+ */
 {
-  "COMMENT":              "comment.tex",
-  "KEYWORD":              "keyword.tex",
-  "CONTEXT_KEYWORD":      "keyword.tex",
-  "DEFINE":               "support.function.tex",
-  "DEFINE_NAME":          "support.function.tex",
-  "SETUP":                "support.function.tex",
-  "SETUP_NAME":           "support.function.tex",
-  "CONTEXT_MODULE":       "support.class.tex",
-  "ACTIVE_CHARACTER":     "constant.other.tex",
-  "CONTROL_SYMBOL":       "constant.other.tex",
-  "CONTROL_WORD":         "support.function.tex",
-  "TIKZ_SEMI_COLON":      "''",
-  "TIKZ_KEYWORD":         "keyword.tex",
-  "TIKZ_KEY":             "variable.parameter.tex",
-  "TIKZ_EQUALS":          "keyword.tex",
-  "TIKZ_MATH_OPERATOR":   "keyword.tex",
-  "TIKZ_MATH_FUNCTION":   "support.function.tex",
-  "TEX_DEF_PREFIX":       "constant.other.tex",
-  "TEX_PARAMETER":        "variable.parameter.tex",
-  "TEX_KEYWORD":          "keyword.tex",
+  // general TeX stuff
   "TEX_DEF":              "support.function.tex",
-  "START_SCOPE":          "support.function.tex",
-  "STOP_SCOPE":           "support.function.tex",
-  "SCOPE_NAME":           "variable.parameter.tex",
-  "LUA_CONTEXT_FUNCTION": "support.function.lua",
-  "NUMBER":               "constant.numeric.tex",
-  "NEW_MATH_COLUMN":      "keyword.tex",
+  "TEX_DEF_PREFIX":       "constant.other.tex",
+  "ACTIVE_CHARACTER":     "constant.other.tex",
+  "CONTROL_WORD":         "support.function.tex",
+  "CONTROL_SYMBOL":       "constant.other.tex",
+  "TEX_GROUP":            "group.tex",
+  "TEX_PARAMETER":        "variable.parameter.tex",
+  // ConTeXt tables
+  "TABLE_ALIGNMENT":      "keyword.tex",
+  "TABLE_FONT":           "entity.tex",
+  "TABLE_LIST":           "table.list.tex",
+  "TABLE_MATH":           "string.tex",
+  "TABLE_NUM_ALIGN":      "constant.other.tex",
+  "TABLE_SPACE":          "''",
+  "TABLE_WIDTH":          "constant.other.tex",
+  // TikZ
+  "TIKZ_GROUP":           "tikz.group.tex",
+  "TIKZ_LIST":            "tikz.list.tex",
+  "TIKZ_CALC_TOGGLE":     "string.tex",
+  "TIKZ_MATH_FUNCTION":   "support.function.tex",
+  "TIKZ_MATH_OPERATOR":   "keyword.tex",
+  "TIKZ_SCOPE":           "tikz.tex",
+  "TIKZ_SEMI_COLON":      "''",
+  // Math mode
+  "MATH_GROUP":           "math.group.tex",
+  "MATH_TEXT":            "string.math.tex",
+  "MATH_TOGGLE":          "string.math.tex",
+  // Lua
+  "LUA_GROUP":            "lua.group.tex",
+  "LUA_CONTEXT_FUNCTION": "support.function.tex",
+  // (ConTeXt style) alignment
   "NEW_COLUMN":           "keyword.tex",
   "NEW_LINE":             "keyword.tex",
   "NEW_ROW":              "keyword.tex",
-  "MATH_CONTROL_SYMBOL":  "support.function.tex",
-  "MATH_CONTROL_WORD":    "support.function.tex",
-  "MATH_TOGGLE":          "string.math.tex",
-  "MATH_TEXT":            "string.math.tex",
-  "TABLE_NUM_ALIGN":      "constant.other.tex",
-  "TABLE_ALIGNMENT":      "keyword.tex",
-  "TABLE_WIDTH":          "constant.other.tex",
-  "TABLE_SPACE":          "''",
-  "TABLE_LIST":           "table.list.tex",
-  "TABLE_FONT":           "entity.tex",
-  "TABLE_MATH":           "string.tex",
-  "LIST_TEXT":            "''",
+  // common ConTeXt-interface style commands
+  "DEFINE":               "support.function.tex",
+  "DEFINE_NAME":          "support.function.tex",
+  "PLACE":                "support.function.tex",
+  "PLACE_NAME":           "support.function.tex",
+  "SETUP":                "support.function.tex",
+  "SETUP_NAME":           "support.function.tex",
+  "START_SCOPE":          "support.function.tex",
+  "STOP_SCOPE":           "support.function.tex",
+  "SCOPE_NAME":           "variable.parameter.tex",
+  "USE_MODULE":           "keyword.tex",
+  "MODULE_NAME":          "support.class.tex",
+  // misc
+  "LIST":                 "list.tex",
+  "ITEM":                 "keyword.tex",
+  "KEYWORD":              "keyword.tex",
+  "COMMENT":              "comment.tex",
+  "KEY":                  "variable.parameter.tex",
   "EQUALS":               "keyword.tex",
   "COLON":                "''",
-  "ITEM":                 "keyword.tex",
-  "KEY":                  "variable.parameter.tex",
-  "TIKZ_SCOPE":           "tikz.tex",
-  "MATH_GROUP":           "math.group.tex",
-  "TEX_GROUP":            "group.tex",
-  "LUA_GROUP":            "lua.group.tex",
-  "TIKZ_GROUP":           "tikz.group.tex",
-  "LIST":                 "list.tex",
-  "TIKZ_LIST":            "tikz.list.tex"
+  "NUMBER":               "constant.numeric.tex"
 }
