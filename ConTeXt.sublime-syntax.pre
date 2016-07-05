@@ -12,20 +12,15 @@ scope: text.tex.context
 # in syntax_pre_process.json - to reference them, simply type {{@var_name}}.
 # Then the python preprocessor will replace them with the corresponding values.
 variables:
-  unit:       '(pt|pc|in|bp|cm|mm|cc|sp|em|ex)' # valid TeX units
-  uns_int:    '\d+'
-  uns_real:   '(\d+\.\d*|\d*\.\d+)'
+  unit: '(pt|pc|in|bp|cm|mm|cc|sp|em|ex)' # valid TeX units
+  uns_int: '\d+'
+  uns_real: '(\d+\.\d*|\d*\.\d+)'
   uns_number: '({{uns_real}}|{{uns_int}})'
-  number:     '[\+\-]*{{uns_number}}'
-  # To be continued: this should list all (most?) of the Lua functions that
-  # ConTeXt provides, so we can highlight them appropriately inside Lua code.
+  number: '[\+\-]*{{uns_number}}'
   lua_context_functions: '(tex\.s?print)|context'
-  # Also needs some TLC, but eventually these variables (or ones like them)
-  # should let us highlight TikZ syntax nicely. The problem is, the TikZ
-  # grammar is pretty big, and I'm not well versed enough in it to know how
-  # best to highlight it.
-  tikz_path_op:  '(draw|fill(draw)?|path|node)'
-  tikz_draw_cmd: '(--|rectangle|node)'
+  tikz_keywords: '(in|at|grid|edge|node|rectangle|cycle|coordinate|decorate|controls|child)'
+  tikz_math_operator: '([\+\-\*\/\^!><\?:]|[=><!]=|&&|\|\|)'
+  tikz_math_function: '(abs|acos|add|and|array|asin|atan|atan2|bin|ceil|cos|cosec|cosh|cot|deg|depth|div|divide|e|equal|factorial|false|floor|frac|gcd|greater|height|hex|Hex|int|ifthenelse|iseven|isodd|isprime|less|ln|log10|log2|max|min|mod|Mod|multiply|neg|not|notequal|notgreater|notless|oct|or|pi|pow|rad|rand|random|real|rnd|round|sec|sin|sinh|sqrt|subtract|tan|tanh|true|veclen|width)'
 
 # -----------------------------------------------------------------------------
 # MAIN
@@ -47,9 +42,9 @@ variables:
 # be fooled, there is only the global namespace (as far as I know).
 contexts:
   main:
-  - include: tex
+  - include: TeX
   - include: lua
-  - include: tikz
+  - include: TikZ
   - include: math
   - include: ConTeXt
   - include: default
@@ -66,23 +61,23 @@ contexts:
 # -----------------------------------------------------------------------------
 # TEX
 # -----------------------------------------------------------------------------
-  tex:
-  - include: tex.def
+  TeX:
+  - include: TeX.def
 
-  tex.def:
+  TeX.def:
   - match: '\\[egx]?def\b'
     scope: {{@TEX_DEF}}
     # Things are pushed onto the stack in the order they are written, so that
-    # after this 'push', 'tex.def.assignable/' will be on top of the stack,
-    # with 'tex.def.parameters*/' just below it and 'tex.def.group/' below
+    # after this 'push', 'TeX.def.assignable/' will be on top of the stack,
+    # with 'TeX.def.parameters*/' just below it and 'TeX.def.group/' below
     # that.
     push: [
-      tex.def.group/,
-      tex.def.parameters*/,
-      tex.def.assignable/,
+      TeX.def.group/,
+      TeX.def.parameters*/,
+      TeX.def.assignable/,
     ]
 
-  tex.def.assignable/:
+  TeX.def.assignable/:
   # although usually you '\def' a control word, it is also possible to '\def' a
   # control symbol or an active character
   - match: '\\[a-zA-Z]+'
@@ -95,38 +90,38 @@ contexts:
     scope: {{@ACTIVE_CHARACTER}}
     pop: true
 
-  tex.def.parameters*/:
+  TeX.def.parameters*/:
   - match: '\#([1-9]|(?=\{))'
     scope: {{@TEX_PARAMETER}}
   - match: '(?=\{)'
     pop: true
 
   # For completeness sake we have
-  #   tex.def.group
-  #   tex.def.group/
-  #   tex.def.group*/
-  #   tex.def.groups*/
+  #   TeX.def.group
+  #   TeX.def.group/
+  #   TeX.def.group*/
+  #   TeX.def.groups*/
   # although we only need one or two of these. It's nice and fairly easy to
   # provide them all though, so why not.
-  tex.def.group:
+  TeX.def.group:
   - match: '\{'
-    push: tex.def.group.core/
+    push: TeX.def.group.core/
 
-  tex.def.group/:
+  TeX.def.group/:
   - match: '\{'
-    set: tex.def.group.core/
+    set: TeX.def.group.core/
 
-  tex.def.group*/:
-  - include: tex.def.group/
+  TeX.def.group*/:
+  - include: TeX.def.group/
   - match: '(?=[^\s\{])'
     pop: true
 
-  tex.def.groups*/:
-  - include: tex.def.group
+  TeX.def.groups*/:
+  - include: TeX.def.group
   - match: '(?=[^\s\{])'
     pop: true
 
-  tex.def.group.core/:
+  TeX.def.group.core/:
   - meta_scope: {{@TEX_GROUP}}
   - match: '\}'
     pop: true
@@ -134,8 +129,8 @@ contexts:
     scope: {{@TEX_PARAMETER}}
   # We need to make sure to handle nested groups {...} ourselves before main
   # does, so that we can highlight parameters '#n'. Thus we 'include'
-  # tex.def.group just before 'include'-ing main.
-  - include: tex.def.group
+  # TeX.def.group just before 'include'-ing main.
+  - include: TeX.def.group
   - include: main
 
 # -----------------------------------------------------------------------------
@@ -203,156 +198,146 @@ contexts:
 # -----------------------------------------------------------------------------
 # TIKZ
 # -----------------------------------------------------------------------------
-# For the moment, I've commented this section out (which doesn't break the
-# line '- include: tikz' inside the main context, it just silently fails). It
-# could do with some work.
-  # tikz:
-  # - include: tikz.block
-  # - include: tikz.inline
+  TikZ:
+  - include: TikZ.block
+  - include: TikZ.inline
 
-  # tikz.block:
-  # - match: '\\start(tikzpicture)\b'
-  #   scope: entity
-  #   push: [
-  #     tikz.block.main/,
-  #     tikz.lists*/,
-  #   ]
+  TikZ.block:
+  - match: '(\\start)(tikzpicture)\b'
+    captures:
+      '1': {{@START_SCOPE}}
+      '2': {{@SCOPE_NAME}}
+    push: [
+      TikZ.block.core/,
+      TikZ.lists*/,
+    ]
 
-  # tikz.block.main/:
-  # - match: '\\stop(\1)\b'
-  #   scope: entity
-  #   pop: true
-  # - include: tikz.core
+  TikZ.block.core/:
+  - meta_scope: {{@TIKZ_SCOPE}}
+  - match: '(\\stop)(\2)\b'
+    captures:
+      '1': {{@STOP_SCOPE}}
+      '2': {{@SCOPE_NAME}}
+    pop: true
+  - include: TikZ.main
 
-  # tikz.inline:
-  # - match: '\\tikz\b'
-  #   scope: support.function
-  #   push: [
-  #     tikz.inline.main/,
-  #     tikz.lists*/,
-  #   ]
+  TikZ.inline:
+  - match: '\\tikz\b'
+    scope: {{@CONTROL_WORD}}
+    push: [
+      TikZ.inline.core/,
+      TikZ.lists*/,
+    ]
 
-  # tikz.inline.main/:
-  # - match: '(?<=;)'
-  #   pop: true
-  # - include: tikz.core
+  TikZ.inline.core/:
+  - meta_scope: {{@TIKZ_SCOPE}}
+  - match: ';'
+    scope: {{@TIKZ_SEMI_COLON}}
+    pop: true
+  - include: TikZ.main
 
-  # tikz.core:
-  # - include: tikz.scope
-  # - include: tikz.foreach
-  # - include: tikz.draw
-  # - include: main
+  TikZ.main:
+  - include: TikZ.keyword
+  - include: TikZ.scope
+  - include: TikZ.group
+  - include: TikZ.list
+  - include: TikZ.calc
+  - include: TeX
+  - include: lua
+  - include: math
+  - include: ConTeXt
+  - include: TikZ.default
 
-  # tikz.scope:
-  # - match: '\\start(scope)\b'
-  #   scope: entity
-  #   push: [
-  #     tikz.scope.main/,
-  #     tikz.lists*/,
-  #   ]
+  TikZ.calc:
+  - match: '\(\$'
+    scope: {{@MATH_TOGGLE}}
+    push: TikZ.calc.core/
 
-  # tikz.scope.main/:
-  # - match: '\\stop(\1)\b'
-  #   scope: entity
-  #   pop: true
-  # - include: tikz.core
+  TikZ.calc.core/:
+  - match: '\$\)'
+    scope: {{@MATH_TOGGLE}}
+    pop: true
+  - match: '{{tikz_math_operator}}'
+    scope:  {{@TIKZ_MATH_OPERATOR}}
+  - match: '\b{{tikz_math_function}}\b'
+    scope:  {{@TIKZ_MATH_FUNCTION}}
+  - match: '{{number}}\s*{{unit}}?'
+    scope: {{@NUMBER}}
 
-  # tikz.foreach:
-  # - match: '\\foreach\b'
-  #   scope: keyword
-  #   push: [
-  #     tikz.foreach.loop/,
-  #     tikz.foreach.iterable/,
-  #     tikz.foreach.variables/,
-  #   ]
+  TikZ.keyword:
+  - match: '\\foreach\b'
+    scope: {{@TIKZ_KEYWORD}}
+  - match: '\b{{tikz_keywords}}\b'
+    scope: {{@TIKZ_KEYWORD}}
 
-  # tikz.foreach.variables/:
-  # - match: '\bin\b'
-  #   scope: keyword
-  #   pop: true
-  # - match: '\\[a-zA-Z]+'
-  #   scope: support.function
+  TikZ.scope:
+  - match: '(\\start)(scope)\b'
+    captures:
+      '1': {{@START_SCOPE}}
+      '2': {{@SCOPE_NAME}}
+  - match: '(\\stop)(scope)\b'
+    captures:
+      '1': {{@STOP_SCOPE}}
+      '2': {{@SCOPE_NAME}}
 
-  # tikz.foreach.iterable/:
-  # - match: '\\[a-zA-Z]+'
-  #   scope: support.function
-  #   pop: true
-  # - match: '\{'
-  #   set:
-  #   - match: '\}'
-  #     pop: true
-  #   - match: '\.{3}'
-  #   - match: '/'
-  #   - include: tikz.math_expr
-  #   - include: main
+  TikZ.default:
+  - match: '{{number}}\s*{{unit}}?'
+    scope: {{@NUMBER}}
+  - match: '\\[a-zA-Z]+'
+    scope: {{@CONTROL_WORD}}
+  - match: '\\[^a-zA-Z]'
+    scope: {{@CONTROL_SYMBOL}}
+  - match: ';'
+    scope: {{@TIKZ_SEMI_COLON}}
 
-  # tikz.foreach.loop/:
-  # - match: '\{'
-  #   set:
-  #   - match: '\}'
-  #     pop: true
-  #   - include: tikz.core
-  # - match: '(?=\\{{tikz_draw_cmd}}\b)'
-  #   set: tikz.inline.main/
+  TikZ.group:
+  - match: '\{'
+    push: TikZ.group.core/
 
-  # tikz.draw:
-  # - match: '\\{{tikz_draw_cmd}}\b'
-  #   scope: support.function
-  #   push: [
-  #     tikz.draw.main/,
-  #     tikz.lists*/,
-  #   ]
+  TikZ.group.core/:
+  - meta_scope: {{@TIKZ_GROUP}}
+  - include: TikZ.main
+  - match: '\}'
+    pop: true
 
-  # tikz.draw.main/:
-  # - match: ';'
-  #   pop: true
-  # - match: '(\+{1,2})?\s*\('
-  #   captures:
-  #     '1': keyword
-  #   push:
-  #   - match: '\)'
-  #     pop: true
-  #   - include: tikz.math_expr
-  #   - include: main
-  # - match: '{{tikz_path_op}}'
-  #   push: [
-  #     default.group*/,
-  #     tikz.lists*/,
-  #   ]
+  TikZ.list:
+  - match: '\['
+    push: TikZ.list.core/
 
-  # tikz.list/:
-  # - match: '\['
-  #   set:
-  #   - match: '\]'
-  #     pop: true
-  #   - match: '([a-zA-Z]+(?:[\sa-zA-Z])*)\s*([<>]?=)'
-  #     captures:
-  #       '1': variable.parameter
-  #       '2': keyword
-  #     push:
-  #     - match: '(?=[,\]])'
-  #       pop: true
-  #     - include: tikz.math_expr
-  #     - include: main
-  #   - include: main
+  TikZ.lists*/:
+  - include: TikZ.list
+  - match: '(?=[^\s\[])'
+    pop: true
 
-  # tikz.list*/:
-  # - match: '(?=[\[])'
-  #   set: tikz.list/
-  # - match: '(?=[^\s\[])'
-  #   pop: true
+  TikZ.list.core/:
+  - meta_scope: {{@TIKZ_LIST}}
+  - match: '\]'
+    pop: true
+  - include: TikZ.list.group
+  - include: TikZ.options.core
 
-  # tikz.lists*/:
-  # - match: '(?=[\[])'
-  #   push: tikz.list/
-  # - match: '(?=[^\s\[])'
-  #   pop: true
+  TikZ.list.group:
+  - match: '\['
+    push: TikZ.list.group.core/
 
-  # tikz.math_expr:
-  # - match: '[\+\-\/\*]'
-  #   scope: keyword
-  # - match: '{{uns_number}}'
-  #   scope: constant.numeric
+  TikZ.list.group.core/:
+  - meta_scope: {{@TIKZ_GROUP}}
+  - match: '\]'
+    pop: true
+  - include: TikZ.options.core
+
+  TikZ.options.core:
+  - match: '([a-zA-Z][a-zA-Z0-9\s\./\->]*)(=)'
+    captures:
+      '1': {{@TIKZ_KEY}}
+      '2': {{@TIKZ_EQUALS}}
+  - match: '{{number}}\s*{{unit}}?'
+    scope: {{@NUMBER}}
+  - match: '\\[a-zA-Z]+'
+    scope: {{@CONTROL_WORD}}
+  - match: '\\[^a-zA-Z]'
+    scope: {{@CONTROL_SYMBOL}}
+  - include: math
 
 # -----------------------------------------------------------------------------
 # MATH
@@ -689,7 +674,7 @@ contexts:
   - match: '\#([1-9]|[a-zA-Z]+)'
     scope: {{@TEX_PARAMETER}}
   - include: ConTeXt.texdef.comment
-  # Just like with tex.def.group.core/, we have to make sure to intercept any
+  # Just like with TeX.def.group.core/, we have to make sure to intercept any
   # groups {...} before main gets to them, if we want to highlight parameters
   # '#n' inside nested groups
   - include: ConTeXt.texdef.group
@@ -699,8 +684,8 @@ contexts:
   - match: '\\define\b'
     scope: {{@TEX_DEF}}
     push: [
-      tex.def.group/,
-      tex.def.assignable/,
+      TeX.def.group/,
+      TeX.def.assignable/,
       ConTeXt.count.list*/,
     ]
 
