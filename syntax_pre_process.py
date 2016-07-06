@@ -2,7 +2,6 @@ import json
 import io
 import re
 
-
 def load_replacements():
     with io.open("syntax_pre_process.json") as f:
         input_str = f.read()
@@ -16,7 +15,6 @@ def load_replacements():
             input_str,
             flags=re.MULTILINE | re.DOTALL)
         return json.loads(input_str)
-
 
 def pre_process(pre, post):
     repl = load_replacements()
@@ -36,7 +34,6 @@ def pre_process(pre, post):
             for before, after in repl.items():
                 input_str = re.sub("{{@%s}}" % before, after, input_str)
             post_file.write(input_str)
-
 
 def main():
     pre_process("ConTeXt.sublime-syntax.pre", "ConTeXt.sublime-syntax")

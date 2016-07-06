@@ -9,18 +9,33 @@ contexts:
   - include: log
 
   log:
-  - match: '^(([0-9]+|[a-zA-Z]+[\sa-zA-Z]*)\s*(>)\s*)*'
+  # do some rudimentary highlighting of the log file
+  - match: '^!.*'
+    scope: invalid.illegal
+  - match: '([0-9]+|[a-zA-Z]+[\sa-zA-Z]*)\s+(>)'
     captures:
-      '2': keyword.tex
-      '3': variable.parameter
+      '1': support.function
+      '2': entity
+  - match: '([a-zA-Z\-]+)(=)'
+    captures:
+      '1': variable.parameter
+      '2': keyword
   - match: "'.*?'"
     scope: string
-  - match: '\\[a-zA-Z@_:]+'
+  - match: '".*?"'
+    scope: string
+  - match: '#[1-9]'
+    scope: variable.parameter
+  - match: '\\[a-zA-Z@!_:]+'
     scope: support.function
+  - match: 'U\+[a-zA-Z0-9]+'
+    scope: constant.numeric
   - match: '[0-9]+'
     scope: constant.numeric
 
   ConTeXt:
+  # if the log file includes a sample from the ConTeXt file (to give context
+  # for an error), then use the ConTeXt syntax file to highlight it
   - match: '^[0-9]+'
     scope: constant.numeric
     push: ConTeXt.sublime-syntax
