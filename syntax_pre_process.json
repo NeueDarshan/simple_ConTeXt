@@ -19,59 +19,59 @@
  */
 {
   // general TeX stuff
-  "TEX_DEF":              "support.function.tex",
-  "TEX_DEF_PREFIX":       "constant.other.tex",
-  "ACTIVE_CHARACTER":     "constant.other.tex",
-  "CONTROL_WORD":         "support.function.tex",
-  "CONTROL_SYMBOL":       "constant.other.tex",
-  "TEX_GROUP":            "group.tex",
-  "TEX_PARAMETER":        "variable.parameter.tex",
+  "TEX_DEF":          "support.function.tex", // for \<?>def<foo><params>: *def
+  "TEX_DEF_PREFIX":   "constant.other.tex", // * <?>, i.e. e/g/x prefix
+  "TEX_PARAMETER":    "variable.parameter.tex", // * <params>, i.e. #1, #2 etc.
+  "ACTIVE_CHARACTER": "constant.other.tex", // * <foo> when it's an active char
+  "CONTROL_WORD":     "support.function.tex", // generic control word
+  "CONTROL_SYMBOL":   "constant.other.tex", // generic control symbol
+  "TEX_GROUP":        "group.tex", // applied to contents of a group
   // ConTeXt tables
-  "TABLE_ALIGNMENT":      "keyword.tex",
-  "TABLE_FONT":           "entity.tex",
-  "TABLE_LIST":           "table.list.tex",
-  "TABLE_MATH":           "string.tex",
-  "TABLE_NUM_ALIGN":      "constant.other.tex",
-  "TABLE_SPACE":          "''",
-  "TABLE_WIDTH":          "constant.other.tex",
+  "TABLE_LIST":      "table.list.tex", // for contents of table preamble
+  "TABLE_ALIGNMENT": "keyword.tex", // in table preamble: * match l/c/r
+  "TABLE_FONT":      "entity.tex", //         * match B/I/R/S/T/f{...}
+  "TABLE_MATH":      "string.tex", //         * match m/M
+  "TABLE_NUM_ALIGN": "constant.other.tex", // * match n/N/q/Q <123.456>
+  "TABLE_SPACE":     "''", //                 * match s/o/i/j/k <space>
+  "TABLE_WIDTH":     "constant.other.tex", // * match w/p <space>
   // TikZ
-  "TIKZ_GROUP":           "tikz.group.tex",
-  "TIKZ_LIST":            "tikz.list.tex",
-  "TIKZ_CALC_TOGGLE":     "string.tex",
-  "TIKZ_MATH_FUNCTION":   "support.function.tex",
-  "TIKZ_MATH_OPERATOR":   "keyword.tex",
-  "TIKZ_SCOPE":           "tikz.tex",
-  "TIKZ_SEMI_COLON":      "''",
+  "TIKZ_GROUP":         "tikz.group.tex", // for contents of TikZ group {...}
+  "TIKZ_LIST":          "tikz.list.tex", // for list [...] of TikZ options
+  "TIKZ_CALC_TOGGLE":   "string.tex", // for '($'/'$)' as in ($ ... $) syntax
+  "TIKZ_MATH_FUNCTION": "support.function.tex", // sin, rand, min, etc.
+  "TIKZ_MATH_OPERATOR": "keyword.tex", // for +, -, *, /, ^, etc.
+  "TIKZ_SCOPE":         "tikz.tex", // fof TikZ content
+  "TIKZ_SEMI_COLON":    "''",
   // Math mode
-  "MATH_GROUP":           "math.group.tex",
-  "MATH_TEXT":            "string.math.tex",
-  "MATH_TOGGLE":          "string.math.tex",
+  "MATH_GROUP":  "math.group.tex", // for contents of a group in math
+  "MATH_TEXT":   "string.math.tex", // applied to plain text in math
+  "MATH_TOGGLE": "string.math.tex", // for '$' and '$$' math toggles
   // Lua
-  "LUA_GROUP":            "lua.group.tex",
-  "LUA_CONTEXT_FUNCTION": "support.function.tex",
+  "LUA_GROUP":            "lua.group.tex", // applied to contents of lua groups
+  "LUA_CONTEXT_FUNCTION": "support.function.tex", // for e.g. 'tex.sprint'
   // (ConTeXt style) alignment
-  "NEW_COLUMN":           "keyword.tex",
-  "NEW_LINE":             "keyword.tex",
-  "NEW_ROW":              "keyword.tex",
+  "NEW_COLUMN": "keyword.tex", // i.e. things like \NC
+  "NEW_LINE":   "keyword.tex", // e.g. \HL
+  "NEW_ROW":    "keyword.tex", // e.g. \NR
   // common ConTeXt-interface style commands
-  "DEFINE":               "support.function.tex",
-  "DEFINE_NAME":          "support.function.tex",
-  "PLACE":                "support.function.tex",
-  "PLACE_NAME":           "support.function.tex",
-  "SETUP":                "support.function.tex",
-  "SETUP_NAME":           "support.function.tex",
-  "START_SCOPE":          "support.function.tex",
-  "STOP_SCOPE":           "support.function.tex",
-  "SCOPE_NAME":           "variable.parameter.tex",
-  "USE_MODULE":           "keyword.tex",
-  "MODULE_NAME":          "support.class.tex",
+  "DEFINE":      "support.function.tex", // in \define<foo>: * for \define
+  "DEFINE_NAME": "support.function.tex", //                  * for <foo>
+  "PLACE":       "support.function.tex", // in \place<foo>: * \place
+  "PLACE_NAME":  "support.function.tex", //                 * <foo>
+  "SETUP":       "support.function.tex", // in \setup<foo>: * \setup
+  "SETUP_NAME":  "support.function.tex", //                 * <foo>
+  "START_SCOPE": "support.function.tex", // in \<start|stop><foo>: * \start
+  "STOP_SCOPE":  "support.function.tex", //                        * \stop
+  "SCOPE_NAME":  "variable.parameter.tex", //                      * <foo>
+  "USE_MODULE":  "keyword.tex", // in \usemodule[<foo>]: * \usemodule
+  "MODULE_NAME": "support.class.tex", //                 * <foo>
   // misc
-  "LIST":                 "list.tex",
-  "ITEM":                 "keyword.tex",
-  "KEYWORD":              "keyword.tex",
-  "COMMENT":              "comment.tex",
-  "KEY":                  "variable.parameter.tex",
-  "EQUALS":               "keyword.tex",
-  "COLON":                "''",
-  "NUMBER":               "constant.numeric.tex"
+  "LIST":    "list.tex", // apply to contents ... of \foo[...]
+  "ITEM":    "keyword.tex", // for \item
+  "KEYWORD": "keyword.tex", // e.g. \if<foo>, or TikZ \foreach
+  "COMMENT": "comment.tex",
+  "KEY":     "variable.parameter.tex", // in <key>=<value>: * <key>
+  "EQUALS":  "keyword.tex", //                              * =
+  "COLON":   "''", // for colons within a generic list [...]
+  "NUMBER":  "constant.numeric.tex" // any number ('real number')
 }

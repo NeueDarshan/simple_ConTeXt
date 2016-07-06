@@ -1,0 +1,33 @@
+%YAML 1.2
+---
+name: ConTeXt Log
+file_extensions: log
+scope: text.log.context
+contexts:
+  main:
+  - include: ConTeXt
+  - include: log
+
+  log:
+  - match: '^(([0-9]+|[a-zA-Z]+[\sa-zA-Z]*)\s*(>)\s*)*'
+    captures:
+      '2': keyword.tex
+      '3': variable.parameter
+  - match: "'.*?'"
+    scope: string
+  - match: '\\[a-zA-Z@_:]+'
+    scope: support.function
+  - match: '[0-9]+'
+    scope: constant.numeric
+
+  ConTeXt:
+  - match: '^[0-9]+'
+    scope: constant.numeric
+    push: ConTeXt.sublime-syntax
+    with_prototype:
+    - match: '^(?=[^0-9])'
+      pop: true
+    - match: '^([0-9]+) (>>)?'
+      captures:
+        '1': constant.numeric
+        '2': invalid.illegal
