@@ -9,46 +9,49 @@ contexts:
   - include: log
 
   log:
+  # do some rudimentary highlighting of the log file
   - match: '! .+'
-    scope: invalid.illegal.error.log.context
+    scope: {{@LOG_ERROR}}
   - match: '([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
     captures:
-      '1': keyword.category.log.context
-      '2': markup.heading.log.context
+      '1': {{@LOG_CATEGORY}}
+      '2': {{@LOG_CATEGORY_SEP}}
   - match: '([a-zA-Z\-]+)(=)'
     captures:
-      '1': variable.parameter.key.log.context
-      '2': keyword.equals.log.context
+      '1': {{@LOG_KEY}}
+      '2': {{@LOG_EQUALS}}
   - match: "'.*?'"
-    scope: string.log.context
+    scope: {{@LOG_STRING}}
   - match: '".*?"'
-    scope: string.log.context
+    scope: {{@LOG_STRING}}
   - match: 'U\+[a-zA-Z0-9]+'
-    scope: constant.numeric.log.context
+    scope: {{@LOG_NUMBER}}
   - match: '[0-9]+'
-    scope: constant.numeric.log.context
+    scope: {{@LOG_NUMBER}}
 
   ConTeXt:
+  # if the log file includes some ConTeXt excerpts, then use the ConTeXt syntax
+  # file to highlight it appropriately
   - match: '^[0-9]+'
-    scope: constant.numeric.log.context
+    scope: {{@LOG_NUMBER}}
     push: ConTeXt.sublime-syntax
     with_prototype:
     - match: '^(?=[^0-9])'
       pop: true
     - match: '^([0-9]+) (>>)?'
       captures:
-        '1': constant.numeric.log.context
-        '2': invalid.illegal.error.log.context
+        '1': {{@LOG_NUMBER}}
+        '2': {{@LOG_ERROR}}
   - match: '<to be read again>'
     push: ConTeXt.sublime-syntax
     with_prototype:
     - match: '^(?=\.{3})'
       pop: true
     - match: '\\[a-zA-Z]*(_+[a-zA-Z]*)+'
-      scope: support.function.control-word.tex.context
+      scope: {{@CONTROL_WORD}}
   - match: 'l\.([0-9]+)'
     captures:
-      '1': constant.numeric.log.context
+      '1': {{@LOG_NUMBER}}
     push: ConTeXt.sublime-syntax
     with_prototype:
     - match: '^(?=\s*$)'

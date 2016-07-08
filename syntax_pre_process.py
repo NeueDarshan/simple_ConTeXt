@@ -37,6 +37,7 @@ def pre_process(pre, post):
 
 def main():
     pre_process("ConTeXt.sublime-syntax.pre", "ConTeXt.sublime-syntax")
+    pre_process("ConTeXt Log.sublime-syntax.pre", "ConTeXt Log.sublime-syntax")
 
 if __name__ == "__main__":
     main()

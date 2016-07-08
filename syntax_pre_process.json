@@ -11,67 +11,71 @@
  *   'entity' - green
  *   'comment' - grey(ed out)
  *   'support.entity' - green, italic
- * Honestly though this facet of the syntax highlighting is the one I least
- * understand... looking at the scopes that come up in markdown highlighting, I
- * see a lot of interesting things.
- *   If I get round to adding snippets and other such fancy things to
- * ConTeXtTools, then I'll have to rework this stuff.
  */
 {
   // general TeX stuff
-  "TEX_DEF":          "support.function.tex", // for \<?>def<foo><params>: *def
-  "TEX_DEF_PREFIX":   "constant.other.tex", // * <?>, i.e. e/g/x prefix
-  "TEX_PARAMETER":    "variable.parameter.tex", // * <params>, i.e. #1, #2 etc.
-  "ACTIVE_CHARACTER": "constant.other.tex", // * <foo> when it's an active char
-  "CONTROL_WORD":     "support.function.tex", // generic control word
-  "CONTROL_SYMBOL":   "constant.other.tex", // generic control symbol
-  "TEX_GROUP":        "group.tex", // applied to contents of a group
+  "TEX_DEF":          "support.function.tex.context",
+  "TEX_DEF_PREFIX":   "constant.other.tex.context",
+  "TEX_PARAMETER":    "variable.parameter.tex.context",
+  "ACTIVE_CHARACTER": "constant.other.active-character.tex.context",
+  "CONTROL_WORD":     "support.function.control-word.tex.context",
+  "CONTROL_SYMBOL":   "constant.other.control-symbol.tex.context",
+  "TEX_GROUP":        "group.tex.context",
   // ConTeXt tables
-  "TABLE_LIST":      "table.list.tex", // for contents of table preamble
-  "TABLE_ALIGNMENT": "keyword.tex", // in table preamble: * match l/c/r
-  "TABLE_FONT":      "entity.tex", //         * match B/I/R/S/T/f{...}
-  "TABLE_MATH":      "string.tex", //         * match m/M
-  "TABLE_NUM_ALIGN": "constant.other.tex", // * match n/N/q/Q <123.456>
-  "TABLE_SPACE":     "''", //                 * match s/o/i/j/k <space>
-  "TABLE_WIDTH":     "constant.other.tex", // * match w/p <space>
+  "TABLE_LIST":      "table.list.tex.context",
+  "TABLE_ALIGNMENT": "keyword.tex.context",
+  "TABLE_FONT":      "entity.tex.context",
+  "TABLE_MATH":      "string.tex.context",
+  "TABLE_NUM_ALIGN": "constant.other.tex.context",
+  "TABLE_SPACE":     "space.tex.context",
+  "TABLE_WIDTH":     "constant.other.tex.context",
   // TikZ
-  "TIKZ_GROUP":         "tikz.group.tex", // for contents of TikZ group {...}
-  "TIKZ_LIST":          "tikz.list.tex", // for list [...] of TikZ options
-  "TIKZ_CALC_TOGGLE":   "string.tex", // for '($'/'$)' as in ($ ... $) syntax
-  "TIKZ_MATH_FUNCTION": "support.function.tex", // sin, rand, min, etc.
-  "TIKZ_MATH_OPERATOR": "keyword.tex", // for +, -, *, /, ^, etc.
-  "TIKZ_SCOPE":         "tikz.tex", // fof TikZ content
-  "TIKZ_SEMI_COLON":    "''",
+  "TIKZ_GROUP":         "group.tikz.tex.context",
+  "TIKZ_LIST":          "list.tikz.tex.context",
+  "TIKZ_SCOPE":         "tikz.tex.context",
+  "TIKZ_CALC_TOGGLE":   "string.calc-toggle.tikz.tex.context",
+  "TIKZ_MATH_FUNCTION": "support.function.math-function.tikz.tex.context",
+  "TIKZ_MATH_OPERATOR": "keyword.math-operator.tikz.tex.context",
+  "TIKZ_SEMI_COLON":    "semi-colon.tikz.tex.context",
   // Math mode
-  "MATH_GROUP":  "math.group.tex", // for contents of a group in math
-  "MATH_TEXT":   "string.math.tex", // applied to plain text in math
-  "MATH_TOGGLE": "string.math.tex", // for '$' and '$$' math toggles
+  "MATH_SCOPE":  "math.tex.context",
+  "MATH_GROUP":  "group.math.tex.context",
+  "MATH_TEXT":   "string.math.tex.context",
+  "MATH_TOGGLE": "string.math-toggle.math.tex.context",
   // Lua
-  "LUA_GROUP":            "lua.group.tex", // applied to contents of lua groups
-  "LUA_CONTEXT_FUNCTION": "support.function.tex", // for e.g. 'tex.sprint'
+  "LUA_GROUP":            "group.lua.tex.context",
+  "LUA_CONTEXT_FUNCTION": "support.function.lua.tex.context",
   // (ConTeXt style) alignment
-  "NEW_COLUMN": "keyword.tex", // i.e. things like \NC
-  "NEW_LINE":   "keyword.tex", // e.g. \HL
-  "NEW_ROW":    "keyword.tex", // e.g. \NR
+  "NEW_COLUMN": "keyword.tex.context",
+  "NEW_LINE":   "keyword.tex.context",
+  "NEW_ROW":    "keyword.tex.context",
   // common ConTeXt-interface style commands
-  "DEFINE":      "support.function.tex", // in \define<foo>: * for \define
-  "DEFINE_NAME": "support.function.tex", //                  * for <foo>
-  "PLACE":       "support.function.tex", // in \place<foo>: * \place
-  "PLACE_NAME":  "support.function.tex", //                 * <foo>
-  "SETUP":       "support.function.tex", // in \setup<foo>: * \setup
-  "SETUP_NAME":  "support.function.tex", //                 * <foo>
-  "START_SCOPE": "support.function.tex", // in \<start|stop><foo>: * \start
-  "STOP_SCOPE":  "support.function.tex", //                        * \stop
-  "SCOPE_NAME":  "variable.parameter.tex", //                      * <foo>
-  "USE_MODULE":  "keyword.tex", // in \usemodule[<foo>]: * \usemodule
-  "MODULE_NAME": "support.class.tex", //                 * <foo>
+  "DEFINE":            "support.function.tex.context",
+  "DEFINE_NAME":       "support.function.tex.context",
+  "PLACE":             "support.function.tex.context",
+  "PLACE_NAME":        "support.function.tex.context",
+  "SETUP":             "support.function.tex.context",
+  "SETUP_NAME":        "support.function.tex.context",
+  "START_ENVIRONMENT": "support.function.start.tex.context",
+  "STOP_ENVIRONMENT":  "support.function.stop.tex.context",
+  "ENVIRONMENT_NAME":  "variable.parameter.environment-name.tex.context",
+  "USE_MODULE":        "keyword.tex.context",
+  "MODULE_NAME":       "support.class.module.tex.context",
   // misc
-  "LIST":    "list.tex", // apply to contents ... of \foo[...]
-  "ITEM":    "keyword.tex", // for \item
-  "KEYWORD": "keyword.tex", // e.g. \if<foo>, or TikZ \foreach
-  "COMMENT": "comment.tex",
-  "KEY":     "variable.parameter.tex", // in <key>=<value>: * <key>
-  "EQUALS":  "keyword.tex", //                              * =
-  "COLON":   "''", // for colons within a generic list [...]
-  "NUMBER":  "constant.numeric.tex" // any number ('real number')
+  "LIST":    "list.tex.context",
+  "ITEM":    "keyword.tex.context",
+  "KEYWORD": "keyword.tex.context",
+  "COMMENT": "comment.tex.context",
+  "KEY":     "variable.parameter.key.tex.context",
+  "EQUALS":  "keyword.equals.tex.context",
+  "COLON":   "colon.tex.context",
+  "NUMBER":  "constant.numeric.tex.context",
+  // log
+  "LOG_ERROR":        "invalid.illegal.error.log.context",
+  "LOG_CATEGORY":     "keyword.category.log.context",
+  "LOG_CATEGORY_SEP": "markup.heading.log.context",
+  "LOG_KEY":          "variable.parameter.key.log.context",
+  "LOG_EQUALS":       "keyword.equals.log.context",
+  "LOG_STRING":       "string.log.context",
+  "LOG_NUMBER":       "constant.numeric.log.context"
 }
