@@ -5,6 +5,7 @@
 name: ConTeXt
 file_extensions: tex
 scope: text.tex.context
+
 # -----------------------------------------------------------------------------
 # VARIABLES
 # -----------------------------------------------------------------------------
@@ -151,15 +152,15 @@ contexts:
   lua.block:
   - match: '(\\start)(lua(code)?)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push:
     # The '(\1)' references the first capture group of the match below it on
     # the stack (so in this case, it will simply refer to 'lua' or 'luacode').
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_SCOPE}}
-        '2': {{@SCOPE_NAME}}
+        '1': {{@STOP_ENVIRONMENT}}
+        '2': {{@ENVIRONMENT_NAME}}
       pop: true
     - include: lua.main
 
@@ -208,8 +209,8 @@ contexts:
   TikZ.block:
   - match: '(\\start)(tikzpicture)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push: [
       TikZ.block.core/,
       TikZ.lists*/,
@@ -219,8 +220,8 @@ contexts:
   - meta_scope: {{@TIKZ_SCOPE}}
   - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     pop: true
   - include: TikZ.main
 
@@ -276,12 +277,12 @@ contexts:
   TikZ.scope:
   - match: '(\\start)(scope)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
   - match: '(\\stop)(scope)\b'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
 
   TikZ.default:
   - match: '{{number}}\s*{{unit}}?'
@@ -361,6 +362,7 @@ contexts:
   - match: '(\$)'
     scope: {{@MATH_TOGGLE}}
     push:
+    - meta_scope: {{@MATH_SCOPE}}
     - match: '(\1)'
       scope: {{@MATH_TOGGLE}}
       pop: true
@@ -369,18 +371,20 @@ contexts:
   math.display:
   - match: '(\\start)(formula)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push:
+    - meta_scope: {{@MATH_SCOPE}}
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_SCOPE}}
-        '2': {{@SCOPE_NAME}}
+        '1': {{@STOP_ENVIRONMENT}}
+        '2': {{@ENVIRONMENT_NAME}}
       pop: true
     - include: math.main
   - match: '(\$\$)'
     scope: {{@MATH_TOGGLE}}
     push:
+    - meta_scope: {{@MATH_SCOPE}}
     - match: '(\1)'
       scope: {{@MATH_TOGGLE}}
       pop: true
@@ -389,13 +393,13 @@ contexts:
   math.displays:
   - match: '(\\start)(formulas)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push:
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_SCOPE}}
-        '2': {{@SCOPE_NAME}}
+        '1': {{@STOP_ENVIRONMENT}}
+        '2': {{@ENVIRONMENT_NAME}}
       pop: true
     - include: math.display
 
@@ -430,26 +434,26 @@ contexts:
     push: default.group/
   - match: '(\\start)(intertext)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push:
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_SCOPE}}
-        '2': {{@SCOPE_NAME}}
+        '1': {{@STOP_ENVIRONMENT}}
+        '2': {{@ENVIRONMENT_NAME}}
       pop: true
     - include: main
 
   math.substack:
   - match: '(\\start)(substack)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push:
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_SCOPE}}
-        '2': {{@SCOPE_NAME}}
+        '1': {{@STOP_ENVIRONMENT}}
+        '2': {{@ENVIRONMENT_NAME}}
       pop: true
     - match: '\\NR\b'
       scope: {{@NEW_ROW}}
@@ -463,8 +467,8 @@ contexts:
   # text and math respectively (NC = new column and MC = math column).
   - match: '(\\start)(mathcases)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push: [
       math.cases.core/,
       default.list*/,
@@ -473,8 +477,8 @@ contexts:
   math.cases.core/:
   - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     pop: true
   - match: '\\NC\b'
     scope: {{@NEW_COLUMN}}
@@ -508,8 +512,8 @@ contexts:
   math.align:
   - match: '(\\start)(align|mathalignment)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push: [
       math.align.core/,
       default.list*/,
@@ -518,8 +522,8 @@ contexts:
   math.align.core/:
   - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     pop: true
   - match: '\\NC\b'
     scope: {{@NEW_COLUMN}}
@@ -592,13 +596,13 @@ contexts:
   ConTeXt.default.start_stop:
   - match: '(\\start)([a-zA-Z]+)'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push: default.lists*/
   - match: '(\\stop)([a-zA-Z]+)'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
 
   ConTeXt.usemodule:
   - match: '\\usemodule\b'
@@ -626,8 +630,8 @@ contexts:
   ConTeXt.texdef:
   - match: '(\\start)(texdefinition)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push: [
       ConTeXt.texdef.main/,
       ConTeXt.texdef.arguments*/,
@@ -658,8 +662,8 @@ contexts:
   - meta_include_prototype: false
   - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     pop: true
   - match: '\#([1-9]|[a-zA-Z]+)'
     scope: {{@TEX_PARAMETER}}
@@ -703,13 +707,13 @@ contexts:
   ConTeXt.itemize:
   - match: '(\\start)(itemize)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push: default.lists*/
   - match: '(\\stop)(itemize)\b'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
   - match: '\\(item|head)\b'
     scope: {{@ITEM}}
 
@@ -726,24 +730,24 @@ contexts:
   ConTeXt.TABLE:
   - match: '(\\b)(TABLE|T[RD])\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push: default.lists*/
   - match: '(\\e)(TABLE|T[RD])\b'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
 
   ConTeXt.table:
   - match: '(\\start)(table)\b'
     captures:
-      '1': {{@START_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@START_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
     push: ConTeXt.table.spec.list*/
   - match: '(\\stop)(table)\b'
     captures:
-      '1': {{@STOP_SCOPE}}
-      '2': {{@SCOPE_NAME}}
+      '1': {{@STOP_ENVIRONMENT}}
+      '2': {{@ENVIRONMENT_NAME}}
   - match: '\\[HV]L\b'
     scope: {{@NEW_LINE}}
   - match: '\\NC\b'
