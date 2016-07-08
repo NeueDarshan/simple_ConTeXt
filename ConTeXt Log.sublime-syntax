@@ -3,53 +3,61 @@
 name: ConTeXt Log
 file_extensions: log
 scope: text.log.context
+variables:
+  log_system_match: '\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
 contexts:
   main:
   - include: ConTeXt
   - include: log
 
   log:
+  - include: log.system
   - match: '! .+'
     scope: invalid.illegal.error.log.context
-  - match: '([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
+  - match: '^(<)([a-zA-Z]+[\sa-zA-Z]*?)(>)'
     captures:
-      '1': keyword.category.log.context
-      '2': markup.heading.log.context
+      '1': markup.heading.log.context
+      '2': keyword.category.log.context
+      '3': markup.heading.log.context
   - match: '([a-zA-Z\-]+)(=)'
     captures:
       '1': variable.parameter.key.log.context
       '2': keyword.equals.log.context
-  - match: "'.*?'"
-    scope: string.log.context
-  - match: '".*?"'
-    scope: string.log.context
   - match: 'U\+[a-zA-Z0-9]+'
     scope: constant.numeric.log.context
   - match: '[0-9]+'
     scope: constant.numeric.log.context
+  - match: "'.*?'"
+    scope: string.log.context
+  - match: '".*?"'
+    scope: string.log.context
+
+  log.system:
+  - match: '^{{log_system_match}}'
+    captures:
+      '1': keyword.category.log.context
+      '2': markup.heading.log.context
+    push: log.system.core/
+
+  log.system.core/:
+  - match: '{{log_system_match}}'
+    captures:
+      '1': keyword.category.log.context
+      '2': markup.heading.log.context
+    set: log.system.core/
+  - match: ''
+    pop: true
 
   ConTeXt:
-  - match: '^[0-9]+'
-    scope: constant.numeric.log.context
+  - match: '^\s*([0-9]+)\s*(>>)?'
+    captures:
+      '1': constant.numeric.log.context
+      '2': invalid.illegal.error.log.context
     push: ConTeXt.sublime-syntax
     with_prototype:
-    - match: '^(?=[^0-9])'
-      pop: true
-    - match: '^([0-9]+) (>>)?'
+    - match: '^\s*([0-9]+)\s*(>>)?'
       captures:
         '1': constant.numeric.log.context
         '2': invalid.illegal.error.log.context
-  - match: '<to be read again>'
-    push: ConTeXt.sublime-syntax
-    with_prototype:
-    - match: '^(?=\.{3})'
-      pop: true
-    - match: '\\[a-zA-Z]*(_+[a-zA-Z]*)+'
-      scope: support.function.control-word.tex.context
-  - match: 'l\.([0-9]+)'
-    captures:
-      '1': constant.numeric.log.context
-    push: ConTeXt.sublime-syntax
-    with_prototype:
-    - match: '^(?=\s*$)'
+    - match: '^(?=\s*[^0-9])'
       pop: true

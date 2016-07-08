@@ -3,6 +3,8 @@
 name: ConTeXt Log
 file_extensions: log
 scope: text.log.context
+variables:
+  log_system_match: '\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
 contexts:
   main:
   - include: ConTeXt
@@ -10,49 +12,55 @@ contexts:
 
   log:
   # do some rudimentary highlighting of the log file
+  - include: log.system
   - match: '! .+'
     scope: {{@LOG_ERROR}}
-  - match: '([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
+  - match: '^(<)([a-zA-Z]+[\sa-zA-Z]*?)(>)'
     captures:
-      '1': {{@LOG_CATEGORY}}
-      '2': {{@LOG_CATEGORY_SEP}}
+      '1': {{@LOG_CATEGORY_SEP}}
+      '2': {{@LOG_CATEGORY}}
+      '3': {{@LOG_CATEGORY_SEP}}
   - match: '([a-zA-Z\-]+)(=)'
     captures:
       '1': {{@LOG_KEY}}
       '2': {{@LOG_EQUALS}}
-  - match: "'.*?'"
-    scope: {{@LOG_STRING}}
-  - match: '".*?"'
-    scope: {{@LOG_STRING}}
   - match: 'U\+[a-zA-Z0-9]+'
     scope: {{@LOG_NUMBER}}
   - match: '[0-9]+'
     scope: {{@LOG_NUMBER}}
+  - match: "'.*?'"
+    scope: {{@LOG_STRING}}
+  - match: '".*?"'
+    scope: {{@LOG_STRING}}
+
+  log.system:
+  - match: '^{{log_system_match}}'
+    captures:
+      '1': {{@LOG_CATEGORY}}
+      '2': {{@LOG_CATEGORY_SEP}}
+    push: log.system.core/
+
+  log.system.core/:
+  - match: '{{log_system_match}}'
+    captures:
+      '1': {{@LOG_CATEGORY}}
+      '2': {{@LOG_CATEGORY_SEP}}
+    set: log.system.core/
+  - match: ''
+    pop: true
 
   ConTeXt:
   # if the log file includes some ConTeXt excerpts, then use the ConTeXt syntax
   # file to highlight it appropriately
-  - match: '^[0-9]+'
-    scope: {{@LOG_NUMBER}}
+  - match: '^\s*([0-9]+)\s*(>>)?'
+    captures:
+      '1': {{@LOG_NUMBER}}
+      '2': {{@LOG_ERROR}}
     push: ConTeXt.sublime-syntax
     with_prototype:
-    - match: '^(?=[^0-9])'
-      pop: true
-    - match: '^([0-9]+) (>>)?'
+    - match: '^\s*([0-9]+)\s*(>>)?'
       captures:
         '1': {{@LOG_NUMBER}}
         '2': {{@LOG_ERROR}}
-  - match: '<to be read again>'
-    push: ConTeXt.sublime-syntax
-    with_prototype:
-    - match: '^(?=\.{3})'
-      pop: true
-    - match: '\\[a-zA-Z]*(_+[a-zA-Z]*)+'
-      scope: {{@CONTROL_WORD}}
-  - match: 'l\.([0-9]+)'
-    captures:
-      '1': {{@LOG_NUMBER}}
-    push: ConTeXt.sublime-syntax
-    with_prototype:
-    - match: '^(?=\s*$)'
+    - match: '^(?=\s*[^0-9])'
       pop: true
