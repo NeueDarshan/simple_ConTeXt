@@ -1,6 +1,6 @@
 <snippet>
     <content><![CDATA[
-\start${1:environment}
+\start${1:environment}[${2:options}]
   $0
 \stop${1:environment}
 ]]></content>
