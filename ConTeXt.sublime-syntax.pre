@@ -4,24 +4,7 @@
 # incomplete, explanation of how this syntax works.
 name: ConTeXt
 file_extensions: tex
-scope: text.tex.context
-
-# -----------------------------------------------------------------------------
-# VARIABLES
-# -----------------------------------------------------------------------------
-# Variables are nice! In addition to the ones here, we also have some variables
-# in syntax_pre_process.json - to reference them, simply type {{@var_name}}.
-# Then the python preprocessor will replace them with the corresponding values.
-variables:
-  unit: '(pt|pc|in|bp|cm|mm|cc|sp|em|ex)' # valid TeX units
-  uns_int: '\d+'
-  uns_real: '(\d+\.\d*|\d*\.\d+)'
-  uns_number: '({{uns_real}}|{{uns_int}})'
-  number: '[\+\-]*{{uns_number}}'
-  lua_context_functions: '(tex\.s?print)|context'
-  tikz_keywords: '(in|at|grid|edge|node|rectangle|cycle|coordinate|decorate|controls|child)'
-  tikz_math_operator: '([\+\-\*\/\^!><\?:]|[=><!]=|&&|\|\|)'
-  tikz_math_function: '(abs|acos|add|and|array|asin|atan|atan2|bin|ceil|cos|cosec|cosh|cot|deg|depth|div|divide|e|equal|factorial|false|floor|frac|gcd|greater|height|hex|Hex|int|ifthenelse|iseven|isodd|isprime|less|ln|log10|log2|max|min|mod|Mod|multiply|neg|not|notequal|notgreater|notless|oct|or|pi|pow|rad|rand|random|real|rnd|round|sec|sin|sinh|sqrt|subtract|tan|tanh|true|veclen|width)'
+scope: {{!general/meta_scope}}
 
 # -----------------------------------------------------------------------------
 # MAIN
@@ -44,11 +27,12 @@ variables:
 contexts:
   main:
   - include: TeX
-  - include: lua
-  - include: TikZ
   - include: math
+  - include: Lua
+  - include: MetaPost
+  - include: TikZ
   - include: ConTeXt
-  - include: default
+  - include: general
 
   prototype:
   - include: comments
@@ -57,7 +41,7 @@ contexts:
   # Because these matches are applied one line at a time, we can use this very
   # simple regex instead of something like '\%.*?$'.
   - match: '\%.*'
-    scope: {{@COMMENT}}
+    scope: {{!general/scopes/comment}}
 
 # -----------------------------------------------------------------------------
 # TEX
@@ -68,9 +52,9 @@ contexts:
   TeX.def:
   - match: '(\\)([egx]?)(def)\b'
     captures:
-      '1': {{@TEX_DEF}}
-      '2': {{@TEX_DEF_PREFIX}}
-      '3': {{@TEX_DEF}}
+      '1': {{!TeX/scopes/def/def}}
+      '2': {{!TeX/scopes/def/prefix}}
+      '3': {{!TeX/scopes/def/def}}
     # Things are pushed onto the stack in the order they are written, so that
     # after this 'push', 'TeX.def.assignable/' will be on top of the stack,
     # with 'TeX.def.parameters*/' just below it and 'TeX.def.group/' below
@@ -85,18 +69,18 @@ contexts:
   # although usually you '\def' a control word, it is also possible to '\def' a
   # control symbol or an active character
   - match: '\\[a-zA-Z]+'
-    scope: {{@CONTROL_WORD}}
+    scope: {{!TeX/scopes/def/control/word}}
     pop: true
   - match: '\\[^a-zA-Z]'
-    scope: {{@CONTROL_SYMBOL}}
+    scope: {{!TeX/scopes/def/control/symbol}}
     pop: true
   - match: '[^\s]'
-    scope: {{@ACTIVE_CHARACTER}}
+    scope: {{!TeX/scopes/def/active_character}}
     pop: true
 
   TeX.def.parameters*/:
   - match: '\#([1-9]|(?=\{))'
-    scope: {{@TEX_PARAMETER}}
+    scope: {{!TeX/scopes/def/parameter}}
   - match: '(?=\{)'
     pop: true
 
@@ -126,11 +110,11 @@ contexts:
     pop: true
 
   TeX.def.group.core/:
-  - meta_scope: {{@TEX_GROUP}}
+  - meta_scope: {{!TeX/scopes/def/group}}
   - match: '\}'
     pop: true
   - match: '\#[1-9]'
-    scope: {{@TEX_PARAMETER}}
+    scope: {{!TeX/scopes/def/parameter}}
   # We need to make sure to handle nested groups {...} ourselves before main
   # does, so that we can highlight parameters '#n'. Thus we 'include'
   # TeX.def.group just before 'include'-ing main.
@@ -140,64 +124,134 @@ contexts:
 # -----------------------------------------------------------------------------
 # LUA
 # -----------------------------------------------------------------------------
-  lua:
-  - include: lua.inline
-  - include: lua.block
+  Lua:
+  - include: Lua.inline
+  - include: Lua.block
 
-  lua.inline:
+  Lua.inline:
   - match: '\\(directlua|ctxlua)\b'
-    scope: {{@CONTROL_WORD}}
-    push: lua.group/
+    scope: {{!general/scopes/control/word}}
+    push: Lua.group/
 
-  lua.block:
+  Lua.block:
   - match: '(\\start)(lua(code)?)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push:
-    # The '(\1)' references the first capture group of the match below it on
-    # the stack (so in this case, it will simply refer to 'lua' or 'luacode').
+    - meta_scope: '{{!Lua/meta_scope}}'
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_ENVIRONMENT}}
-        '2': {{@ENVIRONMENT_NAME}}
+        '1': {{!general/scopes/environment/stop}}
+        '2': {{!general/scopes/environment/name}}
       pop: true
-    - include: lua.main
+    - include: Lua.main
 
-  lua.main:
-  - include: lua.group
-  - include: lua.ConTeXt
-  # This bit is where we include the default Lua syntax highlighting that
-  # Sublime Text provides.
-  - include: 'Packages/Lua/Lua.sublime-syntax'
+  Lua.main:
+  - include: Lua.group
+  - include: Lua.ConTeXt
+  - include: Lua.sublime-syntax
 
-  lua.ConTeXt:
-  - match: '\b{{lua_context_functions}}\b'
-    scope: {{@LUA_CONTEXT_FUNCTION}}
+  Lua.ConTeXt:
+  - match: '\b{{!Lua/variables/ConTeXt/function}}\b'
+    scope: {{!Lua/scopes/ConTeXt/function}}
 
-  lua.group:
+  Lua.group:
   - match: '\{'
-    push: lua.group.core/
+    push: Lua.group.core/
 
-  lua.group/:
+  Lua.group/:
   - match: '\{'
-    set: lua.group.core/
+    set: Lua.group.core/
 
-  lua.group*/:
-  - include: lua.group/
+  Lua.group*/:
+  - include: Lua.group/
   - match: '(?=[^\s\{])'
     pop: true
 
-  lua.groups*/:
-  - include: lua.group
+  Lua.groups*/:
+  - include: Lua.group
   - match: '(?=[^\s\{])'
     pop: true
 
-  lua.group.core/:
-  - meta_scope: {{@LUA_GROUP}}
+  Lua.group.core/:
+  - meta_scope: {{!Lua/scopes/group}}
+# - meta_scope: {{!Lua/meta_scope}}
   - match: '\}'
     pop: true
-  - include: lua.main
+  - include: Lua.main
+
+# -----------------------------------------------------------------------------
+# METAPOST
+# -----------------------------------------------------------------------------
+  MetaPost:
+  - include: MetaPost.block
+
+  MetaPost.block:
+  - match: '(\\start)(MP(code|page|inclusions|calculation))\b'
+    captures:
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
+    push: MetaPost.block.core/
+  - match: '(\\start)((use|reusable|unique)MPgraphic|staticMPfigure)\b'
+    captures:
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
+    push: [
+      MetaPost.block.core/,
+      general.group*/,
+    ]
+
+  MetaPost.block.core/:
+  - meta_scope: {{!MetaPost/meta_scope}}
+  - match: '(\\stop)(\2)\b'
+    captures:
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
+    pop: true
+  - include: MetaPost.main
+
+  MetaPost.main:
+  - include: MetaPost.TeX
+  - include: MetaPost.matches
+
+  MetaPost.TeX:
+  - match: '\b(b|verbatim)(tex)\b'
+    captures:
+      '1': {{!general/scopes/domain/begin}}
+      '2': {{!general/scopes/domain/name}}
+    push: MetaPost.TeX.core/
+
+  MetaPost.TeX.core/:
+  - match: '\b(e)(\2)\b'
+    captures:
+      '1': {{!general/scopes/domain/end}}
+      '2': {{!general/scopes/domain/name}}
+    pop: true
+  - include: main
+
+  MetaPost.matches:
+  - match: '\b({{!MetaPost/variables/command/misc}}|{{!MetaPost/variables/command/macro}})\b'
+    scope: {{!MetaPost/scopes/command}}
+  # need to make type more clever - only match at start of line (modulo
+  # whitespace) or in function spec (NEED, because the same word is used
+  # elsewhere as an operator)
+  - match: '\b{{!MetaPost/variables/type}}\b'
+    scope: {{!MetaPost/scopes/type}}
+  - match: '(\b{{!MetaPost/variables/path/word}}\b|{{!MetaPost/variables/path/join}})'
+    scope: {{!MetaPost/scopes/path_operator}}
+  - match: '(\b{{!MetaPost/variables/operator/word}}\b|{{!MetaPost/variables/operator/arithmetic}}|{{!MetaPost/variables/operator/comparison}})'
+    scope: {{!MetaPost/scopes/operator}}
+  - match: '\b{{!MetaPost/variables/loop}}\b'
+    scope: {{!MetaPost/scopes/keyword}}
+  - match: '"/*?"'
+    scope: {{!MetaPost/scopes/string}}
+  - match: '\b({{!MetaPost/variables/constant/numeric}}|{{!MetaPost/variables/constant/string}}|{{!MetaPost/variables/constant/other}}|{{!MetaPost/variables/constant/misc}})\b'
+    scope: {{!MetaPost/scopes/constant}}
+  - match: '{{!general/variables/number}}({{!TeX/variables/unit}})?'
+    scope: {{!MetaPost/scopes/number}}
+  - match: '{{!MetaPost/variables/punctuation_terminator}}'
+    scope: {{!MetaPost/scopes/punctuation_terminator}}
 
 # -----------------------------------------------------------------------------
 # TIKZ
@@ -209,34 +263,34 @@ contexts:
   TikZ.block:
   - match: '(\\start)(tikzpicture)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push: [
       TikZ.block.core/,
       TikZ.lists*/,
     ]
 
   TikZ.block.core/:
-  - meta_scope: {{@TIKZ_SCOPE}}
+  - meta_scope: {{!TikZ/meta_scope}}
   - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
     pop: true
   - include: TikZ.main
 
   TikZ.inline:
   - match: '\\tikz\b'
-    scope: {{@CONTROL_WORD}}
+    scope: {{!general/scopes/control/word}}
     push: [
       TikZ.inline.core/,
       TikZ.lists*/,
     ]
 
   TikZ.inline.core/:
-  - meta_scope: {{@TIKZ_SCOPE}}
-  - match: ';'
-    scope: {{@TIKZ_SEMI_COLON}}
+  - meta_scope: {{!TikZ/meta_scope}}
+  - match: '{{!TikZ/variables/punctuation_terminator}}'
+    scope: {{!TikZ/scopes/punctuation_terminator}}
     pop: true
   - include: TikZ.main
 
@@ -247,59 +301,61 @@ contexts:
   - include: TikZ.list
   - include: TikZ.calc
   - include: TeX
-  - include: lua
+  - include: Lua
   - include: math
   - include: ConTeXt
-  - include: TikZ.default
+  - include: TikZ.general
 
   TikZ.calc:
   - match: '\(\$'
-    scope: {{@TIKZ_CALC_TOGGLE}}
+    scope: {{!TikZ/scopes/calc_toggle}}
     push: TikZ.calc.core/
 
   TikZ.calc.core/:
   - match: '\$\)'
-    scope: {{@TIKZ_CALC_TOGGLE}}
+    scope: {{!TikZ/scopes/calc_toggle}}
     pop: true
-  - match: '{{tikz_math_operator}}'
-    scope:  {{@TIKZ_MATH_OPERATOR}}
-  - match: '\b{{tikz_math_function}}\b'
-    scope:  {{@TIKZ_MATH_FUNCTION}}
-  - match: '{{number}}\s*{{unit}}?'
-    scope: {{@NUMBER}}
+  - match: '{{!TikZ/variables/math/operator}}'
+    scope: {{!TikZ/scopes/math/operator}}
+  - match: '\b{{!TikZ/variables/math/function}}\b'
+    scope: {{!TikZ/scopes/math/function}}
+  - match: '{{!general/variables/number}}({{!TeX/variables/unit}})?'
+    scope: {{!TikZ/scopes/number}}
 
   TikZ.keyword:
-  - match: '\\foreach\b'
-    scope: {{@KEYWORD}}
-  - match: '\b{{tikz_keywords}}\b'
-    scope: {{@KEYWORD}}
+  - match: '(\\foreach|\b{{!TikZ/variables/keyword}})\b'
+    scope: {{!TikZ/scopes/keyword}}
 
   TikZ.scope:
   - match: '(\\start)(scope)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
   - match: '(\\stop)(scope)\b'
     captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
 
-  TikZ.default:
-  - match: '{{number}}\s*{{unit}}?'
-    scope: {{@NUMBER}}
+  TikZ.general:
+  - match: '{{!TikZ/variables/path_operator}}'
+    scope: {{!TikZ/scopes/path_operator}}
+  - match: '{{!general/variables/number}}({{!TeX/variables/unit}})?'
+    scope: {{!TikZ/scopes/number}}
+    # match control sequences ourselves, so as to ensure that in '\foo[...]'
+    # the ... gets handled by TikZ syntax
   - match: '\\[a-zA-Z]+'
-    scope: {{@CONTROL_WORD}}
+    scope: {{!TikZ/scopes/control/word}}
   - match: '\\[^a-zA-Z]'
-    scope: {{@CONTROL_SYMBOL}}
-  - match: ';'
-    scope: {{@TIKZ_SEMI_COLON}}
+    scope: {{!TikZ/scopes/control/symbol}}
+  - match: '{{!TikZ/variables/punctuation_terminator}}'
+    scope: {{!TikZ/scopes/punctuation_terminator}}
 
   TikZ.group:
   - match: '\{'
     push: TikZ.group.core/
 
   TikZ.group.core/:
-  - meta_scope: {{@TIKZ_GROUP}}
+  - meta_scope: {{!TikZ/scopes/group}}
   - include: TikZ.main
   - match: '\}'
     pop: true
@@ -314,34 +370,34 @@ contexts:
     pop: true
 
   TikZ.list.core/:
-  - meta_scope: {{@TIKZ_LIST}}
+  - meta_scope: {{!TikZ/scopes/list/scope}}
   - match: '\]'
     pop: true
   - include: TikZ.list.group
   - include: TikZ.options.core
 
   TikZ.list.group:
-  - match: '\['
+  - match: '\{'
     push: TikZ.list.group.core/
 
   TikZ.list.group.core/:
-  - meta_scope: {{@TIKZ_GROUP}}
-  - match: '\]'
+  - meta_scope: {{!TikZ/scopes/group}}
+  - match: '\}'
     pop: true
   - include: TikZ.options.core
 
   TikZ.options.core:
   - match: '([a-zA-Z][a-zA-Z0-9\s\./\->]*)(=)'
     captures:
-      '1': {{@KEY}}
-      '2': {{@EQUALS}}
-  - match: '{{number}}\s*{{unit}}?'
-    scope: {{@NUMBER}}
+      '1': {{!TikZ/scopes/list/key}}
+      '2': {{!TikZ/scopes/list/equals}}
+  - match: '{{!general/variables/number}}({{!TeX/variables/unit}})?'
+    scope: {{!TikZ/scopes/number}}
   - match: '\\[a-zA-Z]+'
-    scope: {{@CONTROL_WORD}}
+    scope: {{!TikZ/scopes/control/word}}
   - match: '\\[^a-zA-Z]'
-    scope: {{@CONTROL_SYMBOL}}
-  - include: math
+    scope: {{!TikZ/scopes/control/symbol}}
+  - include: main
 
 # -----------------------------------------------------------------------------
 # MATH
@@ -357,49 +413,49 @@ contexts:
 
   math.inline:
   - match: '\\(m|math|mathematics)\b'
-    scope: {{@CONTROL_WORD}}
+    scope: {{!general/scopes/control/word}}
     push: math.group/
   - match: '(\$)'
-    scope: {{@MATH_TOGGLE}}
+    scope: {{!math/scopes/toggle/inline}}
     push:
-    - meta_scope: {{@MATH_SCOPE}}
+    - meta_scope: {{!math/meta_scope}}
     - match: '(\1)'
-      scope: {{@MATH_TOGGLE}}
+      scope: {{!math/scopes/toggle/inline}}
       pop: true
     - include: math.main
 
   math.display:
   - match: '(\\start)(formula)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push:
-    - meta_scope: {{@MATH_SCOPE}}
+    - meta_scope: {{!math/meta_scope}}
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_ENVIRONMENT}}
-        '2': {{@ENVIRONMENT_NAME}}
+        '1': {{!general/scopes/environment/stop}}
+        '2': {{!general/scopes/environment/name}}
       pop: true
     - include: math.main
   - match: '(\$\$)'
-    scope: {{@MATH_TOGGLE}}
+    scope: {{!math/scopes/toggle/display}}
     push:
-    - meta_scope: {{@MATH_SCOPE}}
+    - meta_scope: {{!math/meta_scope}}
     - match: '(\1)'
-      scope: {{@MATH_TOGGLE}}
+      scope: {{!math/scopes/toggle/display}}
       pop: true
     - include: math.main
 
   math.displays:
   - match: '(\\start)(formulas)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push:
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_ENVIRONMENT}}
-        '2': {{@ENVIRONMENT_NAME}}
+        '1': {{!general/scopes/environment/stop}}
+        '2': {{!general/scopes/environment/name}}
       pop: true
     - include: math.display
 
@@ -410,54 +466,54 @@ contexts:
   - include: math.group
   - include: math.substack
   - include: math.text
-  # Sure, why not include lua.inline, it can be nice to properly highlight an
+  # Sure, why not include Lua.inline, it can be nice to properly highlight an
   # inline Lua call.
-  - include: lua.inline
-  - include: math.default
+  - include: Lua.inline
+  - include: math.general
 
-  math.default:
-  - match: '{{number}}'
-    scope: {{@NUMBER}}
+  math.general:
+  - match: '{{!general/variables/number}}'
+    scope: {{!math/scopes/number}}
   - match: '\\[a-zA-Z]+'
-    scope: {{@CONTROL_WORD}}
+    scope: {{!math/scopes/control/word}}
   - match: '\\[^a-zA-Z]'
-    scope: {{@CONTROL_SYMBOL}}
-  - include: default
-    # This match is what makes plain text within math mode highlight like a
-    # string
+    scope: {{!math/scopes/control/symbol}}
+  - include: general
+    # These matches are what makes plain text within math mode highlight like a
+    # string... having a match for whole words first lets spellcheckers do
+    # their thing better
+  - match: '[a-zA-Z]+'
+    scope: {{!math/scopes/text}}
   - match: '.'
-    scope: {{@MATH_TEXT}}
+    scope: {{!math/scopes/text}}
 
   math.text:
   - match: '\\text\b'
-    scope: {{@CONTROL_WORD}}
-    push: default.group/
+    scope: {{!math/scopes/control/word}}
+    push: general.group/
   - match: '(\\start)(intertext)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push:
     - match: '(\\stop)(\2)\b'
       captures:
-        '1': {{@STOP_ENVIRONMENT}}
-        '2': {{@ENVIRONMENT_NAME}}
+        '1': {{!general/scopes/environment/stop}}
+        '2': {{!general/scopes/environment/name}}
       pop: true
     - include: main
 
   math.substack:
   - match: '(\\start)(substack)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
-    push:
-    - match: '(\\stop)(\2)\b'
-      captures:
-        '1': {{@STOP_ENVIRONMENT}}
-        '2': {{@ENVIRONMENT_NAME}}
-      pop: true
-    - match: '\\NR\b'
-      scope: {{@NEW_ROW}}
-    - include: math.main
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
+  - match: '(\\stop)(substack)\b'
+    captures:
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
+  - match: '\\NR\b'
+    scope: {{!general/scopes/new/row}}
 
   math.cases:
   # This context is setup to match \startmathcases[optional square brackets,
@@ -465,23 +521,23 @@ contexts:
   # rows: so highlight the first bit of a row '\NC ...' as math. The second bit
   # can be either '\NC ... \NR' or '\MC ... \NR', which will be highlighted as
   # text and math respectively (NC = new column and MC = math column).
-  - match: '(\\start)(mathcases)\b'
+  - match: '(\\start)(cases|mathcases)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push: [
       math.cases.core/,
-      default.list*/,
+      general.list*/,
     ]
 
   math.cases.core/:
   - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
     pop: true
   - match: '\\NC\b'
-    scope: {{@NEW_COLUMN}}
+    scope: {{!general/scopes/new/column}}
     push: [
       math.cases.right/,
       math.cases.left/,
@@ -494,41 +550,41 @@ contexts:
 
   math.cases.right/:
   - match: '\\NC\b'
-    scope: {{@NEW_COLUMN}}
+    scope: {{!general/scopes/new/column}}
     set:
     - include: math.cases.right.core/
     - include: main
   - match: '\\MC\b'
-    scope: {{@NEW_COLUMN}}
+    scope: {{!general/scopes/new/column}}
     set:
     - include: math.cases.right.core/
     - include: math.main
 
   math.cases.right.core/:
   - match: '\\NR\b'
-    scope: {{@NEW_ROW}}
+    scope: {{!general/scopes/new/row}}
     pop: true
 
   math.align:
   - match: '(\\start)(align|mathalignment)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push: [
       math.align.core/,
-      default.list*/,
+      general.list*/,
     ]
 
   math.align.core/:
   - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
     pop: true
   - match: '\\NC\b'
-    scope: {{@NEW_COLUMN}}
+    scope: {{!general/scopes/new/column}}
   - match: '\\NR\b'
-    scope: {{@NEW_ROW}}
+    scope: {{!general/scopes/new/row}}
   - include: math.main
 
   math.group:
@@ -550,7 +606,7 @@ contexts:
     pop: true
 
   math.group.core/:
-  - meta_scope: {{@MATH_GROUP}}
+  - meta_scope: {{!math/scopes/group}}
   - match: '\}'
     pop: true
   - include: math.main
@@ -560,69 +616,52 @@ contexts:
 # -----------------------------------------------------------------------------
 # This section is devoted to matching syntax unique to ConTeXt
   ConTeXt:
-  - include: ConTeXt.usemodule
-  - include: ConTeXt.defs
+  - include: ConTeXt.module
+  - include: ConTeXt.def
   - include: ConTeXt.tables
   - include: ConTeXt.itemize
-  - include: ConTeXt.default
+  - include: ConTeXt.comment
 
-  ConTeXt.default:
-  - include: ConTeXt.default.start_stop
-  - include: ConTeXt.default.define
-  - include: ConTeXt.default.setup
-  - include: ConTeXt.default.place
-
-  ConTeXt.default.define:
-  - match: '(\\define)([a-zA-Z]+)'
+  ConTeXt.comment:
+  - match: '(\\start)(comment)\b'
     captures:
-      '1': {{@DEFINE}}
-      '2': {{@DEFINE_NAME}}
-    push: default.lists*/
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
+    push: ConTeXt.comment.core/
 
-  ConTeXt.default.setup:
-  - match: '(\\setup)([a-zA-Z]+)'
+  ConTeXt.comment.core/:
+  - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@SETUP}}
-      '2': {{@SETUP_NAME}}
-    push: default.lists*/
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
+    pop: true
+  - match: '[a-zA-Z]+'
+    scope: {{!general/scopes/comment}}
+  - match: '.'
+    scope: {{!general/scopes/comment}}
 
-  ConTeXt.default.place:
-  - match: '(\\place)([a-zA-Z]+)'
-    captures:
-      '1': {{@PLACE}}
-      '2': {{@PLACE_NAME}}
-    push: default.lists*/
-
-  ConTeXt.default.start_stop:
-  - match: '(\\start)([a-zA-Z]+)'
-    captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
-    push: default.lists*/
-  - match: '(\\stop)([a-zA-Z]+)'
-    captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
-
-  ConTeXt.usemodule:
+  ConTeXt.module:
   - match: '\\usemodule\b'
-    scope: {{@USE_MODULE}}
-    push: ConTeXt.usemodule.list*/
+    scope: {{!ConTeXt/scopes/module/use}}
+    push: [
+      general.lists*/,
+      ConTeXt.module.list*/,
+    ]
 
-  ConTeXt.usemodule.list*/:
+  ConTeXt.module.list*/:
   - match: '\['
-    set: ConTeXt.usemodule.list.core/
+    set: ConTeXt.module.list.core/
   - match: '(?=[^\s\[])'
     pop: true
 
-  ConTeXt.usemodule.list.core/:
-  - meta_scope: {{@LIST}}
+  ConTeXt.module.list.core/:
+  - meta_scope: {{!general/scopes/list/scope}}
   - match: '\]'
     pop: true
   - match: '[a-zA-Z]+'
-    scope: {{@MODULE_NAME}}
+    scope: {{!ConTeXt/scopes/module/name}}
 
-  ConTeXt.defs:
+  ConTeXt.def:
   # Match some ConTeXt specific variations of '\def'
   - include: ConTeXt.texdef
   - include: ConTeXt.define
@@ -630,8 +669,8 @@ contexts:
   ConTeXt.texdef:
   - match: '(\\start)(texdefinition)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push: [
       ConTeXt.texdef.main/,
       ConTeXt.texdef.arguments*/,
@@ -641,18 +680,18 @@ contexts:
 
   ConTeXt.texdef.prefixes*/:
   - match: '\b(global|(un)?expanded)\b'
-    scope: {{@TEX_DEF_PREFIX}}
+    scope: {{!TeX/scopes/def/prefix}}
   - match: '(?=[^\s])'
     pop: true
 
   ConTeXt.texdef.name/:
   - match: '[a-zA-Z]+'
-    scope: {{@CONTROL_WORD}}
+    scope: {{!TeX/scopes/def/control/word}}
     pop: true
 
   ConTeXt.texdef.arguments*/:
   - match: '\#([1-9]|[a-zA-Z]+)'
-    scope: {{@TEX_PARAMETER}}
+    scope: {{!TeX/scopes/def/parameter}}
   - match: '(?=[^\s])'
     pop: true
 
@@ -662,19 +701,19 @@ contexts:
   - meta_include_prototype: false
   - match: '(\\stop)(\2)\b'
     captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
     pop: true
   - match: '\#([1-9]|[a-zA-Z]+)'
-    scope: {{@TEX_PARAMETER}}
+    scope: {{!TeX/scopes/def/parameter}}
   - include: ConTeXt.texdef.comment
   - include: ConTeXt.texdef.group
   - include: main
 
   ConTeXt.texdef.comment:
   - meta_include_prototype: false
-  - match: '\%\s*\%.*'
-    scope: {{@COMMENT}}
+  - match: '\%\%.*'
+    scope: {{!general/scopes/comment}}
 
   ConTeXt.texdef.group:
   - meta_include_prototype: false
@@ -683,11 +722,11 @@ contexts:
 
   ConTeXt.texdef.group.core/:
   - meta_include_prototype: false
-  - meta_scope: {{@TEX_GROUP}}
+  - meta_scope: {{!TeX/scopes/def/group}}
   - match: '\}'
     pop: true
   - match: '\#([1-9]|[a-zA-Z]+)'
-    scope: {{@TEX_PARAMETER}}
+    scope: {{!TeX/scopes/def/parameter}}
   - include: ConTeXt.texdef.comment
   # Just like with TeX.def.group.core/, we have to make sure to intercept any
   # groups {...} before main gets to them, if we want to highlight parameters
@@ -697,7 +736,7 @@ contexts:
 
   ConTeXt.define:
   - match: '\\define\b'
-    scope: {{@TEX_DEF}}
+    scope: {{!TeX/scopes/def/def}}
     push: [
       TeX.def.group/,
       TeX.def.assignable/,
@@ -707,15 +746,15 @@ contexts:
   ConTeXt.itemize:
   - match: '(\\start)(itemize)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
-    push: default.lists*/
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
+    push: general.lists*/
   - match: '(\\stop)(itemize)\b'
     captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
   - match: '\\(item|head)\b'
-    scope: {{@ITEM}}
+    scope: {{!ConTeXt/scopes/item}}
 
   ConTeXt.tables:
   # ConTeXt has many ways to create tables (for historical reasons), some of
@@ -730,53 +769,30 @@ contexts:
   ConTeXt.TABLE:
   - match: '(\\b)(TABLE|T[RD])\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
-    push: default.lists*/
+      '1': {{!general/scopes/domain/begin}}
+      '2': {{!general/scopes/domain/name}}
+    push: general.lists*/
   - match: '(\\e)(TABLE|T[RD])\b'
     captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/domain/end}}
+      '2': {{!general/scopes/domain/name}}
 
   ConTeXt.table:
   - match: '(\\start)(table)\b'
     captures:
-      '1': {{@START_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
     push: ConTeXt.table.spec.list*/
   - match: '(\\stop)(table)\b'
     captures:
-      '1': {{@STOP_ENVIRONMENT}}
-      '2': {{@ENVIRONMENT_NAME}}
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
   - match: '\\[HV]L\b'
-    scope: {{@NEW_LINE}}
+    scope: {{!general/scopes/new/line}}
   - match: '\\NC\b'
-    scope: {{@NEW_COLUMN}}
+    scope: {{!general/scopes/new/column}}
   - match: '\\[FMLSNA]R\b'
-    scope: {{@NEW_ROW}}
-  - match: '\\Use\b'
-    scope: {{@CONTROL_WORD}}
-    push: [
-      default.group/,
-      ConTeXt.table.spec.list/,
-      ConTeXt.count.group/,
-    ]
-  - match: '\\(REF|ReFormat)\b'
-    scope: {{@CONTROL_WORD}}
-    push: [
-      default.group/,
-      ConTeXt.table.spec.list/,
-    ]
-
-  ConTeXt.count.group/:
-  - match: '\{'
-    set: ConTeXt.count.group.core/
-
-  ConTeXt.count.group.core/:
-  - match: '\}'
-    pop: true
-  - match: '{{uns_int}}'
-    scope: {{@NUMBER}}
+    scope: {{!general/scopes/new/row}}
 
   ConTeXt.count.list*/:
   - match: '\['
@@ -787,8 +803,8 @@ contexts:
   ConTeXt.count.list.core/:
   - match: '\]'
     pop: true
-  - match: '{{uns_int}}'
-    scope: {{@NUMBER}}
+  - match: '{{!general/variables/unsigned/int}}'
+    scope: {{!general/scopes/number}}
 
   ConTeXt.table.spec.list/:
   - match: '\['
@@ -800,80 +816,112 @@ contexts:
     pop: true
 
   ConTeXt.table.spec.list.core/:
-  - meta_scope: {{@TABLE_LIST}}
+  - meta_scope: {{!ConTeXt/scopes/tables/table/preamble/meta_scope}}
   - match: '\]'
     pop: true
   - include: ConTeXt.table.spec
   - include: main
 
   ConTeXt.table.spec:
-  - match: '([lcrx])?([wp])\(({{number}})\)'
+  - match: '([lcrx])?([wp])\(({{!general/variables/number}})\)'
     captures:
-      '1': {{@TABLE_ALIGNMENT}}
-      '2': {{@TABLE_WIDTH}}
-      '3': {{@NUMBER}}
+      '1': {{!ConTeXt/scopes/tables/table/preamble/alignment}}
+      '2': {{!ConTeXt/scopes/tables/table/preamble/width}}
+      '3': {{!general/scopes/number}}
   - match: '[lcr]'
-    scope: {{@TABLE_ALIGNMENT}}
+    scope: {{!ConTeXt/scopes/tables/table/preamble/alignment}}
   - match: '[BISRT]'
-    scope: {{@TABLE_FONT}}
+    scope: {{!ConTeXt/scopes/tables/table/preamble/font}}
   - match: '[f]'
-    scope: {{@TABLE_FONT}}
-    push: default.group/
+    scope: {{!ConTeXt/scopes/tables/table/preamble/font}}
+    push: general.group/
   - match: '[mM]'
-    scope: {{@TABLE_MATH}}
-  - match: '[nN]{{uns_int}}\.{{uns_int}} '
-    scope: {{@TABLE_NUM_ALIGN}}
-  - match: '[qQ]{{uns_int}}\,{{uns_int}} '
-    scope: {{@TABLE_NUM_ALIGN}}
-  - match: '([soijk])(\{{{uns_int}}\}|\({{number}}{{unit}}\)|\d)'
+    scope: {{!ConTeXt/scopes/tables/table/preamble/math}}
+  - match: '[nN]{{!general/variables/unsigned/int}}\.{{!general/variables/unsigned/int}} '
+    scope: {{!ConTeXt/scopes/tables/table/preamble/num_align}}
+  - match: '[qQ]{{!general/variables/unsigned/int}}\,{{!general/variables/unsigned/int}} '
+    scope: {{!ConTeXt/scopes/tables/table/preamble/num_align}}
+  - match: '([soijk])(\{{{!general/variables/unsigned/int}}\}|\({{!general/variables/number}}{{!TeX/variables/unit}}\)|\d)'
     captures:
-      '1': {{@TABLE_SPACE}}
-      '2': {{@NUMBER}}
+      '1': {{!ConTeXt/scopes/tables/table/preamble/space}}
+      '2': {{!general/scopes/number}}
 
 # -----------------------------------------------------------------------------
 # DEFAULT
 # -----------------------------------------------------------------------------
 # This section applies matches very broadly, and only gets the chance to match
 # stuff if no other match has been found.
-  default:
-  - include: default.if
-  - include: default.group
-  - include: default.control_word
-  - include: default.control_symbol
+  general:
+  - include: general.if
+  - include: general.group
+  - include: general.moulds
+  - include: general.control_word
+  - include: general.control_symbol
 
-  default.if:
+  general.moulds:
+  - match: '(\\define)([a-zA-Z]+)'
+    captures:
+      '1': {{!ConTeXt/scopes/mould/define/define}}
+      '2': {{!ConTeXt/scopes/mould/define/name}}
+    push: general.lists*/
+  - match: '(\\setup)([a-zA-Z]+)'
+    captures:
+      '1': {{!ConTeXt/scopes/mould/setup/setup}}
+      '2': {{!ConTeXt/scopes/mould/setup/name}}
+    push: general.lists*/
+  - match: '(\\place)([a-zA-Z]+)'
+    captures:
+      '1': {{!ConTeXt/scopes/mould/place/place}}
+      '2': {{!ConTeXt/scopes/mould/place/name}}
+    push: general.lists*/
+  - match: '(\\use)([a-zA-Z]+)'
+    captures:
+      '1': {{!ConTeXt/scopes/mould/use/use}}
+      '2': {{!ConTeXt/scopes/mould/use/name}}
+    push: general.lists*/
+  - match: '(\\start)([a-zA-Z]+)'
+    captures:
+      '1': {{!general/scopes/environment/start}}
+      '2': {{!general/scopes/environment/name}}
+    push: general.lists*/
+  - match: '(\\stop)([a-zA-Z]+)'
+    captures:
+      '1': {{!general/scopes/environment/stop}}
+      '2': {{!general/scopes/environment/name}}
+
+  general.if:
   - match: '\\(if[a-zA-Z]*|else|fi)\b'
-    scope: {{@KEYWORD}}
+    scope: {{!general/scopes/if}}
 
-  default.control_symbol:
+  general.control_symbol:
   - match: '\\[^a-zA-Z]'
-    scope: {{@CONTROL_SYMBOL}}
+    scope: {{!general/scopes/control/symbol}}
 
-  default.control_word:
+  general.control_word:
   - match: '\\[a-zA-Z]+'
-    scope: {{@CONTROL_WORD}}
-    push: default.lists*/
+    scope: {{!general/scopes/control/word}}
+    push: general.lists*/
 
-  default.group:
+  general.group:
   - match: '\{'
-    push: default.group.core/
+    push: general.group.core/
 
-  default.group/:
+  general.group/:
   - match: '\{'
-    set: default.group.core/
+    set: general.group.core/
 
-  default.group*/:
-  - include: default.group/
+  general.group*/:
+  - include: general.group/
   - match: '(?=[^\s\{])'
     pop: true
 
-  default.groups*/:
-  - include: default.group
+  general.groups*/:
+  - include: general.group
   - match: '(?=[^\s\{])'
     pop: true
 
-  default.group.core/:
-  - meta_scope: {{@TEX_GROUP}}
+  general.group.core/:
+  - meta_scope: {{!general/scopes/group}}
   - match: '\}'
     pop: true
   - include: main
@@ -883,35 +931,33 @@ contexts:
   # we do some very simple matches, e.g. take care of key=value style syntax,
   # and finally (this bit is debatable) colour any leftover plain text as a
   # string.
-  default.list:
+  general.list:
   - match: '\['
-    push: default.list.core/
+    push: general.list.core/
 
-  default.list/:
+  general.list/:
   - match: '\['
-    set: default.list.core/
+    set: general.list.core/
 
-  default.list*/:
-  - include: default.list/
+  general.list*/:
+  - include: general.list/
   - match: '(?=[^\s\[])'
     pop: true
 
-  default.lists*/:
-  - include: default.list
+  general.lists*/:
+  - include: general.list
   - match: '(?=[^\s\[])'
     pop: true
 
-  default.list.core/:
-  - meta_scope: {{@LIST}}
+  general.list.core/:
+  - meta_scope: {{!general/scopes/list/scope}}
   - match: '\]'
     pop: true
   - match: '\,'
-  - match: '{{number}}(\s*{{unit}})?'
-    scope: {{@NUMBER}}
+  - match: '{{!general/variables/number}}({{!TeX/variables/unit}})?'
+    scope: {{!general/scopes/number}}
   - match: '([a-zA-Z]+)(=)'
     captures:
-      '1': {{@KEY}}
-      '2': {{@EQUALS}}
-  - match: ':'
-    scope: {{@COLON}}
+      '1': {{!general/scopes/list/key}}
+      '2': {{!general/scopes/list/equals}}
   - include: main
