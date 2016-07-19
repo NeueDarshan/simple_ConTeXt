@@ -3,13 +3,10 @@
 name: ConTeXt Log
 file_extensions: log
 scope: text.log.context
-variables:
-  log_system_match: '\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
 contexts:
   main:
   - include: ConTeXt
   - include: log
-
   log:
   - include: log.system
   - match: '! .+'
@@ -23,31 +20,26 @@ contexts:
     captures:
       '1': variable.parameter.key.log.context
       '2': keyword.equals.log.context
-  - match: 'U\+[a-zA-Z0-9]+'
-    scope: constant.numeric.log.context
-  - match: '[0-9]+'
+  - match: '(U\+[a-zA-Z0-9]+|[0-9]+)'
     scope: constant.numeric.log.context
   - match: "'.*?'"
     scope: string.log.context
   - match: '".*?"'
     scope: string.log.context
-
   log.system:
-  - match: '^{{log_system_match}}'
+  - match: '^\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
     captures:
       '1': keyword.category.log.context
       '2': markup.heading.log.context
     push: log.system.core/
-
   log.system.core/:
-  - match: '{{log_system_match}}'
+  - match: '\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
     captures:
       '1': keyword.category.log.context
       '2': markup.heading.log.context
     set: log.system.core/
   - match: ''
     pop: true
-
   ConTeXt:
   - match: '^\s*([0-9]+)\s*(>>)?'
     captures:
