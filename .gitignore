@@ -1,9 +1,20 @@
+# ignore mac OS stuff
+.DS_Store
+
+# ignore windows OS stuff
+desktop.ini
+
 # Don't track package metadata
 package-metadata.json
 
-# ignore mac stuff
-.DS_Store
-
-# ignore sublime stuff
+# ignore any sublime project stuff
 *.sublime-project
 *.sublime-workspace
+
+# ignore (most) python stuff, keep in the builder though!
+*.py
+!context_build.py
+__pycache__/
+
+# ignore preliminary stuff, we use this extension for pre-processed files
+*.pre
