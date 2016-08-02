@@ -1,0 +1,62 @@
+%YAML 1.2
+---
+name: ConTeXt Log
+file_extensions: log
+scope: {{!log/meta_scope}}
+contexts:
+  main:
+  - include: ConTeXt
+  - include: log
+
+  log:
+  # do some rudimentary highlighting of the log file
+  - include: log.system
+  - match: '! .+'
+    scope: {{!log/scopes/error}}
+  - match: '^(<)([a-zA-Z]+[\sa-zA-Z]*?)(>)'
+    captures:
+      '1': {{!log/scopes/category/separator}}
+      '2': {{!log/scopes/category/name}}
+      '3': {{!log/scopes/category/separator}}
+  - match: '([a-zA-Z\-]+)(=)'
+    captures:
+      '1': {{!log/scopes/key}}
+      '2': {{!log/scopes/equals}}
+  - match: '(U\+[a-zA-Z0-9]+|[0-9]+)'
+    scope: {{!log/scopes/number}}
+  - match: "'.*?'"
+    scope: {{!log/scopes/string}}
+  - match: '".*?"'
+    scope: {{!log/scopes/string}}
+
+  log.system:
+  - match: '^{{!log/variables/system_match}}'
+    captures:
+      '1': {{!log/scopes/category/name}}
+      '2': {{!log/scopes/category/separator}}
+    push: log.system.core/
+
+  log.system.core/:
+  - match: '{{!log/variables/system_match}}'
+    captures:
+      '1': {{!log/scopes/category/name}}
+      '2': {{!log/scopes/category/separator}}
+    set: log.system.core/
+  - match: ''
+    pop: true
+
+  ConTeXt:
+  # if the log file includes some ConTeXt excerpts, then use the ConTeXt syntax
+  # file to highlight it appropriately
+  - match: '^\s*([0-9]+)\s*(>>)?'
+    captures:
+      '1': {{!log/scopes/number}}
+      '2': {{!log/scopes/error}}
+    push: ConTeXt.sublime-syntax
+    with_prototype:
+    - match: '^\s*([0-9]+)\s*(>>)?'
+      captures:
+        '1': {{!log/scopes/number}}
+        '2': {{!log/scopes/error}}
+    - match: '^(?=\s*[^0-9])'
+      pop: true
