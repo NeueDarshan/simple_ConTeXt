@@ -1,0 +1,316 @@
+{
+  // for common elements across the board
+  "general":
+  {
+    "suffix": "tex.context",
+    "meta_scope": "text.{{suffix}}",
+    "scopes":
+    {
+      "comment": //"comment.{{../suffix}}",
+      {
+        "line":  "comment.line.{{../../suffix}}",
+        "block": "comment.block.{{../../suffix}}",
+      },
+      "control":
+      {
+        "symbol": "constant.other.control-symbol.{{../../suffix}}",
+        "word":   "support.function.control-word.{{../../suffix}}",
+      },
+      "domain":
+      {
+        "begin": "support.function.begin.{{../../suffix}}",
+        "end":   "support.function.end.{{../../suffix}}",
+        "name":  "variable.parameter.name.{{../../suffix}}",
+      },
+      "environment":
+      {
+        "start": "support.function.start.{{../../suffix}}",
+        "stop":  "support.function.stop.{{../../suffix}}",
+        "name":  "markup.heading.name.{{../../suffix}}",
+      },
+      "group":   "group.{{../suffix}}",
+      "keyword": "keyword.{{../suffix}}",
+      "list":
+      {
+        "equals": "keyword.equals.{{../../suffix}}",
+        "key":    "variable.parameter.key.{{../../suffix}}",
+        "scope":  "list.{{../../suffix}}",
+        "name":   "entity.name.{{../../suffix}}",
+      },
+      "new":
+      {
+        "column": "keyword.column.{{../../suffix}}",
+        "line":   "keyword.line.{{../../suffix}}",
+        "row":    "keyword.row.{{../../suffix}}",
+      },
+      "number": "constant.numeric.{{../suffix}}",
+    },
+    "variables":
+    {
+      "unsigned":
+      {
+        "int":  "[0-9]+",
+        "real": "({{int}}|[0-9]*\\.[0-9]+)",
+      },
+      "number": "[\\+\\-]?{{unsigned/real}}",
+    },
+  },
+
+
+  // TeX specific things, mostly nice handling of \def
+  "TeX":
+  {
+    "suffix": "{{~/general/suffix}}",
+    "scopes":
+    {
+      "def":
+      {
+        "def":       "{{~/general/scopes/control/word}}",
+        "parameter": "variable.parameter.{{../../suffix}}",
+        "control":
+        {
+          "symbol": "entity.control-symbol.{{~/TeX/suffix}}",
+          "word":   "entity.control-word.{{~/TeX/suffix}}",
+        },
+        "active_character": "entity.active-character.{{../../suffix}}",
+      },
+    },
+    "variables":
+    {
+      "unit": "(pt|pc|in|bp|cm|mm|cc|sp|em|ex)",
+    },
+  },
+
+
+  "log":
+  {
+    "suffix":     "log.context",
+    "meta_scope": "text.{{suffix}}",
+    "scopes":
+    {
+      "category":
+      {
+        "name":      "keyword.category.{{../../suffix}}",
+        "separator": "markup.heading.{{../../suffix}}",
+      },
+      "equals": "keyword.equals.{{../suffix}}",
+      "error":  "invalid.illegal.error.{{../suffix}}",
+      "key":    "variable.parameter.key.{{../suffix}}",
+      "number": "constant.numeric.{{../suffix}}",
+      "string": "string.{{../suffix}}",
+    },
+    "variables":
+    {
+      "system_match": "\\s*([0-9]+|[a-zA-Z]+[\\sa-zA-Z]*?)\\s+(>)",
+    },
+  },
+
+
+  "MetaPost":
+  {
+    "suffix":     "metapost.{{~/general/suffix}}",
+    "meta_scope": "{{suffix}}",
+    "scopes":
+    {
+      "command":                "support.function.{{../suffix}}",
+      "comment":
+      {
+        "line": "comment.{{../../suffix}}",
+      },
+      "constant":               "constant.other.{{../suffix}}",
+      "keyword":                "keyword.{{../suffix}}",
+      "number":                 "{{~/general/scopes/number}}",
+      "operator":               "keyword.operator.{{../suffix}}",
+      "path_operator":          "path-operator.{{../suffix}}",
+      "punctuation_terminator": "punctuation.terminator.{{../suffix}}",
+      "string":                 "string.{{../suffix}}",
+      "type":                   "support.function.{{../suffix}}",
+      "def":
+      {
+        "def":    "support.class.{{../../suffix}}",
+        "name":   "entity.name.function.{{../../suffix}}",
+        "type":   "{{../type}}",
+        "var":    "variable.parameter.{{../../suffix}}",
+        "equals": "{{../operator}}",
+        "enddef": "{{def}}",
+      },
+    },
+    "variables":
+    {
+      "constant":
+      {
+        "misc":    "((beveled|mitered|rounded)|(bp|cc|cm|dd|in|mm|pc|pt)|(black|blue|green|red|white)|(butt|squared)|ditto|(down|up|left|right)|(epsilon|infinity)|(evenly|withdots)|EOF|(false|true)|(full|half|quarter)circle|identity|mpversion|null(pen|picture)|origin|pen(circle|square)|unitsquare)",
+        "numeric": "(ah(angle|length)|bboxmargin|charcode|(minute|hour|day|month|year|time)|default(colormodel|pen|scale|diam)|[hv]ppp|labeloffset|line(cap|join)|miterlimit|mpprocset|numberprecision|pausing|prologues|restoreclipcolor|showstopping|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|warningcheck)",
+        "other":   "(background|current(pen|picture)|cuttings|defaultfont|extra_(begin|end)fig)",
+        "string":  "(jobname|numbersystem|output(filename|format(options)?|template))",
+      },
+      "operator":
+      {
+        "arithmetic": "([&\\*\\+\\-\/]|[\\*\\+]{2}|\\+\\-\\+)",
+        "comparison": "([<=>]|[<>:]=|<>)",
+        "word":       "(abs|(and|not|or)|angle|arclength|ASCII|(b|(inner|outer)?bounding)box|(bottom|left|right|top)boundary|(black|blue|cyan|color|dash|green|grey|magenta|path|color|font|pen|red|text|[xy]{1,2}|yellow)part|(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)|bot|(bound|corner|smooth|squeez|superellips|clipp|fill|transform|uncolor|soften|rotat|(random)?shift|slant|strok)ed|ceiling|center|char|condition|(invcos|acosh?|cos[hd]?|invsin|asinh?|sin[hd]?|a?tand?|cotd?)|cut(after|before|ends)|cycle|d{1,3}ecimal|dir|div|dotprod|(left|right|top|bottom)?enlarged|grayed|floor|fontsize|hex|infont|intersection(point|times)|inv(erse|erted)?|known|(ln|log|exp)|length|(lft|rt)|[lu][lr]corner|make(path|pen)|m(exp|log)|mod|(normal|uniform)deviate|oct|odd|(arctime|direction(point|time)?|glyph|penoffset|point|(pre|post)control|sub(path|string))|(of|on|along)|randomized|readfrom|reverse|round|([xyz]|xy)?scaled|([xy]|xy)sized|scantokens|simplified|sqrt?|str|textual|top|unitvector|unknown|unspiked|whatever)",
+      },
+      "command":
+      {
+        "misc":  "(addto|clip|closefrom|cutdraw|dashed|draw((dbl)?arrow)?|err(help|message)|filenametemplate|fill(draw)?|fontmap(file|name)|interim|let|loggingall|message|newinterval|pickup|save|setbounds|shipout|show(dependencies|token|variable)?|special|tracing(all|none)|un(draw|fill(draw)?)|with((cmyk|rgb|out)?color|greyscale|(pre|post)script|pen)|write|to)",
+        "macro": "(buildcycle|dashpattern|decr|(dot)?label(s)?|draw(dot|options)|image|incr|max|min|thelabel|z)",
+      },
+      "path":
+      {
+        "word": "(curl|tension|controls)",
+        "join": "([\\-|\\.]{2,3})",
+      },
+      "def":
+      {
+        "type": "(expr|suffix|text)",
+        "var":  "[a-zA-Z][a-zA-Z\\_]*",
+      },
+      "type": "(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)",
+      "loop": "(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|endfor)",
+      "punctuation_terminator": ";",
+    },
+  },
+
+
+  "ConTeXt":
+  {
+    "suffix": "{{~/general/suffix}}",
+    "scopes":
+    {
+      "mould":
+      {
+        "define":
+        {
+          "define": "{{~/general/scopes/control/word}}",
+          "name":   "{{define}}",
+        },
+        "place":
+        {
+          "place": "{{../define/define}}",
+          "name":  "{{place}}",
+        },
+        "setup":
+        {
+          "setup": "{{../define/define}}",
+          "name":  "{{setup}}",
+        },
+        "use":
+        {
+          "use":  "{{../define/define}}",
+          "name": "{{use}}",
+        },
+      },
+      "tables":
+      {
+        "table":
+        {
+          "preamble":
+          {
+            "alignment":  "keyword.{{~/ConTeXt/suffix}}",
+            "font":       "entity.{{~/ConTeXt/suffix}}",
+            "math":       "string.{{~/ConTeXt/suffix}}",
+            "meta_scope": "list.preamble.{{~/ConTeXt/suffix}}",
+            "num_align":  "constant.other.{{~/ConTeXt/suffix}}",
+            "space":      "space.{{~/ConTeXt/suffix}}",
+            "width":      "constant.other.{{~/ConTeXt/suffix}}",
+          },
+        },
+      },
+      "item": "keyword.{{../suffix}}",
+      "module":
+      {
+        "use":  "keyword.{{~/ConTeXt/suffix}}",
+      },
+    },
+  },
+
+
+  "TikZ":
+  {
+    "suffix":     "tikz.{{~/general/suffix}}",
+    "meta_scope": "{{suffix}}",
+    "scopes":
+    {
+      "calc_toggle": "string.calc-toggle.{{../suffix}}",
+      "control":
+      {
+        "symbol": "{{~/general/scopes/control/symbol}}",
+        "word":   "{{~/general/scopes/control/word}}",
+      },
+      "list":
+      {
+        "equals": "{{~/general/scopes/list/equals}}",
+        "key":    "{{~/general/scopes/list/key}}",
+        "scope":  "{{~/general/scopes/list/scope}}",
+      },
+      "group":   "{{~/general/scopes/group}}",
+      "keyword": "keyword.{{../suffix}}",
+      "math":
+      {
+        "function": "support.function.math.{{../../suffix}}",
+        "operator": "keyword.math-operator.{{../../suffix}}",
+      },
+      "number":                 "{{~/general/scopes/number}}",
+      "path_operator":          "path-operator.{{../suffix}}",
+      "punctuation_terminator": "punctuation.terminator.{{../suffix}}",
+    },
+    "variables":
+    {
+      "keyword": "(in|at|grid|edge|node|rectangle|cycle|coordinate|decorate|controls|and|child)",
+      "math":
+      {
+        "function": "(abs|add|and|array|bin|ceil|(cos(h)?|acos|sec)|deg|depth|div(ide)?|e|equal|factorial|false|floor|frac|gcd|greater|height|[hH]ex|int|ifthenelse|is(even|odd|prime)|less|ln|log(10|2)|max|min|[mM]od|multiply|neg|not(equal|greater|less)?|oct|or|pi|pow|rad|(rnd|rand(om)?)|real|round|(sin(h)?|asin|cosec)|sqrt|subtract|(tan(h)?|atan(2)?|cot)|true|veclen|width)",
+        "operator": "([\\+\\-\\*\/\\^!><\\?:]|[=><!]=|&&|\\|\\|)",
+      },
+      "path_operator":          "[\\.\\-]{2}",
+      "punctuation_terminator": ";",
+    },
+  },
+
+
+  "math":
+  {
+    "suffix":     "math.{{~/general/suffix}}",
+    "meta_scope": "{{suffix}}",
+    "scopes":
+    {
+      "control":
+      {
+        "symbol": "{{~/general/scopes/control/symbol}}",
+        "word":   "{{~/general/scopes/control/word}}",
+      },
+      "number": "{{~/general/scopes/number}}",
+      "text":   "string.math-text.{{../suffix}}",
+      "toggle":
+      {
+        "inline":  "string.math-toggle.{{../../suffix}}",
+        "display": "{{inline}}",
+      },
+    },
+  },
+
+
+  "Lua":
+  {
+    "suffix": "lua",
+    "meta_scope": "{{suffix}}.{{~/general/suffix}}",
+    "scopes":
+    {
+      "comment":
+      {
+        "line": "comment.line.double-dash.{{../../suffix}}",
+      },
+      "ConTeXt":
+      {
+        "function": "support.function.{{../../suffix}}",
+      },
+    },
+    "variables":
+    {
+      "ConTeXt":
+      { // can we find a good reference for the Lua ConTeXt functions?
+        "function": "((tex\\.s?print)|context)",
+      },
+    },
+  },
+}
