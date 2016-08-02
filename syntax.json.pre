@@ -1,11 +1,16 @@
 {
+  // for common elements across the board
   "general":
   {
     "suffix": "tex.context",
     "meta_scope": "text.{{suffix}}",
     "scopes":
     {
-      "comment": "comment.{{../suffix}}",
+      "comment": //"comment.{{../suffix}}",
+      {
+        "line":  "comment.line.{{../../suffix}}",
+        "block": "comment.block.{{../../suffix}}",
+      },
       "control":
       {
         "symbol": "constant.other.control-symbol.{{../../suffix}}",
@@ -21,15 +26,16 @@
       {
         "start": "support.function.start.{{../../suffix}}",
         "stop":  "support.function.stop.{{../../suffix}}",
-        "name":  "variable.parameter.name.{{../../suffix}}",
+        "name":  "markup.heading.name.{{../../suffix}}",
       },
-      "group": "group.{{../suffix}}",
-      "if":    "keyword.{{../suffix}}",
+      "group":   "group.{{../suffix}}",
+      "keyword": "keyword.{{../suffix}}",
       "list":
       {
         "equals": "keyword.equals.{{../../suffix}}",
         "key":    "variable.parameter.key.{{../../suffix}}",
         "scope":  "list.{{../../suffix}}",
+        "name":   "entity.name.{{../../suffix}}",
       },
       "new":
       {
@@ -51,6 +57,7 @@
   },
 
 
+  // TeX specific things, mostly nice handling of \def
   "TeX":
   {
     "suffix": "{{~/general/suffix}}",
@@ -59,15 +66,13 @@
       "def":
       {
         "def":       "{{~/general/scopes/control/word}}",
-        "prefix":    "constant.other.{{../../suffix}}",
         "parameter": "variable.parameter.{{../../suffix}}",
         "control":
         {
-          "symbol": "{{~/general/scopes/control/symbol}}",
-          "word":   "{{~/general/scopes/control/word}}",
+          "symbol": "entity.control-symbol.{{~/TeX/suffix}}",
+          "word":   "entity.control-word.{{~/TeX/suffix}}",
         },
-        "active_character": "constant.other.active-character.{{../../suffix}}",
-        "group":            "{{~/general/scopes/group}}",
+        "active_character": "entity.active-character.{{../../suffix}}",
       },
     },
     "variables":
@@ -108,6 +113,10 @@
     "scopes":
     {
       "command":                "support.function.{{../suffix}}",
+      "comment":
+      {
+        "line": "comment.{{../../suffix}}",
+      },
       "constant":               "constant.other.{{../suffix}}",
       "keyword":                "keyword.{{../suffix}}",
       "number":                 "{{~/general/scopes/number}}",
@@ -116,6 +125,15 @@
       "punctuation_terminator": "punctuation.terminator.{{../suffix}}",
       "string":                 "string.{{../suffix}}",
       "type":                   "support.function.{{../suffix}}",
+      "def":
+      {
+        "def":    "support.class.{{../../suffix}}",
+        "name":   "entity.name.function.{{../../suffix}}",
+        "type":   "{{../type}}",
+        "var":    "variable.parameter.{{../../suffix}}",
+        "equals": "{{../operator}}",
+        "enddef": "{{def}}",
+      },
     },
     "variables":
     {
@@ -129,18 +147,23 @@
       "operator":
       {
         "arithmetic": "([&\\*\\+\\-\/]|[\\*\\+]{2}|\\+\\-\\+)",
-        "comparison": "([\\<\\=\\>]|[\\<\\>\\:]=|\\<\\>)",
-        "word":       "(abs|(and|not|or)|angle|arclength|ASCII|bbox|(black|blue|cyan|color|dash|green|grey|magenta|path|color|font|pen|red|text|[xy]{1,2}|yellow)part|(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)bot|(bound|clipp|fill|transform|rotat|shift|slant|strok)ed|ceiling|center|char|(cos|sin)d|cut(after|before)|cycle|decimal|dir|div|dotprod|floor|fontsize|hex|infont|intersection(point|times)|inverse|known|length|(lft|rt)|[lu][lr]corner|make(path|pen)|m(exp|log)|mod|(normal|uniform)deviate|oct|odd|(arctime|direction(point|time)?|glyph|penoffset|point|(pre|post)control|sub(path|string)) of|readfrom|reverse|round|[xyz]?scaled|scantokens|sqrt|str|textual|top|unitvector|unknown|whatever)",
+        "comparison": "([<=>]|[<>:]=|<>)",
+        "word":       "(abs|(and|not|or)|angle|arclength|ASCII|(b|(inner|outer)?bounding)box|(bottom|left|right|top)boundary|(black|blue|cyan|color|dash|green|grey|magenta|path|color|font|pen|red|text|[xy]{1,2}|yellow)part|(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)|bot|(bound|corner|smooth|squeez|superellips|clipp|fill|transform|uncolor|soften|rotat|(random)?shift|slant|strok)ed|ceiling|center|char|condition|(invcos|acosh?|cos[hd]?|invsin|asinh?|sin[hd]?|a?tand?|cotd?)|cut(after|before|ends)|cycle|d{1,3}ecimal|dir|div|dotprod|(left|right|top|bottom)?enlarged|grayed|floor|fontsize|hex|infont|intersection(point|times)|inv(erse|erted)?|known|(ln|log|exp)|length|(lft|rt)|[lu][lr]corner|make(path|pen)|m(exp|log)|mod|(normal|uniform)deviate|oct|odd|(arctime|direction(point|time)?|glyph|penoffset|point|(pre|post)control|sub(path|string))|(of|on|along)|randomized|readfrom|reverse|round|([xyz]|xy)?scaled|([xy]|xy)sized|scantokens|simplified|sqrt?|str|textual|top|unitvector|unknown|unspiked|whatever)",
       },
       "command":
       {
-        "misc":  "(addto|clip|closefrom|cutdraw|dashed|draw((dbl)?arrow)?|err(help|message)|filenametemplate|fill(draw)?|fontmap(file|name)|interim|let|loggingall|message|newinterval|pickup|save|setbounds|shipout|show(dependencies|token|variable)?|special|tracing(all|none)|un(draw|fill(draw)?)|with((cmyk|rgb|out)?color|greyscale|(pre|post)script|pen)|write to)",
+        "misc":  "(addto|clip|closefrom|cutdraw|dashed|draw((dbl)?arrow)?|err(help|message)|filenametemplate|fill(draw)?|fontmap(file|name)|interim|let|loggingall|message|newinterval|pickup|save|setbounds|shipout|show(dependencies|token|variable)?|special|tracing(all|none)|un(draw|fill(draw)?)|with((cmyk|rgb|out)?color|greyscale|(pre|post)script|pen)|write|to)",
         "macro": "(buildcycle|dashpattern|decr|(dot)?label(s)?|draw(dot|options)|image|incr|max|min|thelabel|z)",
       },
       "path":
       {
         "word": "(curl|tension|controls)",
-        "join": "(\\-{2}|\\.{2,3})",
+        "join": "([\\-|\\.]{2,3})",
+      },
+      "def":
+      {
+        "type": "(expr|suffix|text)",
+        "var":  "[a-zA-Z][a-zA-Z\\_]*",
       },
       "type": "(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)",
       "loop": "(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|endfor)",
@@ -197,7 +220,6 @@
       "module":
       {
         "use":  "keyword.{{~/ConTeXt/suffix}}",
-        "name": "support.class.module.{{~/ConTeXt/suffix}}",
       },
     },
   },
@@ -240,7 +262,7 @@
         "function": "(abs|add|and|array|bin|ceil|(cos(h)?|acos|sec)|deg|depth|div(ide)?|e|equal|factorial|false|floor|frac|gcd|greater|height|[hH]ex|int|ifthenelse|is(even|odd|prime)|less|ln|log(10|2)|max|min|[mM]od|multiply|neg|not(equal|greater|less)?|oct|or|pi|pow|rad|(rnd|rand(om)?)|real|round|(sin(h)?|asin|cosec)|sqrt|subtract|(tan(h)?|atan(2)?|cot)|true|veclen|width)",
         "operator": "([\\+\\-\\*\/\\^!><\\?:]|[=><!]=|&&|\\|\\|)",
       },
-      "path_operator":          "[\\.-]{2}",
+      "path_operator":          "[\\.\\-]{2}",
       "punctuation_terminator": ";",
     },
   },
@@ -257,7 +279,6 @@
         "symbol": "{{~/general/scopes/control/symbol}}",
         "word":   "{{~/general/scopes/control/word}}",
       },
-      "group":  "{{~/general/scopes/group}}",
       "number": "{{~/general/scopes/number}}",
       "text":   "string.math-text.{{../suffix}}",
       "toggle":
@@ -271,11 +292,14 @@
 
   "Lua":
   {
-    "suffix":     "lua.{{~/general/suffix}}",
-    "meta_scope": "{{suffix}}",
+    "suffix": "lua",
+    "meta_scope": "{{suffix}}.{{~/general/suffix}}",
     "scopes":
     {
-      "group": "{{~/general/scopes/group}}",
+      "comment":
+      {
+        "line": "comment.line.double-dash.{{../../suffix}}",
+      },
       "ConTeXt":
       {
         "function": "support.function.{{../../suffix}}",
@@ -284,7 +308,7 @@
     "variables":
     {
       "ConTeXt":
-      {
+      { // can we find a good reference for the Lua ConTeXt functions?
         "function": "((tex\\.s?print)|context)",
       },
     },

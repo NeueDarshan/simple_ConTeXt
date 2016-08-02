@@ -1,0 +1,314 @@
+{
+  "ConTeXt":
+  {
+    "scopes":
+    {
+      "item": "keyword.tex.context",
+      "module":
+      {
+        "use": "keyword.tex.context"
+      },
+      "mould":
+      {
+        "define":
+        {
+          "define": "support.function.control-word.tex.context",
+          "name": "support.function.control-word.tex.context"
+        },
+        "place":
+        {
+          "name": "support.function.control-word.tex.context",
+          "place": "support.function.control-word.tex.context"
+        },
+        "setup":
+        {
+          "name": "support.function.control-word.tex.context",
+          "setup": "support.function.control-word.tex.context"
+        },
+        "use":
+        {
+          "name": "support.function.control-word.tex.context",
+          "use": "support.function.control-word.tex.context"
+        }
+      },
+      "tables":
+      {
+        "table":
+        {
+          "preamble":
+          {
+            "alignment": "keyword.tex.context",
+            "font": "entity.tex.context",
+            "math": "string.tex.context",
+            "meta_scope": "list.preamble.tex.context",
+            "num_align": "constant.other.tex.context",
+            "space": "space.tex.context",
+            "width": "constant.other.tex.context"
+          }
+        }
+      }
+    },
+    "suffix": "tex.context"
+  },
+
+
+  "Lua":
+  {
+    "meta_scope": "lua.tex.context",
+    "scopes":
+    {
+      "ConTeXt":
+      {
+        "function": "support.function.lua"
+      },
+      "comment":
+      {
+        "line": "comment.line.double-dash.lua"
+      }
+    },
+    "suffix": "lua",
+    "variables":
+    {
+      "ConTeXt":
+      {
+        "function": "((tex\\.s?print)|context)"
+      }
+    }
+  },
+
+
+  "MetaPost":
+  {
+    "meta_scope": "metapost.tex.context",
+    "scopes":
+    {
+      "command": "support.function.metapost.tex.context",
+      "comment":
+      {
+        "line": "comment.metapost.tex.context"
+      },
+      "constant": "constant.other.metapost.tex.context",
+      "def":
+      {
+        "def": "support.class.metapost.tex.context",
+        "enddef": "support.class.metapost.tex.context",
+        "equals": "keyword.operator.metapost.tex.context",
+        "name": "entity.name.function.metapost.tex.context",
+        "type": "support.function.metapost.tex.context",
+        "var": "variable.parameter.metapost.tex.context"
+      },
+      "keyword": "keyword.metapost.tex.context",
+      "number": "constant.numeric.tex.context",
+      "operator": "keyword.operator.metapost.tex.context",
+      "path_operator": "path-operator.metapost.tex.context",
+      "punctuation_terminator": "punctuation.terminator.metapost.tex.context",
+      "string": "string.metapost.tex.context",
+      "type": "support.function.metapost.tex.context"
+    },
+    "suffix": "metapost.tex.context",
+    "variables":
+    {
+      "command":
+      {
+        "macro": "(buildcycle|dashpattern|decr|(dot)?label(s)?|draw(dot|options)|image|incr|max|min|thelabel|z)",
+        "misc": "(addto|clip|closefrom|cutdraw|dashed|draw((dbl)?arrow)?|err(help|message)|filenametemplate|fill(draw)?|fontmap(file|name)|interim|let|loggingall|message|newinterval|pickup|save|setbounds|shipout|show(dependencies|token|variable)?|special|tracing(all|none)|un(draw|fill(draw)?)|with((cmyk|rgb|out)?color|greyscale|(pre|post)script|pen)|write|to)"
+      },
+      "constant":
+      {
+        "misc": "((beveled|mitered|rounded)|(bp|cc|cm|dd|in|mm|pc|pt)|(black|blue|green|red|white)|(butt|squared)|ditto|(down|up|left|right)|(epsilon|infinity)|(evenly|withdots)|EOF|(false|true)|(full|half|quarter)circle|identity|mpversion|null(pen|picture)|origin|pen(circle|square)|unitsquare)",
+        "numeric": "(ah(angle|length)|bboxmargin|charcode|(minute|hour|day|month|year|time)|default(colormodel|pen|scale|diam)|[hv]ppp|labeloffset|line(cap|join)|miterlimit|mpprocset|numberprecision|pausing|prologues|restoreclipcolor|showstopping|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|warningcheck)",
+        "other": "(background|current(pen|picture)|cuttings|defaultfont|extra_(begin|end)fig)",
+        "string": "(jobname|numbersystem|output(filename|format(options)?|template))"
+      },
+      "def":
+      {
+        "type": "(expr|suffix|text)",
+        "var": "[a-zA-Z][a-zA-Z\\_]*"
+      },
+      "loop": "(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|endfor)",
+      "operator":
+      {
+        "arithmetic": "([&\\*\\+\\-/]|[\\*\\+]{2}|\\+\\-\\+)",
+        "comparison": "([<=>]|[<>:]=|<>)",
+        "word": "(abs|(and|not|or)|angle|arclength|ASCII|(b|(inner|outer)?bounding)box|(bottom|left|right|top)boundary|(black|blue|cyan|color|dash|green|grey|magenta|path|color|font|pen|red|text|[xy]{1,2}|yellow)part|(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)|bot|(bound|corner|smooth|squeez|superellips|clipp|fill|transform|uncolor|soften|rotat|(random)?shift|slant|strok)ed|ceiling|center|char|condition|(invcos|acosh?|cos[hd]?|invsin|asinh?|sin[hd]?|a?tand?|cotd?)|cut(after|before|ends)|cycle|d{1,3}ecimal|dir|div|dotprod|(left|right|top|bottom)?enlarged|grayed|floor|fontsize|hex|infont|intersection(point|times)|inv(erse|erted)?|known|(ln|log|exp)|length|(lft|rt)|[lu][lr]corner|make(path|pen)|m(exp|log)|mod|(normal|uniform)deviate|oct|odd|(arctime|direction(point|time)?|glyph|penoffset|point|(pre|post)control|sub(path|string))|(of|on|along)|randomized|readfrom|reverse|round|([xyz]|xy)?scaled|([xy]|xy)sized|scantokens|simplified|sqrt?|str|textual|top|unitvector|unknown|unspiked|whatever)"
+      },
+      "path":
+      {
+        "join": "([\\-|\\.]{2,3})",
+        "word": "(curl|tension|controls)"
+      },
+      "punctuation_terminator": ";",
+      "type": "(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)"
+    }
+  },
+
+
+  "TeX":
+  {
+    "scopes":
+    {
+      "def":
+      {
+        "active_character": "entity.active-character.tex.context",
+        "control":
+        {
+          "symbol": "entity.control-symbol.tex.context",
+          "word": "entity.control-word.tex.context"
+        },
+        "def": "support.function.control-word.tex.context",
+        "parameter": "variable.parameter.tex.context"
+      }
+    },
+    "suffix": "tex.context",
+    "variables":
+    {
+      "unit": "(pt|pc|in|bp|cm|mm|cc|sp|em|ex)"
+    }
+  },
+
+
+  "TikZ":
+  {
+    "meta_scope": "tikz.tex.context",
+    "scopes":
+    {
+      "calc_toggle": "string.calc-toggle.tikz.tex.context",
+      "control":
+      {
+        "symbol": "constant.other.control-symbol.tex.context",
+        "word": "support.function.control-word.tex.context"
+      },
+      "group": "group.tex.context",
+      "keyword": "keyword.tikz.tex.context",
+      "list":
+      {
+        "equals": "keyword.equals.tex.context",
+        "key": "variable.parameter.key.tex.context",
+        "scope": "list.tex.context"
+      },
+      "math":
+      {
+        "function": "support.function.math.tikz.tex.context",
+        "operator": "keyword.math-operator.tikz.tex.context"
+      },
+      "number": "constant.numeric.tex.context",
+      "path_operator": "path-operator.tikz.tex.context",
+      "punctuation_terminator": "punctuation.terminator.tikz.tex.context"
+    },
+    "suffix": "tikz.tex.context",
+    "variables":
+    {
+      "keyword": "(in|at|grid|edge|node|rectangle|cycle|coordinate|decorate|controls|and|child)",
+      "math":
+      {
+        "function": "(abs|add|and|array|bin|ceil|(cos(h)?|acos|sec)|deg|depth|div(ide)?|e|equal|factorial|false|floor|frac|gcd|greater|height|[hH]ex|int|ifthenelse|is(even|odd|prime)|less|ln|log(10|2)|max|min|[mM]od|multiply|neg|not(equal|greater|less)?|oct|or|pi|pow|rad|(rnd|rand(om)?)|real|round|(sin(h)?|asin|cosec)|sqrt|subtract|(tan(h)?|atan(2)?|cot)|true|veclen|width)",
+        "operator": "([\\+\\-\\*/\\^!><\\?:]|[=><!]=|&&|\\|\\|)"
+      },
+      "path_operator": "[\\.\\-]{2}",
+      "punctuation_terminator": ";"
+    }
+  },
+
+
+  "general":
+  {
+    "meta_scope": "text.tex.context",
+    "scopes":
+    {
+      "comment":
+      {
+        "block": "comment.block.tex.context",
+        "line": "comment.line.tex.context"
+      },
+      "control":
+      {
+        "symbol": "constant.other.control-symbol.tex.context",
+        "word": "support.function.control-word.tex.context"
+      },
+      "domain":
+      {
+        "begin": "support.function.begin.tex.context",
+        "end": "support.function.end.tex.context",
+        "name": "variable.parameter.name.tex.context"
+      },
+      "environment":
+      {
+        "name": "markup.heading.name.tex.context",
+        "start": "support.function.start.tex.context",
+        "stop": "support.function.stop.tex.context"
+      },
+      "group": "group.tex.context",
+      "keyword": "keyword.tex.context",
+      "list":
+      {
+        "equals": "keyword.equals.tex.context",
+        "key": "variable.parameter.key.tex.context",
+        "name": "entity.name.tex.context",
+        "scope": "list.tex.context"
+      },
+      "new":
+      {
+        "column": "keyword.column.tex.context",
+        "line": "keyword.line.tex.context",
+        "row": "keyword.row.tex.context"
+      },
+      "number": "constant.numeric.tex.context"
+    },
+    "suffix": "tex.context",
+    "variables":
+    {
+      "number": "[\\+\\-]?([0-9]+|[0-9]*\\.[0-9]+)",
+      "unsigned":
+      {
+        "int": "[0-9]+",
+        "real": "([0-9]+|[0-9]*\\.[0-9]+)"
+      }
+    }
+  },
+
+
+  "log":
+  {
+    "meta_scope": "text.log.context",
+    "scopes":
+    {
+      "category":
+      {
+        "name": "keyword.category.log.context",
+        "separator": "markup.heading.log.context"
+      },
+      "equals": "keyword.equals.log.context",
+      "error": "invalid.illegal.error.log.context",
+      "key": "variable.parameter.key.log.context",
+      "number": "constant.numeric.log.context",
+      "string": "string.log.context"
+    },
+    "suffix": "log.context",
+    "variables":
+    {
+      "system_match": "\\s*([0-9]+|[a-zA-Z]+[\\sa-zA-Z]*?)\\s+(>)"
+    }
+  },
+
+
+  "math":
+  {
+    "meta_scope": "math.tex.context",
+    "scopes":
+    {
+      "control":
+      {
+        "symbol": "constant.other.control-symbol.tex.context",
+        "word": "support.function.control-word.tex.context"
+      },
+      "number": "constant.numeric.tex.context",
+      "text": "string.math-text.math.tex.context",
+      "toggle":
+      {
+        "display": "string.math-toggle.math.tex.context",
+        "inline": "string.math-toggle.math.tex.context"
+      }
+    },
+    "suffix": "math.tex.context"
+  }
+}

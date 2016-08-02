@@ -7,6 +7,7 @@ contexts:
   main:
   - include: ConTeXt
   - include: log
+
   log:
   - include: log.system
   - match: '! .+'
@@ -26,12 +27,14 @@ contexts:
     scope: string.log.context
   - match: '".*?"'
     scope: string.log.context
+
   log.system:
   - match: '^\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
     captures:
       '1': keyword.category.log.context
       '2': markup.heading.log.context
     push: log.system.core/
+
   log.system.core/:
   - match: '\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
     captures:
@@ -40,6 +43,7 @@ contexts:
     set: log.system.core/
   - match: ''
     pop: true
+
   ConTeXt:
   - match: '^\s*([0-9]+)\s*(>>)?'
     captures:
