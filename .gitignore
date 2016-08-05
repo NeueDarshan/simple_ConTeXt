@@ -18,3 +18,6 @@ __pycache__/
 
 # ignore preliminary stuff, we use this extension for pre-processed files
 *.pre
+
+# we use some json files, but they aren't important for the end-result
+*.json
