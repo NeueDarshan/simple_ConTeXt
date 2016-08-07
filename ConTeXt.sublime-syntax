@@ -6,12 +6,16 @@ scope: text.tex.context
 
 contexts:
   main:
+    - include: main.without.general
+    - include: general
+
+  main.without.general:
+    - include: TikZ
     - include: ConTeXt
     - include: Lua
     - include: MetaPost
     - include: TeX
     - include: math
-    - include: general
 
   prototype:
     - include: comment.TeX
@@ -150,10 +154,9 @@ contexts:
         MetaPost.block.core/,
         general.group*/,
       ]
-
   MetaPost.block.core/:
     - meta_include_prototype: false
-    - meta_scope: metapost.tex.context
+    - meta_content_scope: metapost.tex.context
     - match: '(\\stop)(\2)\b'
       captures:
         '1': support.function.stop.tex.context
@@ -165,209 +168,179 @@ contexts:
   MetaPost.main:
     - include: MetaPost.TeX
     - include: MetaPost.def
-    - include: MetaPost.matches
+    - include: MetaPost.label
+    - match: '\b(and|dotprod|div|infont|mod|or|tension|curl|atleast|controls|((cos|cot|sin|tan)d?|a(cos|sin|tan)|a?(cos|sin)h|inv(cos|sin))|(black|blue|cyan|green|grey|magenta|red|yellow|dash|font|text|path|pen)part|(b|(inner|outer)?bounding)box|d{0,2}decimal|(lft|rt|top|bot)|(left|right|top|bottom)boundary|[lu][lr]corner|make(path|pen)|sqr[t]?|[xy]{1,2}part|(oct|hex|abs|angle|arclength|ASCII|bounded|ceiling|center|char|clipped|colormodel|condition|cycle|dir|exp|filled|floor|fontsize|grayed|inv|inverse|inverted|known|length|ln|log|mexp|mlog|not|odd|reverse|round|simplified|stroked|textual|uniformdeviate|unitvector|unknown|unspiked)|(off|on|of|along|cycle)|(([xyz]|xy)?scaled|([xy]|xy)?sized|rotated(around)?|(left|right|top|bottom)?enlarged|(random|[xy])?shifted|cornered|randomized|reflectedabout|slanted|smoothed|softened|squeezed|superellipsed|transformed|uncolored)|(intersection(point|times)|cut(after|before|ends)|arctime|directiont(time|point)?|penoffset|point|(pre|post)control|sub(path|string))|(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|endfor))\b'
+      scope: keyword.operator.metapost
+    - match: '\b(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)\b'
+      scope: storage.type.metapost
+    - match: '\b(re(map)?color|resetcolormap|min|max|incr|decr|dashpattern|interpath|buildcycle|anglebetween|(point|left|center|right)arrow|paired|tripled|remappedcolor|drawoptions|clip|interim|let|pickup|randomseed|save|setbounds|shipout|special|addto|also|contour|doublepath|(re|un)?fill|(un|re|cut|fill|unfill)draw|draw(fill|arrow|dblarrow)?|dashed|with((rgb|cmyk|out)?color|(pre|post)script|pen|shade)|show(variable|token|dependencies)?|newinternal|err(help|message)|filenametemplate|message|(batch|(non|error)stop|scroll)mode|fontmap(file|line)|special|tracing(all|none)|loggingall)\b'
+      scope: support.function.metapost
+    - match: '\b(ah(angle|length)|bboxmargin|charcode|minute|hour|day|month|year|time|default(colormodel|pen|scale|diam)|[hv]ppp|labeloffset|line(cap|join)|miterlimit|mp(procset|version)|numberprecision|pausing|prologues|restoreclipcolor|showstopping|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|warningcheck|jobname|numbersystem|output(filename|format(options)?|template)|background|current(pen|picture)|cuttings|defaultfont|beveled|mitered|rounded|black|blue|green|red|white|butt|squared|ditto|down|up|left|right|epsilon|infinity|evenly|withdots|EOF|false|true|(full|half|quarter)circle|identity|null(pen|picture)|origin|pen(circle|square)|unitsquare)\b'
+      scope: constant.other.metapost
+    - include: MetaPost.misc
 
   MetaPost.TeX:
     - match: '\b(b|verbatim)(tex)\b'
-      captures:
-        '1': support.function.begin.tex.context
-        '2': variable.parameter.name.tex.context
+      scope: entity.name.scope.metapost
       push:
+        - meta_include_prototype: false
+        - meta_content_scope: text.tex.context
         - match: '\b(e)(\2)\b'
-          captures:
-            '1': support.function.end.tex.context
-            '2': variable.parameter.name.tex.context
+          scope: entity.name.scope.metapost
           pop: true
         - include: main
 
   MetaPost.def:
     - match: '\b((var|primary|secondary|tertiary)?def)\b'
-      scope: support.class.metapost.tex.context
+      scope: support.class.metapost
       push:
         - meta_include_prototype: false
-        - match: '='
-          scope: keyword.operator.metapost.tex.context
-          pop: true
-        - match: '[a-zA-Z][a-zA-Z\_]*'
-          scope: entity.name.function.metapost.tex.context
-        - match: '\('
-          push:
+        - match: '[^\s()]+'
+          scope: entity.name.function.metapost
+          set:
             - meta_include_prototype: false
-            - match: '\)'
+            - match: '='
+              scope: keyword.operator.metapost
               pop: true
             - match: '\b(expr|suffix|text)\b'
-              scope: support.function.metapost.tex.context
-            - match: '[a-zA-Z][a-zA-Z\_]*'
-              scope: variable.parameter.metapost.tex.context
+              scope: storage.type.metapost
+            - match: '\bof\b'
+              scope: storage.type.metapost
+            - match: '[^\s,()]+'
+              scope: variable.parameter.metapost
             - include: MetaPost.comment
-        - include: MetaPost.comment
     - match: '\b(enddef)\b'
-      scope: support.class.metapost.tex.context
+      scope: support.class.metapost
 
-  MetaPost.matches:
-    - match: '\b((addto|clip|closefrom|cutdraw|dashed|draw((dbl)?arrow)?|err(help|message)|filenametemplate|fill(draw)?|fontmap(file|name)|interim|let|loggingall|message|newinterval|pickup|save|setbounds|shipout|show(dependencies|token|variable)?|special|tracing(all|none)|un(draw|fill(draw)?)|with((cmyk|rgb|out)?color|greyscale|(pre|post)script|pen)|write|to)|(buildcycle|dashpattern|decr|(dot)?label(s)?|draw(dot|options)|image|incr|max|min|thelabel|z))\b'
-      scope: support.function.metapost.tex.context
-    - match: '\b(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)\b'
-      scope: support.function.metapost.tex.context
-    - match: '(\b(curl|tension|controls)\b|([\-|\.]{2,3}))'
-      scope: path-operator.metapost.tex.context
-    - match: '(\b(abs|(and|not|or)|angle|arclength|ASCII|(b|(inner|outer)?bounding)box|(bottom|left|right|top)boundary|(black|blue|cyan|color|dash|green|grey|magenta|path|color|font|pen|red|text|[xy]{1,2}|yellow)part|(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)|bot|(bound|corner|smooth|squeez|superellips|clipp|fill|transform|uncolor|soften|rotat|(random)?shift|slant|strok)ed|ceiling|center|char|condition|(invcos|acosh?|cos[hd]?|invsin|asinh?|sin[hd]?|a?tand?|cotd?)|cut(after|before|ends)|cycle|d{1,3}ecimal|dir|div|dotprod|(left|right|top|bottom)?enlarged|grayed|floor|fontsize|hex|infont|intersection(point|times)|inv(erse|erted)?|known|(ln|log|exp)|length|(lft|rt)|[lu][lr]corner|make(path|pen)|m(exp|log)|mod|(normal|uniform)deviate|oct|odd|(arctime|direction(point|time)?|glyph|penoffset|point|(pre|post)control|sub(path|string))|(of|on|along)|randomized|readfrom|reverse|round|([xyz]|xy)?scaled|([xy]|xy)sized|scantokens|simplified|sqrt?|str|textual|top|unitvector|unknown|unspiked|whatever)\b|([&\*\+\-/]|[\*\+]{2}|\+\-\+)|([<=>]|[<>:]=|<>))'
-      scope: keyword.operator.metapost.tex.context
-    - match: '\b(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|endfor)\b'
-      scope: keyword.metapost.tex.context
+  MetaPost.label:
+    - match: '\b((dot)?labels?|(free(dot)?|the(free)?)label|textext)(\.([ul]?(lft|rt)|top|bot|raw|origin))?\b'
+      scope: support.function.metapost
+
+  MetaPost.misc:
+    - match: '\b(begin)(group|fig)\b'
+      scope: entity.name.scope.metapost
+    - match: '\b(end)(group|fig)?\b'
+      scope: entity.name.scope.metapost
     - match: '".*?"'
-      scope: string.metapost.tex.context
-    - match: '(?<=[^a-zA-Z])((ah(angle|length)|bboxmargin|charcode|(minute|hour|day|month|year|time)|default(colormodel|pen|scale|diam)|[hv]ppp|labeloffset|line(cap|join)|miterlimit|mpprocset|numberprecision|pausing|prologues|restoreclipcolor|showstopping|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|warningcheck)|(jobname|numbersystem|output(filename|format(options)?|template))|(background|current(pen|picture)|cuttings|defaultfont|extra_(begin|end)fig)|((beveled|mitered|rounded)|(bp|cc|cm|dd|in|mm|pc|pt)|(black|blue|green|red|white)|(butt|squared)|ditto|(down|up|left|right)|(epsilon|infinity)|(evenly|withdots)|EOF|(false|true)|(full|half|quarter)circle|identity|mpversion|null(pen|picture)|origin|pen(circle|square)|unitsquare))(?=[^a-zA-Z])'
-      scope: constant.other.metapost.tex.context
-    - match: '[\+\-]?([0-9]+|[0-9]*\.[0-9]+)((pt|pc|in|bp|cm|mm|cc|sp|em|ex))?'
-      scope: constant.numeric.tex.context
-    - match: ';'
-      scope: punctuation.terminator.metapost.tex.context
+      scope: string.metapost
+    - match: '[\-\.]{2,3}'
+    - match: '([&\+\-/\*]|[\*\+]{2}|\+\-\+|[<>:]?=|<?>?)'
+      scope: keyword.operator.metapost
+    - match: '[\+\-]?([0-9]+|[0-9]*\.[0-9]+)((pt|pc|in|bp|cm|mm|cc|sp|em|ex)\b)?'
+      scope: constant.numeric.metapost
+    - match: '\b(pt|pc|in|bp|cm|mm|cc|sp|em|ex)\b'
+      scope: constant.numeric.metapost
 
   MetaPost.comment:
     - match: '\%.*'
-      scope: comment.metapost.tex.context
+      scope: comment.metapost
 
   TikZ:
-  - include: TikZ.block
-  - include: TikZ.inline
+    - include: TikZ.block
+    - include: TikZ.inline
 
   TikZ.block:
-  - match: '(\\start)(tikzpicture)\b'
-    captures:
-      '1': support.function.start.tex.context
-      '2': markup.heading.name.tex.context
-    push: [
-      TikZ.block.core/,
-      TikZ.lists*/,
-    ]
-
+    - match: '(\\start)(tikzpicture)\b'
+      captures:
+        '1': support.function.start.tex.context
+        '2': markup.heading.name.tex.context
+      push: [
+        TikZ.block.core/,
+        TikZ.lists*/,
+      ]
   TikZ.block.core/:
-  - meta_scope: tikz.tex.context
-  - match: '(\\stop)(\2)\b'
-    captures:
-      '1': support.function.stop.tex.context
-      '2': markup.heading.name.tex.context
-    pop: true
-  - include: TikZ.main
+    - meta_content_scope: tikz.tex.context
+    - match: '(\\stop)(\2)\b'
+      captures:
+        '1': support.function.stop.tex.context
+        '2': markup.heading.name.tex.context
+      pop: true
+    - include: TikZ.main
 
   TikZ.inline:
-  - match: '\\tikz\b'
-    scope: support.function.control-word.tex.context
-    push: [
-      TikZ.inline.core/,
-      TikZ.lists*/,
-    ]
-
+    - match: '\\tikz\b'
+      scope: support.function.control-word.tex.context
+      push: [
+        TikZ.inline.core/,
+        TikZ.lists*/,
+      ]
   TikZ.inline.core/:
-  - meta_scope: tikz.tex.context
-  - match: ';'
-    scope: punctuation.terminator.tikz.tex.context
-    pop: true
-  - include: TikZ.main
+    - meta_content_scope: tikz.tex.context
+    - match: ';'
+      pop: true
+    - include: TikZ.main
 
   TikZ.main:
-  - include: TikZ.keyword
-  - include: TikZ.scope
-  - include: TikZ.group
-  - include: TikZ.list
-  - include: TikZ.calc
-  - include: TeX
-  - include: Lua
-  - include: math
-  - include: ConTeXt
-  - include: TikZ.general
+    - match: '\b(in|at|grid|edge|node|rectangle|cycle|coordinate|decorate|controls|and|child)\b'
+      scope: keyword.tikz.tex.context
+    - include: TikZ.main.without_keyword
 
-  TikZ.calc:
-  - match: '\(\$'
-    scope: string.calc-toggle.tikz.tex.context
-    push: TikZ.calc.core/
-
-  TikZ.calc.core/:
-  - match: '\$\)'
-    scope: string.calc-toggle.tikz.tex.context
-    pop: true
-  - match: '([\+\-\*/\^!><\?:]|[=><!]=|&&|\|\|)'
-    scope: keyword.math-operator.tikz.tex.context
-  - match: '\b(abs|add|and|array|bin|ceil|(cos(h)?|acos|sec)|deg|depth|div(ide)?|e|equal|factorial|false|floor|frac|gcd|greater|height|[hH]ex|int|ifthenelse|is(even|odd|prime)|less|ln|log(10|2)|max|min|[mM]od|multiply|neg|not(equal|greater|less)?|oct|or|pi|pow|rad|(rnd|rand(om)?)|real|round|(sin(h)?|asin|cosec)|sqrt|subtract|(tan(h)?|atan(2)?|cot)|true|veclen|width)\b'
-    scope: support.function.math.tikz.tex.context
-  - match: '[\+\-]?([0-9]+|[0-9]*\.[0-9]+)((pt|pc|in|bp|cm|mm|cc|sp|em|ex))?'
-    scope: constant.numeric.tex.context
-
-  TikZ.keyword:
-  - match: '(\\foreach|\b(in|at|grid|edge|node|rectangle|cycle|coordinate|decorate|controls|and|child))\b'
-    scope: keyword.tikz.tex.context
-
-  TikZ.scope:
-  - match: '(\\start)(scope)\b'
-    captures:
-      '1': support.function.start.tex.context
-      '2': markup.heading.name.tex.context
-  - match: '(\\stop)(scope)\b'
-    captures:
-      '1': support.function.stop.tex.context
-      '2': markup.heading.name.tex.context
+  TikZ.main.without_keyword:
+    - include: TikZ.group
+    - include: TikZ.list
+    - match: '\\foreach\b'
+      scope: keyword.tikz.tex.context
+    - match: '(\\start)(scope)\b'
+      captures:
+        '1': support.function.start.tex.context
+        '2': markup.heading.name.tex.context
+    - match: '(\\stop)(scope)\b'
+      captures:
+        '1': support.function.stop.tex.context
+        '2': markup.heading.name.tex.context
+    - include: main.without.general
+    - include: TikZ.general
 
   TikZ.general:
-  - match: '[\.\-]{2}'
-    scope: path-operator.tikz.tex.context
-  - match: '[\+\-]?([0-9]+|[0-9]*\.[0-9]+)((pt|pc|in|bp|cm|mm|cc|sp|em|ex))?'
-    scope: constant.numeric.tex.context
-  - match: '\\[a-zA-Z]+'
-    scope: support.function.control-word.tex.context
-  - match: '\\[^a-zA-Z]'
-    scope: constant.other.control-symbol.tex.context
-  - match: ';'
-    scope: punctuation.terminator.tikz.tex.context
+    - match: '[\+\-]?([0-9]+|[0-9]*\.[0-9]+)((pt|pc|in|bp|cm|mm|cc|sp|em|ex))?'
+      scope: constant.numeric.tex.context
+    - match: '\\[a-zA-Z]+'
+      scope: support.function.control-word.tex.context
+    - match: '\\[^a-zA-Z]'
+      scope: constant.other.control-symbol.tex.context
 
   TikZ.group:
-  - match: '\{'
-    push: TikZ.group.core/
-
+    - match: '\{'
+      push: TikZ.group.core/
   TikZ.group.core/:
-  - meta_scope: group.tex.context
-  - include: TikZ.main
-  - match: '\}'
-    pop: true
+    - meta_scope: group.tex.context
+    - include: TikZ.main.without_keyword
+    - match: '\}'
+      pop: true
 
   TikZ.list:
-  - match: '\['
-    push: TikZ.list.core/
-
+    - match: '\['
+      push: TikZ.list.core/
   TikZ.lists*/:
-  - include: TikZ.list
-  - match: '(?=[^\s\[])'
-    pop: true
-
+    - include: TikZ.list
+    - match: '(?=[^\s\[])'
+      pop: true
   TikZ.list.core/:
-  - meta_scope: list.tex.context
-  - match: '\]'
-    pop: true
-  - include: TikZ.list.group
-  - include: TikZ.options.core
-
+    - meta_scope: list.tex.context
+    - match: '\]'
+      pop: true
+    - include: TikZ.list.group
+    - include: TikZ.options.core
   TikZ.list.group:
-  - match: '\{'
-    push: TikZ.list.group.core/
-
+    - match: '\{'
+      push: TikZ.list.group.core/
   TikZ.list.group.core/:
-  - meta_scope: group.tex.context
-  - match: '\}'
-    pop: true
-  - include: TikZ.options.core
-
+    - meta_scope: group.tex.context
+    - match: '\}'
+      pop: true
+    - include: TikZ.options.core
   TikZ.options.core:
-  - match: '([a-zA-Z][a-zA-Z0-9\s\./\->]*)(=)'
-    captures:
-      '1': variable.parameter.key.tex.context
-      '2': keyword.equals.tex.context
-  - match: '[\+\-]?([0-9]+|[0-9]*\.[0-9]+)((pt|pc|in|bp|cm|mm|cc|sp|em|ex))?'
-    scope: constant.numeric.tex.context
-  - match: '\\[a-zA-Z]+'
-    scope: support.function.control-word.tex.context
-  - match: '\\[^a-zA-Z]'
-    scope: constant.other.control-symbol.tex.context
-  - include: main
+    - match: '([a-zA-Z][a-zA-Z0-9 \./\->]*)(=)'
+      captures:
+        '1': variable.parameter.key.tex.context
+        '2': keyword.equals.tex.context
+    - match: '[\+\-]?([0-9]+|[0-9]*\.[0-9]+)((pt|pc|in|bp|cm|mm|cc|sp|em|ex))?'
+      scope: constant.numeric.tex.context
+    - match: '\\[a-zA-Z]+'
+      scope: support.function.control-word.tex.context
+    - match: '\\[^a-zA-Z]'
+      scope: constant.other.control-symbol.tex.context
+    - include: main
 
   math:
     - include: math.displays
@@ -469,7 +442,6 @@ contexts:
         math.cases.core/,
         general.list*/,
       ]
-
   math.cases.core/:
     - match: '(\\stop)(\2)\b'
       captures:
@@ -499,7 +471,6 @@ contexts:
       set:
         - include: math.cases.right.core/
         - include: math.main
-
   math.cases.right.core/:
     - match: '\\NR\b'
       scope: keyword.row.tex.context
@@ -514,13 +485,12 @@ contexts:
         - include: math.main
     - match: '[\+\-]?([0-9]+|[0-9]*\.[0-9]+)'
       scope: constant.numeric.tex.context
-    - include: general.if
-    - include: general.alignment
-    - include: general.moulds
-    - match: '\\[a-zA-Z]+'
-      scope: support.function.control-word.tex.context
+    - include: main.without.general
+    - include: general.without.control_sequence
     - match: '\\[^a-zA-Z]'
       scope: constant.other.control-symbol.tex.context
+    - match: '\\[a-zA-Z]+'
+      scope: support.function.control-word.tex.context
     - match: '[^\s]'
       scope: string.math-text.math.tex.context
 
@@ -556,24 +526,27 @@ contexts:
       captures:
         '1': support.function.stop.tex.context
         '2': markup.heading.name.tex.context
-    - match: '\\(item|head)\b'
+    - match: '\\(item|head|sub|mar|its|but)\b'
       scope: keyword.tex.context
       push: general.lists*/
+    - match: '\\(sym|ran|nop)\b'
+      scope: keyword.tex.context
 
   ConTeXt.tables:
-    - include: ConTeXt.table
     - include: ConTeXt.TABLE
+    - include: ConTeXt.table
+    - include: ConTeXt.tabulate
 
   ConTeXt.TABLE:
-    - match: '(\\b)(TABLE|T[RD])\b'
+    - match: '(\\b)(TABLE(head|next|body|foot)?|T([CXYHN]|[RD]s?))\b'
       captures:
-        '1': support.function.begin.tex.context
-        '2': variable.parameter.name.tex.context
+        '1': support.function.start.tex.context
+        '2': markup.heading.name.tex.context
       push: general.lists*/
-    - match: '(\\e)(TABLE|T[RD])\b'
+    - match: '(\\e)(TABLE(head|next|body|foot)?|T([CXYHN]|[RD]s?))\b'
       captures:
-        '1': support.function.end.tex.context
-        '2': variable.parameter.name.tex.context
+        '1': support.function.stop.tex.context
+        '2': markup.heading.name.tex.context
 
   ConTeXt.table:
     - match: '(\\start)(table)\b'
@@ -586,11 +559,21 @@ contexts:
         '1': support.function.stop.tex.context
         '2': markup.heading.name.tex.context
 
+  ConTeXt.tabulate:
+    - match: '(\\start)(tabulate)\b'
+      captures:
+        '1': support.function.start.tex.context
+        '2': markup.heading.name.tex.context
+      push: ConTeXt.table.spec.list*/
+    - match: '(\\stop)(tabulate)\b'
+      captures:
+        '1': support.function.stop.tex.context
+        '2': markup.heading.name.tex.context
+
   ConTeXt.table.spec.list*/:
     - include: ConTeXt.table.spec.list/
     - match: '(?=[^\s\[])'
       pop: true
-
   ConTeXt.table.spec.list.core/:
     - meta_scope: list.preamble.tex.context
     - match: '\]'
@@ -620,30 +603,31 @@ contexts:
     - include: main
 
   general:
-    - include: general.group
-    - include: general.if
-    - include: general.alignment
-    - include: general.moulds
+    - include: general.without.control_sequence
     - include: general.control_sequence
 
+  general.without.control_sequence:
+    - include: general.if
+    - include: general.group
+    - include: general.moulds
+    - include: general.alignment
+
   general.alignment:
-    - match: '\\[HV]L\b'
+    - match: '\\[HFMLTBV]L\b'
       scope: keyword.line.tex.context
       push: general.count.list*/
     - match: '\\NC\b'
       scope: keyword.column.tex.context
     - match: '\\[FMLSNA]R\b'
       scope: keyword.row.tex.context
-      push: general.lists*/
+      push: general.ref.list*/
 
   general.moulds:
     - match: '(\\define)([a-zA-Z]+)'
       captures:
         '1': support.function.control-word.tex.context
         '2': support.function.control-word.tex.context
-      push: [
-        general.lists*/,
-      ]
+      push: general.lists*/
     - match: '(\\setup)([a-zA-Z]+)'
       captures:
         '1': support.function.control-word.tex.context
@@ -685,21 +669,17 @@ contexts:
   general.group:
     - match: '\{'
       push: general.group.core/
-
   general.group/:
     - match: '\{'
       set: general.group.core/
-
   general.group*/:
     - include: general.group/
     - match: '(?=[^\s\{])'
       pop: true
-
   general.groups*/:
     - include: general.group
     - match: '(?=[^\s\{])'
       pop: true
-
   general.group.core/:
     - meta_scope: group.tex.context
     - match: '\}'
@@ -709,21 +689,17 @@ contexts:
   general.list:
     - match: '\['
       push: general.list.core/
-
   general.list/:
     - match: '\['
       set: general.list.core/
-
   general.list*/:
     - include: general.list/
     - match: '(?=[^\s\[])'
       pop: true
-
   general.lists*/:
     - include: general.list
     - match: '(?=[^\s\[])'
       pop: true
-
   general.list.core/:
     - meta_scope: list.tex.context
     - match: '\]'
@@ -742,7 +718,6 @@ contexts:
       set: general.name.list.core/
     - match: '(?=[^\s\[])'
       pop: true
-
   general.name.list.core/:
     - meta_scope: list.tex.context
     - meta_content_scope: entity.name.tex.context
@@ -754,10 +729,19 @@ contexts:
       set: general.count.list.core/
     - match: '(?=[^\s\[])'
       pop: true
-
   general.count.list.core/:
     - meta_scope: list.tex.context
     - match: '\]'
       pop: true
     - match: '[0-9]+'
       scope: constant.numeric.tex.context
+
+  general.ref.list*/:
+    - match: '\['
+      set: general.ref.list.core/
+    - match: ''
+      pop: true
+  general.ref.list.core/:
+    - meta_scope: list.tex.context
+    - match: '\]'
+      pop: true

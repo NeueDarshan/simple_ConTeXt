@@ -13,6 +13,7 @@ package-metadata.json
 
 # ignore (most) python stuff, keep in the builder though!
 *.py
+*.py[cod]
 !context_build.py
 __pycache__/
 
