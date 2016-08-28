@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
    <key>name</key>
-   <string>comment</string>
+   <string>Lua comments</string>
    <key>scope</key>
-   <string>text.tex.context</string>
+   <string>source.lua.tex.context</string>
    <key>settings</key>
    <dict>
       <key>shellVariables</key>
@@ -14,7 +14,19 @@
             <key>name</key>
             <string>TM_COMMENT_START</string>
             <key>value</key>
-            <string>% </string>
+            <string>-- </string>
+         </dict>
+         <dict>
+            <key>name</key>
+            <string>TM_COMMENT_START_2</string>
+            <key>value</key>
+            <string>--[[</string>
+         </dict>
+         <dict>
+            <key>name</key>
+            <string>TM_COMMENT_END_2</string>
+            <key>value</key>
+            <string>]]</string>
          </dict>
       </array>
    </dict>

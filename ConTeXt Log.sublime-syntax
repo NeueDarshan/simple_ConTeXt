@@ -50,9 +50,9 @@ contexts:
         '2': invalid.illegal.error.log.context
       push: ConTeXt.sublime-syntax
       with_prototype:
-      - match: '^\s*([0-9]+)\s*(>>)?'
-        captures:
-          '1': constant.numeric.log.context
-          '2': invalid.illegal.error.log.context
-      - match: '^(?=\s*[^0-9])'
-        pop: true
+        - match: '^\s*([0-9]+)\s*(>>)?'
+          captures:
+            '1': constant.numeric.log.context
+            '2': invalid.illegal.error.log.context
+        - match: '^(?=\s*[^0-9])'
+          pop: true

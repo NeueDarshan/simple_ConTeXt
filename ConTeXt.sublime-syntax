@@ -27,7 +27,7 @@ contexts:
       scope: comment.line.tex.context
 
   comment.ConTeXt:
-    - match: '\\start(comment)\b'
+    - match: '\\start(comment|hiding)\b'
       push:
         - meta_scope: comment.block.tex.context
         - match: '\\stop(\1)\b'
@@ -62,14 +62,14 @@ contexts:
     - include: Lua.block
 
   Lua.inline:
-    - match: '\\(ctx|direct)lua\b'
+    - match: '\\((ctx|direct)lua|luaexpr|cldcontext)\b'
       scope: support.function.control-word.tex.context
       push:
         - match: '\{'
           set:
             - meta_include_prototype: false
             - meta_scope: group.tex.context
-            - meta_content_scope: lua.tex.context
+            - meta_content_scope: source.lua.tex.context
             - match: '\}'
               pop: true
             - include: comment.TeX
@@ -85,7 +85,7 @@ contexts:
         '2': markup.heading.name.tex.context
       push:
         - meta_include_prototype: false
-        - meta_content_scope: lua.tex.context
+        - meta_content_scope: source.lua.tex.context
         - match: '(\\stop)(\2)\b'
           captures:
             '1': support.function.stop.tex.context
@@ -100,7 +100,7 @@ contexts:
         '2': markup.heading.name.tex.context
       push:
         - meta_include_prototype: false
-        - meta_content_scope: lua.tex.context
+        - meta_content_scope: source.lua.tex.context
         - match: '(\\stop)(\2)\b'
           captures:
             '1': support.function.stop.tex.context
@@ -109,7 +109,7 @@ contexts:
         - include: Lua.main
 
   Lua.main:
-    - match: '\b((tex\.s?print)|context)\b'
+    - match: '\b\b'
       scope: support.function.lua
     - include: Lua.sublime-syntax
 
@@ -631,7 +631,10 @@ contexts:
       captures:
         '1': support.function.control-word.tex.context
         '2': support.function.control-word.tex.context
-      push: general.lists*/
+      push: [
+        general.lists*/,
+        general.name.list*/,
+      ]
     - match: '(\\setup)([a-zA-Z]+)'
       captures:
         '1': support.function.control-word.tex.context
