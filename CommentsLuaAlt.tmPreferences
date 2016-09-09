@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
    <key>name</key>
-   <string>TeX comments</string>
+   <string>Lua comments</string>
    <key>scope</key>
-   <string>text.tex.context</string>
+   <string>source.alt.lua</string>
    <key>settings</key>
    <dict>
       <key>shellVariables</key>

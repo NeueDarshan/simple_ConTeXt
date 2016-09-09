@@ -2,7 +2,7 @@
 ---
 name: ConTeXt
 file_extensions:
-  [tex, mkvi]
+  [tex, mkiv]
 scope: text.tex.context
 
 contexts:
@@ -69,14 +69,27 @@ contexts:
           set:
             - meta_include_prototype: false
             - meta_scope: group.tex.context
-            - meta_content_scope: source.lua.tex.context
+            - meta_content_scope: source.alt.lua
             - match: '\}'
               pop: true
             - include: comment.TeX
             - include: Lua.inline.comment
+            - include: Lua.group
             - include: Lua.main
         - match: '(?=[^\s\{])'
           pop: true
+
+  Lua.group:
+    - match: '\{'
+      push: Lua.group.core/
+  Lua.group.core/:
+    - meta_include_prototype: false
+    - match: '\}'
+      pop: true
+    - include: comment.TeX
+    - include: Lua.inline.comment
+    - include: Lua.group
+    - include: Lua.main
 
   Lua.block:
     - match: '(\\start)(lua)\b'
@@ -85,7 +98,7 @@ contexts:
         '2': markup.heading.name.tex.context
       push:
         - meta_include_prototype: false
-        - meta_content_scope: source.lua.tex.context
+        - meta_content_scope: source.alt.lua
         - match: '(\\stop)(\2)\b'
           captures:
             '1': support.function.stop.tex.context
@@ -100,7 +113,7 @@ contexts:
         '2': markup.heading.name.tex.context
       push:
         - meta_include_prototype: false
-        - meta_content_scope: source.lua.tex.context
+        - meta_content_scope: source.main.lua
         - match: '(\\stop)(\2)\b'
           captures:
             '1': support.function.stop.tex.context
@@ -109,12 +122,10 @@ contexts:
         - include: Lua.main
 
   Lua.main:
-    - match: '\b\b'
-      scope: support.function.lua
     - include: Lua.sublime-syntax
 
   Lua.block.comment:
-    - match: '\-\-(?=.?[^\[])'
+    - match: '\-\-(?=[^\[])'
       scope: comment.line.double-dash.lua
       push:
         - meta_content_scope: comment.line.double-dash.lua
@@ -281,14 +292,6 @@ contexts:
     - include: TikZ.list
     - match: '\\foreach\b'
       scope: keyword.tikz.tex.context
-    - match: '(\\start)(scope)\b'
-      captures:
-        '1': support.function.start.tex.context
-        '2': markup.heading.name.tex.context
-    - match: '(\\stop)(scope)\b'
-      captures:
-        '1': support.function.stop.tex.context
-        '2': markup.heading.name.tex.context
     - include: main.without.general
     - include: TikZ.general
 
@@ -526,10 +529,6 @@ contexts:
         '1': support.function.start.tex.context
         '2': markup.heading.name.tex.context
       push: general.lists*/
-    - match: '(\\stop)(itemize)\b'
-      captures:
-        '1': support.function.stop.tex.context
-        '2': markup.heading.name.tex.context
     - match: '\\(item|head|sub|mar|its|but)\b'
       scope: keyword.tex.context
       push: general.lists*/
@@ -558,10 +557,6 @@ contexts:
         '1': support.function.start.tex.context
         '2': markup.heading.name.tex.context
       push: ConTeXt.table.spec.list*/
-    - match: '(\\stop)(table)\b'
-      captures:
-        '1': support.function.stop.tex.context
-        '2': markup.heading.name.tex.context
 
   ConTeXt.tabulate:
     - match: '(\\start)(tabulate)\b'
@@ -569,10 +564,6 @@ contexts:
         '1': support.function.start.tex.context
         '2': markup.heading.name.tex.context
       push: ConTeXt.table.spec.list*/
-    - match: '(\\stop)(tabulate)\b'
-      captures:
-        '1': support.function.stop.tex.context
-        '2': markup.heading.name.tex.context
 
   ConTeXt.table.spec.list*/:
     - include: ConTeXt.table.spec.list/
