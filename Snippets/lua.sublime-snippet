@@ -1,11 +1,11 @@
 <snippet>
     <content><![CDATA[
-\startformula
-  $0
-\stopformula
+\startluacode
+  $1
+\stopluacode
 ]]></content>
     <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
-    <tabTrigger>math</tabTrigger>
+    <tabTrigger>lua</tabTrigger>
     <!-- Optional: Set a scope to limit where the snippet will trigger -->
     <scope>text.tex.context</scope>
     <!-- Optional: Set a description that will show up in the Snippets menu -->

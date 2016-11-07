@@ -1,13 +1,11 @@
 <snippet>
     <content><![CDATA[
 \startformula
-  \startmathalignment[${1:options}]
-    $0
-  \stopmathalignment
+  $1
 \stopformula
 ]]></content>
     <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
-    <tabTrigger>align</tabTrigger>
+    <tabTrigger>math</tabTrigger>
     <!-- Optional: Set a scope to limit where the snippet will trigger -->
     <scope>text.tex.context</scope>
     <!-- Optional: Set a description that will show up in the Snippets menu -->

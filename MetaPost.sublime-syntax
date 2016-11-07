@@ -1,0 +1,128 @@
+%YAML 1.2
+---
+name: MetaPost
+file_extensions:
+  - mp
+scope: source.metapost
+
+contexts:
+  prototype:
+    - include: comment
+
+  main:
+    - include: types
+    - include: constants
+    - include: variables
+    - include: labels
+    - include: operators
+    - include: functions
+    - include: definitions
+    - include: loops
+    - include: environments
+    - include: TeX
+
+  comment:
+    - match: '\%.*'
+      scope: comment.metapost
+
+  types:
+    - match: '(?<=[^a-zA-Z_]|^)(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)(?=[^a-zA-Z_]|$)'
+      scope: storage.type.metapost
+
+  constants:
+    - match: '[0-9]+|[0-9]*\.[0-9]+'
+      scope: constant.numeric.metapost
+    - match: '"'
+      push:
+        - meta_scope: string.metapost
+        - match: '"'
+          pop: true
+    - match: '(?<=[^a-zA-Z_]|^)(beveled|black|blue|butt|(bp|cc|cm|dd|pc|in|mm|pt)|cycle|ditto|down|EOF|epsilon|evenly|false|green|(full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(pen|picture)|origin|pen(circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|whatever|white|withdots)(?=[^a-zA-Z_]|$)'
+      scope: constant.other.metapost
+
+  variables:
+    - match: '(?<=[^a-zA-Z_]|^)(ah(angle|length)|background|bboxmargin|charcode|current(pen|picture)|cuttings|day|default(colormodel|font|pen|scale)|dotlabeldiam|extra_(begin|end)fig|hour|hppp|jobname|labeloffset|line(cap|join)|minute|miterlimit|month|mpprocset|number(precision|system)|output(filename|format|formatoptions|template)|pausing|prologues|restoreclipcolor|showstopping|time|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)(?=[^a-zA-Z_]|$)'
+      scope: variable.parameter.internal.metapost
+
+  labels:
+    - match: '(?<=[^a-zA-Z_]|^)(thelabel|(dot)?labels?)(\.(top|[ul]?(lft|rt)|bot))?(?=[^a-zA-Z_]|$)'
+      scope: support.function.label.metapost
+
+  operators:
+    - match: '(?<=[^a-zA-Z_]|^)(and|atleast|controls|curl|cut(after|before|ends)|dashed|div|dotprod|glyph|infont|intersection(point|times)|mod|not|of|or|off|on|reflectedabout|rotated(around)?|scaled|shifted|slanted|softjoin|tension|to|transformed|with((cmyk|grey|out|rgb)?color|gray|greyscale|(pre|post)script|pen)|[xyz]scaled)(?=[^a-zA-Z_]|$)'
+      scope: keyword.operator.metapost
+    - match: '\.{2,3}|-{2}'
+      scope: keyword.path-operator.metapost
+    - match: '([:<>]?=|<>|\+-\+|[*+]{2}|[<>&*/+-])'
+      scope: keyword.operator.metapost
+
+  functions:
+    - match: '(?<=[^a-zA-Z_]|^)(abs|addto|also|angle|arclength|arctime|ASCII|batchmode|bbox|(sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|dashpattern|decimal|decr|dir|direction(point|time)?|doublepath|draw(arrow|dblarrow|dot|fill|options)?|err(help|message)|(scroll|(error|non)stop)mode|filenametemplate|fill(draw)?|filled|flex|floor|fontmap(file|line)|fontsize|hex|image|incr|input|interim|interpath|inverse|known|length|let|loggingall|makepath|makepen|max|message|mexp|min|mlog|newinternal|(normal|uniform)deviate|oct|odd|pickup|penoffset|point|(post|pre)control|readfrom|reverse|round|save|scantokens|setbounds|shipout|show(dependencies||token|variable)?|special|sqrt|str|stroked|sub(path|string)|superellipse|tensepath|textual|(top|bot|lft|rt)|tracing(all|none)|un(draw(dot|fill)?|fill(draw)?)|unitvector|unknown|[ul][rl]corner|write|(black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)(?=[^a-zA-Z_]|$)'
+      scope: support.function.metapost
+
+  definitions:
+    - include: definitions.binarydef
+    - include: definitions.otherdef
+    - match: '(?<=[^a-zA-Z_]|^)enddef(?=[^a-zA-Z_]|$)'
+      scope: support.class.metapost
+
+  definitions.binarydef:
+    - match: '(?<=[^a-zA-Z_]|^)(primary|secondary|tertiary)def(?=[^a-zA-Z_]|$)'
+      scope: support.class.metapost
+      push: [
+        definitions.equals/,
+        definitions.variable/,
+        definitions.macro/,
+        definitions.variable/,
+      ]
+
+  definitions.otherdef:
+    - match: '(?<=[^a-zA-Z_]|^)(var)?def(?=[^a-zA-Z_]|$)'
+      scope: support.class.metapost
+      push: [
+        definitions.otherdef.core/,
+        definitions.macro/,
+      ]
+  definitions.otherdef.core/:
+    - include: definitions.equals/
+    - include: definitions.type
+    - include: definitions.variable
+
+  definitions.type:
+    - match: '(expr|of|suffix|text)'
+      scope: storage.type.metapost
+  definitions.variable:
+    - match: '[a-zA-Z]+'
+      scope: variable.parameter.metapost
+  definitions.variable/:
+    - match: '[a-zA-Z]+'
+      scope: variable.parameter.metapost
+      pop: true
+  definitions.macro/:
+    - match: '[a-zA-Z]+'
+      scope: entity.name.function.metapost
+      pop: true
+  definitions.equals/:
+    - match: '='
+      scope: keyword.operator.metapost
+      pop: true
+
+  loops:
+    - match: '(?<=[^a-zA-Z_]|^)(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|exit(if|unless)|endfor)(?=[^a-zA-Z_]|$)'
+      scope: keyword.metapost
+
+  environments:
+    - match: '(?<=[^a-zA-Z_]|^)begin(group|fig)(?=[^a-zA-Z_]|$)'
+      scope: support.class.metapost
+    - match: '(?<=[^a-zA-Z_]|^)end(group|fig)?(?=[^a-zA-Z_]|$)'
+      scope: support.class.metapost
+
+  TeX:
+    - match: '(?<=[^a-zA-Z_]|^)(b|verbatim)(tex)(?=[^a-zA-Z_]|$)'
+      scope: support.class.metapost
+      push:
+        - meta_scope: text.tex
+        - match: '(?<=[^a-zA-Z_]|^)e(\2)(?=[^a-zA-Z_]|$)'
+          scope: support.class.metapost
+          pop: true
+        - include: scope:text.tex
