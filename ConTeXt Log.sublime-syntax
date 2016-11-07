@@ -1,7 +1,8 @@
 %YAML 1.2
 ---
 name: ConTeXt Log
-file_extensions: log
+file_extensions:
+  - log
 scope: text.log.context
 contexts:
   main:
@@ -10,36 +11,32 @@ contexts:
 
   log:
     - include: log.system
-    - match: '! .+'
+    - include: log.error
+    - include: log.constants
+
+  log.constants:
+    - match: ("|')
+      push:
+        - meta_scope: string.log.context
+        - match: '\1'
+          pop: true
+
+  log.error:
+    - match: '![ ]*.+'
       scope: invalid.illegal.error.log.context
-    - match: '^(<)([a-zA-Z]+[\sa-zA-Z]*?)(>)'
-      captures:
-        '1': markup.heading.log.context
-        '2': keyword.category.log.context
-        '3': markup.heading.log.context
-    - match: '([a-zA-Z\-]+)(=)'
-      captures:
-        '1': variable.parameter.key.log.context
-        '2': keyword.equals.log.context
-    - match: '(U\+[a-fA-F0-9]+|[0-9]+)'
-      scope: constant.numeric.log.context
-    - match: "'.*?'"
-      scope: string.log.context
-    - match: '".*?"'
-      scope: string.log.context
 
   log.system:
     - match: '^\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
       captures:
         '1': keyword.category.log.context
         '2': markup.heading.log.context
-      push: log.system.core/
-  log.system.core/:
+      push: log.system.core*/
+  log.system.core*/:
     - match: '\s*([0-9]+|[a-zA-Z]+[\sa-zA-Z]*?)\s+(>)'
       captures:
         '1': keyword.category.log.context
         '2': markup.heading.log.context
-      set: log.system.core/
+      set: log.system.core*/
     - match: ''
       pop: true
 
@@ -48,7 +45,7 @@ contexts:
       captures:
         '1': constant.numeric.log.context
         '2': invalid.illegal.error.log.context
-      push: ConTeXt.sublime-syntax
+      push: scope:text.tex.context
       with_prototype:
         - match: '^\s*([0-9]+)\s*(>>)?'
           captures:
