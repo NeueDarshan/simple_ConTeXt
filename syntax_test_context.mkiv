@@ -1,0 +1,70 @@
+% SYNTAX TEST "Packages/ConTeXtTools/ConTeXt.sublime-syntax"
+
+% <- text.tex.context
+
+\starttext
+% <-       keyword.control-word.start.context
+%     ^^^^ markup.heading.name.context
+
+% LUA
+\startluacode context("a") \stopluacode
+%             ^^^^^^^^^^^^ source.lua
+\startlua context("b") \stoplua
+%         ^^^^^^^^^^^^ source.lua
+\ctxlua{context("c")}
+%       ^^^^^^^^^^^^ source.lua
+\directlua{context("d")}
+%          ^^^^^^^^^^^^ source.lua
+
+% METAPOST/METAFUN
+\startuniqueMPgraphic{this}{x, y}
+  %                   ^^^^ entity.name.context
+  pair p; p := (\MPvar{x}, \MPvar{y});
+  %             ^^^^^^            support.function.control-word.context
+  %                        ^^^^^^ support.function.control-word.context
+  draw (unitcircle shifted p) scaled 1cm withcolor red;
+  % <- source.metapost
+\stopuniqueMPgraphic
+
+\useMPgraphic{this}{x=1, y=2}
+%                   ^       variable.parameter.key.context
+%                    ^      keyword.operator.equals.context
+%                        ^  variable.parameter.key.context
+%                         ^ keyword.operator.equals.context
+
+% JAVASCRIPT
+\startJSpreamble{that} used {now}
+  %              ^^^^            entity.name.context
+  %                          ^^^ constant.other.context
+  Stack[Level] += String("okay");
+  % <- source.js
+\stopJSpreamble
+
+% MATH
+Adding $1$, \m{2} and \math{3} gives \mathematics{6}.
+%       ^                                           meta.environment.math
+%              ^                                    meta.environment.math
+%                           ^                       meta.environment.math
+%                                                 ^ meta.environment.math
+
+\startformula e^{iπ} = -1 \stopformula
+%             ^^^^^^^^^^^ meta.environment.math
+
+% VERBATIM
+The code \type{% \macro #n} does stuff.
+%              ^^^^^^^^^^^ markup.raw.context
+
+\starttyping \ctxlua{context("%.3f", math.pi)} \stoptyping
+%            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ markup.raw.context
+
+% COMMENTS
+% Lorem ipsum
+% <- comment
+\startcomment dolor sit amet, \stopcomment
+%             ^^^^^^^^^^^^^^^ comment
+\starthiding consectetur adipisicing elit. \stophiding
+%            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ comment
+
+\stoptext
+% <-      keyword.control-word.stop.context
+%    ^^^^ markup.heading.name.context

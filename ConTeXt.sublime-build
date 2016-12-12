@@ -1,13 +1,4 @@
 {
-  "cmd":
-  [
-    "python",
-    "$packages/ConTeXtTools/context_build.py",
-    "$packages",
-    "$file_name",
-  ],
-  "selector":
-  [
-    "text.tex.context",
-  ]
+  "target": "context_build_pdf",
+  "selector": "text.tex.context",
 }
