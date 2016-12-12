@@ -1,0 +1,26 @@
+%YAML 1.2
+---
+name: ConTeXt build panel
+hidden: true
+scope: text.log.context.build-result
+
+contexts:
+  main:
+    - include: log
+    - include: ConTeXt
+
+  log:
+    - include: scope:text.log.context#log.version
+    - include: log.system.error
+    - include: scope:text.log.context#log.constants
+    - include: scope:text.log.context#log.error
+
+  log.system.error:
+    - match: '^[a-zA-Z0-9-\s]+error.*$'
+      push: [
+        scope:text.log.context#log.system.error.snippet*/,
+        scope:text.log.context#blank-lines*/,
+      ]
+
+  ConTeXt:
+    - include: scope:text.log.context#ConTeXt

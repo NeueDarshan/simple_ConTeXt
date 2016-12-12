@@ -34,9 +34,13 @@ contexts:
       scope: constant.numeric.metapost
     - match: '"'
       push:
+        - meta_include_prototype: false
         - meta_scope: string.metapost
         - match: '"'
           pop: true
+        - match: '%([%jcymdHM]|\{(jobname|charcode|year|month|day|hour|minute)\})'
+          scope: constant.other.escape.metapost
+        - include: comment
     - match: '(?<=[^a-zA-Z_]|^)(beveled|black|blue|butt|(bp|cc|cm|dd|pc|in|mm|pt)|cycle|ditto|down|EOF|epsilon|evenly|false|green|(full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(pen|picture)|origin|pen(circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|whatever|white|withdots)(?=[^a-zA-Z_]|$)'
       scope: constant.other.metapost
 
@@ -92,14 +96,14 @@ contexts:
     - match: '(expr|of|suffix|text)'
       scope: storage.type.metapost
   definitions.variable:
-    - match: '[a-zA-Z]+'
+    - match: '[a-zA-Z-_]+'
       scope: variable.parameter.metapost
   definitions.variable/:
-    - match: '[a-zA-Z]+'
+    - match: '[a-zA-Z-_]+'
       scope: variable.parameter.metapost
       pop: true
   definitions.macro/:
-    - match: '[a-zA-Z]+'
+    - match: '[a-zA-Z-_]+'
       scope: entity.name.function.metapost
       pop: true
   definitions.equals/:
