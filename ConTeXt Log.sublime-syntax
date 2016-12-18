@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-name: ConTeXt Log
+name: ConTeXt log
 file_extensions:
   - log
 scope: text.log.context
@@ -71,11 +71,8 @@ contexts:
       pop: true
 
   log.constants:
-    - match: ("|')
-      push:
-        - meta_scope: string.log.context
-        - match: '\1'
-          pop: true
+    - match: (".*?"|'.*?')
+      scope: string.log.context
 
   log.error:
     - match: '!\s*.+'
