@@ -158,6 +158,12 @@ contexts:
       scope: support.function.control-word.context
       push: Lua.group/
 
+  Lua.dummy-group:
+    - match: '[{}]'
+
+  Lua.group:
+    - match: '\{'
+      push: Lua.group.core/
   Lua.group/:
     - match: '\{'
       set: Lua.group.core/
@@ -170,12 +176,14 @@ contexts:
 
   Lua.major.main:
     - include: scope:source.lua
+    - include: Lua.dummy-group
     - include: main
 
   Lua.minor-inline.main:
     - include: comment.TeX
     - include: Lua.minor-inline.comment
     - include: Lua.minor.string
+    - include: Lua.group
     - include: scope:source.lua
     - include: main
 
@@ -267,6 +275,7 @@ contexts:
     - include: MetaFun.environments
     - include: scope:source.metapost#comment
     - include: MetaFun.TeX
+    - include: main
 
   MetaFun.environments:
     - match: '(?<=[^a-zA-Z_]|^)(Start|Stop)Page(?=[^a-zA-Z_]|$)'
