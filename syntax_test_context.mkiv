@@ -3,68 +3,117 @@
 % <- text.tex.context
 
 \starttext
-% <-       keyword.control-word.start.context
-%     ^^^^ markup.heading.name.context
+% <- support.function.control-word.context
 
 % LUA
-\startluacode context("a") \stopluacode
-%             ^^^^^^^^^^^^ source.lua
-\startlua context("b") \stoplua
-%         ^^^^^^^^^^^^ source.lua
-\ctxlua{context("c")}
-%       ^^^^^^^^^^^^ source.lua
-\directlua{context("d")}
-%          ^^^^^^^^^^^^ source.lua
+\startLUA[before={\blank[small]}]
+  %       ^^^^^^                 variable.parameter.key.context
+  %             ^                keyword.operator.equals.context
+  %       ^^^^^^^^^^^^^^^^^^^^^^ meta.environment.list.context
+  context(
+    5 % 2
+  %   ^^^ - comment
+  )
+  -- context("b")
+  % <- comment
+  context("a")
+  % <- source.lua - comment
+\stopLUA
+
+\startluacode
+  context(
+    5 % 2
+  %   ^^^ - comment
+  )
+  -- context("b")
+  % <- comment
+  context("a")
+  % <- source.lua - comment
+\stopluacode
+
+\startlua
+  context(
+    5 % 2
+  %   ^^^ comment
+  )
+  -- context("b")
+  % <- comment
+  context("a")
+  % <- source.lua comment
+\stoplua
+
+\ctxlua{
+  context(
+    5 % 2
+  %   ^^^ comment
+  )
+  -- context("b")
+  % <- comment
+  context("a")
+  % <- source.lua comment
+}
 
 % METAPOST/METAFUN
-\startuniqueMPgraphic{this}{x, y}
-  %                   ^^^^ entity.name.context
-  pair p; p := (\MPvar{x}, \MPvar{y});
-  %             ^^^^^^            support.function.control-word.context
-  %                        ^^^^^^ support.function.control-word.context
+\startuniqueMPgraphic{foo}{x, y}
+  % setup a pair:
+  % <- comment.metapost
+  pair p;  p := (\MPvar{x}, \MPvar{y});
+  %              ^^^^^^            support.function.control-word.context
+  %                         ^^^^^^ support.function.control-word.context
   draw (unitcircle shifted p) scaled 1cm withcolor red;
   % <- source.metapost
 \stopuniqueMPgraphic
 
-\useMPgraphic{this}{x=1, y=2}
-%                   ^       variable.parameter.key.context
-%                    ^      keyword.operator.equals.context
-%                        ^  variable.parameter.key.context
-%                         ^ keyword.operator.equals.context
+\startMP[numbering=line] draw unitdiamond; \stopMP
+%                        ^^^^^^^^^^^^^^^^^ source.metapost
+\startstaticMPfigure{foo} draw unitsquare; \stopstaticMPfigure
+%                         ^^^^^^^^^^^^^^^^ source.metapost
+\startMPinclusions[+]{foo} draw fullcircle; \stopMPinclusions
+%                          ^^^^^^^^^^^^^^^^ source.metapost
 
 % JAVASCRIPT
-\startJSpreamble{that} used {now}
-  %              ^^^^            entity.name.context
-  %                          ^^^ constant.other.context
-  Stack[Level] += String("okay");
+\startJSpreamble foo used now
+  %              ^^^          entity.name.context
+  %                       ^^^ constant.other.context
+  % factorial function:
+  % <- comment
+  function factorial(n) {
+    if (n === 0 || n === 1) return 1;
+    return n * factorial(n - 1)
+  }
   % <- source.js
 \stopJSpreamble
 
 % MATH
-Adding $1$, \m{2} and \math{3} gives \mathematics{6}.
-%       ^                                           meta.environment.math
-%              ^                                    meta.environment.math
-%                           ^                       meta.environment.math
-%                                                 ^ meta.environment.math
+Adding $1$, \m{2} and \math[three]{3} gives \mathematics{6}.
+%       ^                                                  meta.environment.math
+%              ^                                           meta.environment.math
+%                                  ^                       meta.environment.math
+%                                                        ^ meta.environment.math
 
 \startformula e^{iπ} = -1 \stopformula
 %             ^^^^^^^^^^^ meta.environment.math
 
 % VERBATIM
-The code \type{% \macro #n} does stuff.
-%              ^^^^^^^^^^^ markup.raw.context
+The percent sign \type{%} and the hash \type<<#>> are special.
+%                      ^                        markup.raw.context
+%                                             ^ markup.raw.context
 
-\starttyping \ctxlua{context("%.3f", math.pi)} \stoptyping
-%            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ markup.raw.context
+\starttyping[option=xml]
+  <cd:command name="MPcolor" file="colo-ini.mkiv">
+    <cd:arguments>
+      <cd:resolve name="argument-color"/>
+    </cd:arguments>
+  </cd:command>
+  % <- markup.raw.context
+\stoptyping
 
 % COMMENTS
+
 % Lorem ipsum
 % <- comment
-\startcomment dolor sit amet, \stopcomment
-%             ^^^^^^^^^^^^^^^ comment
 \starthiding consectetur adipisicing elit. \stophiding
 %            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ comment
 
 \stoptext
-% <-      keyword.control-word.stop.context
-%    ^^^^ markup.heading.name.context
+% <- support.function.control-word.context

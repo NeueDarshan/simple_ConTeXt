@@ -6,8 +6,10 @@ file_extensions:
   - mkii
   - mkiv
   - mkvi
+  - mkix
+  - mkxi
 scope: text.tex.context
-first_line_match: '^%.*?macros\s*=\s*mkvi'
+first_line_match: '^(%.*?macros\s*=\s*mk[vx]i)|\s*\\starttext)'
 
 contexts:
   prototype:
@@ -21,27 +23,13 @@ contexts:
     - include: ConTeXt
     - include: TeX
     - include: control
+    - include: generic.group
 
   comment:
     - include: comment.TeX
-    - include: comment.ConTeXt
 
   comment.TeX:
     - include: scope:text.tex#comments
-
-  comment.ConTeXt:
-    - match: '\\start(comment|hiding)(?=[^a-zA-Z]|$)'
-      push:
-        - meta_scope: comment.block.context
-        - match: '\\stop\1(?=[^a-zA-Z]|$)'
-          pop: true
-
-  generic.stop/:
-    - match: '(\\stop)(\2)(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.stop.context
-        '2': markup.heading.name.context
-      pop: true
 
   math:
     - include: math.display
@@ -51,54 +39,60 @@ contexts:
     - match: '\$\$'
       scope: string.math-toggle.display.tex.context
       push:
-        - meta_scope: meta.environment.math.display.tex.context
+        - meta_content_scope: meta.environment.math.display.tex.context
         - match: '\$\$'
           scope: string.math-toggle.display.tex.context
           pop: true
         - include: math.main
-    - match: '(\\start)(formula)(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
-      push:
-        - meta_scope: meta.environment.math.display.tex.context
-        - include: generic.stop/
-        - include: math.main
+    - match: '\\start(formula)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: [
+        math.display.core/,
+        generic.list*/,
+      ]
+  math.display.core/:
+    - meta_content_scope: meta.environment.math.display.tex.context
+    - include: generic.stop/
+    - include: math.main
 
   math.inline:
     - match: '\$'
       scope: string.math-toggle.inline.tex.context
       push:
-        - meta_scope: meta.environment.math.inline.tex.context
+        - meta_content_scope: meta.environment.math.inline.tex.context
         - match: '\$'
           scope: string.math-toggle.inline.tex.context
           pop: true
         - include: math.main
     - match: '\\(m|math|mathematics)(?=[^a-zA-Z]|$)'
       scope: support.function.control-word.context
-      push: math.group*/
+      push: [
+        math.group*/,
+        generic.list*/,
+      ]
 
   math.group:
     - match: '\{'
       push: math.group.core/
-  math.group*/:
+  math.group/:
     - match: '\{'
       set: math.group.core/
-    - match: '(?=[^\s\{])'
-      pop: true
+  math.group*/:
+    - include: math.group/
+    - include: generic.pop-if-no-group/
   math.group.core/:
-    - meta_scope: meta.environment.math.inline.tex.context
-    - match: '\}'
-      pop: true
+    - meta_scope: meta.environment.brace.group.tex
+    - meta_content_scope: meta.environment.math.inline.tex.context
+    - include: generic.pop-at-group-end/
     - include: math.main
 
   math.main:
     - include: math.constant
     - include: math.operator
     - include: math.text
-    - include: math.group
-    - include: math.control
-    - match: '[^\[\](){}]'
+    - include: math.dummy-group
+    - include: main
+    - match: '[^\s]'
       scope: string.math.tex.context
 
   math.constant:
@@ -107,188 +101,208 @@ contexts:
   math.operator:
     - include: scope:text.tex#math-operators
 
-  math.control:
-    - include: Lua
-    - include: control.word.tab
-    - include: control.word.conditional
-    - include: control.word.start-stop
-    - match: '\\[a-zA-Z]+'
-      scope: support.function.control-word.context
-    - match: '\\[^a-zA-Z]'
-      scope: constant.other.control-symbol.context
+  math.dummy-group:
+    - match: '\{'
+      push: math.dummy-group.core/
+  math.dummy-group.core/:
+    - meta_scope: meta.environment.brace.group.tex
+    - include: generic.pop-at-group-end/
+    - include: math.main
 
   math.text:
-    - match: '(\\start)(intertext)(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
+    - match: '\\start(intertext)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
       push:
         - include: generic.stop/
         - include: main
     - match: '\\(inter)?text(?=[^a-zA-Z]|$)'
-      scope: support.function.control-word.tex.context
-      push: control.group/
+      scope: support.function.control-word.context
+      push: generic.group*/
 
   Lua:
-    - include: Lua.inline
     - include: Lua.block
+    - include: Lua.inline
 
   Lua.block:
-    - match: '(\\start)(lua)(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
-      push:
-        - meta_include_prototype: false
-        - meta_scope: source.lua.minor
-        - include: generic.stop/
-        - include: Lua.minor-block.main
-    - match: '(\\start)(luacode)(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
-      push:
-        - meta_include_prototype: false
-        - meta_scope: source.lua.major
-        - include: generic.stop/
-        - include: Lua.major.main
-
-  Lua.inline:
-    - match: '\\(luaexpr|cldcontext|(ctx|direct|late)lua)(?=[^a-zA-Z]|$)'
+    - match: '\\start(LUA)(?=[^a-zA-Z]|$)'
       scope: support.function.control-word.context
-      push: Lua.group/
+      push: [
+        Lua.block.LUA/,
+        generic.list-or-assignment*/,
+      ]
+    - match: '\\start(luacode)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: Lua.block.luacode/
+    - match: '\\start(lua)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: Lua.block.lua/
 
-  Lua.dummy-group:
-    - match: '[{}]'
-
-  Lua.group:
-    - match: '\{'
-      push: Lua.group.core/
-  Lua.group/:
-    - match: '\{'
-      set: Lua.group.core/
-  Lua.group.core/:
+  Lua.block.LUA/:
+    - match: ''
+      set: Lua.block.LUA.scope
+      with_prototype:
+        - match: '(?=\\stopLUA([^a-zA-Z]|$))'
+          pop: true
+        - include: Lua.block.gobble-braces
+        - include: main
+  Lua.block.LUA.scope:
+    - meta_content_scope: source.lua.major
     - meta_include_prototype: false
-    - meta_scope: source.lua.minor
-    - match: '\}'
-      pop: true
-    - include: Lua.minor-inline.main
-
-  Lua.major.main:
-    - include: scope:source.lua
-    - include: Lua.dummy-group
-    - include: main
-
-  Lua.minor-inline.main:
-    - include: comment.TeX
-    - include: Lua.minor-inline.comment
-    - include: Lua.minor.string
-    - include: Lua.group
-    - include: scope:source.lua
-    - include: main
-
-  Lua.minor-block.main:
-    - include: comment.TeX
-    - include: Lua.minor-block.comment
-    - include: Lua.minor.string
-    - include: scope:source.lua
-    - include: main
-
-  Lua.minor.string:
-    - match: ("|')
-      push:
-        - meta_scope: string.quoted.lua
-        - match: '\1'
-          pop: true
-        - include: Lua.minor.string.escape
-    - match: '(?<!--)\[(=*)\['
-      push:
-        - meta_scope: string.long.lua
-        - match: '\]\1\]'
-          pop: true
-        - include: Lua.minor.string.escape
-  Lua.minor.string.escape:
-    - match: '\\([xX][0-9a-fA-F]{2}|u\{[0-9a-fA-F]{,7}\}|.)'
-      scope: constant.character.escape.lua
-
-  Lua.minor-inline.comment:
     - match: '--(?!\[\[)'
       push:
         - meta_scope: comment.line.double-dash.lua
-        - match: '(?=\})'
+        - match: '$|(?=\\stopLUA([^a-zA-Z]|$))'
           pop: true
-        - include: Lua.minor-inline.comment.dummy-group
-  Lua.minor-inline.comment.dummy-group:
-    - match: '\{'
-      push:
-        - match: '\}'
-          pop: true
-        - include: Lua.minor-inline.comment.dummy-group
+    - include: scope:source.lua
 
-  Lua.minor-block.comment:
+  Lua.block.luacode/:
+    - match: ''
+      set: Lua.block.luacode.scope
+      with_prototype:
+        - match: '(?=\\stopluacode([^a-zA-Z]|$))'
+          pop: true
+        - include: Lua.block.gobble-braces
+        - include: main
+  Lua.block.luacode.scope:
+    - meta_content_scope: source.lua.major
+    - meta_include_prototype: false
+    - match: '--(?!\[\[)'
+      push:
+        - meta_scope: comment.line.double-dash.lua
+        - match: '$|(?=\\stopluacode([^a-zA-Z]|$))'
+          pop: true
+    - include: scope:source.lua
+
+  Lua.block.lua/:
+    - match: ''
+      set: Lua.block.lua.scope
+      with_prototype:
+        - match: '(?=\\stoplua([^a-zA-Z]|$))'
+          pop: true
+        - include: Lua.block.gobble-braces
+        - include: comment.TeX
+        - include: main
+  Lua.block.lua.scope:
+    - meta_content_scope: source.lua.minor
     - match: '--(?!\[\[)'
       push:
         - meta_scope: comment.line.double-dash.lua
         - match: '(?=\\stoplua([^a-zA-Z]|$))'
           pop: true
+    - include: scope:source.lua
+
+  Lua.block.gobble-braces:
+    - match: '[{}]'
+
+  Lua.inline:
+    - match: '\\(ctx|direct)lua(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: Lua.inline.group*/
+
+  Lua.inline.group/:
+    - match: '\{'
+      scope: meta.environment.brace.group.tex
+      set: Lua.inline.group.core/
+  Lua.inline.group*/:
+    - include: Lua.inline.group/
+    - include: generic.pop-if-no-group/
+  Lua.inline.group.core/:
+    - match: ''
+      set: Lua.inline.lua.scope
+      with_prototype:
+        - include: generic.pop-at-group-end/
+        - include: Lua.inline.comment
+        - include: Lua.inline.deep-group
+        - include: comment.TeX
+        - include: main
+  Lua.inline.lua.scope:
+    - meta_content_scope: source.lua.minor
+    - meta_scope: meta.environment.brace.group.tex
+    - include: scope:source.lua
+
+  Lua.inline.deep-group:
+    - match: '\{'
+      scope: meta.environment.table.lua
+      push: Lua.inline.deep-group.core/
+  Lua.inline.deep-group.core/:
+    - match: ''
+      set: Lua.inline.deep-lua.scope
+      with_prototype:
+        - include: generic.pop-at-group-end/
+        - include: Lua.inline.comment
+        - include: Lua.inline.deep-group
+        - include: comment.TeX
+        - include: main
+  Lua.inline.deep-lua.scope:
+    - meta_scope: meta.environment.table.lua
+    - include: scope:source.lua
+
+  Lua.inline.comment:
+    - match: '--(?!\[\[)'
+      push:
+        - meta_scope: comment.line.double-dash.lua
+        - match: '(?=\})'
+          pop: true
+        - match: '\\.'
+        - match: '\{'
+          push:
+            - match: '\\.'
+            - match: '\}'
+              pop: true
 
   MetaFun:
     - include: MetaFun.block
-    - include: MetaFun.use
 
   MetaFun.block:
-    - match: '(\\start)(MP(calculation|code|clip|definitions|drawing|inclusions|extensions|initializations|page|run|positiongraphic)|(((re)?use|(re)?usable|static)MP|uniqueMP(page)?)graphic|staticMPfigure)(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
+    - match: '\\start(MPinitializations)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: MetaFun.block.core/
+    - match: '\\start(MPinclusions)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
       push: [
         MetaFun.block.core/,
-        control.groups*/,
-        control.group.name*/
+        generic.group*/,
+        generic.list*/,
       ]
+    - match: '\\start(MP(drawing|environment|page)?)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: [
+        MetaFun.block.core/,
+        generic.list-or-assignment*/,
+      ]
+    - match: '\\start(MP(extensions|run|code|definitions|clip|positionmethod)|staticMPfigure)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: [
+        MetaFun.block.core/,
+        generic.group*/,
+      ]
+    - match: '\\start((MPposition|(static|use|(re)?usable|unique)MP|uniqueMPpage)graphic)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: [
+        MetaFun.block.core/,
+        generic.group*/,
+        generic.group*/,
+      ]
+
   MetaFun.block.core/:
     - meta_include_prototype: false
     - meta_content_scope: source.metapost.metafun
     - include: generic.stop/
     - include: MetaFun.main
 
-  MetaFun.use:
-    - match: '\\(re)?useMPgraphic(?=[^a-zA-Z]|$)'
-      scope: support.function.control-word.context
-      push: [
-        control.groups*/,
-        control.group.list*/,
-        control.group*/,
-      ]
-
   MetaFun.main:
-    - include: TeX.parameter
-    - include: MetaFun.ConTeXt
     - include: scope:source.metapost#types
+    - include: scope:source.metapost#definitions
+    - include: scope:source.metapost#loops
+    - include: scope:source.metapost#comment
     - include: MetaFun.constants
     - include: MetaFun.variables
     - include: MetaFun.labels
     - include: MetaFun.operators
     - include: MetaFun.functions
-    - include: scope:source.metapost#definitions
-    - include: scope:source.metapost#loops
     - include: MetaFun.environments
-    - include: scope:source.metapost#comment
     - include: MetaFun.TeX
-    - include: main
-
-  MetaFun.environments:
-    - match: '(?<=[^a-zA-Z_]|^)(Start|Stop)Page(?=[^a-zA-Z_]|$)'
-      scope: support.class.metapost
-    - include: scope:source.metapost#environments
-
-  MetaFun.ConTeXt:
-    - match: '\\(MP(betex|text|pos|anchor|var|color(only)?|options|transparency|string)|includeMPgraphic)(?=[^a-zA-Z]|$)'
-      scope: support.function.control-word.context
-      push: control.group/
-    - include: Lua
-    - include: control.word
-    - include: control.symbol
+    - include: MetaFun.ConTeXt
 
   MetaFun.constants:
     - match: '(?<=[^a-zA-Z_]|^)(Page(Offset|Depth|StateAvailable)|(Top|Bottom|Back|Cut)Space|(Left|Right|Inner|Outer)(Edge|Margin)(Width|Distance)|(Top|Header|Footer|Bottom)(Height|Distance)|(Makeup|Text)(Height|Width)|(Print)?Paper(Height|Width)|LayoutColumn(s|Distance|Width)|(Top|BaseLine)Skip|([HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(Right|Odd)Page|InPageBody|(Real|Last)?PageNumber|NOf(Pages|Columns)|Current(Column|Layout|Width|Height)|Overlay(Offset|Color|Depth|Height|Line(Color|Width)|Width)|Strut(Depth|Height)|fullsquare|(full|unit)diamond|[ul][lr]triangle|(unit|[btrl]|[ul][lr])circle|yellow)(?=[^a-zA-Z_]|$)'
@@ -319,90 +333,109 @@ contexts:
       scope: support.function.metapost.metafun
     - include: scope:source.metapost#functions
 
+  MetaFun.environments:
+    - match: '(?<=[^a-zA-Z_]|^)(Start|Stop)Page(?=[^a-zA-Z_]|$)'
+      scope: support.class.metapost
+    - include: scope:source.metapost#environments
+
   MetaFun.TeX:
     - match: '(?<=[^a-zA-Z_]|^)(b|verbatim)(tex)(?=[^a-zA-Z_]|$)'
       scope: support.class.metapost.metafun
       push:
-        - meta_scope: text.tex.context
+        - meta_content_scope: text.tex.context
         - match: '(?<=[^a-zA-Z_]|^)e\2(?=[^a-zA-Z_]|$)'
           scope: support.class.metapost.metafun
           pop: true
         - include: main
 
+  MetaFun.ConTeXt:
+    - match: '\\(MP(betex|text|pos|anchor|var|color(only)?|options|transparency|string)|includeMPgraphic)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: generic.group*/
+    - include: main
+
   JavaScript:
     - include: JavaScript.block
 
   JavaScript.block:
-    - match: '(\\start)(JS(code|preamble))(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
+    - match: '\\start(JSpreamble)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
       push: [
-        JavaScript.block.core/,
-        JavaScript.preamble*/,
+        JavaScript.block.preamble.core/,
+        JavaScript.name-used-when*/,
+      ]
+    - match: '\\start(JScode)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: [
+        JavaScript.block.code.core/,
+        JavaScript.name-uses-name*/,
       ]
 
-  JavaScript.block.core/:
-    - meta_include_prototype: false
-    - meta_content_scope: source.js
-    - include: generic.stop/
-    - include: JavaScript.main
+  JavaScript.block.preamble.core/:
+    - match: ''
+      set: JavaScript.block.scope
+      with_prototype:
+        - match: '(?=\\stopJSpreamble([^a-zA-Z]|$))'
+          pop: true
+        - include: comment.TeX
+        - include: control.word
 
-  JavaScript.main:
-    - include: comment.TeX
+  JavaScript.block.code.core/:
+    - match: ''
+      set: JavaScript.block.scope
+      with_prototype:
+        - match: '(?=\\stopJScode([^a-zA-Z]|$))'
+          pop: true
+        - include: comment.TeX
+        - include: control.word
+
+  JavaScript.block.scope:
+    - meta_content_scope: source.js
+    - match: '//.*$'
+      scope: comment.line.double-slash.js
     - include: scope:source.js
 
-  JavaScript.preamble*/:
-    - match: ''
-      set: [
-        JavaScript.preamble.used*/,
-        JavaScript.preamble.part/,
-      ]
-  JavaScript.preamble.part/:
-    - match: '[a-zA-Z]+'
-      scope: entity.name.context
-      pop: true
-    - match: '\{([a-zA-Z]*)\}'
+  JavaScript.name-used-when*/:
+    - match: '\s*(\S+)\s+(used)\s+(now|later)(?=[^a-zA-Z]|$)'
       captures:
         '1': entity.name.context
+        '2': markup.raw.context
+        '3': constant.other.context
       pop: true
-  JavaScript.preamble.used*/:
-    - match: '\s*(used)\s*'
-      set: JavaScript.preamble.when*/
     - match: ''
       pop: true
-  JavaScript.preamble.when*/:
-    - match: '\s*[a-zA-Z]+\s*'
-      scope: constant.other.context
-      pop: true
-    - match: '\s*\{([\sa-zA-Z]*)\}\s*'
+
+  JavaScript.name-uses-name*/:
+    - match: '\s*(\S+)\s+(uses)\s+(\S+)'
       captures:
-        '1': constant.other.context
+        '1': entity.name.context
+        '2': markup.raw.context
+        '3': entity.name.context
       pop: true
     - match: ''
       pop: true
 
   ConTeXt:
-    - include: ConTeXt.TABLE
+    - include: ConTeXt.comment
     - include: ConTeXt.verbatim
     - include: ConTeXt.sections
     - include: ConTeXt.macros
 
-  ConTeXt.TABLE:
-    - match: '(\\b)(TABLE(head|next|body|foot)?|T([CXYHN]|[RD]s?))(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
-      push: control.lists*/
-    - match: '(\\e)(TABLE(head|next|body|foot)?|T([CXYHN]|[RD]s?))(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.stop.context
-        '2': markup.heading.name.context
+  ConTeXt.comment:
+    - match: '\\start(hiding)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push:
+        - meta_scope: comment.block.context
+        - include: generic.stop/
+
 
   ConTeXt.sections:
-    - match: '\\(part|chapter|(sub){0,4}section)(?=[^a-zA-Z]|$)'
+    - match: '\\(part|chapter|title|(sub){0,4}(section|subject))(?=[^a-zA-Z]|$)'
       scope: support.function.control-word.context
-      push: control.group.name/
+      push: [
+        generic.group.name*/,
+        generic.list*/,
+      ]
 
   ConTeXt.verbatim:
     - include: ConTeXt.verbatim.inline
@@ -411,33 +444,54 @@ contexts:
   ConTeXt.verbatim.inline:
     - match: '\\type(?=[^a-zA-Z]|$)'
       scope: support.function.control-word.context
-      push: ConTeXt.verbatim.group/
-  ConTeXt.verbatim.group/:
+      push: [
+        ConTeXt.verbatim.angles_or_group/,
+        generic.assignment*/,
+      ]
+  ConTeXt.verbatim.angles_or_group/:
     - match: '\{'
-      set: ConTeXt.verbatim.group.core/
-  ConTeXt.verbatim.group.core/:
-    - meta_include_prototype: false
-    - meta_content_scope: markup.raw.context
-    - match: '\}'
-      pop: true
-    - include: ConTeXt.verbatim.dummy-group
+      scope: meta.environment.brace.group.tex
+      set:
+        - meta_include_prototype: false
+        - meta_content_scope: 'meta.environment.brace.group.tex markup.raw.context'
+        - match: '\}'
+          scope: meta.environment.brace.group.tex
+          pop: true
+        - include: ConTeXt.verbatim.dummy-group
+    - match: '<<'
+      set:
+        - meta_include_prototype: false
+        - meta_content_scope: markup.raw.context
+        - match: '>>'
+          pop: true
+        - include: ConTeXt.verbatim.dummy-angles
+
   ConTeXt.verbatim.dummy-group:
     - match: '\{'
       push:
         - meta_include_prototype: false
-        - match: '\}'
-          pop: true
+        - include: generic.pop-at-group-end/
         - include: ConTeXt.verbatim.dummy-group
+  ConTeXt.verbatim.dummy-angles:
+    - match: '<<'
+      push:
+        - meta_include_prototype: false
+        - match: '>>'
+          pop: true
+        - include: ConTeXt.verbatim.dummy-angles
 
   ConTeXt.verbatim.block:
-    - match: '(\\start)(typing|buffer)(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
+    - match: '\\start(typing)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
       push: [
         ConTeXt.verbatim.block.core/,
-        control.lists*/,
-        control.list.name*/,
+        generic.list-or-assignment*/,
+      ]
+    - match: '\\start(buffer)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
+      push: [
+        ConTeXt.verbatim.block.core/,
+        generic.list*/,
       ]
   ConTeXt.verbatim.block.core/:
     - meta_include_prototype: false
@@ -452,15 +506,14 @@ contexts:
     - match: '\\define(?=[^a-zA-Z]|$)'
       scope: keyword.control-word.tex.context
       push: [
-        control.sequence.def/,
-        control.list.num*/,
+        generic.group/,
+        TeX.def.control-sequence/,
+        generic.list.num*/,
       ]
 
   ConTeXt.texdef:
-    - match: '(\\start)(texdefinition)(?=[^a-zA-Z]|$)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
+    - match: '\\start(texdefinition)(?=[^a-zA-Z]|$)'
+      scope: support.function.control-word.context
       push: [
         ConTeXt.texdef.main/,
         ConTeXt.texdef.arguments*/,
@@ -469,7 +522,7 @@ contexts:
       ]
 
   ConTeXt.texdef.prefixes*/:
-    - match: '(?<=[^a-zA-Z]|^)(global|(un)?expanded)(?=[^a-zA-Z]|$)'
+    - match: '(?<=[^a-zA-Z]|^)((no)?spaces|global|(un)?expanded)(?=[^a-zA-Z]|$)'
       scope: constant.other.tex.context
     - match: '(?=[^\s])'
       pop: true
@@ -485,45 +538,34 @@ contexts:
       pop: true
 
   ConTeXt.texdef.main/:
-    - meta_include_prototype: false
     - meta_content_scope: meta.environment.def.tex.context
     - include: generic.stop/
-    - include: ConTeXt.texdef.comment
-    - include: ConTeXt.texdef.group
-    - include: main
-
-  ConTeXt.texdef.comment:
-    - match: '%%.*'
-      scope: comment.line.double-percentage.tex.context
-
-  ConTeXt.texdef.group:
-    - match: '\{'
-      push: ConTeXt.texdef.group.core/
-  ConTeXt.texdef.group.core/:
-    - meta_include_prototype: false
-    - match: '\}'
-      pop: true
-    - include: ConTeXt.texdef.comment
-    - include: ConTeXt.texdef.group
     - include: main
 
   TeX:
     - include: TeX.parameter
-    - include: TeX.def
+    - include: TeX.let-or-def
 
   TeX.parameter:
     - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})[1-9]'
       scope: variable.parameter.tex
-    - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})([a-zA-Z]+|\{.*?\})'
+    - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})([a-zA-Z:-]+|\{.*?\})'
       scope: variable.parameter.tex
 
-  TeX.def:
+  TeX.let-or-def:
     - match: '\\([egx]?def|let)(?=[^a-zA-Z]|$)'
       scope: keyword.control-word.tex
-      push: control.sequence.def/
+      push: TeX.def.control-sequence/
+
+  TeX.def.control-sequence/:
+    - match: '\\[a-zA-Z]+'
+      scope: entity.control-word.tex
+      pop: true
+    - match: '\\[^a-zA-Z]'
+      scope: entity.control-symbol.tex
+      pop: true
 
   control:
-    - include: control.group
     - include: control.word
     - include: control.symbol
     - include: control.active-character
@@ -532,8 +574,6 @@ contexts:
     - include: control.word.font
     - include: control.word.tab
     - include: control.word.conditional
-    - include: control.word.interface
-    - include: control.word.start-stop
     - include: control.word.generic
 
   control.word.font:
@@ -543,50 +583,16 @@ contexts:
   control.word.tab:
     - match: '\\([FMLSNA]R|NC|[HFMLTBV]L)(?=[^a-zA-Z]|$)'
       scope: entity.control-word.tab.context
-      push: control.lists*/
+      push: generic.lists*/
 
   control.word.conditional:
     - match: '\\((if|doif(else)?)[a-zA-Z]*|doif[a-zA-Z]*else|[a-zA-Z]+(true|false)(?=[^a-zA-Z]|$)|(or|else|fi)(?=[^a-zA-Z]|$))'
       scope: keyword.control-word.context
 
-  control.word.interface:
-    - match: '(\\define)([a-zA-Z]+)'
-      captures:
-        '1': constant.other.control-word.context
-        '2': support.function.control-word.context
-      push: [
-        control.lists*/,
-        control.list.name*/,
-      ]
-    - match: '(\\setup(?!s(?=[^a-zA-Z]|$)))([a-zA-Z]+)'
-      captures:
-        '1': constant.other.control-word.context
-        '2': support.function.control-word.context
-      push: control.lists*/
-
-  control.word.start-stop:
-    - match: '(\\start)([a-zA-Z]*)'
-      captures:
-        '1': keyword.control-word.start.context
-        '2': markup.heading.name.context
-      push: control.lists*/
-    - match: '(\\stop)([a-zA-Z]*)'
-      captures:
-        '1': keyword.control-word.stop.context
-        '2': markup.heading.name.context
-
   control.word.generic:
     - match: '\\[a-zA-Z]+'
       scope: support.function.control-word.context
-      push: control.lists*/
-
-  control.sequence.def/:
-    - match: '\\[a-zA-Z]+'
-      scope: entity.control-word.tex
-      pop: true
-    - match: '\\[^a-zA-Z]'
-      scope: entity.control-symbol.tex
-      pop: true
+      push: generic.lists-or-assignments*/
 
   control.symbol:
     - match: '\\[^a-zA-Z]'
@@ -596,91 +602,127 @@ contexts:
     - match: '[|~]'
       scope: constant.other.active-character.context
 
-  control.group:
-    - match: '\{'
-      push: control.group.core/
-  control.group/:
-    - match: '\{'
-      set: control.group.core/
-  control.group*/:
-    - include: control.group/
+  generic.stop/:
+    - match: '(?=\\stop\1([^a-zA-Z]|$))'
+      scope: support.function.control-word.context
+      pop: true
+
+  generic.pop-if-no-group/:
     - match: '(?=[^\s\{])'
       pop: true
-  control.groups*/:
-    - include: control.group
-    - match: '(?=[^\s\{])'
+  generic.pop-if-no-list/:
+    - match: '(?=[^\s\[])'
       pop: true
-  control.group.core/:
+
+  generic.pop-at-group-end/:
     - match: '\}'
       pop: true
+  generic.pop-at-list-end/:
+    - match: '\]'
+      pop: true
+
+  generic.group:
+    - match: '\{'
+      push: generic.group.core/
+  generic.group/:
+    - match: '\{'
+      set: generic.group.core/
+  generic.group*/:
+    - include: generic.group/
+    - include: generic.pop-if-no-group/
+  generic.groups*/:
+    - include: generic.group
+    - include: generic.pop-if-no-group/
+  generic.group.core/:
+    - meta_scope: meta.environment.brace.group.tex
+    - include: generic.pop-at-group-end/
     - include: main
 
-  control.group.list*/:
+  generic.group.list*/:
     - match: '\{'
-      set: control.group.list.core/
-    - match: '(?=[^\s\{])'
-      pop: true
-  control.group.list.core/:
-    - match: '\}'
-      pop: true
-    - match: '([a-zA-Z-:]+)(=)'
+      set: generic.group.list.core/
+    - include: generic.pop-if-no-group/
+  generic.group.list.core/:
+    - meta_scope: meta.environment.brace.group.tex
+    - match: '([a-zA-Z-:]+)\s*(=)'
       captures:
         '1': variable.parameter.key.context
         '2': keyword.operator.equals.context
-    - include: main
+    - include: generic.group.core/
 
-  control.group.name/:
+  generic.group.name/:
     - match: '\{'
-      set: control.group.name.core/
-  control.group.name*/:
-    - include: control.group.name/
-    - match: '(?=[^\s\{])'
-      pop: true
-  control.group.name.core/:
-    - include: control.group.core/
+      set: generic.group.name.core/
+  generic.group.name*/:
+    - include: generic.group.name/
+    - include: generic.pop-if-no-group/
+  generic.group.name.core/:
+    - meta_scope: meta.environment.brace.group.tex
+    - include: generic.group.core/
     - match: '.'
       scope: entity.name.context
 
-  control.list:
+  generic.list:
     - match: '\['
-      push: control.list.core/
-  control.lists*/:
-    - include: control.list
-    - match: '(?=[^\s\[])'
-      pop: true
-  control.list.core/:
-    - match: '\]'
-      pop: true
-    - match: '([a-zA-Z-:]+)(=)'
+      push: generic.list.core/
+  generic.list/:
+    - match: '\['
+      set: generic.list.core/
+  generic.list*/:
+    - include: generic.list/
+    - include: generic.pop-if-no-list/
+  generic.lists*/:
+    - include: generic.list
+    - include: generic.pop-if-no-list/
+  generic.list.core/:
+    - meta_scope: meta.environment.list.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  generic.assignment:
+    - match: '\['
+      push: generic.assignment.core/
+  generic.assignment/:
+    - match: '\['
+      set: generic.assignment.core/
+  generic.assignment*/:
+    - include: generic.assignment/
+    - include: generic.pop-if-no-list/
+  generic.assignments*/:
+    - include: generic.assignment
+    - include: generic.pop-if-no-list/
+  generic.assignment.core/:
+    - meta_scope: meta.environment.list.context
+    - match: '([a-zA-Z-:]+)\s*(=)'
       captures:
         '1': variable.parameter.key.context
         '2': keyword.operator.equals.context
-    - include: main
+    - include: generic.list.core/
 
-  control.list.name/:
+  generic.list-or-assignment:
     - match: '\['
-      set: control.list.name.core/
-  control.list.name*/:
-    - include: control.list.name/
-    - match: '(?=[^\s\[])'
-      pop: true
-  control.list.name.core/:
-    - match: '\]'
-      pop: true
-    - include: main
-    - match: '.'
-      scope: entity.name.context
+      push: generic.list-or-assignment.core/
+  generic.list-or-assignment/:
+    - match: '\['
+      set: generic.list-or-assignment.core/
+  generic.list-or-assignment*/:
+    - include: generic.list-or-assignment/
+    - include: generic.pop-if-no-list/
+  generic.lists-or-assignments*/:
+    - include: generic.list-or-assignment
+    - include: generic.pop-if-no-list/
+  generic.list-or-assignment.core/:
+    - meta_scope: meta.environment.list.context
+    - include: generic.assignment.core/
 
-  control.list.num/:
+  generic.list.num/:
     - match: '\['
-      set: control.list.num.core/
-  control.list.num*/:
-    - include: control.list.num/
-    - match: '(?=[^\s\[])'
-      pop: true
-  control.list.num.core/:
+      set: generic.list.num.core/
+  generic.list.num*/:
+    - include: generic.list.num/
+    - include: generic.pop-if-no-list/
+  generic.list.num.core/:
+    - meta_scope: meta.environment.list.context
     - match: '[0-9]+'
       scope: constant.numeric.context
-    - match: '\]'
-      pop: true
-    - include: main
+    - include: generic.list.core/
