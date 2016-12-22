@@ -7,8 +7,8 @@ import os
 COMMAND_LEN_UPPER_BOUND = 100
 
 def load_commands():
-    commands_json = os.path.join(
-        sublime.packages_path(), "ConTeXtTools", "commands.json")
+    this_package_path = os.path.dirname(__file__)
+    commands_json = os.path.join(this_package_path, "commands.json")
     with open(commands_json) as f:
         return json.load(f)
 
@@ -38,13 +38,15 @@ def is_context(view):
     except:
         return False
 
+
 class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.commands = load_commands()
         self.command_names = set(self.commands.keys())
         self.command_completions = [
-            ["\\{name}".format(name=name), ""] for name in self.command_names]
+            ["\\{name}".format(name=name), ""]
+            for name in self.command_names]
 
     def on_query_completions(self, view, prefix, locations):
         if not is_context(view):
@@ -56,73 +58,78 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         if not is_context(view):
             return
 
-        previous_text = view.substr(sublime.Region(
+        previous_text_range = [
             max(0, view.sel()[0].begin() - COMMAND_LEN_UPPER_BOUND),
             view.sel()[0].begin()
-        ))
+        ]
 
-        command_name = self.get_command_name(previous_text)
+        command_name = self.get_command_name(view, *previous_text_range)
         if not command_name:
             view.hide_popup()
             return
 
         popup_text = self.get_popup_text(command_name)
 
-        width = 8 * 75
         kwargs = {
             "location": -1,
-            "max_width": width if width < 900 else 900,
+            "max_width": 1000,
             "flags": sublime.COOPERATE_WITH_AUTO_COMPLETE,
         }
 
         view.show_popup(popup_text, **kwargs)
 
-    def get_command_name(self, previous_text):
+    def get_command_name(self, view, start, stop):
+        previous_text = view.substr(sublime.Region(start, stop))
         match = re.match(r"\s*([a-zA-Z]+)\\", previous_text[::-1])
         if match:
             name = match.group(1)[::-1]
-            if name in self.command_names:
+            range_ = [stop - end for end in reversed(match.span(1))]
+            scope_is_command = view.match_selector(
+                range_[0], "support.function.control-word.context")
+            if name in self.command_names and scope_is_command:
                 return name
 
     def get_popup_text(self, command_name):
-        style_sheet = "\n".join([
-            r"html {",
-            r"    background-color: #{};".format("151515"),
-            r"}",
-            r"",
-            r".syntax {",
-            r"    color: #{};".format("8ea6b7"),
-            r"    font-size: 1.2em;",
-            r"}",
-            r"",
-            r".doc_string {",
-            r"    color: #{};".format("956837"),
-            r"    font-size: 1em;",
-            r"}",
-        ])
+        style_sheet = """
+            html {{
+                background-color: {background_color};
+            }}
+            .syntax {{
+                color: {syntax_color};
+                font-size: 1.2em;
+            }}
+            .doc_string {{
+                color: {doc_string_color};
+                font-size: 1em;
+            }}
+        """.format(
+            background_color="#151515",
+            syntax_color="#8ea6b7",
+            doc_string_color="#956837")
 
         signatures = []
         command = self.commands[command_name]
         for variation in command:
-            new_signature = "\n".join([
-                r"<div class='syntax'>",
-                r"    <code>{syntax}</code>",
-                r"</div>",
-                r"",
-                r"<br />",
-                r"",
-                r"<div class='doc_string'>",
-                r"    <code>{doc_string}</code>",
-                r"</div>",
-            ])
+            new_signature = """
+                <div class='syntax'>
+                    <code>{syntax}</code>
+                </div>
+            """
             parts = {
-                "syntax": protect_html(variation[0]),
-                "doc_string": protect_html(variation[1])
+                "syntax": protect_html(variation[0])
             }
+            if len(variation[1]) > 0:
+                new_signature += """
+                    <br />
+                    <div class='doc_string'>
+                        <code>{doc_string}</code>
+                    </div>
+                """
+                parts["doc_string"] = protect_html(variation[1])
             signatures.append(new_signature.format(**parts))
 
         full_signature = \
-            r"<style>{style_sheet}</style>".format(style_sheet=style_sheet) \
+            "<style>{style_sheet}</style>".format(style_sheet=style_sheet) \
             + "<br />".join(signatures)
 
         return full_signature

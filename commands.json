@@ -1001,12 +1001,12 @@
   ],
   "alwayscitation": [
     [
-      "                      1         2  \n\\alwayscitation [..,..=..,..] [...]\n                     OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                      1             2      \n\\alwayscitation [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                      1         2  \n\\alwayscitation [..,..=..,..] [...]\n                     OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "                  1     2  \n\\alwayscitation [...] [...]\n                 OPT       ",
@@ -1015,12 +1015,12 @@
   ],
   "alwayscite": [
     [
-      "                  1         2  \n\\alwayscite [..,..=..,..] [...]\n                 OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                  1             2      \n\\alwayscite [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                  1         2  \n\\alwayscite [..,..=..,..] [...]\n                 OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "              1     2  \n\\alwayscite [...] [...]\n             OPT       ",
@@ -1259,10 +1259,6 @@
     [
       "              1         2      \n\\attachment [...] [..,..=..,..]\n             OPT       OPT     ",
       "1   NAME\n\n2   inherits: \\setupattachment"
-    ],
-    [
-      "              1         2      \n\\attachment [...] [..,..=..,..]\n             OPT       OPT     ",
-      "1   NAME\n\n2   inherits: \\setupattachment"
     ]
   ],
   "autocap": [
@@ -1410,10 +1406,6 @@
     ]
   ],
   "background": [
-    [
-      "              1  \n\\background {...}",
-      "1   CONTENT"
-    ],
     [
       "              1  \n\\background {...}",
       "1   CONTENT"
@@ -1767,12 +1759,12 @@
   ],
   "btxalwayscitation": [
     [
-      "                         1         2  \n\\btxalwayscitation [..,..=..,..] [...]\n                        OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                         1             2      \n\\btxalwayscitation [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                         1         2  \n\\btxalwayscitation [..,..=..,..] [...]\n                        OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "                     1     2  \n\\btxalwayscitation [...] [...]\n                    OPT       ",
@@ -1955,20 +1947,20 @@
   ],
   "btxhybridcite": [
     [
-      "                     1         2  \n\\btxhybridcite [..,..=..,..] [...]\n                    OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                     1             2      \n\\btxhybridcite [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
     ],
     [
-      "                 1     2  \n\\btxhybridcite [...] [...]\n                OPT       ",
-      "1   default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n\n2   REFERENCE"
+      "                     1         2  \n\\btxhybridcite [..,..=..,..] [...]\n                    OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "                 1  \n\\btxhybridcite {...}",
       "1   REFERENCE"
+    ],
+    [
+      "                 1     2  \n\\btxhybridcite [...] [...]\n                OPT       ",
+      "1   default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n\n2   REFERENCE"
     ]
   ],
   "btxlabellanguage": [
@@ -1985,12 +1977,12 @@
   ],
   "btxlistcitation": [
     [
-      "                       1         2  \n\\btxlistcitation [..,..=..,..] [...]\n                      OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                       1             2      \n\\btxlistcitation [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                       1         2  \n\\btxlistcitation [..,..=..,..] [...]\n                      OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "                   1     2  \n\\btxlistcitation [...] [...]\n                  OPT       ",
@@ -2041,12 +2033,12 @@
   ],
   "btxtextcitation": [
     [
-      "                       1         2  \n\\btxtextcitation [..,..=..,..] [...]\n                      OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                       1             2      \n\\btxtextcitation [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                       1         2  \n\\btxtextcitation [..,..=..,..] [...]\n                      OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "                   1     2  \n\\btxtextcitation [...] [...]\n                  OPT       ",
@@ -2103,19 +2095,15 @@
   ],
   "but": [
     [
-      "       1    2    \n\\but [...] ... \\\\",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
       "       1       2    \n\\but [...] [...,...]\n              OPT   ",
       "1   REFERENCE\n\n2   REFERENCE"
+    ],
+    [
+      "       1    2    \n\\but [...] ... \\\\",
+      "1   REFERENCE\n\n2   TEXT"
     ]
   ],
   "button": [
-    [
-      "              1         2     3  \n\\button [..,..=..,..] {...} [...]\n             OPT                 ",
-      "1   inherits: \\setupbutton\n\n2   TEXT\n\n3   REFERENCE"
-    ],
     [
       "              1         2     3  \n\\button [..,..=..,..] {...} [...]\n             OPT                 ",
       "1   inherits: \\setupbutton\n\n2   TEXT\n\n3   REFERENCE"
@@ -2367,38 +2355,38 @@
   ],
   "citation": [
     [
-      "                1         2  \n\\citation [..,..=..,..] [...]\n               OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                1             2      \n\\citation [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
     ],
     [
-      "            1     2  \n\\citation [...] [...]\n           OPT       ",
-      "1   default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n\n2   REFERENCE"
+      "                1         2  \n\\citation [..,..=..,..] [...]\n               OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "            1  \n\\citation {...}",
       "1   REFERENCE"
+    ],
+    [
+      "            1     2  \n\\citation [...] [...]\n           OPT       ",
+      "1   default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n\n2   REFERENCE"
     ]
   ],
   "cite": [
-    [
-      "            1         2  \n\\cite [..,..=..,..] [...]\n           OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
     [
       "            1             2      \n\\cite [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
     ],
     [
-      "        1     2  \n\\cite [...] [...]\n       OPT       ",
-      "1   default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n\n2   REFERENCE"
+      "            1         2  \n\\cite [..,..=..,..] [...]\n           OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "        1  \n\\cite {...}",
       "1   REFERENCE"
+    ],
+    [
+      "        1     2  \n\\cite [...] [...]\n       OPT       ",
+      "1   default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n\n2   REFERENCE"
     ]
   ],
   "clap": [
@@ -2493,12 +2481,12 @@
   ],
   "colored": [
     [
-      "           1     2  \n\\colored [...] {...}",
-      "1   COLOR\n\n2   CONTENT"
-    ],
-    [
       "               1         2  \n\\colored [..,..=..,..] {...}",
       "1   inherits: \\definecolor\n\n2   CONTENT"
+    ],
+    [
+      "           1     2  \n\\colored [...] {...}",
+      "1   COLOR\n\n2   CONTENT"
     ]
   ],
   "colorvalue": [
@@ -2550,10 +2538,6 @@
     ]
   ],
   "comment": [
-    [
-      "           1         2         3  \n\\comment [...] [..,..=..,..] {...}\n          OPT       OPT           ",
-      "1   TEXT\n\n2   inherits: \\setupcomment\n\n3   TEXT"
-    ],
     [
       "           1         2         3  \n\\comment [...] [..,..=..,..] {...}\n          OPT       OPT           ",
       "1   TEXT\n\n2   inherits: \\setupcomment\n\n3   TEXT"
@@ -2872,10 +2856,6 @@
     ]
   ],
   "copylabeltext": [
-    [
-      "                 1         2      \n\\copylabeltext [...] [..,..=..,..]\n                OPT               ",
-      "1   LANGUAGE\n\n2   KEY = KEY"
-    ],
     [
       "                 1         2      \n\\copylabeltext [...] [..,..=..,..]\n                OPT               ",
       "1   LANGUAGE\n\n2   KEY = KEY"
@@ -3319,12 +3299,12 @@
   ],
   "decrement": [
     [
-      "             1 \n\\decrement \\...",
-      "1   CSNAME"
-    ],
-    [
       "               1    \n\\decrement (...,...)",
       "1   CSNAME NUMBER"
+    ],
+    [
+      "             1 \n\\decrement \\...",
+      "1   CSNAME"
     ]
   ],
   "decrementcounter": [
@@ -3657,12 +3637,12 @@
   ],
   "defineconversion": [
     [
-      "                    1     2     3  \n\\defineconversion [...] [...] [...]\n                   OPT             ",
-      "1   LANGUAGE\n\n2   NAME\n\n3   CSNAME"
-    ],
-    [
       "                    1     2       3    \n\\defineconversion [...] [...] [...,...]\n                   OPT                 ",
       "1   LANGUAGE\n\n2   NAME\n\n3   TEXT"
+    ],
+    [
+      "                    1     2     3  \n\\defineconversion [...] [...] [...]\n                   OPT             ",
+      "1   LANGUAGE\n\n2   NAME\n\n3   CSNAME"
     ]
   ],
   "defineconversionset": [
@@ -4062,10 +4042,6 @@
     ]
   ],
   "defineinterlinespace": [
-    [
-      "                        1     2         3      \n\\defineinterlinespace [...] [...] [..,..=..,..]\n                             OPT       OPT     ",
-      "1   NAME\n\n2   NAME\n\n3   inherits: \\setupinterlinespace"
-    ],
     [
       "                        1     2         3      \n\\defineinterlinespace [...] [...] [..,..=..,..]\n                             OPT       OPT     ",
       "1   NAME\n\n2   NAME\n\n3   inherits: \\setupinterlinespace"
@@ -4977,12 +4953,12 @@
   ],
   "directcolored": [
     [
-      "                 1  \n\\directcolored [...]",
-      "1   COLOR"
-    ],
-    [
       "                     1      \n\\directcolored [..,..=..,..]",
       "1   inherits: \\definecolor"
+    ],
+    [
+      "                 1  \n\\directcolored [...]",
+      "1   COLOR"
     ]
   ],
   "directconvertedcounter": [
@@ -7195,12 +7171,12 @@
   ],
   "dorecurse": [
     [
-      "             1     2  \n\\dorecurse {...} {...}",
-      "1   NUMBER\n\n2   COMMAND"
-    ],
-    [
       "             1     2 \n\\dorecurse {...} \\...",
       "1   NUMBER\n\n2   CSNAME"
+    ],
+    [
+      "             1     2  \n\\dorecurse {...} {...}",
+      "1   NUMBER\n\n2   COMMAND"
     ]
   ],
   "dorepeatwithcommand": [
@@ -7252,18 +7228,6 @@
     ]
   ],
   "dosetupcheckedinterlinespace": [
-    [
-      "                                    1      \n\\dosetupcheckedinterlinespace {..,..=..,..}",
-      "1   inherits: \\setupinterlinespace"
-    ],
-    [
-      "                                  1    \n\\dosetupcheckedinterlinespace {...,...}",
-      "1   on off reset auto small medium big NUMBER DIMENSION"
-    ],
-    [
-      "                                1  \n\\dosetupcheckedinterlinespace {...}",
-      "1   NAME"
-    ],
     [
       "                                    1      \n\\dosetupcheckedinterlinespace {..,..=..,..}",
       "1   inherits: \\setupinterlinespace"
@@ -7633,12 +7597,12 @@
   ],
   "endnote": [
     [
-      "             1       2  \n\\endnote [...,...] {...}\n            OPT         ",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
       "               1      \n\\endnote [..,..=..,..]",
       "1   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
+    ],
+    [
+      "             1       2  \n\\endnote [...,...] {...}\n            OPT         ",
+      "1   REFERENCE\n\n2   TEXT"
     ]
   ],
   "enskip": [
@@ -8453,22 +8417,22 @@
   ],
   "footnote": [
     [
-      "              1       2  \n\\footnote [...,...] {...}\n             OPT         ",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
       "                1      \n\\footnote [..,..=..,..]",
       "1   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
+    ],
+    [
+      "              1       2  \n\\footnote [...,...] {...}\n             OPT         ",
+      "1   REFERENCE\n\n2   TEXT"
     ]
   ],
   "footnotetext": [
     [
-      "                  1       2  \n\\footnotetext [...,...] {...}\n                 OPT         ",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
       "                    1      \n\\footnotetext [..,..=..,..]",
       "1   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
+    ],
+    [
+      "                  1       2  \n\\footnotetext [...,...] {...}\n                 OPT         ",
+      "1   REFERENCE\n\n2   TEXT"
     ]
   ],
   "forcecharacterstripping": [
@@ -8553,10 +8517,6 @@
     [
       "              1         2  \n\\framed [..,..=..,..] {...}\n             OPT           ",
       "1   inherits: \\setupframed\n\n2   CONTENT"
-    ],
-    [
-      "              1         2  \n\\framed [..,..=..,..] {...}\n             OPT           ",
-      "1   inherits: \\setupframed\n\n2   CONTENT"
     ]
   ],
   "frameddimension": [
@@ -8572,10 +8532,6 @@
     ]
   ],
   "framedtext": [
-    [
-      "                  1         2  \n\\framedtext [..,..=..,..] {...}\n                 OPT           ",
-      "1   inherits: \\setupframedtext\n\n2   CONTENT"
-    ],
     [
       "                  1         2  \n\\framedtext [..,..=..,..] {...}\n                 OPT           ",
       "1   inherits: \\setupframedtext\n\n2   CONTENT"
@@ -9555,10 +9511,6 @@
     [
       "        1  \n\\high {...}",
       "1   CONTENT"
-    ],
-    [
-      "        1  \n\\high {...}",
-      "1   CONTENT"
     ]
   ],
   "highlight": [
@@ -9801,20 +9753,12 @@
   ],
   "increment": [
     [
-      "             1 \n\\increment \\...",
-      "1   CSNAME"
-    ],
-    [
       "               1    \n\\increment (...,...)",
       "1   CSNAME NUMBER"
     ],
     [
       "             1 \n\\increment \\...",
       "1   CSNAME"
-    ],
-    [
-      "               1    \n\\increment (...,...)",
-      "1   CSNAME NUMBER"
     ]
   ],
   "incrementcounter": [
@@ -10553,17 +10497,9 @@
     [
       "\\labellanguage",
       ""
-    ],
-    [
-      "\\labellanguage",
-      ""
     ]
   ],
   "labeltext": [
-    [
-      "             1  \n\\labeltext {...}",
-      "1   KEY"
-    ],
     [
       "             1  \n\\labeltext {...}",
       "1   KEY"
@@ -10573,20 +10509,16 @@
     [
       "              1     2  \n\\labeltexts {...} {...}",
       "1   KEY\n\n2   TEXT"
-    ],
-    [
-      "              1     2  \n\\labeltexts {...} {...}",
-      "1   KEY\n\n2   TEXT"
     ]
   ],
   "language": [
     [
-      "\\language",
-      ""
-    ],
-    [
       "            1  \n\\language [...]",
       "1   LANGUAGE"
+    ],
+    [
+      "\\language",
+      ""
     ]
   ],
   "languageCharacters": [
@@ -10782,10 +10714,6 @@
     ]
   ],
   "leftlabeltext": [
-    [
-      "                 1  \n\\leftlabeltext {...}",
-      "1   KEY"
-    ],
     [
       "                 1  \n\\leftlabeltext {...}",
       "1   KEY"
@@ -11117,11 +11045,11 @@
   ],
   "limitatetext": [
     [
-      "                1     2     3  \n\\limitatetext {...} {...} {...}",
+      "                1       2       3  \n\\limitatetext {...} {...,...} {...}",
       "1   TEXT\n\n2   [+-]DIMENSION\n\n3   COMMAND"
     ],
     [
-      "                1       2       3  \n\\limitatetext {...} {...,...} {...}",
+      "                1     2     3  \n\\limitatetext {...} {...} {...}",
       "1   TEXT\n\n2   [+-]DIMENSION\n\n3   COMMAND"
     ]
   ],
@@ -11141,10 +11069,6 @@
     [
       "            1  \n\\linenote {...}",
       "1   TEXT"
-    ],
-    [
-      "            1  \n\\linenote {...}",
-      "1   TEXT"
     ]
   ],
   "linespanningtext": [
@@ -11161,12 +11085,12 @@
   ],
   "listcitation": [
     [
-      "                    1         2  \n\\listcitation [..,..=..,..] [...]\n                   OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                    1             2      \n\\listcitation [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                    1         2  \n\\listcitation [..,..=..,..] [...]\n                   OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "                1     2  \n\\listcitation [...] [...]\n               OPT       ",
@@ -11175,12 +11099,12 @@
   ],
   "listcite": [
     [
-      "                1         2  \n\\listcite [..,..=..,..] [...]\n               OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                1             2      \n\\listcite [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                1         2  \n\\listcite [..,..=..,..] [...]\n               OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "            1     2  \n\\listcite [...] [...]\n           OPT       ",
@@ -11368,10 +11292,6 @@
     ]
   ],
   "low": [
-    [
-      "       1  \n\\low {...}",
-      "1   CONTENT"
-    ],
     [
       "       1  \n\\low {...}",
       "1   CONTENT"
@@ -11659,12 +11579,12 @@
   ],
   "mathcommand": [
     [
-      "               1     2  \n\\mathcommand {...} {...}\n              OPT   OPT ",
-      "1   TEXT\n\n2   TEXT"
-    ],
-    [
       "               1  \n\\mathcommand {...}",
       "1   NAME"
+    ],
+    [
+      "               1     2  \n\\mathcommand {...} {...}\n              OPT   OPT ",
+      "1   TEXT\n\n2   TEXT"
     ]
   ],
   "mathdefault": [
@@ -11845,10 +11765,6 @@
     [
       "               1     2     3     4  \n\\mathtriplet [...] {...} {...} {...}\n              OPT   OPT   OPT   OPT ",
       "1   NAME\n\n2   TEXT\n\n3   TEXT\n\n4   TEXT"
-    ],
-    [
-      "               1     2     3     4  \n\\mathtriplet [...] {...} {...} {...}\n              OPT   OPT   OPT   OPT ",
-      "1   NAME\n\n2   TEXT\n\n3   TEXT\n\n4   TEXT"
     ]
   ],
   "mathtt": [
@@ -11967,12 +11883,12 @@
   ],
   "menubutton": [
     [
-      "              1         2         3     4  \n\\menubutton [...] [..,..=..,..] {...} {...}\n                       OPT                 ",
-      "1   NAME\n\n2   inherits: \\setupinteractionmenu\n\n3   TEXT\n\n4   REFERENCE"
-    ],
-    [
       "                  1         2     3  \n\\menubutton [..,..=..,..] {...} {...}",
       "1   inherits: \\setupbutton\n\n2   TEXT\n\n3   REFERENCE"
+    ],
+    [
+      "              1         2         3     4  \n\\menubutton [...] [..,..=..,..] {...} {...}\n                       OPT                 ",
+      "1   NAME\n\n2   inherits: \\setupinteractionmenu\n\n3   TEXT\n\n4   REFERENCE"
     ]
   ],
   "mequal": [
@@ -12144,10 +12060,6 @@
     ]
   ],
   "monobold": [
-    [
-      "\\monobold",
-      ""
-    ],
     [
       "\\monobold",
       ""
@@ -12433,10 +12345,6 @@
     [
       "\\nextparagraphs",
       ""
-    ],
-    [
-      "\\nextparagraphs",
-      ""
     ]
   ],
   "nextrealpage": [
@@ -12657,12 +12565,12 @@
   ],
   "note": [
     [
-      "          1       2  \n\\note [...,...] {...}\n         OPT         ",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
       "            1      \n\\note [..,..=..,..]",
       "1   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
+    ],
+    [
+      "          1       2  \n\\note [...,...] {...}\n         OPT         ",
+      "1   REFERENCE\n\n2   TEXT"
     ],
     [
       "        1     2  \n\\note [...] [...]\n       OPT       ",
@@ -13101,12 +13009,12 @@
   ],
   "pageinjection": [
     [
-      "                 1         2      \n\\pageinjection [...] [..,..=..,..]\n                OPT       OPT     ",
-      "1   NAME\n\n2   KEY = VALUE"
-    ],
-    [
       "                     1             2      \n\\pageinjection [..,..=..,..] [..,..=..,..]\n                    OPT           OPT     ",
       "1   inherits: \\setuppageinjection\n\n2   KEY = VALUE"
+    ],
+    [
+      "                 1         2      \n\\pageinjection [...] [..,..=..,..]\n                OPT       OPT     ",
+      "1   NAME\n\n2   KEY = VALUE"
     ]
   ],
   "pagenumber": [
@@ -13255,12 +13163,12 @@
   ],
   "periods": [
     [
-      "           1  \n\\periods [...]\n          OPT ",
-      "1   NUMBER"
-    ],
-    [
       "               1      \n\\periods [..,..=..,..]\n              OPT     ",
       "1   inherits: \\setupperiods"
+    ],
+    [
+      "           1  \n\\periods [...]\n          OPT ",
+      "1   NUMBER"
     ]
   ],
   "permitcaretescape": [
@@ -13343,12 +13251,12 @@
   ],
   "placecombinedlist": [
     [
-      "                     1         2      \n\\placecombinedlist [...] [..,..=..,..]\n                              OPT     ",
-      "1   LIST\n\n2   inherits: \\setuplist"
-    ],
-    [
       "                         1      \n\\placecombinedlist [..,..=..,..]\n                        OPT     ",
       "1   inherits: \\setuplist"
+    ],
+    [
+      "                     1         2      \n\\placecombinedlist [...] [..,..=..,..]\n                              OPT     ",
+      "1   LIST\n\n2   inherits: \\setuplist"
     ]
   ],
   "placecomments": [
@@ -13569,12 +13477,12 @@
   ],
   "placement": [
     [
-      "             1         2         3  \n\\placement [...] [..,..=..,..] {...}\n                      OPT           ",
-      "1   NAME\n\n2   inherits: \\setupplacement\n\n3   CONTENT"
-    ],
-    [
       "                 1         2  \n\\placement [..,..=..,..] {...}\n                OPT           ",
       "1   inherits: \\setupplacement\n\n2   CONTENT"
+    ],
+    [
+      "             1         2         3  \n\\placement [...] [..,..=..,..] {...}\n                      OPT           ",
+      "1   NAME\n\n2   inherits: \\setupplacement\n\n3   CONTENT"
     ]
   ],
   "placenamedfloat": [
@@ -13597,12 +13505,12 @@
   ],
   "placeongrid": [
     [
-      "               1     2  \n\\placeongrid [...] {...}\n              OPT       ",
-      "1   normal standard yes strict tolerant top bottom both broad fit first last high one low none line strut box min max middle NAME\n\n2   CONTENT"
-    ],
-    [
       "                 1       2  \n\\placeongrid [...,...] {...}\n                OPT         ",
       "1   inherits: \\definegridsnapping\n\n2   CONTENT"
+    ],
+    [
+      "               1     2  \n\\placeongrid [...] {...}\n              OPT       ",
+      "1   normal standard yes strict tolerant top bottom both broad fit first last high one low none line strut box min max middle NAME\n\n2   CONTENT"
     ]
   ],
   "placeontopofeachother": [
@@ -13619,12 +13527,12 @@
   ],
   "placepairedbox": [
     [
-      "                  1         2         3     4  \n\\placepairedbox [...] [..,..=..,..] {...} {...}\n                           OPT                 ",
-      "1   NAME\n\n2   inherits: \\setuppairedbox\n\n3   CONTENT\n\n4   TEXT"
-    ],
-    [
       "                      1         2     3  \n\\placepairedbox [..,..=..,..] {...} {...}\n                     OPT                 ",
       "1   inherits: \\setuppairedbox\n\n2   CONTENT\n\n3   TEXT"
+    ],
+    [
+      "                  1         2         3     4  \n\\placepairedbox [...] [..,..=..,..] {...} {...}\n                           OPT                 ",
+      "1   NAME\n\n2   inherits: \\setuppairedbox\n\n3   CONTENT\n\n4   TEXT"
     ]
   ],
   "placeparallel": [
@@ -13818,10 +13726,6 @@
     ]
   ],
   "presetlabeltext": [
-    [
-      "                   1         2      \n\\presetlabeltext [...] [..,..=..,..]\n                  OPT               ",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
     [
       "                   1         2      \n\\presetlabeltext [...] [..,..=..,..]\n                  OPT               ",
       "1   LANGUAGE\n\n2   KEY = VALUE"
@@ -15249,10 +15153,6 @@
     [
       "                  1  \n\\rightlabeltext {...}",
       "1   KEY"
-    ],
-    [
-      "                  1  \n\\rightlabeltext {...}",
-      "1   KEY"
     ]
   ],
   "rightline": [
@@ -15353,12 +15253,12 @@
   ],
   "rollbutton": [
     [
-      "              1         2        3    4  \n\\rollbutton [...] [..,..=..,..] ... [...]\n             OPT       OPT               ",
-      "1   NAME\n\n2   inherits: \\setupinteractionmenu\n\n3   TEXT\n\n4   REFERENCE"
-    ],
-    [
       "                  1        2    3  \n\\rollbutton [..,..=..,..] ... [...]",
       "1   inherits: \\setupbutton\n\n2   TEXT\n\n3   REFERENCE"
+    ],
+    [
+      "              1         2        3    4  \n\\rollbutton [...] [..,..=..,..] ... [...]\n             OPT       OPT               ",
+      "1   NAME\n\n2   inherits: \\setupinteractionmenu\n\n3   TEXT\n\n4   REFERENCE"
     ]
   ],
   "roman": [
@@ -15489,12 +15389,12 @@
   ],
   "savebuffer": [
     [
-      "                1       2  \n\\savebuffer [...,...] [...]",
-      "1   BUFFER\n\n2   FILE"
-    ],
-    [
       "                  1      \n\\savebuffer [..,..=..,..]",
       "1   list   = NAME\n    file   = FILE\n    prefix = <u>yes</u> no"
+    ],
+    [
+      "                1       2  \n\\savebuffer [...,...] [...]",
+      "1   BUFFER\n\n2   FILE"
     ]
   ],
   "savecolor": [
@@ -15601,20 +15501,16 @@
   ],
   "section": [
     [
-      "             1       2  \n\\section [...,...] {...}\n            OPT         ",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "             1       2     3  \n\\section [...,...] {...} {...}\n            OPT               ",
-      "1   REFERENCE\n\n2   NUMBER\n\n3   TEXT"
-    ],
-    [
       "               1      \n\\section [..,..=..,..]",
       "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT"
     ],
     [
       "             1       2  \n\\section [...,...] {...}\n            OPT         ",
       "1   REFERENCE\n\n2   TEXT"
+    ],
+    [
+      "             1       2     3  \n\\section [...,...] {...} {...}\n            OPT               ",
+      "1   REFERENCE\n\n2   NUMBER\n\n3   TEXT"
     ]
   ],
   "seeindex": [
@@ -16145,22 +16041,22 @@
   ],
   "setnote": [
     [
-      "           1       2       3  \n\\setnote [...] [...,...] {...}\n                  OPT         ",
-      "1   NAME\n\n2   REFERENCE\n\n3   TEXT"
-    ],
-    [
       "           1         2      \n\\setnote [...] [..,..=..,..]",
       "1   NAME\n\n2   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
+    ],
+    [
+      "           1       2       3  \n\\setnote [...] [...,...] {...}\n                  OPT         ",
+      "1   NAME\n\n2   REFERENCE\n\n3   TEXT"
     ]
   ],
   "setnotetext": [
     [
-      "               1       2       3  \n\\setnotetext [...] [...,...] {...}\n                      OPT         ",
-      "1   NAME\n\n2   REFERENCE\n\n3   TEXT"
-    ],
-    [
       "               1         2      \n\\setnotetext [...] [..,..=..,..]",
       "1   NAME\n\n2   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
+    ],
+    [
+      "               1       2       3  \n\\setnotetext [...] [...,...] {...}\n                      OPT         ",
+      "1   NAME\n\n2   REFERENCE\n\n3   TEXT"
     ]
   ],
   "setobject": [
@@ -16499,12 +16395,12 @@
   ],
   "setupbackgrounds": [
     [
-      "                      1         2           3      \n\\setupbackgrounds [...,...] [...,...] [..,..=..,..]\n                               OPT                 ",
-      "1   top header text footer bottom\n\n2   leftedge leftmargin text rightmargin rightedge\n\n3   inherits: \\setupframed"
-    ],
-    [
       "                      1           2      \n\\setupbackgrounds [...,...] [..,..=..,..]\n                     OPT                 ",
       "1   paper page leftpage rightpage text hidden\n\n2   state = <u>start</u> stop\n    inherits: \\setupframed"
+    ],
+    [
+      "                      1         2           3      \n\\setupbackgrounds [...,...] [...,...] [..,..=..,..]\n                               OPT                 ",
+      "1   top header text footer bottom\n\n2   leftedge leftmargin text rightmargin rightedge\n\n3   inherits: \\setupframed"
     ]
   ],
   "setupbar": [
@@ -16563,12 +16459,12 @@
   ],
   "setupbtx": [
     [
-      "            1         2      \n\\setupbtx [...] [..,..=..,..]\n           OPT               ",
-      "1   NAME\n\n2   specification    = default apa aps NAME\n    dataset          = default NAME\n    command          = ONEARGUMENT\n    left             = COMMAND\n    right            = COMMAND\n    authorconversion = normal normalshort normalinverted invertedshort short\n    etallimit        = NUMBER\n    etaldisplay      = NUMBER\n    etaloption       = last\n    stopper          = initials\n    interaction      = <u>start</u> stop all\n    alternative      = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    sorttype         = <u>normal</u> reverse\n    compress         = <u>yes</u> no\n    default          = default NAME\n    style            = STYLE COMMAND\n    color            = COLOR"
-    ],
-    [
       "            1  \n\\setupbtx [...]",
       "1   NAME"
+    ],
+    [
+      "            1         2      \n\\setupbtx [...] [..,..=..,..]\n           OPT               ",
+      "1   NAME\n\n2   specification    = default apa aps NAME\n    dataset          = default NAME\n    command          = ONEARGUMENT\n    left             = COMMAND\n    right            = COMMAND\n    authorconversion = normal normalshort normalinverted invertedshort short\n    etallimit        = NUMBER\n    etaldisplay      = NUMBER\n    etaloption       = last\n    stopper          = initials\n    interaction      = <u>start</u> stop all\n    alternative      = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    sorttype         = <u>normal</u> reverse\n    compress         = <u>yes</u> no\n    default          = default NAME\n    style            = STYLE COMMAND\n    color            = COLOR"
     ]
   ],
   "setupbtxdataset": [
@@ -16693,12 +16589,12 @@
   ],
   "setupcombinedlist": [
     [
-      "                     1         2      \n\\setupcombinedlist [...] [..,..=..,..]",
-      "1   LIST\n\n2   inherits: \\setuplist"
-    ],
-    [
       "                         1      \n\\setupcombinedlist [..,..=..,..]",
       "1   inherits: \\setuplist"
+    ],
+    [
+      "                     1         2      \n\\setupcombinedlist [...] [..,..=..,..]",
+      "1   LIST\n\n2   inherits: \\setuplist"
     ]
   ],
   "setupcomment": [
@@ -17067,24 +16963,12 @@
   ],
   "setupinterlinespace": [
     [
-      "                         1           2      \n\\setupinterlinespace [...,...] [..,..=..,..]\n                        OPT                 ",
-      "1   NAME\n\n2   line      = DIMENSION\n    height    = NUMBER\n    depth     = NUMBER\n    minheight = NUMBER\n    mindepth  = NUMBER\n    distance  = DIMENSION\n    top       = NUMBER height\n    bottom    = NUMBER\n    stretch   = NUMBER\n    shrink    = NUMBER"
-    ],
-    [
       "                         1    \n\\setupinterlinespace [...,...]\n                        OPT   ",
       "1   on off reset auto small medium big NUMBER DIMENSION"
     ],
     [
-      "                       1  \n\\setupinterlinespace [...]",
-      "1   NAME"
-    ],
-    [
       "                         1           2      \n\\setupinterlinespace [...,...] [..,..=..,..]\n                        OPT                 ",
       "1   NAME\n\n2   line      = DIMENSION\n    height    = NUMBER\n    depth     = NUMBER\n    minheight = NUMBER\n    mindepth  = NUMBER\n    distance  = DIMENSION\n    top       = NUMBER height\n    bottom    = NUMBER\n    stretch   = NUMBER\n    shrink    = NUMBER"
-    ],
-    [
-      "                         1    \n\\setupinterlinespace [...,...]\n                        OPT   ",
-      "1   on off reset auto small medium big NUMBER DIMENSION"
     ],
     [
       "                       1  \n\\setupinterlinespace [...]",
@@ -17099,12 +16983,12 @@
   ],
   "setupitemgroup": [
     [
-      "                  1       2         3           4      \n\\setupitemgroup [...] [...,...] [...,...] [..,..=..,..]\n                         OPT       OPT         OPT     ",
-      "1   NAME\n\n2   each NUMBER\n\n3   intro random continue packed autointro broad text before after nowhite margin inmargin atmargin intext loose fit nofit paragraph joinedup serried stopper unpacked repeat norepeat reverse columns one two three four five six seven eight nine standard NUMBER*broad NUMBER*serried horizontal NAME\n\n4   before       = COMMAND\n    after        = COMMAND\n    inbetween    = COMMAND\n    beforehead   = COMMAND\n    afterhead    = COMMAND\n    lefttext     = COMMAND\n    righttext    = COMMAND\n    left         = COMMAND\n    right        = COMMAND\n    factor       = NUMBER\n    step         = DIMENSION\n    width        = DIMENSION\n    distance     = DIMENSION\n    margin       = yes no standard DIMENSION\n    leftmargin   = yes no standard DIMENSION\n    rightmargin  = yes no standard DIMENSION\n    align        = inherits: \\setupalign\n    indenting    = \n    start        = NUMBER\n    symalign     = left middle right flushleft center flushright\n    symbol       = NAME\n    n            = NUMBER\n    indentnext   = yes no auto\n    inner        = COMMAND\n    command      = CSNAME\n    items        = NUMBER\n    maxwidth     = DIMENSION\n    itemalign    = left right middle flushleft flushright inner outer\n    alignsymbol  = yes <u>no</u>\n    textdistance = small medium big none <u>space</u> DIMENSION\n    placestopper = <u>yes</u> no\n    style        = STYLE COMMAND\n    color        = COLOR\n    headstyle    = STYLE COMMAND\n    headcolor    = COLOR\n    marstyle     = STYLE COMMAND\n    marcolor     = COLOR\n    symstyle     = STYLE COMMAND\n    symcolor     = COLOR\n    inherits: \\setupcounter"
-    ],
-    [
       "                    1           2      \n\\setupitemgroup [...,...] [..,..=..,..]\n                   OPT                 ",
       "1   NAME NAME:NUMBER\n\n2   before       = COMMAND\n    after        = COMMAND\n    inbetween    = COMMAND\n    beforehead   = COMMAND\n    afterhead    = COMMAND\n    lefttext     = COMMAND\n    righttext    = COMMAND\n    left         = COMMAND\n    right        = COMMAND\n    factor       = NUMBER\n    step         = DIMENSION\n    width        = DIMENSION\n    distance     = DIMENSION\n    option       = intro random continue packed autointro broad text before after nowhite margin inmargin atmargin intext loose fit nofit paragraph joinedup serried stopper unpacked repeat norepeat reverse columns one two three four five six seven eight nine standard NUMBER*broad NUMBER*serried horizontal NAME\n    margin       = yes no standard DIMENSION\n    leftmargin   = yes no standard DIMENSION\n    rightmargin  = yes no standard DIMENSION\n    align        = inherits: \\setupalign\n    indenting    = \n    start        = NUMBER\n    symalign     = left middle right flushleft center flushright\n    symbol       = NAME\n    n            = NUMBER\n    indentnext   = yes no auto\n    inner        = COMMAND\n    command      = CSNAME\n    items        = NUMBER\n    maxwidth     = DIMENSION\n    itemalign    = left right middle flushleft flushright inner outer\n    alignsymbol  = yes <u>no</u>\n    textdistance = small medium big none <u>space</u> DIMENSION\n    placestopper = <u>yes</u> no\n    style        = STYLE COMMAND\n    color        = COLOR\n    headstyle    = STYLE COMMAND\n    headcolor    = COLOR\n    marstyle     = STYLE COMMAND\n    marcolor     = COLOR\n    symstyle     = STYLE COMMAND\n    symcolor     = COLOR\n    inherits: \\setupcounter"
+    ],
+    [
+      "                  1       2         3           4      \n\\setupitemgroup [...] [...,...] [...,...] [..,..=..,..]\n                         OPT       OPT         OPT     ",
+      "1   NAME\n\n2   each NUMBER\n\n3   intro random continue packed autointro broad text before after nowhite margin inmargin atmargin intext loose fit nofit paragraph joinedup serried stopper unpacked repeat norepeat reverse columns one two three four five six seven eight nine standard NUMBER*broad NUMBER*serried horizontal NAME\n\n4   before       = COMMAND\n    after        = COMMAND\n    inbetween    = COMMAND\n    beforehead   = COMMAND\n    afterhead    = COMMAND\n    lefttext     = COMMAND\n    righttext    = COMMAND\n    left         = COMMAND\n    right        = COMMAND\n    factor       = NUMBER\n    step         = DIMENSION\n    width        = DIMENSION\n    distance     = DIMENSION\n    margin       = yes no standard DIMENSION\n    leftmargin   = yes no standard DIMENSION\n    rightmargin  = yes no standard DIMENSION\n    align        = inherits: \\setupalign\n    indenting    = \n    start        = NUMBER\n    symalign     = left middle right flushleft center flushright\n    symbol       = NAME\n    n            = NUMBER\n    indentnext   = yes no auto\n    inner        = COMMAND\n    command      = CSNAME\n    items        = NUMBER\n    maxwidth     = DIMENSION\n    itemalign    = left right middle flushleft flushright inner outer\n    alignsymbol  = yes <u>no</u>\n    textdistance = small medium big none <u>space</u> DIMENSION\n    placestopper = <u>yes</u> no\n    style        = STYLE COMMAND\n    color        = COLOR\n    headstyle    = STYLE COMMAND\n    headcolor    = COLOR\n    marstyle     = STYLE COMMAND\n    marcolor     = COLOR\n    symstyle     = STYLE COMMAND\n    symcolor     = COLOR\n    inherits: \\setupcounter"
     ]
   ],
   "setupitems": [
@@ -17120,10 +17004,6 @@
     ]
   ],
   "setuplabeltext": [
-    [
-      "                  1         2      \n\\setuplabeltext [...] [..,..=..,..]\n                 OPT               ",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
     [
       "                  1         2      \n\\setuplabeltext [...] [..,..=..,..]\n                 OPT               ",
       "1   LANGUAGE\n\n2   KEY = VALUE"
@@ -17149,12 +17029,12 @@
   ],
   "setuplayout": [
     [
-      "               1         2      \n\\setuplayout [...] [..,..=..,..]\n              OPT               ",
-      "1   NAME\n\n2   state               = <u>start</u> stop normal repeat\n    margin              = DIMENSION\n    edge                = DIMENSION\n    margindistance      = DIMENSION\n    edgedistance        = DIMENSION\n    leftedgedistance    = DIMENSION\n    rightedgedistance   = DIMENSION\n    leftmargindistance  = DIMENSION\n    rightmargindistance = DIMENSION\n    topdistance         = DIMENSION\n    headerdistance      = DIMENSION\n    footerdistance      = DIMENSION\n    bottomdistance      = DIMENSION\n    preset              = NAME\n    leftmargin          = DIMENSION\n    rightmargin         = DIMENSION\n    leftedge            = DIMENSION\n    rightedge           = DIMENSION\n    header              = DIMENSION\n    footer              = DIMENSION\n    top                 = DIMENSION\n    bottom              = DIMENSION\n    backspace           = DIMENSION\n    topspace            = DIMENSION\n    setups              = NAME\n    cutspace            = DIMENSION\n    width               = DIMENSION middle fit\n    bottomspace         = DIMENSION\n    lines               = NUMBER\n    height              = DIMENSION middle fit\n    horoffset           = DIMENSION\n    veroffset           = DIMENSION\n    columns             = NUMBER\n    columndistance      = DIMENSION\n    method              = default normal NAME\n    location            = left middle right top bottom singlesided doublesided\n    textwidth           = DIMENSION\n    textheight          = DIMENSION\n    nx                  = NUMBER\n    ny                  = NUMBER\n    dx                  = DIMENSION\n    dy                  = DIMENSION\n    scale               = NUMBER\n    sx                  = NUMBER\n    sy                  = NUMBER\n    marking             = on <u>off</u> page empty color\n    grid                = yes <u>no</u> off\n    textdistance        = DIMENSION\n    alternative         = default <u>normal</u> makeup NAME\n    clipoffset          = DIMENSION\n    cropoffset          = DIMENSION\n    trimoffset          = DIMENSION\n    bleedoffset         = DIMENSION\n    artoffset           = DIMENSION"
-    ],
-    [
       "               1  \n\\setuplayout [...]",
       "1   reset NAME"
+    ],
+    [
+      "               1         2      \n\\setuplayout [...] [..,..=..,..]\n              OPT               ",
+      "1   NAME\n\n2   state               = <u>start</u> stop normal repeat\n    margin              = DIMENSION\n    edge                = DIMENSION\n    margindistance      = DIMENSION\n    edgedistance        = DIMENSION\n    leftedgedistance    = DIMENSION\n    rightedgedistance   = DIMENSION\n    leftmargindistance  = DIMENSION\n    rightmargindistance = DIMENSION\n    topdistance         = DIMENSION\n    headerdistance      = DIMENSION\n    footerdistance      = DIMENSION\n    bottomdistance      = DIMENSION\n    preset              = NAME\n    leftmargin          = DIMENSION\n    rightmargin         = DIMENSION\n    leftedge            = DIMENSION\n    rightedge           = DIMENSION\n    header              = DIMENSION\n    footer              = DIMENSION\n    top                 = DIMENSION\n    bottom              = DIMENSION\n    backspace           = DIMENSION\n    topspace            = DIMENSION\n    setups              = NAME\n    cutspace            = DIMENSION\n    width               = DIMENSION middle fit\n    bottomspace         = DIMENSION\n    lines               = NUMBER\n    height              = DIMENSION middle fit\n    horoffset           = DIMENSION\n    veroffset           = DIMENSION\n    columns             = NUMBER\n    columndistance      = DIMENSION\n    method              = default normal NAME\n    location            = left middle right top bottom singlesided doublesided\n    textwidth           = DIMENSION\n    textheight          = DIMENSION\n    nx                  = NUMBER\n    ny                  = NUMBER\n    dx                  = DIMENSION\n    dy                  = DIMENSION\n    scale               = NUMBER\n    sx                  = NUMBER\n    sy                  = NUMBER\n    marking             = on <u>off</u> page empty color\n    grid                = yes <u>no</u> off\n    textdistance        = DIMENSION\n    alternative         = default <u>normal</u> makeup NAME\n    clipoffset          = DIMENSION\n    cropoffset          = DIMENSION\n    trimoffset          = DIMENSION\n    bleedoffset         = DIMENSION\n    artoffset           = DIMENSION"
     ]
   ],
   "setuplayouttext": [
@@ -17225,24 +17105,12 @@
   ],
   "setuplocalinterlinespace": [
     [
-      "                              1           2      \n\\setuplocalinterlinespace [...,...] [..,..=..,..]\n                             OPT                 ",
-      "1   NAME\n\n2   inherits: \\setupinterlinespace"
-    ],
-    [
       "                              1    \n\\setuplocalinterlinespace [...,...]\n                             OPT   ",
       "1   on off reset auto small medium big NUMBER DIMENSION"
     ],
     [
-      "                            1  \n\\setuplocalinterlinespace [...]",
-      "1   NAME"
-    ],
-    [
       "                              1           2      \n\\setuplocalinterlinespace [...,...] [..,..=..,..]\n                             OPT                 ",
       "1   NAME\n\n2   inherits: \\setupinterlinespace"
-    ],
-    [
-      "                              1    \n\\setuplocalinterlinespace [...,...]\n                             OPT   ",
-      "1   on off reset auto small medium big NUMBER DIMENSION"
     ],
     [
       "                            1  \n\\setuplocalinterlinespace [...]",
@@ -17437,12 +17305,12 @@
   ],
   "setupoutputroutine": [
     [
-      "                      1         2      \n\\setupoutputroutine [...] [..,..=..,..]\n                     OPT               ",
-      "1   NAME\n\n2   KEY = CSNAME"
-    ],
-    [
       "                      1  \n\\setupoutputroutine [...]",
       "1   NAME"
+    ],
+    [
+      "                      1         2      \n\\setupoutputroutine [...] [..,..=..,..]\n                     OPT               ",
+      "1   NAME\n\n2   KEY = CSNAME"
     ]
   ],
   "setuppagechecker": [
@@ -17537,12 +17405,12 @@
   ],
   "setuppairedbox": [
     [
-      "                    1           2      \n\\setuppairedbox [...,...] [..,..=..,..]\n                   OPT                 ",
-      "1   NAME\n\n2   before    = COMMAND\n    after     = COMMAND\n    inbetween = COMMAND\n    location  = left middle right top bottom high low\n    n         = NUMBER\n    distance  = DIMENSION\n    bodyfont  = inherits: \\setupbodyfont\n    width     = DIMENSION\n    height    = DIMENSION\n    maxwidth  = DIMENSION\n    maxheight = DIMENSION\n    align     = inherits: \\setupalign\n    style     = STYLE COMMAND\n    color     = COLOR"
-    ],
-    [
       "                      1      \n\\setuppairedbox [..,..=..,..]",
       "1   inherits: \\setuppairedbox"
+    ],
+    [
+      "                    1           2      \n\\setuppairedbox [...,...] [..,..=..,..]\n                   OPT                 ",
+      "1   NAME\n\n2   before    = COMMAND\n    after     = COMMAND\n    inbetween = COMMAND\n    location  = left middle right top bottom high low\n    n         = NUMBER\n    distance  = DIMENSION\n    bodyfont  = inherits: \\setupbodyfont\n    width     = DIMENSION\n    height    = DIMENSION\n    maxwidth  = DIMENSION\n    maxheight = DIMENSION\n    align     = inherits: \\setupalign\n    style     = STYLE COMMAND\n    color     = COLOR"
     ]
   ],
   "setuppalet": [
@@ -17587,12 +17455,12 @@
   ],
   "setupparagraphs": [
     [
-      "                   1       2           3      \n\\setupparagraphs [...] [...,...] [..,..=..,..]\n                  OPT     OPT                 ",
-      "1   NAME\n\n2   each NUMBER\n\n3   n             = NUMBER\n    before        = COMMAND\n    after         = COMMAND\n    width         = DIMENSION\n    distance      = DIMENSION\n    height        = DIMENSION <u>fit</u>\n    top           = COMMAND\n    bottom        = COMMAND\n    align         = inherits: \\setupalign\n    inner         = COMMAND\n    command       = COMMAND\n    rule          = on <u>off</u>\n    rulethickness = DIMENSION\n    rulecolor     = COLOR\n    style         = STYLE COMMAND\n    color         = COLOR"
-    ],
-    [
       "                   1         2      \n\\setupparagraphs [...] [..,..=..,..]\n                  OPT               ",
       "1   NAME:NUMBER\n\n2   n             = NUMBER\n    before        = COMMAND\n    after         = COMMAND\n    width         = DIMENSION\n    distance      = DIMENSION\n    height        = DIMENSION <u>fit</u>\n    top           = COMMAND\n    bottom        = COMMAND\n    align         = inherits: \\setupalign\n    inner         = COMMAND\n    command       = COMMAND\n    rule          = on <u>off</u>\n    rulethickness = DIMENSION\n    rulecolor     = COLOR\n    style         = STYLE COMMAND\n    color         = COLOR"
+    ],
+    [
+      "                   1       2           3      \n\\setupparagraphs [...] [...,...] [..,..=..,..]\n                  OPT     OPT                 ",
+      "1   NAME\n\n2   each NUMBER\n\n3   n             = NUMBER\n    before        = COMMAND\n    after         = COMMAND\n    width         = DIMENSION\n    distance      = DIMENSION\n    height        = DIMENSION <u>fit</u>\n    top           = COMMAND\n    bottom        = COMMAND\n    align         = inherits: \\setupalign\n    inner         = COMMAND\n    command       = COMMAND\n    rule          = on <u>off</u>\n    rulethickness = DIMENSION\n    rulecolor     = COLOR\n    style         = STYLE COMMAND\n    color         = COLOR"
     ]
   ],
   "setupparallel": [
@@ -17693,16 +17561,16 @@
   ],
   "setupregister": [
     [
+      "                   1           2      \n\\setupregister [...,...] [..,..=..,..]\n                  OPT                 ",
+      "1   NUMBER\n\n2   inherits: \\setupregister"
+    ],
+    [
       "                   1         2           3      \n\\setupregister [...,...] [...,...] [..,..=..,..]\n                  OPT       OPT                 ",
       "1   NAME\n\n2   NUMBER\n\n3   referencemethod         = forward\n    expansion               = yes <u>no</u> xml\n    ownnumber               = yes <u>no</u>\n    xmlsetup                = NAME\n    alternative             = a b A B\n    method                  = default before after first last ch mm zm pm mc zc pc uc\n    compress                = yes <u>no</u> all\n    criterium               = local text current previous <u>all</u> SECTION\n    pageprefixseparatorset  = COMMAND\n    pageprefixconversionset = NAME\n    pageprefixstarter       = COMMAND PROCESSOR->COMMAND\n    pageprefixstopper       = COMMAND PROCESSOR->COMMAND\n    pageprefixset           = NAME\n    pageprefixsegments      = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all SECTION SECTION:SECTION SECTION:* SECTION:all\n    pageprefixconnector     = COMMAND\n    pageprefix              = yes no\n    pageseparatorset        = NAME\n    pageconversionset       = NAME\n    pagestarter             = COMMAND PROCESSOR->COMMAND\n    pagestopper             = COMMAND PROCESSOR->COMMAND\n    pagesegments            = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all\n    maxwidth                = DIMENSION\n    indicator               = <u>yes</u> no\n    before                  = COMMAND\n    after                   = COMMAND\n    command                 = ONEARGUMENT\n    textcommand             = ONEARGUMENT\n    deeptextcommand         = ONEARGUMENT\n    pagecommand             = ONEARGUMENT\n    distance                = DIMENSION\n    interaction             = text <u>pagenumber</u>\n    pagenumber              = <u>yes</u> no\n    symbol                  = a <u>n</u> none 1 2 COMMAND\n    language                = default DIN\u24235007-1 DIN\u24235007-2 Duden de-DE de-CH de-AT ru-iso9 ocs-scn LANGUAGE\n    style                   = STYLE COMMAND\n    color                   = COLOR\n    textstyle               = STYLE COMMAND\n    textcolor               = COLOR\n    pagestyle               = STYLE COMMAND\n    pagecolor               = COLOR\n    n                       = NUMBER\n    balance                 = <u>yes</u> no\n    align                   = inherits: \\setupalign\n    numberorder             = <u>numbers</u>"
     ],
     [
       "                 1         2      \n\\setupregister [...] [..,..=..,..]\n                OPT               ",
       "1   NAME:NUMBER\n\n2   referencemethod         = forward\n    expansion               = yes <u>no</u> xml\n    ownnumber               = yes <u>no</u>\n    xmlsetup                = NAME\n    alternative             = a b A B\n    method                  = default before after first last ch mm zm pm mc zc pc uc\n    compress                = yes <u>no</u> all\n    criterium               = local text current previous <u>all</u> SECTION\n    pageprefixseparatorset  = COMMAND\n    pageprefixconversionset = NAME\n    pageprefixstarter       = COMMAND PROCESSOR->COMMAND\n    pageprefixstopper       = COMMAND PROCESSOR->COMMAND\n    pageprefixset           = NAME\n    pageprefixsegments      = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all SECTION SECTION:SECTION SECTION:* SECTION:all\n    pageprefixconnector     = COMMAND\n    pageprefix              = yes no\n    pageseparatorset        = NAME\n    pageconversionset       = NAME\n    pagestarter             = COMMAND PROCESSOR->COMMAND\n    pagestopper             = COMMAND PROCESSOR->COMMAND\n    pagesegments            = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all\n    maxwidth                = DIMENSION\n    indicator               = <u>yes</u> no\n    before                  = COMMAND\n    after                   = COMMAND\n    command                 = ONEARGUMENT\n    textcommand             = ONEARGUMENT\n    deeptextcommand         = ONEARGUMENT\n    pagecommand             = ONEARGUMENT\n    distance                = DIMENSION\n    interaction             = text <u>pagenumber</u>\n    pagenumber              = <u>yes</u> no\n    symbol                  = a <u>n</u> none 1 2 COMMAND\n    language                = default DIN\u24235007-1 DIN\u24235007-2 Duden de-DE de-CH de-AT ru-iso9 ocs-scn LANGUAGE\n    style                   = STYLE COMMAND\n    color                   = COLOR\n    textstyle               = STYLE COMMAND\n    textcolor               = COLOR\n    pagestyle               = STYLE COMMAND\n    pagecolor               = COLOR\n    n                       = NUMBER\n    balance                 = <u>yes</u> no\n    align                   = inherits: \\setupalign\n    numberorder             = <u>numbers</u>"
-    ],
-    [
-      "                   1           2      \n\\setupregister [...,...] [..,..=..,..]\n                  OPT                 ",
-      "1   NUMBER\n\n2   inherits: \\setupregister"
     ]
   ],
   "setuprenderingwindow": [
@@ -18705,12 +18573,12 @@
   ],
   "snaptogrid": [
     [
-      "              1     2    3  \n\\snaptogrid [...] \\... {...}\n             OPT            ",
-      "1   normal standard yes strict tolerant top bottom both broad fit first last high one low none line strut box min max middle NAME\n\n2   CSNAME\n\n3   CONTENT"
-    ],
-    [
       "                1       2    3  \n\\snaptogrid [...,...] \\... {...}\n               OPT              ",
       "1   inherits: \\definegridsnapping\n\n2   CSNAME\n\n3   CONTENT"
+    ],
+    [
+      "              1     2    3  \n\\snaptogrid [...] \\... {...}\n             OPT            ",
+      "1   normal standard yes strict tolerant top bottom both broad fit first last high one low none line strut box min max middle NAME\n\n2   CSNAME\n\n3   CONTENT"
     ]
   ],
   "someheadnumber": [
@@ -19079,17 +18947,9 @@
     [
       "                   1         2                          \n\\startattachment [...] [..,..=..,..] ... \\stopattachment\n                  OPT       OPT                         ",
       "1   NAME\n\n2   inherits: \\setupattachment"
-    ],
-    [
-      "                   1         2                          \n\\startattachment [...] [..,..=..,..] ... \\stopattachment\n                  OPT       OPT                         ",
-      "1   NAME\n\n2   inherits: \\setupattachment"
     ]
   ],
   "startbackground": [
-    [
-      "                       1                          \n\\startbackground [..,..=..,..] ... \\stopbackground\n                      OPT                         ",
-      "1   inherits: \\setupbackground"
-    ],
     [
       "                       1                          \n\\startbackground [..,..=..,..] ... \\stopbackground\n                      OPT                         ",
       "1   inherits: \\setupbackground"
@@ -19251,19 +19111,15 @@
   ],
   "startcombination": [
     [
-      "                    1     2                       \n\\startcombination [...] [...] ... \\stopcombination\n                   OPT   OPT                      ",
-      "1   NAME\n\n2   MATRIX"
-    ],
-    [
       "                    1         2                           \n\\startcombination [...] [..,..=..,..] ... \\stopcombination\n                   OPT       OPT                          ",
       "1   NAME\n\n2   inherits: \\setupcombination"
+    ],
+    [
+      "                    1     2                       \n\\startcombination [...] [...] ... \\stopcombination\n                   OPT   OPT                      ",
+      "1   NAME\n\n2   MATRIX"
     ]
   ],
   "startcomment": [
-    [
-      "                1         2                       \n\\startcomment [...] [..,..=..,..] ... \\stopcomment\n               OPT       OPT                      ",
-      "1   TEXT\n\n2   inherits: \\setupcomment"
-    ],
     [
       "                1         2                       \n\\startcomment [...] [..,..=..,..] ... \\stopcomment\n               OPT       OPT                      ",
       "1   TEXT\n\n2   inherits: \\setupcomment"
@@ -19459,22 +19315,22 @@
   ],
   "startfittingpage": [
     [
-      "                    1         2                           \n\\startfittingpage [...] [..,..=..,..] ... \\stopfittingpage\n                             OPT                          ",
-      "1   NAME\n\n2   inherits: \\setupfittingpage"
-    ],
-    [
       "                        1                           \n\\startfittingpage [..,..=..,..] ... \\stopfittingpage\n                       OPT                          ",
       "1   inherits: \\setupfittingpage"
+    ],
+    [
+      "                    1         2                           \n\\startfittingpage [...] [..,..=..,..] ... \\stopfittingpage\n                             OPT                          ",
+      "1   NAME\n\n2   inherits: \\setupfittingpage"
     ]
   ],
   "startfloatcombination": [
     [
-      "                         1                            \n\\startfloatcombination [...] ... \\stopfloatcombination\n                        OPT                           ",
-      "1   MATRIX NAME"
-    ],
-    [
       "                             1                                \n\\startfloatcombination [..,..=..,..] ... \\stopfloatcombination\n                            OPT                               ",
       "1   inherits: \\setupcombination"
+    ],
+    [
+      "                         1                            \n\\startfloatcombination [...] ... \\stopfloatcombination\n                        OPT                           ",
+      "1   MATRIX NAME"
     ]
   ],
   "startfloattext": [
@@ -19515,10 +19371,6 @@
     [
       "                  1                     \n\\startformula [...,...] ... \\stopformula\n                 OPT                    ",
       "1   inherits: \\setupbodyfont"
-    ],
-    [
-      "                  1                     \n\\startformula [...,...] ... \\stopformula\n                 OPT                    ",
-      "1   inherits: \\setupbodyfont"
     ]
   ],
   "startformulas": [
@@ -19540,10 +19392,6 @@
     ]
   ],
   "startframedtext": [
-    [
-      "                   1         2                          \n\\startframedtext [...] [..,..=..,..] ... \\stopframedtext\n                  OPT       OPT                         ",
-      "1   left right middle none\n\n2   inherits: \\setupframedtext"
-    ],
     [
       "                   1         2                          \n\\startframedtext [...] [..,..=..,..] ... \\stopframedtext\n                  OPT       OPT                         ",
       "1   left right middle none\n\n2   inherits: \\setupframedtext"
@@ -19575,12 +19423,12 @@
   ],
   "startgridsnapping": [
     [
-      "                     1                        \n\\startgridsnapping [...] ... \\stopgridsnapping\n                    OPT                       ",
-      "1   normal standard yes strict tolerant top bottom both broad fit first last high one low none line strut box min max middle NAME"
-    ],
-    [
       "                       1                          \n\\startgridsnapping [...,...] ... \\stopgridsnapping\n                      OPT                         ",
       "1   inherits: \\definegridsnapping"
+    ],
+    [
+      "                     1                        \n\\startgridsnapping [...] ... \\stopgridsnapping\n                    OPT                       ",
+      "1   normal standard yes strict tolerant top bottom both broad fit first last high one low none line strut box min max middle NAME"
     ]
   ],
   "starthboxestohbox": [
@@ -19639,12 +19487,12 @@
   ],
   "startindentedtext": [
     [
-      "\\startindentedtext ... \\stopindentedtext",
-      ""
-    ],
-    [
       "                     1                        \n\\startindentedtext [...] ... \\stopindentedtext",
       "1   NAME"
+    ],
+    [
+      "\\startindentedtext ... \\stopindentedtext",
+      ""
     ]
   ],
   "startinteraction": [
@@ -19709,10 +19557,6 @@
     [
       "                  1     2                     \n\\startlabeltext [...] [...] ... \\stoplabeltext\n                 OPT                          ",
       "1   LANGUAGE\n\n2   KEY"
-    ],
-    [
-      "                  1     2                     \n\\startlabeltext [...] [...] ... \\stoplabeltext\n                 OPT                          ",
-      "1   LANGUAGE\n\n2   KEY"
     ]
   ],
   "startlayout": [
@@ -19755,10 +19599,6 @@
     [
       "                 1     2  \n\\startlinenote [...] {...}",
       "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "                 1     2  \n\\startlinenote [...] {...}",
-      "1   REFERENCE\n\n2   TEXT"
     ]
   ],
   "startlinenumbering": [
@@ -19772,10 +19612,6 @@
     ]
   ],
   "startlines": [
-    [
-      "                  1                     \n\\startlines [..,..=..,..] ... \\stoplines\n                 OPT                    ",
-      "1   inherits: \\setuplines"
-    ],
     [
       "                  1                     \n\\startlines [..,..=..,..] ... \\stoplines\n                 OPT                    ",
       "1   inherits: \\setuplines"
@@ -19869,12 +19705,12 @@
   ],
   "startmakeup": [
     [
-      "               1         2                      \n\\startmakeup [...] [..,..=..,..] ... \\stopmakeup\n                        OPT                     ",
-      "1   NAME\n\n2   inherits: \\setupmakeup"
-    ],
-    [
       "                   1                      \n\\startmakeup [..,..=..,..] ... \\stopmakeup\n                  OPT                     ",
       "1   inherits: \\setupmakeup"
+    ],
+    [
+      "               1         2                      \n\\startmakeup [...] [..,..=..,..] ... \\stopmakeup\n                        OPT                     ",
+      "1   NAME\n\n2   inherits: \\setupmakeup"
     ]
   ],
   "startmarginblock": [
@@ -19885,12 +19721,12 @@
   ],
   "startmarginrule": [
     [
-      "                   1                      \n\\startmarginrule [...] ... \\stopmarginrule\n                  OPT                     ",
-      "1   NUMBER"
-    ],
-    [
       "                       1                          \n\\startmarginrule [..,..=..,..] ... \\stopmarginrule\n                      OPT                         ",
       "1   inherits: \\setupmarginrule"
+    ],
+    [
+      "                   1                      \n\\startmarginrule [...] ... \\stopmarginrule\n                  OPT                     ",
+      "1   NUMBER"
     ]
   ],
   "startmarkedcontent": [
@@ -19903,17 +19739,9 @@
     [
       "                          1                             \n\\startmathalignment [..,..=..,..] ... \\stopmathalignment\n                         OPT                            ",
       "1   inherits: \\setupmathalignment"
-    ],
-    [
-      "                          1                             \n\\startmathalignment [..,..=..,..] ... \\stopmathalignment\n                         OPT                            ",
-      "1   inherits: \\setupmathalignment"
     ]
   ],
   "startmathcases": [
-    [
-      "                      1                         \n\\startmathcases [..,..=..,..] ... \\stopmathcases\n                     OPT                        ",
-      "1   inherits: \\setupmathcases"
-    ],
     [
       "                      1                         \n\\startmathcases [..,..=..,..] ... \\stopmathcases\n                     OPT                        ",
       "1   inherits: \\setupmathcases"
@@ -19926,10 +19754,6 @@
     ]
   ],
   "startmathmatrix": [
-    [
-      "                       1                          \n\\startmathmatrix [..,..=..,..] ... \\stopmathmatrix\n                      OPT                         ",
-      "1   inherits: \\setupmathmatrix"
-    ],
     [
       "                       1                          \n\\startmathmatrix [..,..=..,..] ... \\stopmathmatrix\n                      OPT                         ",
       "1   inherits: \\setupmathmatrix"
@@ -19985,12 +19809,12 @@
   ],
   "startmixedcolumns": [
     [
-      "                     1         2                            \n\\startmixedcolumns [...] [..,..=..,..] ... \\stopmixedcolumns\n                    OPT       OPT                           ",
-      "1   NAME\n\n2   inherits: \\setupmixedcolumns"
-    ],
-    [
       "                         1                            \n\\startmixedcolumns [..,..=..,..] ... \\stopmixedcolumns\n                        OPT                           ",
       "1   inherits: \\setupmixedcolumns"
+    ],
+    [
+      "                     1         2                            \n\\startmixedcolumns [...] [..,..=..,..] ... \\stopmixedcolumns\n                    OPT       OPT                           ",
+      "1   NAME\n\n2   inherits: \\setupmixedcolumns"
     ]
   ],
   "startmode": [
@@ -20041,23 +19865,19 @@
   ],
   "startnarrow": [
     [
+      "                   1           2                    \n\\startnarrow [..,..=..,..] [...,...] ... \\stopnarrow\n                  OPT         OPT                   ",
+      "1   inherits: \\setupnarrower\n\n2   [+-]left [+-]middle [+-]right NUMBER*left NUMBER*middle NUMBER*right reset"
+    ],
+    [
       "               1         2                      \n\\startnarrow [...] [..,..=..,..] ... \\stopnarrow\n              OPT       OPT                     ",
       "1   NAME\n\n2   inherits: \\setupnarrower"
     ],
     [
       "               1       2                    \n\\startnarrow [...] [...,...] ... \\stopnarrow\n              OPT     OPT                   ",
       "1   NAME\n\n2   [+-]left [+-]middle [+-]right NUMBER*left NUMBER*middle NUMBER*right reset"
-    ],
-    [
-      "                   1           2                    \n\\startnarrow [..,..=..,..] [...,...] ... \\stopnarrow\n                  OPT         OPT                   ",
-      "1   inherits: \\setupnarrower\n\n2   [+-]left [+-]middle [+-]right NUMBER*left NUMBER*middle NUMBER*right reset"
     ]
   ],
   "startnarrower": [
-    [
-      "                   1                      \n\\startnarrower [...,...] ... \\stopnarrower\n                  OPT                     ",
-      "1   [+-]left [+-]middle [+-]right NUMBER*left NUMBER*middle NUMBER*right reset"
-    ],
     [
       "                   1                      \n\\startnarrower [...,...] ... \\stopnarrower\n                  OPT                     ",
       "1   [+-]left [+-]middle [+-]right NUMBER*left NUMBER*middle NUMBER*right reset"
@@ -20283,12 +20103,12 @@
   ],
   "startplacepairedbox": [
     [
-      "                       1         2                              \n\\startplacepairedbox [...] [..,..=..,..] ... \\stopplacepairedbox\n                                OPT                             ",
-      "1   NAME\n\n2   inherits: \\setuppairedbox"
-    ],
-    [
       "                           1                              \n\\startplacepairedbox [..,..=..,..] ... \\stopplacepairedbox\n                          OPT                             ",
       "1   inherits: \\setuppairedbox"
+    ],
+    [
+      "                       1         2                              \n\\startplacepairedbox [...] [..,..=..,..] ... \\stopplacepairedbox\n                                OPT                             ",
+      "1   NAME\n\n2   inherits: \\setuppairedbox"
     ]
   ],
   "startplacetable": [
@@ -20481,20 +20301,16 @@
     [
       "                    1             2                       \n\\startsection [..,..=..,..] [..,..=..,..] ... \\stopsection\n                   OPT           OPT                      ",
       "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "                    1             2                       \n\\startsection [..,..=..,..] [..,..=..,..] ... \\stopsection\n                   OPT           OPT                      ",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
     ]
   ],
   "startsectionblock": [
     [
-      "                     1         2                            \n\\startsectionblock [...] [..,..=..,..] ... \\stopsectionblock\n                              OPT                           ",
-      "1   NAME\n\n2   bookmark = TEXT\n    inherits: \\setupsectionblock"
-    ],
-    [
       "                         1                            \n\\startsectionblock [..,..=..,..] ... \\stopsectionblock\n                        OPT                           ",
       "1   bookmark = TEXT\n    inherits: \\setupsectionblock"
+    ],
+    [
+      "                     1         2                            \n\\startsectionblock [...] [..,..=..,..] ... \\stopsectionblock\n                              OPT                           ",
+      "1   NAME\n\n2   bookmark = TEXT\n    inherits: \\setupsectionblock"
     ]
   ],
   "startsectionblockenvironment": [
@@ -20539,16 +20355,16 @@
   ],
   "startspecialitem": [
     [
+      "                    1                       \n\\startspecialitem [...] ... \\stopspecialitem",
+      "1   sub its"
+    ],
+    [
       "                    1       2                         \n\\startspecialitem [...] [...,...] ... \\stopspecialitem\n                   OPT     OPT                        ",
       "1   <u>item</u>\n\n2   REFERENCE"
     ],
     [
       "                    1     2                       \n\\startspecialitem [...] {...} ... \\stopspecialitem",
       "1   sym ran mar\n\n2   TEXT"
-    ],
-    [
-      "                    1                       \n\\startspecialitem [...] ... \\stopspecialitem",
-      "1   sub its"
     ]
   ],
   "startspeech": [
@@ -20571,12 +20387,12 @@
   ],
   "startstartstop": [
     [
-      "\\startstartstop ... \\stopstartstop",
-      ""
-    ],
-    [
       "                  1                     \n\\startstartstop [...] ... \\stopstartstop\n                 OPT                    ",
       "1   NAME"
+    ],
+    [
+      "\\startstartstop ... \\stopstartstop",
+      ""
     ]
   ],
   "startstaticMPfigure": [
@@ -20611,16 +20427,16 @@
   ],
   "startstyle": [
     [
-      "\\startstyle ... \\stopstyle",
-      ""
+      "                  1                     \n\\startstyle [..,..=..,..] ... \\stopstyle",
+      "1   inherits: \\setupstyle"
     ],
     [
       "              1                 \n\\startstyle [...] ... \\stopstyle",
       "1   NAME FONT"
     ],
     [
-      "                  1                     \n\\startstyle [..,..=..,..] ... \\stopstyle",
-      "1   inherits: \\setupstyle"
+      "\\startstyle ... \\stopstyle",
+      ""
     ]
   ],
   "startsubformulas": [
@@ -20783,10 +20599,6 @@
     [
       "\\starttexcode ... \\stoptexcode",
       ""
-    ],
-    [
-      "\\starttexcode ... \\stoptexcode",
-      ""
     ]
   ],
   "starttexdefinition": [
@@ -20803,12 +20615,12 @@
   ],
   "starttextbackground": [
     [
-      "                       1         2                              \n\\starttextbackground [...] [..,..=..,..] ... \\stoptextbackground\n                                OPT                             ",
-      "1   NAME\n\n2   inherits: \\setuptextbackground"
-    ],
-    [
       "                           1                              \n\\starttextbackground [..,..=..,..] ... \\stoptextbackground\n                          OPT                             ",
       "1   inherits: \\setuptextbackground"
+    ],
+    [
+      "                       1         2                              \n\\starttextbackground [...] [..,..=..,..] ... \\stoptextbackground\n                                OPT                             ",
+      "1   NAME\n\n2   inherits: \\setuptextbackground"
     ]
   ],
   "starttextbackgroundmanual": [
@@ -20872,14 +20684,6 @@
     ]
   ],
   "starttyping": [
-    [
-      "                   1                      \n\\starttyping [..,..=..,..] ... \\stoptyping\n                  OPT                     ",
-      "1   inherits: \\setuptyping"
-    ],
-    [
-      "                 1                    \n\\starttyping [...,...] ... \\stoptyping\n                OPT                   ",
-      "1   continue"
-    ],
     [
       "                   1                      \n\\starttyping [..,..=..,..] ... \\stoptyping\n                  OPT                     ",
       "1   inherits: \\setuptyping"
@@ -21025,10 +20829,6 @@
     [
       "               1                  \n\\startxtable [...] ... \\stopxtable\n              OPT                 ",
       "1   NAME"
-    ],
-    [
-      "                   1                      \n\\startxtable [..,..=..,..] ... \\stopxtable\n                  OPT                     ",
-      "1   inherits: \\setupxtable"
     ]
   ],
   "startxtablebody": [
@@ -21078,10 +20878,6 @@
     ]
   ],
   "stoplinenote": [
-    [
-      "                1  \n\\stoplinenote [...]",
-      "1   REFERENCE"
-    ],
     [
       "                1  \n\\stoplinenote [...]",
       "1   REFERENCE"
@@ -21207,16 +21003,16 @@
   ],
   "style": [
     [
+      "             1         2  \n\\style [..,..=..,..] {...}",
+      "1   inherits: \\setupstyle\n\n2   TEXT"
+    ],
+    [
       "         1  \n\\style {...}",
       "1   TEXT"
     ],
     [
       "         1     2  \n\\style [...] {...}",
       "1   NAME FONT\n\n2   TEXT"
-    ],
-    [
-      "             1         2  \n\\style [..,..=..,..] {...}",
-      "1   inherits: \\setupstyle\n\n2   TEXT"
     ]
   ],
   "styleinstance": [
@@ -21345,12 +21141,12 @@
   ],
   "switchstyleonly": [
     [
-      "                   1  \n\\switchstyleonly [...]",
-      "1   rm ss tt hw cg roman serif regular sans sansserif support type teletype mono handwritten calligraphic"
-    ],
-    [
       "                   1 \n\\switchstyleonly \\...",
       "1   CSNAME"
+    ],
+    [
+      "                   1  \n\\switchstyleonly [...]",
+      "1   rm ss tt hw cg roman serif regular sans sansserif support type teletype mono handwritten calligraphic"
     ]
   ],
   "switchtobodyfont": [
@@ -21367,24 +21163,12 @@
   ],
   "switchtointerlinespace": [
     [
-      "                            1           2      \n\\switchtointerlinespace [...,...] [..,..=..,..]\n                           OPT                 ",
-      "1   NAME\n\n2   inherits: \\setupinterlinespace"
-    ],
-    [
       "                            1    \n\\switchtointerlinespace [...,...]\n                           OPT   ",
       "1   on off reset auto small medium big NUMBER DIMENSION"
     ],
     [
-      "                          1  \n\\switchtointerlinespace [...]",
-      "1   NAME"
-    ],
-    [
       "                            1           2      \n\\switchtointerlinespace [...,...] [..,..=..,..]\n                           OPT                 ",
       "1   NAME\n\n2   inherits: \\setupinterlinespace"
-    ],
-    [
-      "                            1    \n\\switchtointerlinespace [...,...]\n                           OPT   ",
-      "1   on off reset auto small medium big NUMBER DIMENSION"
     ],
     [
       "                          1  \n\\switchtointerlinespace [...]",
@@ -21399,12 +21183,12 @@
   ],
   "symbol": [
     [
-      "          1     2  \n\\symbol [...] [...]\n         OPT       ",
-      "1   NAME\n\n2   NAME"
-    ],
-    [
       "          1  \n\\symbol {...}",
       "1   NAME"
+    ],
+    [
+      "          1     2  \n\\symbol [...] [...]\n         OPT       ",
+      "1   NAME\n\n2   NAME"
     ]
   ],
   "symbolreference": [
@@ -21637,12 +21421,12 @@
   ],
   "textcitation": [
     [
-      "                    1         2  \n\\textcitation [..,..=..,..] [...]\n                   OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                    1             2      \n\\textcitation [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                    1         2  \n\\textcitation [..,..=..,..] [...]\n                   OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "                1     2  \n\\textcitation [...] [...]\n               OPT       ",
@@ -21651,12 +21435,12 @@
   ],
   "textcite": [
     [
-      "                1         2  \n\\textcite [..,..=..,..] [...]\n               OPT           ",
-      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
-    ],
-    [
       "                1             2      \n\\textcite [..,..=..,..] [..,..=..,..]",
       "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   KEY = VALUE"
+    ],
+    [
+      "                1         2  \n\\textcite [..,..=..,..] [...]\n               OPT           ",
+      "1   reference   = REFERENCE\n    alternative = default category entry short page num textnum year index tag keywords author authoryears authornum authoryear\n    before      = COMMAND\n    after       = COMMAND\n    left        = COMMAND\n    right       = COMMAND\n    inherits: \\setupbtx\n\n2   REFERENCE"
     ],
     [
       "            1     2  \n\\textcite [...] [...]\n           OPT       ",
@@ -21772,10 +21556,6 @@
     ]
   ],
   "thinspace": [
-    [
-      "\\thinspace",
-      ""
-    ],
     [
       "\\thinspace",
       ""
@@ -21914,14 +21694,6 @@
     ]
   ],
   "tooltip": [
-    [
-      "               1         2     3  \n\\tooltip [..,..=..,..] {...} {...}\n              OPT                 ",
-      "1   inherits: \\setuptooltip\n\n2   TEXT\n\n3   TEXT"
-    ],
-    [
-      "           1     2     3  \n\\tooltip [...] {...} {...}\n          OPT             ",
-      "1   left middle right\n\n2   TEXT\n\n3   TEXT"
-    ],
     [
       "               1         2     3  \n\\tooltip [..,..=..,..] {...} {...}\n              OPT                 ",
       "1   inherits: \\setuptooltip\n\n2   TEXT\n\n3   TEXT"
@@ -22089,12 +21861,12 @@
   ],
   "txt": [
     [
-      "      1    \n\\txt ... \\\\",
-      "1   TEXT"
-    ],
-    [
       "       1       2    \n\\txt {...} [...,...]\n              OPT   ",
       "1   TEXT\n\n2   REFERENCE"
+    ],
+    [
+      "      1    \n\\txt ... \\\\",
+      "1   TEXT"
     ]
   ],
   "txx": [
@@ -22105,40 +21877,32 @@
   ],
   "typ": [
     [
-      "           1         2  \n\\typ [..,..=..,..] {...}\n          OPT           ",
-      "1   inherits: \\setuptype\n\n2   CONTENT"
-    ],
-    [
       "           1          2   \n\\typ [..,..=..,..] <<...>>\n          OPT             ",
       "1   inherits: \\setuptype\n\n2   ANGLES"
+    ],
+    [
+      "           1         2  \n\\typ [..,..=..,..] {...}\n          OPT           ",
+      "1   inherits: \\setuptype\n\n2   CONTENT"
     ]
   ],
   "type": [
     [
-      "            1         2  \n\\type [..,..=..,..] {...}\n           OPT           ",
-      "1   inherits: \\setuptype\n\n2   CONTENT"
-    ],
-    [
       "            1          2   \n\\type [..,..=..,..] <<...>>\n           OPT             ",
       "1   inherits: \\setuptype\n\n2   ANGLES"
     ],
     [
       "            1         2  \n\\type [..,..=..,..] {...}\n           OPT           ",
       "1   inherits: \\setuptype\n\n2   CONTENT"
-    ],
-    [
-      "            1          2   \n\\type [..,..=..,..] <<...>>\n           OPT             ",
-      "1   inherits: \\setuptype\n\n2   ANGLES"
     ]
   ],
   "typebuffer": [
     [
-      "                1           2      \n\\typebuffer [...,...] [..,..=..,..]\n               OPT         OPT     ",
-      "1   BUFFER\n\n2   inherits: \\setuptyping"
-    ],
-    [
       "                  1      \n\\typebuffer [..,..=..,..]\n                 OPT     ",
       "1   inherits: \\setuptyping"
+    ],
+    [
+      "                1           2      \n\\typebuffer [...,...] [..,..=..,..]\n               OPT         OPT     ",
+      "1   BUFFER\n\n2   inherits: \\setuptyping"
     ]
   ],
   "typedefinedbuffer": [
@@ -22422,10 +22186,6 @@
     ]
   ],
   "unit": [
-    [
-      "        1  \n\\unit {...}",
-      "1   CONTENT"
-    ],
     [
       "        1  \n\\unit {...}",
       "1   CONTENT"
@@ -22744,10 +22504,6 @@
     ]
   ],
   "useinterlinespaceparameter": [
-    [
-      "                              1 \n\\useinterlinespaceparameter \\...",
-      "1   CSNAME"
-    ],
     [
       "                              1 \n\\useinterlinespaceparameter \\...",
       "1   CSNAME"
@@ -23674,11 +23430,11 @@
   "xmlregisterns": [
     [
       "                 1     2  \n\\xmlregisterns {...} {...}",
-      "1   NAME\n\n2   URL"
+      "1   NAME\n\n2   NAME"
     ],
     [
       "                 1     2  \n\\xmlregisterns {...} {...}",
-      "1   NAME\n\n2   NAME"
+      "1   NAME\n\n2   URL"
     ]
   ],
   "xmlremapname": [
