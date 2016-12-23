@@ -1309,6 +1309,12 @@
       ""
     ]
   ],
+  "autostoptext": [
+    [
+      "\\autostoptext",
+      ""
+    ]
+  ],
   "availablehsize": [
     [
       "\\availablehsize",
@@ -7295,6 +7301,12 @@
       "1   NUMBER\n\n2   NUMBER\n\n3   [+-]NUMBER\n\n4   COMMAND"
     ]
   ],
+  "dostoptagged": [
+    [
+      "\\dostoptagged",
+      ""
+    ]
+  ],
   "dosubtractfeature": [
     [
       "                     1  \n\\dosubtractfeature {...}",
@@ -7443,6 +7455,90 @@
     [
       "                  1  \n\\dummyparameter {...}",
       "1   KEY"
+    ]
+  ],
+  "eTABLE": [
+    [
+      "\\eTABLE",
+      ""
+    ]
+  ],
+  "eTABLEbody": [
+    [
+      "\\eTABLEbody",
+      ""
+    ]
+  ],
+  "eTABLEfoot": [
+    [
+      "\\eTABLEfoot",
+      ""
+    ]
+  ],
+  "eTABLEhead": [
+    [
+      "\\eTABLEhead",
+      ""
+    ]
+  ],
+  "eTABLEnext": [
+    [
+      "\\eTABLEnext",
+      ""
+    ]
+  ],
+  "eTC": [
+    [
+      "\\eTC",
+      ""
+    ]
+  ],
+  "eTD": [
+    [
+      "\\eTD",
+      ""
+    ]
+  ],
+  "eTDs": [
+    [
+      "\\eTDs",
+      ""
+    ]
+  ],
+  "eTH": [
+    [
+      "\\eTH",
+      ""
+    ]
+  ],
+  "eTN": [
+    [
+      "\\eTN",
+      ""
+    ]
+  ],
+  "eTR": [
+    [
+      "\\eTR",
+      ""
+    ]
+  ],
+  "eTRs": [
+    [
+      "\\eTRs",
+      ""
+    ]
+  ],
+  "eTX": [
+    [
+      "\\eTX",
+      ""
+    ]
+  ],
+  "eTY": [
+    [
+      "\\eTY",
+      ""
     ]
   ],
   "eTeX": [
@@ -7595,6 +7691,18 @@
       "1   NAME"
     ]
   ],
+  "endblock": [
+    [
+      "\\endblock",
+      ""
+    ]
+  ],
+  "endbuffer": [
+    [
+      "\\endbuffer",
+      ""
+    ]
+  ],
   "endnote": [
     [
       "               1      \n\\endnote [..,..=..,..]",
@@ -7603,6 +7711,18 @@
     [
       "             1       2  \n\\endnote [...,...] {...}\n            OPT         ",
       "1   REFERENCE\n\n2   TEXT"
+    ]
+  ],
+  "endofshapebox": [
+    [
+      "\\endofshapebox",
+      ""
+    ]
+  ],
+  "endstrut": [
+    [
+      "\\endstrut",
+      ""
     ]
   ],
   "enskip": [
@@ -7667,6 +7787,12 @@
     [
       "                   1     2  \n\\eoverparentfill {...} {...}\n                  OPT   OPT ",
       "1   TEXT\n\n2   TEXT"
+    ]
+  ],
+  "epar": [
+    [
+      "\\epar",
+      ""
     ]
   ],
   "epos": [
@@ -8989,6 +9115,12 @@
     [
       "                  1 \n\\globalpopmacro \\...",
       "1   CSNAME"
+    ]
+  ],
+  "globalpopreferenceprefix": [
+    [
+      "\\globalpopreferenceprefix",
+      ""
     ]
   ],
   "globalpreventmode": [
@@ -13581,10 +13713,58 @@
       "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT\n\n4   CONTENT"
     ]
   ],
+  "popMPdrawing": [
+    [
+      "\\popMPdrawing",
+      ""
+    ]
+  ],
+  "poparrangedpages": [
+    [
+      "\\poparrangedpages",
+      ""
+    ]
+  ],
   "popattribute": [
     [
       "                1 \n\\popattribute \\...",
       "1   CSNAME"
+    ]
+  ],
+  "popbackground": [
+    [
+      "\\popbackground",
+      ""
+    ]
+  ],
+  "popbar": [
+    [
+      "\\popbar",
+      ""
+    ]
+  ],
+  "popcatcodetable": [
+    [
+      "\\popcatcodetable",
+      ""
+    ]
+  ],
+  "popcolor": [
+    [
+      "\\popcolor",
+      ""
+    ]
+  ],
+  "popendofline": [
+    [
+      "\\popendofline",
+      ""
+    ]
+  ],
+  "popindentation": [
+    [
+      "\\popindentation",
+      ""
     ]
   ],
   "popmacro": [
@@ -13593,10 +13773,40 @@
       "1   CSNAME"
     ]
   ],
+  "popmathstyle": [
+    [
+      "\\popmathstyle",
+      ""
+    ]
+  ],
   "popmode": [
     [
       "           1  \n\\popmode [...]",
       "1   NAME"
+    ]
+  ],
+  "poppath": [
+    [
+      "\\poppath",
+      ""
+    ]
+  ],
+  "poppunctuation": [
+    [
+      "\\poppunctuation",
+      ""
+    ]
+  ],
+  "poprandomseed": [
+    [
+      "\\poprandomseed",
+      ""
+    ]
+  ],
+  "popreferenceprefix": [
+    [
+      "\\popreferenceprefix",
+      ""
     ]
   ],
   "popsystemmode": [
@@ -15050,6 +15260,12 @@
   "restorecatcodes": [
     [
       "\\restorecatcodes",
+      ""
+    ]
+  ],
+  "restorecolor": [
+    [
+      "\\restorecolor",
       ""
     ]
   ],
@@ -20871,10 +21087,766 @@
       "1   NAME"
     ]
   ],
+  "stopJScode": [
+    [
+      "\\stopJScode",
+      ""
+    ]
+  ],
+  "stopJSpreamble": [
+    [
+      "\\stopJSpreamble",
+      ""
+    ]
+  ],
+  "stopLUA": [
+    [
+      "\\stopLUA",
+      ""
+    ]
+  ],
+  "stopMP": [
+    [
+      "\\stopMP",
+      ""
+    ]
+  ],
+  "stopMPclip": [
+    [
+      "\\stopMPclip",
+      ""
+    ]
+  ],
+  "stopMPcode": [
+    [
+      "\\stopMPcode",
+      ""
+    ]
+  ],
+  "stopMPdefinitions": [
+    [
+      "\\stopMPdefinitions",
+      ""
+    ]
+  ],
+  "stopMPdrawing": [
+    [
+      "\\stopMPdrawing",
+      ""
+    ]
+  ],
+  "stopMPenvironment": [
+    [
+      "\\stopMPenvironment",
+      ""
+    ]
+  ],
+  "stopMPextensions": [
+    [
+      "\\stopMPextensions",
+      ""
+    ]
+  ],
+  "stopMPinclusions": [
+    [
+      "\\stopMPinclusions",
+      ""
+    ]
+  ],
+  "stopMPinitializations": [
+    [
+      "\\stopMPinitializations",
+      ""
+    ]
+  ],
+  "stopMPpage": [
+    [
+      "\\stopMPpage",
+      ""
+    ]
+  ],
+  "stopMPpositiongraphic": [
+    [
+      "\\stopMPpositiongraphic",
+      ""
+    ]
+  ],
+  "stopMPpositionmethod": [
+    [
+      "\\stopMPpositionmethod",
+      ""
+    ]
+  ],
+  "stopMPrun": [
+    [
+      "\\stopMPrun",
+      ""
+    ]
+  ],
+  "stopPARSEDXML": [
+    [
+      "\\stopPARSEDXML",
+      ""
+    ]
+  ],
+  "stopTABLE": [
+    [
+      "\\stopTABLE",
+      ""
+    ]
+  ],
+  "stopTABLEbody": [
+    [
+      "\\stopTABLEbody",
+      ""
+    ]
+  ],
+  "stopTABLEfoot": [
+    [
+      "\\stopTABLEfoot",
+      ""
+    ]
+  ],
+  "stopTABLEhead": [
+    [
+      "\\stopTABLEhead",
+      ""
+    ]
+  ],
+  "stopTABLEnext": [
+    [
+      "\\stopTABLEnext",
+      ""
+    ]
+  ],
+  "stopTEX": [
+    [
+      "\\stopTEX",
+      ""
+    ]
+  ],
+  "stopTEXpage": [
+    [
+      "\\stopTEXpage",
+      ""
+    ]
+  ],
+  "stopXML": [
+    [
+      "\\stopXML",
+      ""
+    ]
+  ],
+  "stopalign": [
+    [
+      "\\stopalign",
+      ""
+    ]
+  ],
+  "stopalignment": [
+    [
+      "\\stopalignment",
+      ""
+    ]
+  ],
+  "stopallmodes": [
+    [
+      "\\stopallmodes",
+      ""
+    ]
+  ],
+  "stopappendices": [
+    [
+      "\\stopappendices",
+      ""
+    ]
+  ],
+  "stopattachment": [
+    [
+      "\\stopattachment",
+      ""
+    ]
+  ],
+  "stopbackground": [
+    [
+      "\\stopbackground",
+      ""
+    ]
+  ],
+  "stopbackmatter": [
+    [
+      "\\stopbackmatter",
+      ""
+    ]
+  ],
+  "stopbar": [
+    [
+      "\\stopbar",
+      ""
+    ]
+  ],
+  "stopbitmapimage": [
+    [
+      "\\stopbitmapimage",
+      ""
+    ]
+  ],
+  "stopblockquote": [
+    [
+      "\\stopblockquote",
+      ""
+    ]
+  ],
+  "stopbodymatter": [
+    [
+      "\\stopbodymatter",
+      ""
+    ]
+  ],
+  "stopboxedcolumns": [
+    [
+      "\\stopboxedcolumns",
+      ""
+    ]
+  ],
+  "stopbtxlabeltext": [
+    [
+      "\\stopbtxlabeltext",
+      ""
+    ]
+  ],
+  "stopbtxrenderingdefinitions": [
+    [
+      "\\stopbtxrenderingdefinitions",
+      ""
+    ]
+  ],
+  "stopbuffer": [
+    [
+      "\\stopbuffer",
+      ""
+    ]
+  ],
+  "stopbut": [
+    [
+      "\\stopbut",
+      ""
+    ]
+  ],
+  "stopcases": [
+    [
+      "\\stopcases",
+      ""
+    ]
+  ],
+  "stopcatcodetable": [
+    [
+      "\\stopcatcodetable",
+      ""
+    ]
+  ],
+  "stopcenteraligned": [
+    [
+      "\\stopcenteraligned",
+      ""
+    ]
+  ],
+  "stopchapter": [
+    [
+      "\\stopchapter",
+      ""
+    ]
+  ],
+  "stopcharacteralign": [
+    [
+      "\\stopcharacteralign",
+      ""
+    ]
+  ],
+  "stopcheckedfences": [
+    [
+      "\\stopcheckedfences",
+      ""
+    ]
+  ],
+  "stopchemical": [
+    [
+      "\\stopchemical",
+      ""
+    ]
+  ],
+  "stopcollect": [
+    [
+      "\\stopcollect",
+      ""
+    ]
+  ],
+  "stopcollecting": [
+    [
+      "\\stopcollecting",
+      ""
+    ]
+  ],
+  "stopcolor": [
+    [
+      "\\stopcolor",
+      ""
+    ]
+  ],
+  "stopcolorintent": [
+    [
+      "\\stopcolorintent",
+      ""
+    ]
+  ],
+  "stopcolorset": [
+    [
+      "\\stopcolorset",
+      ""
+    ]
+  ],
+  "stopcolumns": [
+    [
+      "\\stopcolumns",
+      ""
+    ]
+  ],
+  "stopcolumnspan": [
+    [
+      "\\stopcolumnspan",
+      ""
+    ]
+  ],
+  "stopcom": [
+    [
+      "\\stopcom",
+      ""
+    ]
+  ],
+  "stopcombination": [
+    [
+      "\\stopcombination",
+      ""
+    ]
+  ],
+  "stopcomment": [
+    [
+      "\\stopcomment",
+      ""
+    ]
+  ],
+  "stopcomponent": [
+    [
+      "\\stopcomponent",
+      ""
+    ]
+  ],
+  "stopcontextcode": [
+    [
+      "\\stopcontextcode",
+      ""
+    ]
+  ],
+  "stopcontextdefinitioncode": [
+    [
+      "\\stopcontextdefinitioncode",
+      ""
+    ]
+  ],
+  "stopctxfunction": [
+    [
+      "\\stopctxfunction",
+      ""
+    ]
+  ],
+  "stopctxfunctiondefinition": [
+    [
+      "\\stopctxfunctiondefinition",
+      ""
+    ]
+  ],
+  "stopcurrentcolor": [
+    [
+      "\\stopcurrentcolor",
+      ""
+    ]
+  ],
+  "stopcurrentlistentrywrapper": [
+    [
+      "\\stopcurrentlistentrywrapper",
+      ""
+    ]
+  ],
+  "stopdelimited": [
+    [
+      "\\stopdelimited",
+      ""
+    ]
+  ],
+  "stopdelimitedtext": [
+    [
+      "\\stopdelimitedtext",
+      ""
+    ]
+  ],
+  "stopdescription": [
+    [
+      "\\stopdescription",
+      ""
+    ]
+  ],
+  "stopdisplaymath": [
+    [
+      "\\stopdisplaymath",
+      ""
+    ]
+  ],
+  "stopdmath": [
+    [
+      "\\stopdmath",
+      ""
+    ]
+  ],
+  "stopdocument": [
+    [
+      "\\stopdocument",
+      ""
+    ]
+  ],
+  "stopeffect": [
+    [
+      "\\stopeffect",
+      ""
+    ]
+  ],
+  "stopembeddedxtable": [
+    [
+      "\\stopembeddedxtable",
+      ""
+    ]
+  ],
+  "stopendnote": [
+    [
+      "\\stopendnote",
+      ""
+    ]
+  ],
+  "stopenumeration": [
+    [
+      "\\stopenumeration",
+      ""
+    ]
+  ],
+  "stopenvironment": [
+    [
+      "\\stopenvironment",
+      ""
+    ]
+  ],
+  "stopexceptions": [
+    [
+      "\\stopexceptions",
+      ""
+    ]
+  ],
+  "stopexpanded": [
+    [
+      "\\stopexpanded",
+      ""
+    ]
+  ],
+  "stopexpandedcollect": [
+    [
+      "\\stopexpandedcollect",
+      ""
+    ]
+  ],
+  "stopextendedcatcodetable": [
+    [
+      "\\stopextendedcatcodetable",
+      ""
+    ]
+  ],
+  "stopexternalfigurecollection": [
+    [
+      "\\stopexternalfigurecollection",
+      ""
+    ]
+  ],
+  "stopfact": [
+    [
+      "\\stopfact",
+      ""
+    ]
+  ],
+  "stopfigure": [
+    [
+      "\\stopfigure",
+      ""
+    ]
+  ],
+  "stopfiguretext": [
+    [
+      "\\stopfiguretext",
+      ""
+    ]
+  ],
+  "stopfittingpage": [
+    [
+      "\\stopfittingpage",
+      ""
+    ]
+  ],
+  "stopfloatcombination": [
+    [
+      "\\stopfloatcombination",
+      ""
+    ]
+  ],
+  "stopfloattext": [
+    [
+      "\\stopfloattext",
+      ""
+    ]
+  ],
+  "stopfont": [
+    [
+      "\\stopfont",
+      ""
+    ]
+  ],
+  "stopfontclass": [
+    [
+      "\\stopfontclass",
+      ""
+    ]
+  ],
+  "stopfontsolution": [
+    [
+      "\\stopfontsolution",
+      ""
+    ]
+  ],
+  "stopfootnote": [
+    [
+      "\\stopfootnote",
+      ""
+    ]
+  ],
+  "stopformula": [
+    [
+      "\\stopformula",
+      ""
+    ]
+  ],
+  "stopformulas": [
+    [
+      "\\stopformulas",
+      ""
+    ]
+  ],
+  "stopframed": [
+    [
+      "\\stopframed",
+      ""
+    ]
+  ],
+  "stopframedcontent": [
+    [
+      "\\stopframedcontent",
+      ""
+    ]
+  ],
+  "stopframedtext": [
+    [
+      "\\stopframedtext",
+      ""
+    ]
+  ],
+  "stopfrontmatter": [
+    [
+      "\\stopfrontmatter",
+      ""
+    ]
+  ],
+  "stopgot": [
+    [
+      "\\stopgot",
+      ""
+    ]
+  ],
+  "stopgoto": [
+    [
+      "\\stopgoto",
+      ""
+    ]
+  ],
+  "stopgraphictext": [
+    [
+      "\\stopgraphictext",
+      ""
+    ]
+  ],
+  "stopgridsnapping": [
+    [
+      "\\stopgridsnapping",
+      ""
+    ]
+  ],
+  "stophboxestohbox": [
+    [
+      "\\stophboxestohbox",
+      ""
+    ]
+  ],
+  "stophead": [
+    [
+      "\\stophead",
+      ""
+    ]
+  ],
+  "stopheadtext": [
+    [
+      "\\stopheadtext",
+      ""
+    ]
+  ],
+  "stophelp": [
+    [
+      "\\stophelp",
+      ""
+    ]
+  ],
+  "stophelptext": [
+    [
+      "\\stophelptext",
+      ""
+    ]
+  ],
+  "stophiding": [
+    [
+      "\\stophiding",
+      ""
+    ]
+  ],
+  "stophighlight": [
+    [
+      "\\stophighlight",
+      ""
+    ]
+  ],
+  "stophyphenation": [
+    [
+      "\\stophyphenation",
+      ""
+    ]
+  ],
+  "stopimath": [
+    [
+      "\\stopimath",
+      ""
+    ]
+  ],
+  "stopindentedtext": [
+    [
+      "\\stopindentedtext",
+      ""
+    ]
+  ],
+  "stopinteraction": [
+    [
+      "\\stopinteraction",
+      ""
+    ]
+  ],
+  "stopinteractionmenu": [
+    [
+      "\\stopinteractionmenu",
+      ""
+    ]
+  ],
+  "stopinterface": [
+    [
+      "\\stopinterface",
+      ""
+    ]
+  ],
+  "stopintermezzotext": [
+    [
+      "\\stopintermezzotext",
+      ""
+    ]
+  ],
+  "stopintertext": [
+    [
+      "\\stopintertext",
+      ""
+    ]
+  ],
+  "stopitem": [
+    [
+      "\\stopitem",
+      ""
+    ]
+  ],
+  "stopitemgroup": [
+    [
+      "\\stopitemgroup",
+      ""
+    ]
+  ],
+  "stopitemize": [
+    [
+      "\\stopitemize",
+      ""
+    ]
+  ],
+  "stopknockout": [
+    [
+      "\\stopknockout",
+      ""
+    ]
+  ],
+  "stoplabeltext": [
+    [
+      "\\stoplabeltext",
+      ""
+    ]
+  ],
+  "stoplayout": [
+    [
+      "\\stoplayout",
+      ""
+    ]
+  ],
+  "stopleftaligned": [
+    [
+      "\\stopleftaligned",
+      ""
+    ]
+  ],
+  "stoplegend": [
+    [
+      "\\stoplegend",
+      ""
+    ]
+  ],
   "stopline": [
     [
       "            1  \n\\stopline [...]",
       "1   REFERENCE"
+    ]
+  ],
+  "stoplinealignment": [
+    [
+      "\\stoplinealignment",
+      ""
+    ]
+  ],
+  "stoplinecorrection": [
+    [
+      "\\stoplinecorrection",
+      ""
     ]
   ],
   "stoplinenote": [
@@ -20883,16 +21855,1120 @@
       "1   REFERENCE"
     ]
   ],
+  "stoplinenumbering": [
+    [
+      "\\stoplinenumbering",
+      ""
+    ]
+  ],
+  "stoplines": [
+    [
+      "\\stoplines",
+      ""
+    ]
+  ],
+  "stoplinetable": [
+    [
+      "\\stoplinetable",
+      ""
+    ]
+  ],
+  "stoplinetablebody": [
+    [
+      "\\stoplinetablebody",
+      ""
+    ]
+  ],
+  "stoplinetablecell": [
+    [
+      "\\stoplinetablecell",
+      ""
+    ]
+  ],
+  "stoplinetablehead": [
+    [
+      "\\stoplinetablehead",
+      ""
+    ]
+  ],
+  "stoplocalfootnotes": [
+    [
+      "\\stoplocalfootnotes",
+      ""
+    ]
+  ],
+  "stoplocalheadsetup": [
+    [
+      "\\stoplocalheadsetup",
+      ""
+    ]
+  ],
+  "stoplocallinecorrection": [
+    [
+      "\\stoplocallinecorrection",
+      ""
+    ]
+  ],
+  "stoplocalnotes": [
+    [
+      "\\stoplocalnotes",
+      ""
+    ]
+  ],
+  "stoplocalsetups": [
+    [
+      "\\stoplocalsetups",
+      ""
+    ]
+  ],
+  "stoplua": [
+    [
+      "\\stoplua",
+      ""
+    ]
+  ],
+  "stopluacode": [
+    [
+      "\\stopluacode",
+      ""
+    ]
+  ],
+  "stopluaparameterset": [
+    [
+      "\\stopluaparameterset",
+      ""
+    ]
+  ],
+  "stopluasetups": [
+    [
+      "\\stopluasetups",
+      ""
+    ]
+  ],
+  "stopmakeup": [
+    [
+      "\\stopmakeup",
+      ""
+    ]
+  ],
+  "stopmarginblock": [
+    [
+      "\\stopmarginblock",
+      ""
+    ]
+  ],
+  "stopmarginrule": [
+    [
+      "\\stopmarginrule",
+      ""
+    ]
+  ],
+  "stopmarkedcontent": [
+    [
+      "\\stopmarkedcontent",
+      ""
+    ]
+  ],
+  "stopmathalignment": [
+    [
+      "\\stopmathalignment",
+      ""
+    ]
+  ],
+  "stopmathcases": [
+    [
+      "\\stopmathcases",
+      ""
+    ]
+  ],
+  "stopmathlabeltext": [
+    [
+      "\\stopmathlabeltext",
+      ""
+    ]
+  ],
+  "stopmathmatrix": [
+    [
+      "\\stopmathmatrix",
+      ""
+    ]
+  ],
+  "stopmathmode": [
+    [
+      "\\stopmathmode",
+      ""
+    ]
+  ],
+  "stopmathstyle": [
+    [
+      "\\stopmathstyle",
+      ""
+    ]
+  ],
+  "stopmatrices": [
+    [
+      "\\stopmatrices",
+      ""
+    ]
+  ],
+  "stopmatrix": [
+    [
+      "\\stopmatrix",
+      ""
+    ]
+  ],
+  "stopmaxaligned": [
+    [
+      "\\stopmaxaligned",
+      ""
+    ]
+  ],
+  "stopmdformula": [
+    [
+      "\\stopmdformula",
+      ""
+    ]
+  ],
+  "stopmidaligned": [
+    [
+      "\\stopmidaligned",
+      ""
+    ]
+  ],
+  "stopmiddlealigned": [
+    [
+      "\\stopmiddlealigned",
+      ""
+    ]
+  ],
+  "stopmixedcolumns": [
+    [
+      "\\stopmixedcolumns",
+      ""
+    ]
+  ],
+  "stopmode": [
+    [
+      "\\stopmode",
+      ""
+    ]
+  ],
+  "stopmodeset": [
+    [
+      "\\stopmodeset",
+      ""
+    ]
+  ],
+  "stopmodule": [
+    [
+      "\\stopmodule",
+      ""
+    ]
+  ],
+  "stopmoduletestsection": [
+    [
+      "\\stopmoduletestsection",
+      ""
+    ]
+  ],
+  "stopmpformula": [
+    [
+      "\\stopmpformula",
+      ""
+    ]
+  ],
+  "stopnamedsection": [
+    [
+      "\\stopnamedsection",
+      ""
+    ]
+  ],
+  "stopnamedsubformulas": [
+    [
+      "\\stopnamedsubformulas",
+      ""
+    ]
+  ],
+  "stopnarrow": [
+    [
+      "\\stopnarrow",
+      ""
+    ]
+  ],
+  "stopnarrower": [
+    [
+      "\\stopnarrower",
+      ""
+    ]
+  ],
+  "stopnegative": [
+    [
+      "\\stopnegative",
+      ""
+    ]
+  ],
+  "stopnicelyfilledbox": [
+    [
+      "\\stopnicelyfilledbox",
+      ""
+    ]
+  ],
+  "stopnointerference": [
+    [
+      "\\stopnointerference",
+      ""
+    ]
+  ],
+  "stopnop": [
+    [
+      "\\stopnop",
+      ""
+    ]
+  ],
+  "stopnotallmodes": [
+    [
+      "\\stopnotallmodes",
+      ""
+    ]
+  ],
+  "stopnote": [
+    [
+      "\\stopnote",
+      ""
+    ]
+  ],
+  "stopnotext": [
+    [
+      "\\stopnotext",
+      ""
+    ]
+  ],
+  "stopnotmode": [
+    [
+      "\\stopnotmode",
+      ""
+    ]
+  ],
+  "stopoperatortext": [
+    [
+      "\\stopoperatortext",
+      ""
+    ]
+  ],
+  "stopopposite": [
+    [
+      "\\stopopposite",
+      ""
+    ]
+  ],
+  "stopoutputstream": [
+    [
+      "\\stopoutputstream",
+      ""
+    ]
+  ],
+  "stopoverlay": [
+    [
+      "\\stopoverlay",
+      ""
+    ]
+  ],
+  "stopoverprint": [
+    [
+      "\\stopoverprint",
+      ""
+    ]
+  ],
+  "stoppacked": [
+    [
+      "\\stoppacked",
+      ""
+    ]
+  ],
+  "stoppagecomment": [
+    [
+      "\\stoppagecomment",
+      ""
+    ]
+  ],
+  "stoppagefigure": [
+    [
+      "\\stoppagefigure",
+      ""
+    ]
+  ],
+  "stoppagegrid": [
+    [
+      "\\stoppagegrid",
+      ""
+    ]
+  ],
+  "stoppagegridspan": [
+    [
+      "\\stoppagegridspan",
+      ""
+    ]
+  ],
+  "stoppagelayout": [
+    [
+      "\\stoppagelayout",
+      ""
+    ]
+  ],
+  "stoppar": [
+    [
+      "\\stoppar",
+      ""
+    ]
+  ],
+  "stopparagraph": [
+    [
+      "\\stopparagraph",
+      ""
+    ]
+  ],
+  "stopparagraphs": [
+    [
+      "\\stopparagraphs",
+      ""
+    ]
+  ],
+  "stopparagraphscell": [
+    [
+      "\\stopparagraphscell",
+      ""
+    ]
+  ],
+  "stopparallel": [
+    [
+      "\\stopparallel",
+      ""
+    ]
+  ],
+  "stopparbuilder": [
+    [
+      "\\stopparbuilder",
+      ""
+    ]
+  ],
+  "stoppart": [
+    [
+      "\\stoppart",
+      ""
+    ]
+  ],
+  "stopplacechemical": [
+    [
+      "\\stopplacechemical",
+      ""
+    ]
+  ],
+  "stopplacefigure": [
+    [
+      "\\stopplacefigure",
+      ""
+    ]
+  ],
+  "stopplacefloat": [
+    [
+      "\\stopplacefloat",
+      ""
+    ]
+  ],
+  "stopplaceformula": [
+    [
+      "\\stopplaceformula",
+      ""
+    ]
+  ],
+  "stopplacegraphic": [
+    [
+      "\\stopplacegraphic",
+      ""
+    ]
+  ],
+  "stopplaceintermezzo": [
+    [
+      "\\stopplaceintermezzo",
+      ""
+    ]
+  ],
+  "stopplacelegend": [
+    [
+      "\\stopplacelegend",
+      ""
+    ]
+  ],
+  "stopplacepairedbox": [
+    [
+      "\\stopplacepairedbox",
+      ""
+    ]
+  ],
+  "stopplacetable": [
+    [
+      "\\stopplacetable",
+      ""
+    ]
+  ],
+  "stoppositioning": [
+    [
+      "\\stoppositioning",
+      ""
+    ]
+  ],
+  "stoppositionoverlay": [
+    [
+      "\\stoppositionoverlay",
+      ""
+    ]
+  ],
+  "stoppositive": [
+    [
+      "\\stoppositive",
+      ""
+    ]
+  ],
+  "stoppostponing": [
+    [
+      "\\stoppostponing",
+      ""
+    ]
+  ],
+  "stopprefixtext": [
+    [
+      "\\stopprefixtext",
+      ""
+    ]
+  ],
+  "stopprocessassignmentcommand": [
+    [
+      "\\stopprocessassignmentcommand",
+      ""
+    ]
+  ],
+  "stopprocessassignmentlist": [
+    [
+      "\\stopprocessassignmentlist",
+      ""
+    ]
+  ],
+  "stopprocesscommacommand": [
+    [
+      "\\stopprocesscommacommand",
+      ""
+    ]
+  ],
+  "stopprocesscommalist": [
+    [
+      "\\stopprocesscommalist",
+      ""
+    ]
+  ],
+  "stopproduct": [
+    [
+      "\\stopproduct",
+      ""
+    ]
+  ],
+  "stopproject": [
+    [
+      "\\stopproject",
+      ""
+    ]
+  ],
+  "stopprotectedcolors": [
+    [
+      "\\stopprotectedcolors",
+      ""
+    ]
+  ],
+  "stoppsh": [
+    [
+      "\\stoppsh",
+      ""
+    ]
+  ],
+  "stoppublication": [
+    [
+      "\\stoppublication",
+      ""
+    ]
+  ],
+  "stopquotation": [
+    [
+      "\\stopquotation",
+      ""
+    ]
+  ],
+  "stopquote": [
+    [
+      "\\stopquote",
+      ""
+    ]
+  ],
+  "stoprandomized": [
+    [
+      "\\stoprandomized",
+      ""
+    ]
+  ],
+  "stopraw": [
+    [
+      "\\stopraw",
+      ""
+    ]
+  ],
+  "stoprawsetups": [
+    [
+      "\\stoprawsetups",
+      ""
+    ]
+  ],
+  "stopreadingfile": [
+    [
+      "\\stopreadingfile",
+      ""
+    ]
+  ],
+  "stopregime": [
+    [
+      "\\stopregime",
+      ""
+    ]
+  ],
   "stopregister": [
     [
       "                1     2  \n\\stopregister [...] [...]",
       "1   NAME\n\n2   NAME"
     ]
   ],
+  "stopreusableMPgraphic": [
+    [
+      "\\stopreusableMPgraphic",
+      ""
+    ]
+  ],
+  "stoprightaligned": [
+    [
+      "\\stoprightaligned",
+      ""
+    ]
+  ],
+  "stoprob": [
+    [
+      "\\stoprob",
+      ""
+    ]
+  ],
+  "stoprul": [
+    [
+      "\\stoprul",
+      ""
+    ]
+  ],
+  "stopscript": [
+    [
+      "\\stopscript",
+      ""
+    ]
+  ],
+  "stopsdformula": [
+    [
+      "\\stopsdformula",
+      ""
+    ]
+  ],
+  "stopsection": [
+    [
+      "\\stopsection",
+      ""
+    ]
+  ],
+  "stopsectionblock": [
+    [
+      "\\stopsectionblock",
+      ""
+    ]
+  ],
+  "stopsectionblockenvironment": [
+    [
+      "\\stopsectionblockenvironment",
+      ""
+    ]
+  ],
+  "stopsectionlevel": [
+    [
+      "\\stopsectionlevel",
+      ""
+    ]
+  ],
+  "stopsetups": [
+    [
+      "\\stopsetups",
+      ""
+    ]
+  ],
+  "stopshift": [
+    [
+      "\\stopshift",
+      ""
+    ]
+  ],
+  "stopsidebar": [
+    [
+      "\\stopsidebar",
+      ""
+    ]
+  ],
+  "stopsimplecolumns": [
+    [
+      "\\stopsimplecolumns",
+      ""
+    ]
+  ],
+  "stopspecialitem": [
+    [
+      "\\stopspecialitem",
+      ""
+    ]
+  ],
+  "stopspeech": [
+    [
+      "\\stopspeech",
+      ""
+    ]
+  ],
+  "stopspformula": [
+    [
+      "\\stopspformula",
+      ""
+    ]
+  ],
+  "stopspread": [
+    [
+      "\\stopspread",
+      ""
+    ]
+  ],
+  "stopstartstop": [
+    [
+      "\\stopstartstop",
+      ""
+    ]
+  ],
+  "stopstaticMPfigure": [
+    [
+      "\\stopstaticMPfigure",
+      ""
+    ]
+  ],
+  "stopstaticMPgraphic": [
+    [
+      "\\stopstaticMPgraphic",
+      ""
+    ]
+  ],
+  "stopstrictinspectnextcharacter": [
+    [
+      "\\stopstrictinspectnextcharacter",
+      ""
+    ]
+  ],
   "stopstructurepageregister": [
     [
       "                             1     2  \n\\stopstructurepageregister [...] [...]",
       "1   NAME\n\n2   NAME"
+    ]
+  ],
+  "stopstyle": [
+    [
+      "\\stopstyle",
+      ""
+    ]
+  ],
+  "stopsubformulas": [
+    [
+      "\\stopsubformulas",
+      ""
+    ]
+  ],
+  "stopsubject": [
+    [
+      "\\stopsubject",
+      ""
+    ]
+  ],
+  "stopsubjectlevel": [
+    [
+      "\\stopsubjectlevel",
+      ""
+    ]
+  ],
+  "stopsubsection": [
+    [
+      "\\stopsubsection",
+      ""
+    ]
+  ],
+  "stopsubsentence": [
+    [
+      "\\stopsubsentence",
+      ""
+    ]
+  ],
+  "stopsubstack": [
+    [
+      "\\stopsubstack",
+      ""
+    ]
+  ],
+  "stopsubsubject": [
+    [
+      "\\stopsubsubject",
+      ""
+    ]
+  ],
+  "stopsubsubsection": [
+    [
+      "\\stopsubsubsection",
+      ""
+    ]
+  ],
+  "stopsubsubsubject": [
+    [
+      "\\stopsubsubsubject",
+      ""
+    ]
+  ],
+  "stopsubsubsubsection": [
+    [
+      "\\stopsubsubsubsection",
+      ""
+    ]
+  ],
+  "stopsubsubsubsubject": [
+    [
+      "\\stopsubsubsubsubject",
+      ""
+    ]
+  ],
+  "stopsubsubsubsubsection": [
+    [
+      "\\stopsubsubsubsubsection",
+      ""
+    ]
+  ],
+  "stopsubsubsubsubsubject": [
+    [
+      "\\stopsubsubsubsubsubject",
+      ""
+    ]
+  ],
+  "stopsymbolset": [
+    [
+      "\\stopsymbolset",
+      ""
+    ]
+  ],
+  "stoptable": [
+    [
+      "\\stoptable",
+      ""
+    ]
+  ],
+  "stoptablehead": [
+    [
+      "\\stoptablehead",
+      ""
+    ]
+  ],
+  "stoptables": [
+    [
+      "\\stoptables",
+      ""
+    ]
+  ],
+  "stoptabletail": [
+    [
+      "\\stoptabletail",
+      ""
+    ]
+  ],
+  "stoptabletext": [
+    [
+      "\\stoptabletext",
+      ""
+    ]
+  ],
+  "stoptabulate": [
+    [
+      "\\stoptabulate",
+      ""
+    ]
+  ],
+  "stoptabulatehead": [
+    [
+      "\\stoptabulatehead",
+      ""
+    ]
+  ],
+  "stoptabulatetail": [
+    [
+      "\\stoptabulatetail",
+      ""
+    ]
+  ],
+  "stoptabulation": [
+    [
+      "\\stoptabulation",
+      ""
+    ]
+  ],
+  "stoptaglabeltext": [
+    [
+      "\\stoptaglabeltext",
+      ""
+    ]
+  ],
+  "stoptexcode": [
+    [
+      "\\stoptexcode",
+      ""
+    ]
+  ],
+  "stoptexdefinition": [
+    [
+      "\\stoptexdefinition",
+      ""
+    ]
+  ],
+  "stoptext": [
+    [
+      "\\stoptext",
+      ""
+    ]
+  ],
+  "stoptextbackground": [
+    [
+      "\\stoptextbackground",
+      ""
+    ]
+  ],
+  "stoptextbackgroundmanual": [
+    [
+      "\\stoptextbackgroundmanual",
+      ""
+    ]
+  ],
+  "stoptextcolor": [
+    [
+      "\\stoptextcolor",
+      ""
+    ]
+  ],
+  "stoptextcolorintent": [
+    [
+      "\\stoptextcolorintent",
+      ""
+    ]
+  ],
+  "stoptextflow": [
+    [
+      "\\stoptextflow",
+      ""
+    ]
+  ],
+  "stoptextrule": [
+    [
+      "\\stoptextrule",
+      ""
+    ]
+  ],
+  "stoptitle": [
+    [
+      "\\stoptitle",
+      ""
+    ]
+  ],
+  "stoptokens": [
+    [
+      "\\stoptokens",
+      ""
+    ]
+  ],
+  "stoptxt": [
+    [
+      "\\stoptxt",
+      ""
+    ]
+  ],
+  "stoptypescript": [
+    [
+      "\\stoptypescript",
+      ""
+    ]
+  ],
+  "stoptypescriptcollection": [
+    [
+      "\\stoptypescriptcollection",
+      ""
+    ]
+  ],
+  "stoptyping": [
+    [
+      "\\stoptyping",
+      ""
+    ]
+  ],
+  "stopuniqueMPgraphic": [
+    [
+      "\\stopuniqueMPgraphic",
+      ""
+    ]
+  ],
+  "stopuniqueMPpagegraphic": [
+    [
+      "\\stopuniqueMPpagegraphic",
+      ""
+    ]
+  ],
+  "stopunittext": [
+    [
+      "\\stopunittext",
+      ""
+    ]
+  ],
+  "stopunpacked": [
+    [
+      "\\stopunpacked",
+      ""
+    ]
+  ],
+  "stopusableMPgraphic": [
+    [
+      "\\stopusableMPgraphic",
+      ""
+    ]
+  ],
+  "stopuseMPgraphic": [
+    [
+      "\\stopuseMPgraphic",
+      ""
+    ]
+  ],
+  "stopusemathstyleparameter": [
+    [
+      "\\stopusemathstyleparameter",
+      ""
+    ]
+  ],
+  "stopusingbtxspecification": [
+    [
+      "\\stopusingbtxspecification",
+      ""
+    ]
+  ],
+  "stopvboxtohbox": [
+    [
+      "\\stopvboxtohbox",
+      ""
+    ]
+  ],
+  "stopvboxtohboxseparator": [
+    [
+      "\\stopvboxtohboxseparator",
+      ""
+    ]
+  ],
+  "stopviewerlayer": [
+    [
+      "\\stopviewerlayer",
+      ""
+    ]
+  ],
+  "stopxcell": [
+    [
+      "\\stopxcell",
+      ""
+    ]
+  ],
+  "stopxcellgroup": [
+    [
+      "\\stopxcellgroup",
+      ""
+    ]
+  ],
+  "stopxgroup": [
+    [
+      "\\stopxgroup",
+      ""
+    ]
+  ],
+  "stopxmldisplayverbatim": [
+    [
+      "\\stopxmldisplayverbatim",
+      ""
+    ]
+  ],
+  "stopxmlinlineverbatim": [
+    [
+      "\\stopxmlinlineverbatim",
+      ""
+    ]
+  ],
+  "stopxmlraw": [
+    [
+      "\\stopxmlraw",
+      ""
+    ]
+  ],
+  "stopxmlsetups": [
+    [
+      "\\stopxmlsetups",
+      ""
+    ]
+  ],
+  "stopxrow": [
+    [
+      "\\stopxrow",
+      ""
+    ]
+  ],
+  "stopxrowgroup": [
+    [
+      "\\stopxrowgroup",
+      ""
+    ]
+  ],
+  "stopxtable": [
+    [
+      "\\stopxtable",
+      ""
+    ]
+  ],
+  "stopxtablebody": [
+    [
+      "\\stopxtablebody",
+      ""
+    ]
+  ],
+  "stopxtablefoot": [
+    [
+      "\\stopxtablefoot",
+      ""
+    ]
+  ],
+  "stopxtablehead": [
+    [
+      "\\stopxtablehead",
+      ""
+    ]
+  ],
+  "stopxtablenext": [
+    [
+      "\\stopxtablenext",
+      ""
     ]
   ],
   "stretched": [
@@ -22211,7 +24287,7 @@
   ],
   "unprotect": [
     [
-      "\\unprotect ... \\\u200bprotect",
+      "\\unprotect ... \\protect",
       ""
     ]
   ],
@@ -23669,6 +25745,12 @@
     [
       "         1  \n\\xypos {...}",
       "1   NAME"
+    ]
+  ],
+  "protect": [
+    [
+      "\\protect",
+      ""
     ]
   ]
 }

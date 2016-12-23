@@ -23,15 +23,15 @@
                   "file": "${packages}/ConTeXtTools/README.md"
                 },
               },
-              {"caption": "-"},
-              {
-                "caption": "Settings",
-                "command": "open_file",
-                "args":
-                {
-                  "file": "${packages}/ConTeXtTools/ConTeXtTools.sublime-settings"
-                },
-              },
+              // {"caption": "-"},
+              // {
+              //   "caption": "Settings",
+              //   "command": "open_file",
+              //   "args":
+              //   {
+              //     "file": "${packages}/ConTeXtTools/ConTeXtTools.sublime-settings"
+              //   },
+              // },
             ]
           }
         ]

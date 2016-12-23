@@ -72,7 +72,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         kwargs = {
             "location": -1,
-            "max_width": 1000,
+            "max_width": 600,
             "flags": sublime.COOPERATE_WITH_AUTO_COMPLETE,
         }
 
@@ -85,7 +85,12 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             name = match.group(1)[::-1]
             range_ = [stop - end for end in reversed(match.span(1))]
             scope_is_command = view.match_selector(
-                range_[0], "support.function.control-word.context")
+                range_[0],
+                ", ".join([
+                    "support.function.control-word.context",
+                    "keyword.control-word.context",
+                ])
+            )
             if name in self.command_names and scope_is_command:
                 return name
 

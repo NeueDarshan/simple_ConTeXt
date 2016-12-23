@@ -1,5 +1,5 @@
-# ConTeXtTools
+# ConTeXt plugin for Sublime Text 3
 
-Very much so a *work in progress* at the moment. This has come out of my personal attempts to get ConTeXt to play nice with Sublime Text, and there's still a great deal of work that could (should?) be done to it.
+This plugin provides some basic support for working with [ConTeXt][contextgarden] files. It provides `sublime-syntax` files for ConTeXt (and MetaPost too), and a basic builder (needs improvement). More interestingly, it also adds completions for the various commands ConTeXt defines, as well as pop-ups that show the documentation for a given command on typing it out.
 
-For the moment it includes a simple builder, syntax highlighting, and one or two snippets.
+[contextgarden]: http://wiki.contextgarden.net/What_is_ConTeXt

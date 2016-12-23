@@ -5,7 +5,7 @@
   <key>name</key>
   <string>TeX def comments</string>
   <key>scope</key>
-  <string>meta.environment.def.tex.context</string>
+  <string>meta.environment.def.context</string>
   <key>settings</key>
   <dict>
     <key>shellVariables</key>
