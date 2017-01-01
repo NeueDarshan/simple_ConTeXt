@@ -90,6 +90,7 @@ contexts:
 
   math.main:
     - include: math.constant
+    - include: LMX
     - include: math.operator
     - include: math.text
     - include: math.dummy-group
@@ -100,13 +101,12 @@ contexts:
       scope: string.math.context
 
   math.control-sequence:
-    - match: '\\start([[:alpha:]]+)\b'
-      scope: support.function.control-word.context
-      push: generic.assignment*/
-
     - include: control.word.font
     - include: control.word.tab
     - include: control.word.conditional
+    - match: '\\start([[:alpha:]]+)'
+      scope: support.function.control-word.context
+      push: generic.assignment*/
     - include: control.word.generic.no-arguments
     - include: control.symbol
 
@@ -158,8 +158,9 @@ contexts:
       with_prototype:
         - match: '(?=\\stopLUA\b)'
           pop: true
+        - include: TeX.parameter
         - include: Lua.block.gobble-braces
-        - include: control.word
+        - include: control.word.generic.no-arguments
         - include: control.symbol
   Lua.block.LUA.scope:
     - meta_content_scope: source.lua.major
@@ -177,8 +178,9 @@ contexts:
       with_prototype:
         - match: '(?=\\stopluacode\b)'
           pop: true
+        - include: TeX.parameter
         - include: Lua.block.gobble-braces
-        - include: control.word
+        - include: control.word.generic.no-arguments
         - include: control.symbol
   Lua.block.luacode.scope:
     - meta_content_scope: source.lua.major
@@ -196,9 +198,10 @@ contexts:
       with_prototype:
         - match: '(?=\\stoplua\b)'
           pop: true
+        - include: TeX.parameter
         - include: Lua.block.gobble-braces
         - include: comment.TeX
-        - include: control.word
+        - include: control.word.generic.no-arguments
         - include: control.symbol
   Lua.block.lua.scope:
     - meta_content_scope: source.lua.minor
@@ -213,7 +216,7 @@ contexts:
     - match: '[{}]'
 
   Lua.inline:
-    - match: '\\(ctx|direct)lua\b'
+    - match: '\\(cldcontext|(ctx|direct)lua)\b'
       scope: support.function.control-word.context
       push: Lua.inline.group*/
 
@@ -231,8 +234,9 @@ contexts:
         - include: generic.pop-at-group-end/
         - include: Lua.inline.comment
         - include: Lua.inline.deep-group
+        - include: TeX.parameter
         - include: comment.TeX
-        - include: control.word
+        - include: control.word.generic.no-arguments
         - include: control.symbol
   Lua.inline.lua.scope:
     - meta_content_scope: source.lua.minor meta.environment.brace.group.tex.context
@@ -249,8 +253,9 @@ contexts:
         - include: generic.pop-at-group-end/
         - include: Lua.inline.comment
         - include: Lua.inline.deep-group
+        - include: TeX.parameter
         - include: comment.TeX
-        - include: control.word
+        - include: control.word.generic.no-arguments
         - include: control.symbol
   Lua.inline.deep-lua.scope:
     - meta_content_scope: meta.environment.table.lua
@@ -317,6 +322,7 @@ contexts:
     - include: MetaFun.constants
     - include: MetaFun.variables
     - include: MetaFun.labels
+    - include: LMX
     - include: MetaFun.operators
     - include: MetaFun.functions
     - include: MetaFun.environments
@@ -324,7 +330,7 @@ contexts:
     - include: MetaFun.ConTeXt
 
   MetaFun.constants:
-    - match: '\b(Page(Offset|Depth|StateAvailable)|(Top|Bottom|Back|Cut)Space|(Left|Right|Inner|Outer)(Edge|Margin)(Width|Distance)|(Top|Header|Footer|Bottom)(Height|Distance)|(Makeup|Text)(Height|Width)|(Print)?Paper(Height|Width)|LayoutColumn(s|Distance|Width)|(Top|BaseLine)Skip|([HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(Right|Odd)Page|InPageBody|(Real|Last)?PageNumber|NOf(Pages|Columns)|Current(Column|Layout|Width|Height)|Overlay(Offset|Color|Depth|Height|Line(Color|Width)|Width)|Strut(Depth|Height)|fullsquare|(full|unit)diamond|[ul][lr]triangle|(unit|[btrl]|[ul][lr])circle|yellow)\b'
+    - match: '\b(Page(Offset|Depth|StateAvailable)?|(Top|Bottom|Back|Cut)Space|(Left|Right|Inner|Outer)(Edge|Margin)(Width|Distance)|(Top|Header|Footer|Bottom)(Height|Distance)|(Makeup|Text)(Height|Width)|(Print)?Paper(Height|Width)|LayoutColumn(s|Distance|Width)|(Top|BaseLine)Skip|([HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(Right|Odd)Page|InPageBody|(Real|Last)?PageNumber|NOf(Pages|Columns)|Current(Column|Layout|Width|Height)|Overlay(Box|Offset|Color|Depth|Height|Line(Color|Width)|Width)|Strut(Depth|Height)|shadedup|fullsquare|(full|unit)diamond|[ul][lr]triangle|(unit|[btrl]|[ul][lr])circle|yellow)\b'
       scope: constant.other.metapost.metafun
     - include: scope:source.metapost#constants
 
@@ -341,7 +347,7 @@ contexts:
     - include: scope:source.metapost#labels
 
   MetaFun.operators:
-    - match: '\b(along|(bottom|left|[ul][rl]|right|top)?enlarged|blownup|cornered|crossed|curved|laddered|paralleled|punked|random(ized|shifted)|shortened|smoothed|softened|stretched|squeezed|superellipsed|[ul][rl]moved|uncolored|with(shade|fillcolor)|[xy]shifted|([xy]|xy)sized|xyscaled)\b'
+    - match: '\b(along|(bottom|left|[ul][rl]|right|top)?enlarged|blownup|cornered|crossed|curved|laddered|paralleled|punked|random(ized|shifted)|shadedinto|shortened|smoothed|softened|stretched|squeezed|superellipsed|[ul][rl]moved|uncolored|with(shade(method|direction)?|fillcolor|transparency)|[xy]shifted|([xy]|xy)sized|xyscaled)\b'
       scope: keyword.operator.metapost.metafun
     - match: '-{3}'
       scope: keyword.path-operator.metapost.metafun
@@ -371,7 +377,7 @@ contexts:
     - match: '\\(MP(betex|text|pos|anchor|var|color(only)?|options|transparency|string)|includeMPgraphic)\b'
       scope: support.function.control-word.context
       push: generic.group*/
-    - include: control.word
+    - include: control.word.generic.no-arguments
     - include: control.symbol
 
   JavaScript:
@@ -398,8 +404,9 @@ contexts:
         - match: '(?=\\stopJSpreamble\b)'
           pop: true
         - include: comment.TeX
-        - include: control.word
+        - include: control.word.generic.no-arguments
         - include: control.symbol
+        - include: LMX
 
   JavaScript.block.code.core/:
     - match: ''
@@ -408,8 +415,9 @@ contexts:
         - match: '(?=\\stopJScode\b)'
           pop: true
         - include: comment.TeX
-        - include: control.word
+        - include: control.word.generic.no-arguments
         - include: control.symbol
+        - include: LMX
 
   JavaScript.block.scope:
     - meta_content_scope: source.js
@@ -461,14 +469,17 @@ contexts:
   LMX.snippets:
     - match: '(<\?)(lua)\b'
       captures:
-        '1': markup.heading.tag.begin.context
-        '2': markup.heading.tag.context
+        '1': entity.tag.begin.context
+        '2': entity.tag.lua.context
       push:
+        - meta_include_prototype: false
         - match: '(\?>)'
           captures:
-            '1': markup.heading.tag.end.context
+            '1': entity.tag.end.context
           pop: true
         - include: scope:source.lua
+        - match: '\b(inject)\b'
+          scope: support.function.lua
 
   ConTeXt:
     - include: ConTeXt.hiding
@@ -540,18 +551,25 @@ contexts:
       scope: support.function.control-word.context
       push: [
         ConTeXt.verbatim.block.core/,
-        generic.list-or-assignment*/,
+        ConTeXt.verbatim.list-or-assignment*/,
       ]
     - match: '\\start(buffer)\b'
       scope: support.function.control-word.context
       push: [
         ConTeXt.verbatim.block.core/,
-        generic.list*/,
+        ConTeXt.verbatim.list*/,
       ]
   ConTeXt.verbatim.block.core/:
     - meta_include_prototype: false
     - meta_content_scope: markup.raw.context
     - include: generic.stop/
+
+  ConTeXt.verbatim.list-or-assignment*/:
+    - meta_include_prototype: false
+    - include: generic.list-or-assignment*/
+  ConTeXt.verbatim.list*/:
+    - meta_include_prototype: false
+    - include: generic.list*/
 
   ConTeXt.macros:
     - include: ConTeXt.define
@@ -636,8 +654,8 @@ contexts:
       scope: string.control-word.context
 
   control.word.tab:
-    - match: '\\([FMLSNA]R|NC|[HFMLTBV]L)\b'
-      scope: entity.control-word.tab.context
+    - match: '\\(NB|[BCHNR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R)\b'
+      scope: keyword.control-word.tab.context
       push: generic.lists*/
 
   control.word.conditional:
@@ -780,7 +798,7 @@ contexts:
     - match: '[[:digit:]]+'
       scope: constant.numeric.context
   generic.key-equals:
-    - match: '([[:alpha:]:-]+)\s*(=)'
+    - match: '([[:word:].:-]+)(=)'
       captures:
         '1': variable.parameter.key.context
         '2': keyword.operator.equals.context

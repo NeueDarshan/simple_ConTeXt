@@ -4,7 +4,9 @@ import json
 import re
 import os
 
-COMMAND_LEN_UPPER_BOUND = 100
+# longest seems to be \currentlistentrydestinationattribute at 36
+COMMAND_LEN_UPPER_BOUND = 40
+
 
 def load_commands():
     this_package_path = os.path.dirname(__file__)
@@ -12,8 +14,10 @@ def load_commands():
     with open(commands_json) as f:
         return json.load(f)
 
+
 def protect_html_whitespace(string):
     return string.replace(" ", "&nbsp;").replace("\n", "<br />")
+
 
 # we use <u> style markup to indicate default arguments in commands.json,
 # so we give special attention to preserving those tags
@@ -28,8 +32,10 @@ def protect_html_brackets(string, ignore_tags=["u"]):
             "</{tag}>".format(tag=tag))
     return new_string
 
+
 def protect_html(string, ignore_tags=["u"]):
     return protect_html_whitespace(protect_html_brackets(string))
+
 
 def is_context(view):
     try:
@@ -47,6 +53,10 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         self.command_completions = [
             ["\\{name}".format(name=name), ""]
             for name in self.command_names]
+        self.reload_settings()
+
+    def reload_settings(self):
+        self.settings = sublime.load_settings("ConTeXtTools.sublime-settings")
 
     def on_query_completions(self, view, prefix, locations):
         if not is_context(view):
@@ -55,7 +65,10 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         return self.command_completions
 
     def on_modified(self, view):
-        if not is_context(view):
+        self.reload_settings()
+        should_show_popup = is_context(view) \
+            and self.settings.get("command_popups", {}).get("on")
+        if not should_show_popup:
             return
 
         previous_text_range = [
@@ -69,13 +82,11 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             return
 
         popup_text = self.get_popup_text(command_name)
-
         kwargs = {
             "location": -1,
             "max_width": 600,
             "flags": sublime.COOPERATE_WITH_AUTO_COMPLETE,
         }
-
         view.show_popup(popup_text, **kwargs)
 
     def get_command_name(self, view, start, stop):
@@ -89,6 +100,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 ", ".join([
                     "support.function.control-word.context",
                     "keyword.control-word.context",
+                    "keyword.control-word.context"
                 ])
             )
             if name in self.command_names and scope_is_command:
@@ -107,14 +119,20 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 color: {doc_string_color};
                 font-size: 1em;
             }}
+            .file {{
+                color: {file_color};
+                font-size: 1em;
+            }}
         """.format(
             background_color="#151515",
             syntax_color="#8ea6b7",
-            doc_string_color="#956837")
+            doc_string_color="#956837",
+            file_color="#8ea6b7")
 
         signatures = []
         command = self.commands[command_name]
-        for variation in command:
+        file = command[-1]
+        for variation in command[:-1]:
             new_signature = """
                 <div class='syntax'>
                     <code>{syntax}</code>
@@ -135,6 +153,14 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         full_signature = \
             "<style>{style_sheet}</style>".format(style_sheet=style_sheet) \
-            + "<br />".join(signatures)
+            + "<br />".join(signatures) \
+
+        if file and self.settings.get("command_popups", {}).get("show_file"):
+            full_signature += """
+                <br />
+                <div class='file'>
+                    <code>{file}</code>
+                </div>
+            """.format(file=file)
 
         return full_signature
