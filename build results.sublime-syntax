@@ -6,21 +6,32 @@ scope: text.log.context.build-result
 
 contexts:
   main:
-    - include: log
-    - include: ConTeXt
+    - include: result
+    - include: timing
+    - include: error
 
-  log:
-    - include: scope:text.log.context#log.version
-    - include: log.system.error
-    - include: scope:text.log.context#log.constants
-    - include: scope:text.log.context#log.error
+  result:
+    - match: '^Failure!'
+      scope: keyword.failure.build-result
+    - match: '^Success!'
+      scope: entity.success.build-result
 
-  log.system.error:
-    - match: '^[a-zA-Z0-9-\s]+error.*$'
+  timing:
+    - match: '^\[Finished in ([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)s\]'
+
+  error:
+    - match: '^tex error on line ([[:digit:]]+)'
+      captures:
+        '1': constant.numeric
       push: [
-        scope:text.log.context#log.system.error.snippet*/,
-        scope:text.log.context#blank-lines*/,
+        error.context/,
+        error.tail/,
       ]
-
-  ConTeXt:
-    - include: scope:text.log.context#ConTeXt
+  error.tail/:
+    - include: scope:text.log.context#system.error.tex.tail/
+  error.context/:
+    - match: ''
+      set: scope:text.log.context#system.error.tex.context/
+      with_prototype:
+        - match: '^(?=\[Finished in ([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)s\])'
+          pop: true

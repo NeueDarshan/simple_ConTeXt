@@ -1,0 +1,20 @@
+{
+  "context_executable":
+  {
+    "options":
+    {
+      "jit": true,
+      "synctex": true,
+      "directives":
+      {
+        "system.errorcontext": 5,
+      },
+    },
+    "path": "",
+  },
+  "command_popups":
+  {
+    "on": true,
+    "show_file": false,
+  },
+}

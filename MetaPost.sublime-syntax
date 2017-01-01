@@ -96,14 +96,14 @@ contexts:
     - match: '\b(expr|of|suffix|text)\b'
       scope: storage.type.metapost
   definitions.variable:
-    - match: '[[:alpha:]]+'
+    - match: '\w+'
       scope: variable.parameter.metapost
   definitions.variable/:
-    - match: '[[:alpha:]]+'
+    - match: '\w+'
       scope: variable.parameter.metapost
       pop: true
   definitions.macro/:
-    - match: '[[:alpha:]]+'
+    - match: '\w+'
       scope: entity.name.function.metapost
       pop: true
   definitions.equals/:

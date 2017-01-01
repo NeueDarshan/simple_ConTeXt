@@ -1,8 +1,14 @@
 import sublime_plugin
+import sublime
 import subprocess
+import platform
 import time
 import os
 import re
+
+
+def file_with_ext(file, ext):
+    return os.path.splitext(os.path.basename(file))[0] + ext
 
 
 def is_context(view):
@@ -13,16 +19,34 @@ def is_context(view):
         return False
 
 
-def file_with_ext(file, ext):
-    return os.path.splitext(os.path.basename(file))[0] + ext
+def prep_environ_path():
+    settings = sublime.load_settings("ConTeXtTools.sublime-settings")
+    context_path = settings.get("context_executable", {}).get("path")
+    if not context_path:
+        return
+
+    if platform.system() == "Windows":
+        pass
+    elif platform.system() == "Darwin":
+        context_path = os.path.normpath(context_path)
+        passes_initial_check = isinstance(context_path, str) \
+            and os.path.exists(context_path)
+        if passes_initial_check:
+            PATH = set(os.environ["PATH"].split(":"))
+            PATH.add(context_path)
+            os.environ["PATH"] = ":".join(sorted(PATH))
+    else:
+        raise Exception("Unknown platform!")
 
 
-def parse_log_for_error(file_str):
+def parse_log_for_error(file_bytes):
+    file_str = file_bytes.decode(encoding="utf-8")
+    file_str = file_str.replace("\r\n", "\n").replace("\r", "\n")
+
     def is_error(line):
         return re.match(
-            r"^.*?>\s*(.*?) error\s+on\s+line\s+([0-9]+).*?! (.*?)$",
-            line
-        )
+            r"^.*?>\s*(.*?)\s+error\s+on\s+line\s+([0-9]+).*?!\s*(.*?)$",
+            line)
 
     def is_code_snippet(line):
         return re.match(r"^\s*[0-9]+", line)
@@ -49,26 +73,30 @@ def parse_log_for_error(file_str):
     while is_blank_line(log[end_of_error]):
         end_of_error -= 1
 
-    return "\n".join([error_summary, ""] + log[start_of_error:end_of_error-1])
+    return "\n\n".join([error_summary] + log[start_of_error:end_of_error - 1])
 
 
 class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        prep_environ_path()
+        self.reload_settings()
 
-    # def __init__(self, *args, **kwargs):
-    #     sublime_plugin.WindowCommand.__init__(self, *args, **kwargs)
+    def reload_settings(self):
+        self.settings = sublime.load_settings("ConTeXtTools.sublime-settings")
 
     def run(self):
         start_time = time.time()
+        self.reload_settings()
 
         active_view = self.window.active_view()
-
         if not is_context(active_view):
             return
 
         # setup the 'build panel'/'output view'
         #  |-- initialize if needed
         if not hasattr(self, "output_view"):
-            self.output_view = self.window.get_output_panel("contexttools")
+            self.output_view = self.window.get_output_panel("ConTeXtTools")
 
         #  |-- define various settings
         self.output_view.settings().set("line_numbers", False)
@@ -78,66 +106,87 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
             "Packages/ConTeXtTools/build results.sublime-syntax")
 
         #  |-- this is needed to 'refresh' the view
-        self.output_view = self.window.get_output_panel("contexttools")
+        self.output_view = self.window.get_output_panel("ConTeXtTools")
 
         #  |-- make the `output_view` visible
-        self.window.run_command("show_panel", {"panel": "output.contexttools"})
+        self.window.run_command("show_panel", {"panel": "output.ConTeXtTools"})
 
         try:
             # identity the file to compile, and its location
-            input_file_dir, input_file_name = os.path.split(
+            input_dir, input_name = os.path.split(
                 active_view.file_name())
+            input_base_name = file_with_ext(input_name, "")
             # change dir to the target files dir, so any output is put there
-            os.chdir(input_file_dir)
-            # decide on the output name
-          # output_file_name = file_with_ext(input_file_name, ".pdf")
+            os.chdir(input_dir)
 
-            # run `context` on the input file
+            # decide what command to invoke, we take advantage of the fact that
+            # subprocess will accept a list or a string
+            command_line_options = \
+                self.settings.get("context_executable", {}).get("options", {})
+
+            if isinstance(command_line_options, str):
+                command = [
+                    "context", command_line_options.split(" "), input_name]
+
+            elif isinstance(command_line_options, dict):
+                command = ["context"]
+
+                if command_line_options.get("result"):
+                    output_file_name = sublime.expand_variables(
+                        command_line_options["result"],
+                        {"name": input_base_name})
+                    command.append("--result={name}".format(
+                        name=output_file_name))
+                    del command_line_options["result"]
+
+                for option, value in command_line_options.items():
+                    if isinstance(value, bool) and value:
+                        command.append("--{option}".format(option=option))
+                    elif isinstance(value, dict):
+                        normalized_value = ", ".join(
+                            "{opt}={val}".format(opt=k, val=v)
+                            for k, v in value.items())
+                        command.append("--{option}={value}".format(
+                            value=normalized_value, option=option))
+                    else:
+                        command.append("--{option}={value}".format(
+                            value=value, option=option))
+
+                command.append(input_name)
+
+            else:
+                command = ["context", input_name]
+
+            # run `context`
             context_process = subprocess.Popen(
-                [
-                    "context",
-                    "--run",
-                    input_file_name,
-                  # "--autogenerate",
-                  # "--result={}".format(output_file_name),
-                    "--synctex=1",
-                  # "--noconsole=1",
-                    "--interface=en",
-                    "--jit",
-                  # "--autopdf",
-                ],
+                command,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                universal_newlines=True
-            )
+                stderr=subprocess.PIPE)
 
-            out, _ = context_process.communicate()
+            result = context_process.communicate()
             if context_process.returncode != 0:
                 raise Exception()
 
             # report our success
             elapsed = time.time() - start_time
-            characters = "Success!\n\nFinished in {:.1f}s".format(elapsed)
-            self.output_view.run_command(
-                "append",
-                {
-                    "characters": characters,
-                  # "force": True,
-                }
-            )
+            characters = "\n\n".join([
+                "Success!",
+                "[Finished in {time:.1f}s]".format(time=elapsed)])
+            self.output_view.run_command("append", {"characters": characters})
 
-        except Exception as e:
+        except:
             # report our failure
             #  |-- parse the log for the error message
-            err_message = parse_log_for_error(out)
+            try:
+                err_message = parse_log_for_error(result[0])
+            except UnboundLocalError as err:
+                err_message = repr(err)
             #  |-- construct a suitable error message
-            characters = "Failure!\n\n{}".format(err_message)
+            elapsed = time.time() - start_time
+            characters = "\n\n".join([
+                "Failure!",
+                err_message,
+                "[Finished in {time:.1f}s]".format(time=elapsed)])
             #  |-- print that message to the build panel
-            self.output_view.run_command(
-                "append",
-                {
-                    "characters": characters,
-                  # "force": True,
-                }
-            )
+            self.output_view.run_command("append", {"characters": characters})

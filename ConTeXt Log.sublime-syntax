@@ -6,108 +6,126 @@ file_extensions:
 scope: text.log.context
 contexts:
   main:
-    - include: log
-    - include: ConTeXt
+    - include: version
+    - include: system
 
-  log:
-    - include: log.version
-    - include: log.system
-    - include: log.constants
-    - include: log.error
+  version:
+    - match: '^\s*(ConTeXt\s+ver:)\s*(.*?)\s*(current\s+fmt:)\s*(.*?)\s*(int:)\s*(.*)'
+      captures:
+        '1': support.function.version.log.context
+        '2': constant.other.version.log.context
+        '3': support.function.version.log.context
+        '4': constant.other.version.log.context
+        '5': support.function.version.log.context
+        '6': constant.other.version.log.context
 
-  log.version:
-    - match: '^\s*ConTeXt\s*ver.*'
-      scope: constant.other
+  system:
+    - include: system.files-or-options
+    - include: system.error
+    - include: system.generic
 
-  log.system:
-    - include: log.system.files
-    - include: log.system.error
-    - include: log.system.general
-
-  log.system.files:
-    - match: '^(used (?:file|option))\s*(>)'
+  system.files-or-options:
+    - match: '^\s*(used\s+(file|option))\s*(>)'
       captures:
         '1': entity.system.log.context
-        '2': support.function.separator.log.context
-      push: log.system.files.core*/
-  log.system.files.core*/:
-    - match: '([0-9]+):'
+        '3': support.function.separator.log.context
+      push: system.files.core/
+  system.files.core/:
+    - match: '([[:digit:]]+):'
       captures:
         '1': constant.numeric.log.context
-    - match: ([a-zA-Z-]+)(=)
+    - match: '([[:word:].:-]+)\s*(=)'
       captures:
         '1': variable.parameter.key.log.context
         '2': keyword.equals.log.context
-    - include: log.constants
+    - include: constants
     - match: '$'
       pop: true
 
-  log.system.error:
-    - match: '^[a-zA-Z0-9-\s]+error.*$'
-      scope: invalid.illegal.error.log.context
+  system.error:
+    - include: system.error.tex
+    - include: system.error.generic
+
+  system.error.tex:
+    - match: '^\s*(tex\s+error)\s*(>)'
+      captures:
+        '1': invalid.illegal.error.log.context
+        '2': support.function.separator.log.context
       push: [
-        log.system.error.snippet*/,
-        blank-lines*/,
+        system.error.tex.snippet/,
+        system.error.tex.context/,
+        system.error.tex.tail/,
       ]
-  log.system.error.snippet*/:
+
+  system.error.tex.tail/:
+    - match: '$'
+      pop: true
+
+  system.error.tex.context/:
     - match: ''
       set: scope:text.tex.context
       with_prototype:
-        - include: ConTeXt.inline/
+        - match: '^(?=\s*[[:digit:]]+\s*(>>)?\s*)'
+          pop: true
+        - match: '^\s*l\.\s*([[:digit:]]+)'
+          captures:
+            '1': constant.numeric.log.context
+        - match: '^\s*(<)(.*?)(>)'
+          captures:
+            '1': variable.parameter.delimiter.log.context
+            '2': keyword.name.log.context
+            '3': variable.parameter.delimiter.log.context
 
-  log.system.general:
-    - match: '^([a-zA-Z0-9-\s]+)(>)'
+  system.error.tex.snippet/:
+    - match: ''
+      set: system.error.tex.snippet.core/
+  system.error.tex.snippet.core/:
+    - match: '^\s*([[:digit:]]+)\s*(>>)?\s*'
+      captures:
+        '1': constant.numeric.log.context
+        '2': invalid.illegal.error.log.context
+      set: scope:text.tex.context
+      with_prototype:
+        - match: '^\s*([[:digit:]]+)\s*(>>)?\s*'
+          captures:
+            '1': constant.numeric.log.context
+            '2': invalid.illegal.error.log.context
+        - match: '(?=^\s*$)'
+          pop: true
+    - match: '(?=^.*?\S+)'
+      pop: true
+
+  system.error.generic:
+    - match: '^\s*((\s*[[:word:].:-]+)+\s+error)\s*(>)'
+      captures:
+        '1': invalid.illegal.error.log.context
+        '3': support.function.separator.log.context
+      push: system.generic.tail/
+
+  system.generic:
+    - match: '^\s*((\s*[[:word:].:-]+)+)\s*(>)'
       captures:
         '1': entity.system.log.context
-        '2': support.function.separator.log.context
-      push: log.system.general.core*/
-  log.system.general.core*/:
-    - match: '([a-zA-Z0-9-\s]+)(>)'
+        '3': support.function.separator.log.context
+      push: [
+        system.generic.tail/,
+        system.generic.repeat*/,
+      ]
+  system.generic.repeat*/:
+    - match: '\s*((\s*[[:word:].:-]+)+)\s*(>)'
       captures:
         '1': entity.system.log.context
-        '2': support.function.separator.log.context
-      set: log.system.general.core*/
+        '3': support.function.separator.log.context
+      set: system.generic.repeat*/
     - match: ''
       pop: true
+  system.generic.tail/:
+    - include: constants
+    - match: '$'
+      pop: true
 
-  log.constants:
+  constants:
+    - match: '[[:digit:]]+|U\+\h+'
+      scope: constant.numeric.log.context
     - match: (".*?"|'.*?')
       scope: string.log.context
-
-  log.error:
-    - match: '!\s*.+'
-      scope: invalid.illegal.error.log.context
-
-  ConTeXt:
-    - match: '^\s*([0-9-]+)\s*(>>)?'
-      captures:
-        '1': constant.numeric.log.context
-        '2': invalid.illegal.error.log.context
-      push: scope:text.tex.context
-      with_prototype:
-        - include: ConTeXt.core/
-    - match: '^l\.([0-9]+)'
-      captures:
-        '1': constant.numeric.log.context
-      push: scope:text.tex.context
-      with_prototype:
-        - include: ConTeXt.inline/
-
-  ConTeXt.core/:
-    - match: '^\s*([0-9-]+)\s*(>>)?'
-      captures:
-        '1': constant.numeric.log.context
-        '2': invalid.illegal.error.log.context
-    - match: '^(?=\s*[^0-9-])'
-      pop: true
-
-  ConTeXt.inline/:
-    - match: '(?=^\s*$)'
-      pop: true
-    - match: '(?=^l\.[0-9]+)'
-      pop: true
-
-  blank-lines*/:
-    - match: '^\s*$'
-    - match: '(?=[^\s])'
-      pop: true
