@@ -101,7 +101,6 @@ contexts:
       scope: string.math.context
 
   math.control-sequence:
-    - include: control.word.font
     - include: control.word.tab
     - include: control.word.conditional
     - match: '\\start([[:alpha:]]+)'
@@ -471,15 +470,30 @@ contexts:
       captures:
         '1': entity.tag.begin.context
         '2': entity.tag.lua.context
-      push:
-        - meta_include_prototype: false
+      push: LMX.lua.scope
+      with_prototype:
         - match: '(\?>)'
           captures:
             '1': entity.tag.end.context
           pop: true
-        - include: scope:source.lua
-        - match: '\b(inject)\b'
-          scope: support.function.lua
+        - include: LMX.inline.comment
+        - include: LMX.functions
+
+  LMX.lua.scope:
+    - meta_include_prototype: false
+    - meta_scope: source.lua
+    - include: scope:source.lua
+
+  LMX.inline.comment:
+    - match: '--(?!\[\[)'
+      push:
+        - meta_scope: comment.line.double-dash.lua
+        - match: '(?=\?>)'
+          pop: true
+
+  LMX.functions:
+    - match: '\b(inject)\b'
+      scope: support.function.lua
 
   ConTeXt:
     - include: ConTeXt.hiding
@@ -511,10 +525,10 @@ contexts:
     - match: '\\type\b'
       scope: support.function.control-word.context
       push: [
-        ConTeXt.verbatim.angles_or_group/,
+        ConTeXt.verbatim.angles_or_group*/,
         generic.assignment*/,
       ]
-  ConTeXt.verbatim.angles_or_group/:
+  ConTeXt.verbatim.angles_or_group*/:
     - match: '\{'
       scope: meta.environment.brace.group.tex.context
       set:
@@ -531,6 +545,8 @@ contexts:
         - match: '>>'
           pop: true
         - include: ConTeXt.verbatim.dummy-angles
+    - match: '(?=[^\s\{<])'
+      pop: true
 
   ConTeXt.verbatim.dummy-group:
     - match: '\{'
@@ -577,10 +593,9 @@ contexts:
 
   ConTeXt.define:
     - match: '\\define\b'
-      scope: keyword.control-word.context
+      scope: support.function.control-word.context
       push: [
-        generic.group/,
-        TeX.def.control-sequence/,
+        TeX.def.control-sequence*/,
         generic.list.num*/,
       ]
 
@@ -602,7 +617,7 @@ contexts:
 
   ConTeXt.texdef.name/:
     - match: '\S+'
-      scope: entity.control-word.context
+      scope: entity.control-word.tex.context
       pop: true
 
   ConTeXt.texdef.arguments*/:
@@ -627,15 +642,17 @@ contexts:
 
   TeX.let-or-def:
     - match: '\\([egx]?def|let)\b'
-      scope: keyword.control-word.tex.context
-      push: TeX.def.control-sequence/
+      scope: support.function.control-word.context
+      push: TeX.def.control-sequence*/
 
-  TeX.def.control-sequence/:
+  TeX.def.control-sequence*/:
     - match: '\\[[:alpha:]]+'
       scope: entity.control-word.tex.context
       pop: true
     - match: '\\[^[:alpha:]]'
       scope: entity.control-symbol.tex.context
+      pop: true
+    - match: '(?=[^\s\\])'
       pop: true
 
   control:
@@ -649,17 +666,13 @@ contexts:
     - include: control.word.conditional
     - include: control.word.generic
 
-  control.word.font:
-    - match: '\\(em|(tf|it|sl|bf|bi|bs)(x{1,2}|[a-d])?|rm|ss|tt)\b'
-      scope: string.control-word.context
-
   control.word.tab:
     - match: '\\(NB|[BCHNR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R)\b'
       scope: keyword.control-word.tab.context
       push: generic.lists*/
 
   control.word.conditional:
-    - match: '\\(doif[[:alpha:]]*else|(if|doif(else)?)[[:alpha:]]*|[[:alpha:]]+(true|false)|or|else|fi)\b'
+    - match: '\\(doif[[:alpha:]]*else|(if|[[:alpha:]]*doif(else)?)[[:alpha:]]*|[[:alpha:]]+(true|false)|or|else|fi)\b'
       scope: keyword.control-word.context
 
   control.word.generic:
