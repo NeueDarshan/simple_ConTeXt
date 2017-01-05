@@ -65,6 +65,9 @@
 \stopuniqueMPgraphic
 
 \startMP[numbering=line] draw unitdiamond; \stopMP
+%        ^^^^^^^^^                         variable.parameter.key.context
+%                 ^                        keyword.operator.equals.context
+%        ^^^^^^^^^^^^^^                    meta.environment.list.context
 %                        ^^^^^^^^^^^^^^^^^ source.metapost
 \startstaticMPfigure{foo} draw unitsquare; \stopstaticMPfigure
 %                         ^^^^^^^^^^^^^^^^ source.metapost
@@ -84,6 +87,10 @@
   % <- source.js
 \stopJSpreamble
 
+% XML
+\startXML <div> foo </div> \stopXML
+%         ^^^^^^^^^^^^^^^^ text.xml
+
 % MATH
 Adding $1$, \m{2} and \math[three]{3} gives \mathematics{6}.
 %       ^                                                  meta.environment.math
@@ -95,11 +102,18 @@ Adding $1$, \m{2} and \math[three]{3} gives \mathematics{6}.
 %             ^^^^^^^^^^^ meta.environment.math
 
 % VERBATIM
-The percent sign \type{%} and the hash \type<<#>> are special.
-%                      ^                        markup.raw.context
-%                                             ^ markup.raw.context
+The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
+%                      ^^^^^^                                variable.parameter.key.context
+%                            ^                               keyword.operator.equals.context
+%                      ^^^^^^^^^^                            meta.environment.list.context
+%                                  ^                         markup.raw.context
+%                                                         ^^ markup.raw.context
 
-\starttyping[option=xml]
+\starttyping
+  [option=xml]
+%  ^^^^^^     variable.parameter.key.context
+%        ^    keyword.operator.equals.context
+%  ^^^^^^^^^^ meta.environment.list.context
   <cd:command name="MPcolor" file="colo-ini.mkiv">
     <cd:arguments>
       <cd:resolve name="argument-color"/>
@@ -114,6 +128,58 @@ The percent sign \type{%} and the hash \type<<#>> are special.
 % <- comment
 \starthiding consectetur adipisicing elit. \stophiding
 %            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ comment
+
+% TEMPLATES a.k.a. LMX
+\bTABLE
+  <?lua for row=1,5 do -- build a table ?>
+% ^^                                       entity.tag.begin.context
+%   ^^^                                    entity.tag.lua.context
+%       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    source.lua
+%                      ^^^^^^^^^^^^^^^^    comment
+%                                       ^^ entity.tag.end.context
+    \bTR
+      <?lua for col=1,5 do ?>
+        \bTD
+          cell (<?lua inject(row) ?>, <?lua inject(col) ?>)
+          %           ^^^^^^                       support.function
+          %                                 ^^^^^^ support.function
+        \eTD
+      <?lua end ?>
+    \eTR
+  <?lua end ?>
+\eTABLE
+
+% DEFINITIONS
+\def \foo #1{!! #1 !!}
+% <-                  support.function.control-word.context
+%    ^^^^             entity.control-word.tex.context
+%         ^^          variable.parameter.tex.context
+%               ^^    variable.parameter.tex.context
+%            ^^^^^^^^ meta.environment.brace.group.tex.context
+
+\define[1] \foo {!! #1 !!}
+% <-                      support.function.control-word.context
+%       ^                 constant.numeric.context
+%          ^^^^           entity.control-word.tex.context
+%                   ^^    variable.parameter.tex.context
+%                ^^^^^^^^ meta.environment.brace.group.tex.context
+
+\starttexdefinition foo #1
+% <-                       support.function.control-word.context
+%                   ^^^    entity.control-word.tex.context
+%                       ^^ variable.parameter.tex.context
+  !! #1 !!
+%    ^^                    variable.parameter.tex.context
+\stoptexdefinition
+
+% mkvi style definitions
+\def \foo #arg[#misc]{%
+%         ^^^^                                 variable.parameter.tex.context
+%              ^^^^^                           variable.parameter.tex.context
+  argument is: #arg with delimited part: #misc%
+%              ^^^^                            variable.parameter.tex.context
+%                                        ^^^^^ variable.parameter.tex.context
+}
 
 \stoptext
 % <- support.function.control-word.context

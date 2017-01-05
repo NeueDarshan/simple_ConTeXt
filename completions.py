@@ -99,7 +99,6 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 range_[0],
                 ", ".join([
                     "support.function.control-word.context",
-                    "keyword.control-word.context",
                     "keyword.control-word.context"
                 ])
             )
