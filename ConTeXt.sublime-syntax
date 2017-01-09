@@ -9,7 +9,7 @@ file_extensions:
   - mkix
   - mkxi
 scope: text.tex.context
-first_line_match: '^(%.*?macros\s*=\s*mk[vx]i|\s*\\starttext)'
+first_line_match: '^(%.*?macros\s*=\s*mk[vx]i|\s*\\(starttext|usemodule))\b'
 
 contexts:
   prototype:
@@ -157,10 +157,7 @@ contexts:
       with_prototype:
         - match: '(?=\\stopLUA\b)'
           pop: true
-        - include: TeX.parameter
         - include: Lua.block.gobble-braces
-        - include: control.word.generic.no-arguments
-        - include: control.symbol
   Lua.block.LUA.scope:
     - meta_content_scope: source.lua.major
     - meta_include_prototype: false
@@ -177,10 +174,7 @@ contexts:
       with_prototype:
         - match: '(?=\\stopluacode\b)'
           pop: true
-        - include: TeX.parameter
         - include: Lua.block.gobble-braces
-        - include: control.word.generic.no-arguments
-        - include: control.symbol
   Lua.block.luacode.scope:
     - meta_content_scope: source.lua.major
     - meta_include_prototype: false
@@ -197,11 +191,7 @@ contexts:
       with_prototype:
         - match: '(?=\\stoplua\b)'
           pop: true
-        - include: TeX.parameter
         - include: Lua.block.gobble-braces
-        - include: comment.TeX
-        - include: control.word.generic.no-arguments
-        - include: control.symbol
   Lua.block.lua.scope:
     - meta_content_scope: source.lua.minor
     - match: '--(?!\[\[)'
