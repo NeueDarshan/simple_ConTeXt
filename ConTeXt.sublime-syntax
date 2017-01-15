@@ -205,7 +205,7 @@ contexts:
     - match: '[{}]'
 
   Lua.inline:
-    - match: '\\(cldcontext|(ctx|direct)lua)\b'
+    - match: '\\(ctx((direct|late)?(command|lua)|report|sprint|write|luacode)|(direct|late)lua(code)?|luacode)\b'
       scope: support.function.control-word.context
       push: Lua.inline.group*/
 
@@ -220,15 +220,10 @@ contexts:
     - match: ''
       set: Lua.inline.lua.scope
       with_prototype:
-        - include: generic.pop-at-group-end/
-        - include: Lua.inline.comment
-        - include: Lua.inline.deep-group
-        - include: TeX.parameter
-        - include: comment.TeX
-        - include: control.word.generic.no-arguments
-        - include: control.symbol
+        - include: Lua.inline.core/
   Lua.inline.lua.scope:
     - meta_content_scope: source.lua.minor meta.environment.brace.group.tex.context
+    - include: Lua.inline.string
     - include: scope:source.lua
 
   Lua.inline.deep-group:
@@ -239,16 +234,35 @@ contexts:
     - match: ''
       set: Lua.inline.deep-lua.scope
       with_prototype:
-        - include: generic.pop-at-group-end/
-        - include: Lua.inline.comment
-        - include: Lua.inline.deep-group
-        - include: TeX.parameter
-        - include: comment.TeX
-        - include: control.word.generic.no-arguments
-        - include: control.symbol
+        - include: Lua.inline.core/
   Lua.inline.deep-lua.scope:
     - meta_content_scope: meta.environment.table.lua
+    - include: Lua.inline.string
     - include: scope:source.lua
+
+  Lua.inline.core/:
+    - include: generic.pop-at-group-end/
+    - include: TeX.parameter
+    - include: comment.TeX
+    - include: control.word.generic.no-arguments
+    - include: control.symbol
+    - include: Lua.inline.deep-group
+    - include: Lua.inline.comment
+
+  Lua.inline.string:
+    - match: ('|")
+      scope: punctuation.definition.string.begin.lua
+      push:
+        - meta_scope: string.quoted.single.lua
+        - match: '\1'
+          scope: punctuation.definition.string.end.lua
+          pop: true
+        - include: TeX.parameter
+        - include: comment.TeX
+        - match: '\\([abfnrtv\\"'']|\d{1,3}|u\{\h{,7}\}|[xX]\h\h)'
+          scope: constant.character.escape.lua
+        - include: control.word.generic.no-arguments
+        - include: control.symbol
 
   Lua.inline.comment:
     - match: '--(?!\[\[)'
@@ -471,7 +485,7 @@ contexts:
 
   LMX.lua.scope:
     - meta_include_prototype: false
-    - meta_scope: source.lua
+    - meta_content_scope: source.lua
     - include: scope:source.lua
 
   LMX.inline.comment:
@@ -486,10 +500,10 @@ contexts:
       scope: support.function.lua
 
   ConTeXt:
-    - include: ConTeXt.hiding
     - include: ConTeXt.verbatim
     - include: ConTeXt.sections
     - include: ConTeXt.macros
+    - include: ConTeXt.hiding
 
   ConTeXt.hiding:
     - match: '\\start(hiding)\b'
@@ -497,7 +511,6 @@ contexts:
       push:
         - meta_scope: comment.block.context
         - include: generic.stop/
-
 
   ConTeXt.sections:
     - match: '\\(part|chapter|title|(sub){0,4}(section|subject))\b'
@@ -512,7 +525,7 @@ contexts:
     - include: ConTeXt.verbatim.block
 
   ConTeXt.verbatim.inline:
-    - match: '\\type\b'
+    - match: '\\(type|typ)\b'
       scope: support.function.control-word.context
       push: [
         ConTeXt.verbatim.angles_or_group*/,
@@ -651,7 +664,6 @@ contexts:
     - include: control.active-character
 
   control.word:
-    - include: control.word.font
     - include: control.word.tab
     - include: control.word.conditional
     - include: control.word.generic

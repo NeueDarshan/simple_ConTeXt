@@ -53,6 +53,15 @@
   % <- source.lua comment
 }
 
+\luacode{...} \lateluacode{...} \ctxluacode{...} \ctxlatelua{...}
+%        ^^^                                                     source.lua
+%                          ^^^                                   source.lua
+%                                           ^^^                  source.lua
+%                                                            ^^^ source.lua
+\ctxdirectlua{...} \directlua{...}
+%             ^^^                 source.lua
+%                             ^^^ source.lua
+
 % METAPOST/METAFUN
 \startuniqueMPgraphic{foo}{x, y}
   % setup a pair:
@@ -87,6 +96,11 @@
   % <- source.js
 \stopJSpreamble
 
+\startJScode bar uses foo factorial(10) \stopJScode
+%            ^^^                        entity.name.context
+%                     ^^^               entity.name.context
+%                         ^^^^^^^^^^^^^ source.js
+
 % XML
 \startXML <div> foo </div> \stopXML
 %         ^^^^^^^^^^^^^^^^ text.xml
@@ -106,8 +120,8 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 %                      ^^^^^^                                variable.parameter.key.context
 %                            ^                               keyword.operator.equals.context
 %                      ^^^^^^^^^^                            meta.environment.list.context
-%                                  ^                         markup.raw.context
-%                                                         ^^ markup.raw.context
+%                                  ^                         markup.raw.context - comment
+%                                                         ^^ markup.raw.context - variable.parameter.tex.context
 
 \starttyping
   [option=xml]
@@ -173,12 +187,12 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 \stoptexdefinition
 
 % mkvi style definitions
-\def \foo #arg[#misc]{%
-%         ^^^^                                 variable.parameter.tex.context
-%              ^^^^^                           variable.parameter.tex.context
-  argument is: #arg with delimited part: #misc%
-%              ^^^^                            variable.parameter.tex.context
-%                                        ^^^^^ variable.parameter.tex.context
+\def \foo #a[#{b}]{
+%         ^^      variable.parameter.tex.context
+%            ^^^^ variable.parameter.tex.context
+  !! #a !! #{b} !!
+%    ^^         variable.parameter.tex.context
+%          ^^^^ variable.parameter.tex.context
 }
 
 \stoptext

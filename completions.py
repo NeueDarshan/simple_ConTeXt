@@ -34,7 +34,8 @@ def protect_html_brackets(string, ignore_tags=["u"]):
 
 
 def protect_html(string, ignore_tags=["u"]):
-    return protect_html_whitespace(protect_html_brackets(string))
+    return protect_html_whitespace(
+        protect_html_brackets(string, ignore_tags=ignore_tags))
 
 
 def is_context(view):
@@ -118,7 +119,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 color: {doc_string_color};
                 font-size: 1em;
             }}
-            .file {{
+            .files {{
                 color: {file_color};
                 font-size: 1em;
             }}
@@ -130,7 +131,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         signatures = []
         command = self.commands[command_name]
-        file = command[-1]
+        files = command[-1]
         for variation in command[:-1]:
             new_signature = """
                 <div class='syntax'>
@@ -152,14 +153,14 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         full_signature = \
             "<style>{style_sheet}</style>".format(style_sheet=style_sheet) \
-            + "<br />".join(signatures) \
+            + "<br />".join(signatures)
 
-        if file and self.settings.get("command_popups", {}).get("show_file"):
+        if files and self.settings.get("command_popups", {}).get("show_file"):
             full_signature += """
                 <br />
-                <div class='file'>
-                    <code>{file}</code>
+                <div class='files'>
+                    <code>{files}</code>
                 </div>
-            """.format(file=file)
+            """.format(files=protect_html(" ".join(files)))
 
         return full_signature

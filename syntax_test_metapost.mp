@@ -8,7 +8,7 @@ outputtemplate := "%j-%c.mps";
 %              ^^            keyword.operator.metapost
 %                  ^^        constant.other.escape.metapost
 %                     ^^     constant.other.escape.metapost
-%                       ^^^^ string.metapost
+%                  ^^^^^^^^^ string.metapost
 outputformat := "svg";
 % numbersystem := "decimal";
 % <- comment.metapost
