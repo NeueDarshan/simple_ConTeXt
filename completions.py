@@ -92,7 +92,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
     def get_command_name(self, view, start, stop):
         previous_text = view.substr(sublime.Region(start, stop))
-        match = re.match(r"\s*([a-zA-Z]+)\\", previous_text[::-1])
+        match = re.match(r"[^\S\n]*([a-zA-Z]+)\\", previous_text[::-1])
         if match:
             name = match.group(1)[::-1]
             range_ = [stop - end for end in reversed(match.span(1))]
@@ -100,7 +100,8 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 range_[0],
                 ", ".join([
                     "support.function.control-word.context",
-                    "keyword.control-word.context"
+                    "keyword.control-word.context",
+                    "entity.control-word.tex.context"
                 ])
             )
             if name in self.command_names and scope_is_command:
