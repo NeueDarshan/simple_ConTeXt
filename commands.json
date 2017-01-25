@@ -1418,7 +1418,7 @@
   ],
   "aftersplitstring": [
     [
-      "                   1      2       3\n\\aftersplitstring ... \\at ... \\to \\...",
+      "                   1       2        3\n\\aftersplitstring ... \\at ... \\to \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -1427,7 +1427,7 @@
   ],
   "aftertestandsplitstring": [
     [
-      "                          1      2       3\n\\aftertestandsplitstring ... \\at ... \\to \\...",
+      "                          1       2        3\n\\aftertestandsplitstring ... \\at ... \\to \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -1551,7 +1551,7 @@
   ],
   "appendetoks": [
     [
-      "              1       2\n\\appendetoks ... \\to \\...",
+      "              1        2\n\\appendetoks ... \\to \\...",
       "1   COMMAND\n\n2   CSNAME"
     ],
     [
@@ -1578,7 +1578,7 @@
   ],
   "appendtoks": [
     [
-      "             1       2\n\\appendtoks ... \\to \\...",
+      "             1        2\n\\appendtoks ... \\to \\...",
       "1   COMMAND\n\n2   CSNAME"
     ],
     [
@@ -1587,7 +1587,7 @@
   ],
   "appendtoksonce": [
     [
-      "                 1       2\n\\appendtoksonce ... \\to \\...",
+      "                 1        2\n\\appendtoksonce ... \\to \\...",
       "1   COMMAND\n\n2   CSNAME"
     ],
     [
@@ -1794,7 +1794,7 @@
   ],
   "assigntranslation": [
     [
-      "                         1            2\n\\assigntranslation [..,..=..,..] \\to \\...",
+      "                         1             2\n\\assigntranslation [..,..=..,..] \\to \\...",
       "1   LANGUAGE = TEXT\n\n2   CSNAME"
     ],
     [
@@ -2213,7 +2213,7 @@
   ],
   "beforesplitstring": [
     [
-      "                    1      2       3\n\\beforesplitstring ... \\at ... \\to \\...",
+      "                    1       2        3\n\\beforesplitstring ... \\at ... \\to \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -2222,7 +2222,7 @@
   ],
   "beforetestandsplitstring": [
     [
-      "                           1      2       3\n\\beforetestandsplitstring ... \\at ... \\to \\...",
+      "                           1       2        3\n\\beforetestandsplitstring ... \\at ... \\to \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -3933,11 +3933,7 @@
   ],
   "completelistofsorts": [
     [
-      "                           1\n\\completelistofsorts [..,..=..,..]\n                          OPT",
-      "1   inherits: \\setupsorting"
-    ],
-    [
-      "                       1         2\n\\completelistofsorts [...] [..,..=..,..]\n                                OPT",
+      "                       1         2\n\\completelistofsorts [...] [..,..=..,..]\n                      OPT       OPT",
       "1   SINGULAR\n\n2   inherits: \\setupsorting"
     ],
     [
@@ -3946,11 +3942,7 @@
   ],
   "completelistofsynonyms": [
     [
-      "                              1\n\\completelistofsynonyms [..,..=..,..]\n                             OPT",
-      "1   inherits: \\setupsynonyms"
-    ],
-    [
-      "                          1         2\n\\completelistofsynonyms [...] [..,..=..,..]\n                                   OPT",
+      "                          1         2\n\\completelistofsynonyms [...] [..,..=..,..]\n                         OPT       OPT",
       "1   SINGULAR\n\n2   inherits: \\setupsynonyms"
     ],
     [
@@ -3977,11 +3969,7 @@
   ],
   "completeregister": [
     [
-      "                        1\n\\completeregister [..,..=..,..]\n                       OPT",
-      "1   inherits: \\setupregister"
-    ],
-    [
-      "                    1         2\n\\completeregister [...] [..,..=..,..]\n                             OPT",
+      "                    1         2\n\\completeregister [...] [..,..=..,..]\n                   OPT       OPT",
       "1   NAME\n\n2   inherits: \\setupregister"
     ],
     [
@@ -4128,7 +4116,7 @@
   ],
   "convertargument": [
     [
-      "                  1       2\n\\convertargument ... \\to \\...",
+      "                  1        2\n\\convertargument ... \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -4137,7 +4125,7 @@
   ],
   "convertcommand": [
     [
-      "                  1       2\n\\convertcommand \\... \\to \\...",
+      "                  1        2\n\\convertcommand \\... \\to \\...",
       "1   CSNAME\n\n2   CSNAME"
     ],
     [
@@ -4191,7 +4179,7 @@
   ],
   "convertvalue": [
     [
-      "               1       2\n\\convertvalue ... \\to \\...",
+      "               1        2\n\\convertvalue ... \\to \\...",
       "1   NAME\n\n2   CSNAME"
     ],
     [
@@ -4335,7 +4323,7 @@
   ],
   "counttoken": [
     [
-      "             1      2       3\n\\counttoken ... \\in ... \\to \\...",
+      "             1       2        3\n\\counttoken ... \\in ... \\to \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -4344,7 +4332,7 @@
   ],
   "counttokens": [
     [
-      "              1       2\n\\counttokens ... \\to \\...",
+      "              1        2\n\\counttokens ... \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -4443,12 +4431,8 @@
   ],
   "ctxfunction": [
     [
-      "               1\n\\ctxfunction {...}",
+      "               1\n\\ctxfunction {...}\n              OPT",
       "1   NAME"
-    ],
-    [
-      "\\ctxfunction",
-      ""
     ],
     [
       "luat-ini.mkiv"
@@ -7206,11 +7190,7 @@
   ],
   "delimitedtext": [
     [
-      "                 1\n\\delimitedtext {...}",
-      "1   CONTENT"
-    ],
-    [
-      "                 1     2\n\\delimitedtext [...] {...}",
+      "                 1     2\n\\delimitedtext [...] {...}\n                OPT",
       "1   NAME\n\n2   CONTENT"
     ],
     [
@@ -7749,7 +7729,7 @@
   ],
   "dogetcommacommandelement": [
     [
-      "                           1        2       3\n\\dogetcommacommandelement ... \\from ... \\to \\...",
+      "                           1         2        3\n\\dogetcommacommandelement ... \\from ... \\to \\...",
       "1   NUMBER\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -11895,12 +11875,8 @@
   ],
   "fence": [
     [
-      "         1\n\\fence {...}",
+      "         1\n\\fence {...}\n        OPT",
       "1   CONTENT"
-    ],
-    [
-      "\\fence",
-      ""
     ],
     [
       "math-fen.mkiv"
@@ -12991,10 +12967,6 @@
       "1   BUFFER"
     ],
     [
-      "\\getbuffer",
-      ""
-    ],
-    [
       "buff-ini.mkiv"
     ]
   ],
@@ -13936,7 +13908,7 @@
   ],
   "greedysplitstring": [
     [
-      "                    1      2       3        4\n\\greedysplitstring ... \\at ... \\to \\... \\and \\...",
+      "                    1       2        3         4\n\\greedysplitstring ... \\at ... \\to \\... \\and \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME\n\n4   CSNAME"
     ],
     [
@@ -14035,7 +14007,7 @@
   ],
   "handletokens": [
     [
-      "               1         2\n\\handletokens ... \\with \\...",
+      "               1          2\n\\handletokens ... \\with \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -14350,11 +14322,7 @@
   ],
   "highlight": [
     [
-      "             1\n\\highlight {...}",
-      "1   TEXT"
-    ],
-    [
-      "             1     2\n\\highlight [...] {...}",
+      "             1     2\n\\highlight [...] {...}\n            OPT",
       "1   NAME\n\n2   TEXT"
     ],
     [
@@ -14579,7 +14547,7 @@
   ],
   "ifassignment": [
     [
-      "               1        2\n\\ifassignment ... \\else ... \\fi",
+      "               1         2\n\\ifassignment ... \\else ... \\fi",
       "1   TRUE\n\n2   FALSE"
     ],
     [
@@ -14597,7 +14565,7 @@
   ],
   "ifinobject": [
     [
-      "             1        2\n\\ifinobject ... \\else ... \\fi",
+      "             1         2\n\\ifinobject ... \\else ... \\fi",
       "1   TRUE\n\n2   FALSE"
     ],
     [
@@ -14606,7 +14574,7 @@
   ],
   "ifinoutputstream": [
     [
-      "                   1        2\n\\ifinoutputstream ... \\else ... \\fi",
+      "                   1         2\n\\ifinoutputstream ... \\else ... \\fi",
       "1   TRUE\n\n2   FALSE"
     ],
     [
@@ -14615,7 +14583,7 @@
   ],
   "ifparameters": [
     [
-      "               1        2\n\\ifparameters ... \\else ... \\fi",
+      "               1         2\n\\ifparameters ... \\else ... \\fi",
       "1   TRUE\n\n2   FALSE"
     ],
     [
@@ -14624,7 +14592,7 @@
   ],
   "iftrialtypesetting": [
     [
-      "                     1        2\n\\iftrialtypesetting ... \\else ... \\fi",
+      "                     1         2\n\\iftrialtypesetting ... \\else ... \\fi",
       "1   TRUE\n\n2   FALSE"
     ],
     [
@@ -14772,11 +14740,7 @@
   ],
   "index": [
     [
-      "         1        2\n\\index [...] [..+...+..]\n        OPT",
-      "1   TEXT PROCESSOR->TEXT\n\n2   INDEX"
-    ],
-    [
-      "         1     2        3\n\\index [...] {...} [..+...+..]\n        OPT",
+      "         1     2        3\n\\index [...] {...} [..+...+..]\n        OPT   OPT",
       "1   TEXT PROCESSOR->TEXT\n\n2   TEXT\n\n3   INDEX"
     ],
     [
@@ -15837,12 +15801,8 @@
   ],
   "language": [
     [
-      "            1\n\\language [...]",
+      "            1\n\\language [...]\n           OPT",
       "1   LANGUAGE"
-    ],
-    [
-      "\\language",
-      ""
     ],
     [
       "lang-ini.mkiv"
@@ -16273,7 +16233,7 @@
   ],
   "letcscsname": [
     [
-      "               1          2\n\\letcscsname \\... \\csname ... \\endcsname",
+      "               1           2\n\\letcscsname \\... \\csname ... \\endcsname",
       "1   CSNAME\n\n2   NAME"
     ],
     [
@@ -16282,7 +16242,7 @@
   ],
   "letcsnamecs": [
     [
-      "                     1              2\n\\letcsnamecs \\csname ... \\endcsname \\...",
+      "                      1               2\n\\letcsnamecs \\csname ... \\endcsname \\...",
       "1   NAME\n\n2   CSNAME"
     ],
     [
@@ -16291,7 +16251,7 @@
   ],
   "letcsnamecsname": [
     [
-      "                         1                    2\n\\letcsnamecsname \\csname ... \\endcsname \\csname ... \\endcsname",
+      "                          1                      2\n\\letcsnamecsname \\csname ... \\endcsname \\csname ... \\endcsname",
       "1   NAME\n\n2   NAME"
     ],
     [
@@ -17022,7 +16982,7 @@
   ],
   "lowercasestring": [
     [
-      "                  1       2\n\\lowercasestring ... \\to \\...",
+      "                  1        2\n\\lowercasestring ... \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -17301,11 +17261,7 @@
   ],
   "margindata": [
     [
-      "                  1             2         3\n\\margindata [..,..=..,..] [..,..=..,..] {...}\n                 OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "              1         2             3         4\n\\margindata [...] [..,..=..,..] [..,..=..,..] {...}\n                       OPT           OPT",
+      "              1         2             3         4\n\\margindata [...] [..,..=..,..] [..,..=..,..] {...}\n             OPT       OPT           OPT",
       "1   NAME\n\n2   reference = REFERENCE\n    inherits: \\setupmargindata\n\n3   inherits: \\setupmarginframed\n\n4   CONTENT"
     ],
     [
@@ -18743,12 +18699,8 @@
   ],
   "nop": [
     [
-      "      1\n\\nop ... \\\\",
+      "      1\n\\nop ... \\\\\n     OPT",
       "1   TEXT"
-    ],
-    [
-      "\\nop",
-      ""
     ],
     [
       "scrn-but.mkvi",
@@ -19906,11 +19858,7 @@
   ],
   "placecombinedlist": [
     [
-      "                         1\n\\placecombinedlist [..,..=..,..]\n                        OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "                     1         2\n\\placecombinedlist [...] [..,..=..,..]\n                              OPT",
+      "                     1         2\n\\placecombinedlist [...] [..,..=..,..]\n                    OPT       OPT",
       "1   LIST\n\n2   inherits: \\setuplist"
     ],
     [
@@ -19964,11 +19912,7 @@
   ],
   "placefloat": [
     [
-      "                1         2       3     4\n\\placefloat [...,...] [...,...] {...} {...}\n               OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT\n\n4   CONTENT"
-    ],
-    [
-      "              1       2         3       4     5\n\\placefloat [...] [...,...] [...,...] {...} {...}\n                     OPT       OPT",
+      "              1       2         3       4     5\n\\placefloat [...] [...,...] [...,...] {...} {...}\n             OPT     OPT       OPT",
       "1   SINGULAR\n\n2   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n3   REFERENCE\n\n4   TEXT\n\n5   CONTENT"
     ],
     [
@@ -20184,11 +20128,7 @@
   ],
   "placelistofsorts": [
     [
-      "                        1\n\\placelistofsorts [..,..=..,..]\n                       OPT",
-      "1   inherits: \\setupsorting"
-    ],
-    [
-      "                    1         2\n\\placelistofsorts [...] [..,..=..,..]\n                             OPT",
+      "                    1         2\n\\placelistofsorts [...] [..,..=..,..]\n                   OPT       OPT",
       "1   SINGULAR\n\n2   inherits: \\setupsorting"
     ],
     [
@@ -20197,11 +20137,7 @@
   ],
   "placelistofsynonyms": [
     [
-      "                           1\n\\placelistofsynonyms [..,..=..,..]\n                          OPT",
-      "1   inherits: \\setupsynonyms"
-    ],
-    [
-      "                       1         2\n\\placelistofsynonyms [...] [..,..=..,..]\n                                OPT",
+      "                       1         2\n\\placelistofsynonyms [...] [..,..=..,..]\n                      OPT       OPT",
       "1   SINGULAR\n\n2   inherits: \\setupsynonyms"
     ],
     [
@@ -20237,11 +20173,7 @@
   ],
   "placement": [
     [
-      "                 1         2\n\\placement [..,..=..,..] {...}\n                OPT",
-      "1   inherits: \\setupplacement\n\n2   CONTENT"
-    ],
-    [
-      "             1         2         3\n\\placement [...] [..,..=..,..] {...}\n                      OPT",
+      "             1         2         3\n\\placement [...] [..,..=..,..] {...}\n            OPT       OPT",
       "1   NAME\n\n2   inherits: \\setupplacement\n\n3   CONTENT"
     ],
     [
@@ -20308,11 +20240,7 @@
   ],
   "placepairedbox": [
     [
-      "                      1         2     3\n\\placepairedbox [..,..=..,..] {...} {...}\n                     OPT",
-      "1   inherits: \\setuppairedbox\n\n2   CONTENT\n\n3   TEXT"
-    ],
-    [
-      "                  1         2         3     4\n\\placepairedbox [...] [..,..=..,..] {...} {...}\n                           OPT",
+      "                  1         2         3     4\n\\placepairedbox [...] [..,..=..,..] {...} {...}\n                 OPT       OPT",
       "1   NAME\n\n2   inherits: \\setuppairedbox\n\n3   CONTENT\n\n4   TEXT"
     ],
     [
@@ -20339,11 +20267,7 @@
   ],
   "placeregister": [
     [
-      "                     1\n\\placeregister [..,..=..,..]\n                    OPT",
-      "1   inherits: \\setupregister"
-    ],
-    [
-      "                 1         2\n\\placeregister [...] [..,..=..,..]\n                          OPT",
+      "                 1         2\n\\placeregister [...] [..,..=..,..]\n                OPT       OPT",
       "1   NAME\n\n2   inherits: \\setupregister"
     ],
     [
@@ -20631,7 +20555,7 @@
   ],
   "prependetoks": [
     [
-      "               1       2\n\\prependetoks ... \\to \\...",
+      "               1        2\n\\prependetoks ... \\to \\...",
       "1   COMMAND\n\n2   CSNAME"
     ],
     [
@@ -20658,7 +20582,7 @@
   ],
   "prependtoks": [
     [
-      "              1       2\n\\prependtoks ... \\to \\...",
+      "              1        2\n\\prependtoks ... \\to \\...",
       "1   COMMAND\n\n2   CSNAME"
     ],
     [
@@ -20667,7 +20591,7 @@
   ],
   "prependtoksonce": [
     [
-      "                  1       2\n\\prependtoksonce ... \\to \\...",
+      "                  1        2\n\\prependtoksonce ... \\to \\...",
       "1   COMMAND\n\n2   CSNAME"
     ],
     [
@@ -21917,11 +21841,7 @@
   ],
   "register": [
     [
-      "            1        2\n\\register [...] [..+...+..]\n           OPT",
-      "1   TEXT PROCESSOR->TEXT\n\n2   INDEX"
-    ],
-    [
-      "            1     2        3\n\\register [...] {...} [..+...+..]\n           OPT",
+      "            1     2        3\n\\register [...] {...} [..+...+..]\n           OPT   OPT",
       "1   TEXT PROCESSOR->TEXT\n\n2   TEXT\n\n3   INDEX"
     ],
     [
@@ -22137,7 +22057,7 @@
   ],
   "removesubstring": [
     [
-      "                  1        2       3\n\\removesubstring ... \\from ... \\to \\...",
+      "                  1         2        3\n\\removesubstring ... \\from ... \\to \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -22146,7 +22066,7 @@
   ],
   "removetoks": [
     [
-      "             1         2\n\\removetoks ... \\from \\...",
+      "             1          2\n\\removetoks ... \\from \\...",
       "1   COMMAND\n\n2   CSNAME"
     ],
     [
@@ -23381,11 +23301,7 @@
       "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT"
     ],
     [
-      "             1       2\n\\section [...,...] {...}\n            OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "             1       2     3\n\\section [...,...] {...} {...}\n            OPT",
+      "             1       2     3\n\\section [...,...] {...} {...}\n            OPT     OPT",
       "1   REFERENCE\n\n2   NUMBER\n\n3   TEXT"
     ],
     [
@@ -24071,10 +23987,6 @@
     [
       "                  1         2             3         4\n\\setlayerframed [...] [..,..=..,..] [..,..=..,..] {...}\n                           OPT           OPT",
       "1   NAME\n\n2   inherits: \\setuplayer\n\n3   inherits: \\setupframed\n\n4   CONTENT"
-    ],
-    [
-      "                  1         2         3\n\\setlayerframed [...] [..,..=..,..] {...}\n                           OPT",
-      "1   NAME\n\n2   inherits: \\setupframed\n\n3   CONTENT"
     ],
     [
       "pack-box.mkiv"
@@ -24993,11 +24905,7 @@
   ],
   "setupcombinedlist": [
     [
-      "                         1\n\\setupcombinedlist [..,..=..,..]",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "                     1         2\n\\setupcombinedlist [...] [..,..=..,..]",
+      "                     1         2\n\\setupcombinedlist [...] [..,..=..,..]\n                    OPT",
       "1   LIST\n\n2   inherits: \\setuplist"
     ],
     [
@@ -26943,7 +26851,7 @@
   ],
   "setwidthof": [
     [
-      "             1       2\n\\setwidthof ... \\to \\...",
+      "             1        2\n\\setwidthof ... \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -28142,7 +28050,7 @@
   ],
   "splitofftokens": [
     [
-      "                 1        2       3\n\\splitofftokens ... \\from ... \\to \\...",
+      "                 1         2        3\n\\splitofftokens ... \\from ... \\to \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -28160,7 +28068,7 @@
   ],
   "splitstring": [
     [
-      "              1      2       3        4\n\\splitstring ... \\at ... \\to \\... \\and \\...",
+      "              1       2        3         4\n\\splitstring ... \\at ... \\to \\... \\and \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME\n\n4   CSNAME"
     ],
     [
@@ -28571,10 +28479,6 @@
       "1   NAME"
     ],
     [
-      "\\startbuffer ... \\stopbuffer",
-      ""
-    ],
-    [
       "buff-ini.mkiv"
     ]
   ],
@@ -28822,11 +28726,7 @@
   ],
   "startdelimitedtext": [
     [
-      "                        1\n\\startdelimitedtext [...,...] ... \\stopdelimitedtext\n                       OPT",
-      "1   inherits: \\startnarrower"
-    ],
-    [
-      "                      1       2\n\\startdelimitedtext [...] [...,...] ... \\stopdelimitedtext\n                             OPT",
+      "                      1       2\n\\startdelimitedtext [...] [...,...] ... \\stopdelimitedtext\n                     OPT     OPT",
       "1   NAME\n\n2   inherits: \\startnarrower"
     ],
     [
@@ -28875,12 +28775,8 @@
   ],
   "starteffect": [
     [
-      "               1\n\\starteffect [...] ... \\stopeffect",
+      "               1\n\\starteffect [...] ... \\stopeffect\n              OPT",
       "1   NAME"
-    ],
-    [
-      "\\starteffect ... \\stopeffect",
-      ""
     ],
     [
       "attr-eff.mkiv"
@@ -29012,11 +28908,7 @@
   ],
   "startfittingpage": [
     [
-      "                        1\n\\startfittingpage [..,..=..,..] ... \\stopfittingpage\n                       OPT",
-      "1   inherits: \\setupfittingpage"
-    ],
-    [
-      "                    1         2\n\\startfittingpage [...] [..,..=..,..] ... \\stopfittingpage\n                             OPT",
+      "                    1         2\n\\startfittingpage [...] [..,..=..,..] ... \\stopfittingpage\n                   OPT       OPT",
       "1   NAME\n\n2   inherits: \\setupfittingpage"
     ],
     [
@@ -29262,12 +29154,8 @@
   ],
   "startindentedtext": [
     [
-      "                     1\n\\startindentedtext [...] ... \\stopindentedtext",
+      "                     1\n\\startindentedtext [...] ... \\stopindentedtext\n                    OPT",
       "1   NAME"
-    ],
-    [
-      "\\startindentedtext ... \\stopindentedtext",
-      ""
     ],
     [
       "strc-ind.mkiv"
@@ -29329,11 +29217,7 @@
   ],
   "startitemgroup": [
     [
-      "                    1           2\n\\startitemgroup [...,...] [..,..=..,..] ... \\stopitemgroup\n                   OPT         OPT",
-      "1   inherits: \\setupitemgroup\n\n2   inherits: \\setupitemgroup"
-    ],
-    [
-      "                  1       2           3\n\\startitemgroup [...] [...,...] [..,..=..,..] ... \\stopitemgroup\n                         OPT         OPT",
+      "                  1       2           3\n\\startitemgroup [...] [...,...] [..,..=..,..] ... \\stopitemgroup\n                 OPT     OPT         OPT",
       "1   NAME\n\n2   inherits: \\setupitemgroup\n\n3   inherits: \\setupitemgroup"
     ],
     [
@@ -29579,11 +29463,7 @@
   ],
   "startmakeup": [
     [
-      "                   1\n\\startmakeup [..,..=..,..] ... \\stopmakeup\n                  OPT",
-      "1   inherits: \\setupmakeup"
-    ],
-    [
-      "               1         2\n\\startmakeup [...] [..,..=..,..] ... \\stopmakeup\n                        OPT",
+      "               1         2\n\\startmakeup [...] [..,..=..,..] ... \\stopmakeup\n              OPT       OPT",
       "1   NAME\n\n2   inherits: \\setupmakeup"
     ],
     [
@@ -29730,10 +29610,6 @@
     ]
   ],
   "startmixedcolumns": [
-    [
-      "                         1\n\\startmixedcolumns [..,..=..,..] ... \\stopmixedcolumns\n                        OPT",
-      "1   inherits: \\setupmixedcolumns"
-    ],
     [
       "                     1         2\n\\startmixedcolumns [...] [..,..=..,..] ... \\stopmixedcolumns\n                    OPT       OPT",
       "1   NAME\n\n2   inherits: \\setupmixedcolumns"
@@ -29985,10 +29861,6 @@
   ],
   "startpagegrid": [
     [
-      "                     1\n\\startpagegrid [..,..=..,..] ... \\stoppagegrid\n                    OPT",
-      "1   inherits: \\setuppagegrid"
-    ],
-    [
       "                 1         2\n\\startpagegrid [...] [..,..=..,..] ... \\stoppagegrid\n                OPT       OPT",
       "1   NAME\n\n2   inherits: \\setuppagegrid"
     ],
@@ -30034,12 +29906,8 @@
   ],
   "startparagraphs": [
     [
-      "                   1\n\\startparagraphs [...] ... \\stopparagraphs",
+      "                   1\n\\startparagraphs [...] ... \\stopparagraphs\n                  OPT",
       "1   NAME"
-    ],
-    [
-      "\\startparagraphs ... \\stopparagraphs",
-      ""
     ],
     [
       "tabl-mis.mkiv"
@@ -30101,11 +29969,7 @@
   ],
   "startplacefloat": [
     [
-      "                       1             2\n\\startplacefloat [..,..=..,..] [..,..=..,..] ... \\stopplacefloat\n                      OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n    reference = REFERENCE\n\n2   KEY = VALUE"
-    ],
-    [
-      "                   1         2             3\n\\startplacefloat [...] [..,..=..,..] [..,..=..,..] ... \\stopplacefloat\n                            OPT           OPT",
+      "                   1         2             3\n\\startplacefloat [...] [..,..=..,..] [..,..=..,..] ... \\stopplacefloat\n                  OPT       OPT           OPT",
       "1   SINGULAR\n\n2   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n    reference = REFERENCE\n\n3   KEY = VALUE"
     ],
     [
@@ -30154,11 +30018,7 @@
   ],
   "startplacepairedbox": [
     [
-      "                           1\n\\startplacepairedbox [..,..=..,..] ... \\stopplacepairedbox\n                          OPT",
-      "1   inherits: \\setuppairedbox"
-    ],
-    [
-      "                       1         2\n\\startplacepairedbox [...] [..,..=..,..] ... \\stopplacepairedbox\n                                OPT",
+      "                       1         2\n\\startplacepairedbox [...] [..,..=..,..] ... \\stopplacepairedbox\n                      OPT       OPT",
       "1   NAME\n\n2   inherits: \\setuppairedbox"
     ],
     [
@@ -30449,11 +30309,7 @@
   ],
   "startsectionblock": [
     [
-      "                         1\n\\startsectionblock [..,..=..,..] ... \\stopsectionblock\n                        OPT",
-      "1   bookmark = TEXT\n    inherits: \\setupsectionblock"
-    ],
-    [
-      "                     1         2\n\\startsectionblock [...] [..,..=..,..] ... \\stopsectionblock\n                              OPT",
+      "                     1         2\n\\startsectionblock [...] [..,..=..,..] ... \\stopsectionblock\n                    OPT       OPT",
       "1   NAME\n\n2   bookmark = TEXT\n    inherits: \\setupsectionblock"
     ],
     [
@@ -30568,10 +30424,6 @@
       "1   NAME"
     ],
     [
-      "\\startstartstop ... \\stopstartstop",
-      ""
-    ],
-    [
       "core-sys.mkiv"
     ]
   ],
@@ -30626,12 +30478,8 @@
       "1   inherits: \\setupstyle"
     ],
     [
-      "              1\n\\startstyle [...] ... \\stopstyle",
+      "              1\n\\startstyle [...] ... \\stopstyle\n             OPT",
       "1   NAME FONT"
-    ],
-    [
-      "\\startstyle ... \\stopstyle",
-      ""
     ],
     [
       "font-sty.mkvi"
@@ -30894,11 +30742,7 @@
   ],
   "starttextbackground": [
     [
-      "                           1\n\\starttextbackground [..,..=..,..] ... \\stoptextbackground\n                          OPT",
-      "1   inherits: \\setuptextbackground"
-    ],
-    [
-      "                       1         2\n\\starttextbackground [...] [..,..=..,..] ... \\stoptextbackground\n                                OPT",
+      "                       1         2\n\\starttextbackground [...] [..,..=..,..] ... \\stoptextbackground\n                      OPT       OPT",
       "1   NAME\n\n2   inherits: \\setuptextbackground"
     ],
     [
@@ -31100,12 +30944,8 @@
   ],
   "startviewerlayer": [
     [
-      "                    1\n\\startviewerlayer [...] ... \\stopviewerlayer",
+      "                    1\n\\startviewerlayer [...] ... \\stopviewerlayer\n                   OPT",
       "1   NAME"
-    ],
-    [
-      "\\startviewerlayer ... \\stopviewerlayer",
-      ""
     ],
     [
       "attr-lay.mkiv"
@@ -34116,7 +33956,7 @@
   ],
   "stripcharacter": [
     [
-      "                 1        2       3\n\\stripcharacter ... \\from ... \\to \\...",
+      "                 1         2        3\n\\stripcharacter ... \\from ... \\to \\...",
       "1   CHARACTER\n\n2   TEXT\n\n3   CSNAME"
     ],
     [
@@ -34138,7 +33978,7 @@
   ],
   "stripspaces": [
     [
-      "                   1       2\n\\stripspaces \\from ... \\to \\...",
+      "                    1        2\n\\stripspaces \\from ... \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -34250,11 +34090,7 @@
       "1   inherits: \\setupstyle\n\n2   TEXT"
     ],
     [
-      "         1\n\\style {...}",
-      "1   TEXT"
-    ],
-    [
-      "         1     2\n\\style [...] {...}",
+      "         1     2\n\\style [...] {...}\n        OPT",
       "1   NAME FONT\n\n2   TEXT"
     ],
     [
@@ -34751,7 +34587,7 @@
   ],
   "testandsplitstring": [
     [
-      "                     1      2       3        4\n\\testandsplitstring ... \\at ... \\to \\... \\and \\...",
+      "                     1       2        3         4\n\\testandsplitstring ... \\at ... \\to \\... \\and \\...",
       "1   TEXT\n\n2   TEXT\n\n3   CSNAME\n\n4   CSNAME"
     ],
     [
@@ -35558,10 +35394,6 @@
   ],
   "typebuffer": [
     [
-      "                  1\n\\typebuffer [..,..=..,..]\n                 OPT",
-      "1   inherits: \\setuptyping"
-    ],
-    [
       "                1           2\n\\typebuffer [...,...] [..,..=..,..]\n               OPT         OPT",
       "1   BUFFER\n\n2   inherits: \\setuptyping"
     ],
@@ -35954,7 +35786,7 @@
   ],
   "unhhbox": [
     [
-      "          1         2\n\\unhhbox ... \\with {...}",
+      "          1          2\n\\unhhbox ... \\with {...}",
       "1   CSNAME NUMBER\n\n2   COMMAND"
     ],
     [
@@ -36062,7 +35894,7 @@
   ],
   "unspaceargument": [
     [
-      "                  1       2\n\\unspaceargument ... \\to \\...",
+      "                  1        2\n\\unspaceargument ... \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -36080,7 +35912,7 @@
   ],
   "unspacestring": [
     [
-      "                1       2\n\\unspacestring ... \\to \\...",
+      "                1        2\n\\unspacestring ... \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -36089,7 +35921,7 @@
   ],
   "untexargument": [
     [
-      "                 1        2\n\\untexargument {...} \\to \\...",
+      "                 1         2\n\\untexargument {...} \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [
@@ -36098,7 +35930,7 @@
   ],
   "untexcommand": [
     [
-      "                1        2\n\\untexcommand {...} \\to \\...",
+      "                1         2\n\\untexcommand {...} \\to \\...",
       "1   CSNAME\n\n2   CSNAME"
     ],
     [
@@ -36116,7 +35948,7 @@
   ],
   "uppercasestring": [
     [
-      "                  1       2\n\\uppercasestring ... \\to \\...",
+      "                  1        2\n\\uppercasestring ... \\to \\...",
       "1   TEXT\n\n2   CSNAME"
     ],
     [

@@ -480,20 +480,12 @@ contexts:
           captures:
             '1': entity.tag.end.context
           pop: true
-        - include: LMX.inline.comment
         - include: LMX.functions
 
   LMX.lua.scope:
     - meta_include_prototype: false
     - meta_content_scope: source.lua
     - include: scope:source.lua
-
-  LMX.inline.comment:
-    - match: '--(?!\[\[)'
-      push:
-        - meta_scope: comment.line.double-dash.lua
-        - match: '(?=\?>)'
-          pop: true
 
   LMX.functions:
     - match: '\b(inject)\b'
@@ -640,7 +632,7 @@ contexts:
   TeX.parameter:
     - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})[[:digit:]]'
       scope: variable.parameter.tex.context
-    - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})([[:alpha:]]+|\{.*?\})'
+    - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})([[:alpha:]]+|\{[^{}]*\})'
       scope: variable.parameter.tex.context
 
   TeX.let-or-def:
