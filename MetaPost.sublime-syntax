@@ -3,6 +3,8 @@
 name: MetaPost
 file_extensions:
   - mp
+  - mpii
+  - mpiv
 scope: source.metapost
 
 contexts:
