@@ -1,7 +1,6 @@
 import sublime_plugin
 import sublime
 import subprocess
-import platform
 import time
 import os
 import re
@@ -24,19 +23,17 @@ def prep_environ_path():
     context_path = settings.get("context_executable", {}).get("path")
     if not context_path:
         return
-
-    if platform.system() == "Windows":
-        pass
-    elif platform.system() == "Darwin":
-        context_path = os.path.normpath(context_path)
-        passes_initial_check = isinstance(context_path, str) \
-            and os.path.exists(context_path)
-        if passes_initial_check:
-            PATH = set(os.environ["PATH"].split(":"))
-            PATH.add(context_path)
-            os.environ["PATH"] = ":".join(sorted(PATH))
-    else:
-        raise Exception("Unknown platform!")
+    context_path = os.path.normpath(context_path)
+    passes_initial_check = isinstance(context_path, str) \
+        and os.path.exists(context_path)
+    if passes_initial_check:
+        PATH = os.environ["PATH"].split(os.pathsep)
+        if context_path not in PATH:
+            PATH.insert(0, context_path)
+        else:
+            PATH.remove(context_path)
+            PATH.insert(0, context_path)
+        os.environ["PATH"] = os.pathsep.join(PATH)
 
 
 def parse_log_for_error(file_bytes):
@@ -54,6 +51,7 @@ def parse_log_for_error(file_bytes):
     def is_blank_line(line):
         return (len(line) == 0 or re.match(r"^\s*$", line))
 
+    start_of_error = 0
     log = file_str.split("\n")
     for i, line in enumerate(log):
         error = is_error(line)
@@ -79,11 +77,11 @@ def parse_log_for_error(file_bytes):
 class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        prep_environ_path()
         self.reload_settings()
 
     def reload_settings(self):
         self.settings = sublime.load_settings("ConTeXtTools.sublime-settings")
+        prep_environ_path()
 
     def run(self):
         start_time = time.time()
@@ -125,8 +123,8 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
                 self.settings.get("context_executable", {}).get("options", {})
 
             if isinstance(command_line_options, str):
-                command = [
-                    "context", command_line_options.split(" "), input_name]
+                command = ["context"] + command_line_options.split(" ") \
+                    + [input_name]
 
             elif isinstance(command_line_options, dict):
                 command = ["context"]
