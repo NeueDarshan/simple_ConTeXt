@@ -1,20 +1,23 @@
 {
-  "context_executable":
-  {
-    "options":
+  "profiles": [
     {
-      "jit": true,
-      "synctex": true,
-      "directives":
+      "name": "Default",
+      "context_executable":
       {
-        "system.errorcontext": 5,
+        "options":
+        {
+          "autogenerate": true,
+        },
+        "path": null,
+      },
+      "command_popups":
+      {
+        "on": true,
+        "version": null,
+        "show_file": false,
       },
     },
-    "path": "",
-  },
-  "command_popups":
-  {
-    "on": true,
-    "show_file": false,
-  },
+  ],
+
+  "current_profile": "Default",
 }

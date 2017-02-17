@@ -4,15 +4,22 @@ import json
 import re
 import os
 
-# longest seems to be \currentlistentrydestinationattribute at 36
+
 COMMAND_LEN_UPPER_BOUND = 40
 
 
-def load_commands():
-    this_package_path = os.path.dirname(__file__)
-    commands_json = os.path.join(this_package_path, "commands.json")
-    with open(commands_json) as f:
-        return json.load(f)
+def load_commands(profile):
+    try:
+        this_package_path = os.path.dirname(__file__)
+        version = profile.get("command_popups", {}).get("version")
+        if not version:
+            name = "Minimals"
+        name = "commands {version}.json".format(version=version)
+        commands_json = os.path.join(this_package_path, "interface", name)
+        with open(commands_json) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return
 
 
 def protect_html_whitespace(string):
@@ -49,26 +56,45 @@ def is_context(view):
 class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.commands = load_commands()
-        self.command_names = set(self.commands.keys())
-        self.command_completions = [
-            ["\\{name}".format(name=name), ""]
-            for name in self.command_names]
+        self.current_profile = {}
+        self.commands = {}
         self.reload_settings()
 
     def reload_settings(self):
-        self.settings = sublime.load_settings("ConTeXtTools.sublime-settings")
+        try:
+            self.settings = sublime.load_settings(
+                "ConTeXtTools.sublime-settings")
+            profile_name = self.settings.get("current_profile")
+
+            for profile in self.settings.get("profiles", {}):
+                if profile.get("name") == profile_name:
+                    self.current_profile = profile
+                    break
+
+            if self.current_profile.get("name") not in self.commands:
+                dict_ = self.commands[self.current_profile.get("name")] = {}
+                dict_["commands"] = load_commands(self.current_profile)
+                dict_["command_names"] = sorted(dict_["commands"].keys())
+                dict_["command_completions"] = [
+                    ["\\{name}".format(name=name), ""]
+                    for name in dict_["command_names"]
+                ]
+        except TypeError:
+            pass
 
     def on_query_completions(self, view, prefix, locations):
         if not is_context(view):
             return
 
-        return self.command_completions
+        self.reload_settings()
+        return self.commands.get(
+            self.current_profile.get("name"), {}).get(
+                "command_completions", [])
 
     def on_modified(self, view):
         self.reload_settings()
         should_show_popup = is_context(view) \
-            and self.settings.get("command_popups", {}).get("on")
+            and self.current_profile.get("command_popups", {}).get("on")
         if not should_show_popup:
             return
 
@@ -104,7 +130,9 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                     "entity.control-word.tex.context"
                 ])
             )
-            if name in self.command_names and scope_is_command:
+            name_is_command = name in self.commands.get(
+                self.current_profile.get("name")).get("command_names")
+            if scope_is_command and name_is_command:
                 return name
 
     def get_popup_text(self, command_name):
@@ -131,7 +159,8 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             file_color="#8ea6b7")
 
         signatures = []
-        command = self.commands[command_name]
+        command = self.commands.get(
+            self.current_profile.get("name")).get("commands").get(command_name)
         files = command[-1]
         for variation in command[:-1]:
             new_signature = """
@@ -156,7 +185,9 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             "<style>{style_sheet}</style>".format(style_sheet=style_sheet) \
             + "<br />".join(signatures)
 
-        if files and self.settings.get("command_popups", {}).get("show_file"):
+        show_file = files and \
+            self.current_profile.get("command_popups", {}).get("show_file")
+        if show_file:
             full_signature += """
                 <br />
                 <div class='files'>

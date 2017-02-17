@@ -25,11 +25,19 @@
               },
               {"caption": "-"},
               {
-                "caption": "Settings",
+                "caption": "Settings – Default",
                 "command": "open_file",
                 "args":
                 {
                   "file": "${packages}/ConTeXtTools/ConTeXtTools.sublime-settings"
+                },
+              },
+              {
+                "caption": "Settings – User",
+                "command": "open_file",
+                "args":
+                {
+                  "file": "${packages}/User/ConTeXtTools.sublime-settings"
                 },
               },
             ]
