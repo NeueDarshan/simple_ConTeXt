@@ -18,12 +18,12 @@ def is_context(view):
         return False
 
 
-def prep_environ_path():
-    settings = sublime.load_settings("ConTeXtTools.sublime-settings")
-    context_path = settings.get("context_executable", {}).get("path")
+def prep_environ_path(profile):
+    context_path = profile.get("context_executable", {}).get("path")
     if not context_path:
         return
     context_path = os.path.normpath(context_path)
+
     passes_initial_check = isinstance(context_path, str) \
         and os.path.exists(context_path)
     if passes_initial_check:
@@ -77,11 +77,19 @@ def parse_log_for_error(file_bytes):
 class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.current_profile = {}
         self.reload_settings()
 
     def reload_settings(self):
         self.settings = sublime.load_settings("ConTeXtTools.sublime-settings")
-        prep_environ_path()
+        profile_name = self.settings.get("current_profile")
+
+        for profile in self.settings.get("profiles", {}):
+            if profile.get("name") == profile_name:
+                self.current_profile = profile
+                break
+
+        prep_environ_path(self.current_profile)
 
     def run(self):
         start_time = time.time()
@@ -119,8 +127,8 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
 
             # decide what command to invoke, we take advantage of the fact that
             # subprocess will accept a list or a string
-            command_line_options = \
-                self.settings.get("context_executable", {}).get("options", {})
+            command_line_options = self.current_profile.get(
+                "context_executable", {}).get("options", {})
 
             if isinstance(command_line_options, str):
                 command = ["context"] + command_line_options.split(" ") \

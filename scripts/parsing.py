@@ -203,7 +203,7 @@ def handle_syntax_element(element, definitions):
             return handler(element)
 
 # these fixes apply to the TeXLive 2016 (combined) interface XML file
-def fix_context_tree(root_node):
+def fix_context_tree_2016(root_node):
     # fix \setupitemgroup, resolve->inherit
     itemgroup = root_node.find(
         './/cd:interface[@file="i-itemgroup.xml"]', namespaces=NAMESPACES)
@@ -244,6 +244,13 @@ def fix_context_tree(root_node):
     query = './/cd:arguments//cd:keywords//cd:constant[@type="moth"]'
     problem = currentdate.find(query, namespaces=NAMESPACES)
     problem.set("type", "month")
+
+    # '\​protect' -> '\protect' (no zero-width whitespace at start)
+    catcodes = root_node.find(
+        './/cd:interface[@file="i-catcodes.xml"]', namespaces=NAMESPACES)
+    protect = catcodes.find(
+        './/cd:command[@name="protect"]', namespaces=NAMESPACES)
+    protect.set("end", "")
 
     # fix \defineenumerations, defineenumerations->defineenumeration
     enumeration = root_node.find(
@@ -310,6 +317,96 @@ def fix_context_tree(root_node):
     common_arguments = root_node.find(query, namespaces=NAMESPACES)
     for arg in new_arguments:
         common_arguments.append(ET.fromstring(arg))
+
+# these fixes apply to the ConTeXt minimals 2017 (combined) interface XML file
+def fix_context_tree_2017(root_node):
+    # fix \definefontfamilypreset, assignment->assignments
+    fontfamily = root_node.find(
+        './/cd:interface[@file="i-fontfamily.xml"]', namespaces=NAMESPACES)
+    definefontfamilypreset = fontfamily.iterfind(
+        './/cd:command[@name="definefontfamilypreset"]', namespaces=NAMESPACES)
+    for variant in definefontfamilypreset:
+        query = './/cd:arguments//cd:assignment'
+        problem = variant.find(query, namespaces=NAMESPACES)
+        if problem:
+            problem.tag = "{{{cd}}}assignments".format(**NAMESPACES)
+
+    # fix \setupfittingpage, defaut->default
+    fittingpage = root_node.find(
+        './/cd:interface[@file="i-fittingpage.xml"]', namespaces=NAMESPACES)
+    setupfittingpage = fittingpage.find(
+        './/cd:command[@name="setupfittingpage"]', namespaces=NAMESPACES)
+    query = './/cd:arguments//cd:assignments//cd:parameter[@name="paper"]' \
+        + '//cd:constant[@type="defaut"]'
+    problem = setupfittingpage.find(query, namespaces=NAMESPACES)
+    problem.set("type", "default")
+
+    # '\​protect' -> '\protect' (no zero-width whitespace at start)
+    catcodes = root_node.find(
+        './/cd:interface[@file="i-catcodes.xml"]', namespaces=NAMESPACES)
+    protect = catcodes.find(
+        './/cd:command[@name="protect"]', namespaces=NAMESPACES)
+    protect.set("end", "")
+
+    # fix: keyword-name-optional-list->keyword-name-list-optional
+    query = './/cd:interface//cd:command//cd:arguments//' \
+        + 'cd:resolve[@name="keyword-name-optional-list"]'
+    problem_commands = root_node.findall(query, namespaces=NAMESPACES)
+    for command in problem_commands:
+        command.set("name", "keyword-name-list-optional")
+
+    # fix: we don't understand a file attribute in the interface element in the
+    # main parsers, we only understand it on the command element itself. As
+    # such, we tweak the XML to obey this convention.
+    xml = root_node.find(
+        './/cd:interface[@file="i-xml.xml"]', namespaces=NAMESPACES)
+    for child in xml:
+        child.set("file", "lxml-ini.mkiv")
+
+    # add the new common argument types:
+    #   + argument-content
+    #   + argument-content-optional
+    #   + argument-content-list
+    #   + argument-content-list-optional
+    new_arguments = [
+        """<cd:define
+        xmlns:cd="http://www.pragma-ade.com/commands"
+        name="argument-content">
+            <cd:keywords delimiters="braces">
+                <cd:constant type="cd:content"/>
+            </cd:keywords>
+        </cd:define>""",
+
+        """<cd:define
+        xmlns:cd="http://www.pragma-ade.com/commands"
+        name="argument-content-optional">
+            <cd:keywords delimiters="braces" optional="yes">
+                <cd:constant type="cd:content"/>
+            </cd:keywords>
+        </cd:define>""",
+
+        """<cd:define
+        xmlns:cd="http://www.pragma-ade.com/commands"
+        name="argument-content-list">
+            <cd:keywords delimiters="braces" list="yes">
+                <cd:constant type="cd:content"/>
+            </cd:keywords>
+        </cd:define>""",
+
+        """<cd:define
+        xmlns:cd="http://www.pragma-ade.com/commands"
+        name="argument-content-list-optional">
+            <cd:keywords delimiters="braces" list="yes" optional="yes">
+                <cd:constant type="cd:content"/>
+            </cd:keywords>
+        </cd:define>"""]
+
+    query = './/cd:interface[@file="i-common-definitions.xml"]' \
+        + '//cd:interface[@file="i-common-argument.xml"]'
+    common_arguments = root_node.find(query, namespaces=NAMESPACES)
+    for arg in new_arguments:
+        common_arguments.append(ET.fromstring(arg))
+
 
 # high-level function, fully processes one cd:command node;
 def parse_command_instance(element, definitions):
@@ -653,19 +750,17 @@ def simplify_commands(commands):
 
 def main():
     structured_commands = parse_context_tree(
-        "context-en.xml", pre_process=fix_context_tree)
-
+        "context-en-2016.xml", pre_process=fix_context_tree_2016)
     simplify_commands(structured_commands)
-
-    # structured_commands is the intermediate form we store the commands in; to
-    # take a look at it you can do something like this to write it to file, but
-    # be warned it is a very big (~100,000 lines long) file.
-    # with open("pre_commands.json", mode="w") as f:
-    #     json.dump(structured_commands, f, sort_keys=True, indent=2)
-
     flat_commands = rendered_command_dict(structured_commands)
+    with open("commands TeXLive 2016.json", mode="w") as f:
+        json.dump(flat_commands, f, sort_keys=True, indent=2)
 
-    with open("commands.json", mode="w") as f:
+    structured_commands = parse_context_tree(
+        "context-en-min.xml", pre_process=fix_context_tree_2017)
+    simplify_commands(structured_commands)
+    flat_commands = rendered_command_dict(structured_commands)
+    with open("commands Minimals.json", mode="w") as f:
         json.dump(flat_commands, f, sort_keys=True, indent=2)
 
 if __name__ == "__main__":

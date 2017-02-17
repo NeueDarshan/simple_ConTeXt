@@ -881,6 +881,15 @@
       "anch-pos.mkiv"
     ]
   ],
+  "MPwhd": [
+    [
+      "         1\n\\MPwhd {...}",
+      "1   NAME"
+    ],
+    [
+      "anch-pos.mkiv"
+    ]
+  ],
   "MPx": [
     [
       "       1\n\\MPx {...}",
@@ -1286,15 +1295,6 @@
       "cont-log.mkiv"
     ]
   ],
-  "abbreviation": [
-    [
-      "                1     2     3\n\\abbreviation [...] {...} {...}\n               OPT",
-      "1   NAME\n\n2   TEXT\n\n3   CONTENT"
-    ],
-    [
-      "strc-syn.mkiv"
-    ]
-  ],
   "abjadnaivenumerals": [
     [
       "                      1\n\\abjadnaivenumerals {...}",
@@ -1356,6 +1356,15 @@
     ],
     [
       "pack-box.mkiv"
+    ]
+  ],
+  "adaptfontfeature": [
+    [
+      "                    1         2\n\\adaptfontfeature [...] [..,..=..,..]",
+      "1   NAME\n\n2   inherits: \\definefontfeature"
+    ],
+    [
+      "font-fea.mkvi"
     ]
   ],
   "adaptlayout": [
@@ -1756,6 +1765,15 @@
       "buff-ver.mkiv"
     ]
   ],
+  "aside": [
+    [
+      "         1     2\n\\aside [...] {...}\n        OPT",
+      "1   LANGUAGE\n\n2   CONTENT"
+    ],
+    [
+      "typo-del.mkiv"
+    ]
+  ],
   "assignalfadimension": [
     [
       "                       1     2    3     4     5\n\\assignalfadimension {...} \\... {...} {...} {...}",
@@ -1846,15 +1864,6 @@
       "strc-ref.mkvi"
     ]
   ],
-  "atleftmargin": [
-    [
-      "                    1             2         3\n\\atleftmargin [..,..=..,..] [..,..=..,..] {...}\n                   OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
   "atpage": [
     [
       "          1\n\\atpage [...]",
@@ -1862,15 +1871,6 @@
     ],
     [
       "strc-ref.mkvi"
-    ]
-  ],
-  "atrightmargin": [
-    [
-      "                     1             2         3\n\\atrightmargin [..,..=..,..] [..,..=..,..] {...}\n                    OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
     ]
   ],
   "attachment": [
@@ -2238,9 +2238,36 @@
       "strc-blk.mkiv"
     ]
   ],
+  "beginhbox": [
+    [
+      "\\beginhbox ... \\endhbox",
+      ""
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
   "beginofshapebox": [
     [
       "\\beginofshapebox ... \\endofshapebox",
+      ""
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
+  "beginvbox": [
+    [
+      "\\beginvbox ... \\endvbox",
+      ""
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
+  "beginvtop": [
+    [
+      "\\beginvtop ... \\endvtop",
       ""
     ],
     [
@@ -2438,8 +2465,8 @@
   ],
   "blockquote": [
     [
-      "              1\n\\blockquote {...}",
-      "1   CONTENT"
+      "              1     2\n\\blockquote [...] {...}\n             OPT",
+      "1   LANGUAGE\n\n2   CONTENT"
     ],
     [
       "typo-del.mkiv"
@@ -2933,24 +2960,6 @@
       "publ-ini.mkiv"
     ]
   ],
-  "btxlabellanguage": [
-    [
-      "\\btxlabellanguage",
-      ""
-    ],
-    [
-      "publ-ini.mkiv"
-    ]
-  ],
-  "btxlabeltext": [
-    [
-      "                1\n\\btxlabeltext {...}",
-      "1   KEY"
-    ],
-    [
-      "publ-ini.mkiv"
-    ]
-  ],
   "btxlistcitation": [
     [
       "                       1             2\n\\btxlistcitation [..,..=..,..] [..,..=..,..]",
@@ -3120,20 +3129,6 @@
       "enco-ini.mkiv"
     ]
   ],
-  "but": [
-    [
-      "       1       2\n\\but [...] [...,...]\n              OPT",
-      "1   REFERENCE\n\n2   REFERENCE"
-    ],
-    [
-      "       1    2\n\\but [...] ... \\\\",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "scrn-but.mkvi",
-      "strc-itm.mkvi"
-    ]
-  ],
   "button": [
     [
       "              1         2     3\n\\button [..,..=..,..] {...} [...]\n             OPT",
@@ -3240,15 +3235,6 @@
     ],
     [
       "math-frc.mkiv"
-    ]
-  ],
-  "chapter": [
-    [
-      "             1       2\n\\chapter [...,...] {...}\n            OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "character": [
@@ -3415,6 +3401,15 @@
     ],
     [
       "core-two.mkiv"
+    ]
+  ],
+  "checkvariables": [
+    [
+      "                  1         2\n\\checkvariables [...] [..,..=..,..]",
+      "1   NAME\n\n2   set   = COMMAND\n    reset = COMMAND\n    KEY   = VALUE"
+    ],
+    [
+      "core-env.mkiv"
     ]
   ],
   "chem": [
@@ -3697,6 +3692,15 @@
       "colo-ini.mkiv"
     ]
   ],
+  "coloronly": [
+    [
+      "             1     2\n\\coloronly [...] {...}",
+      "1   COLOR\n\n2   CONTENT"
+    ],
+    [
+      "colo-ini.mkiv"
+    ]
+  ],
   "colorvalue": [
     [
       "              1\n\\colorvalue {...}",
@@ -3722,15 +3726,6 @@
     ],
     [
       "page-brk.mkiv"
-    ]
-  ],
-  "com": [
-    [
-      "      1\n\\com ... \\\\",
-      "1   TEXT"
-    ],
-    [
-      "scrn-but.mkvi"
     ]
   ],
   "combinepages": [
@@ -3832,24 +3827,6 @@
       "strc-lst.mkvi"
     ]
   ],
-  "completecontent": [
-    [
-      "                       1\n\\completecontent [..,..=..,..]\n                      OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-lst.mkvi"
-    ]
-  ],
-  "completeindex": [
-    [
-      "                     1\n\\completeindex [..,..=..,..]\n                    OPT",
-      "1   inherits: \\setupregister"
-    ],
-    [
-      "strc-reg.mkiv"
-    ]
-  ],
   "completelist": [
     [
       "                1         2\n\\completelist [...] [..,..=..,..]\n                         OPT",
@@ -3859,33 +3836,6 @@
       "strc-lst.mkvi"
     ]
   ],
-  "completelistofabbreviations": [
-    [
-      "                                   1\n\\completelistofabbreviations [..,..=..,..]\n                                  OPT",
-      "1   inherits: \\setupsynonyms"
-    ],
-    [
-      "strc-syn.mkiv"
-    ]
-  ],
-  "completelistofchemicals": [
-    [
-      "                               1\n\\completelistofchemicals [..,..=..,..]\n                              OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "completelistoffigures": [
-    [
-      "                             1\n\\completelistoffigures [..,..=..,..]\n                            OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "completelistoffloats": [
     [
       "                            1\n\\completelistoffloats [..,..=..,..]\n                           OPT",
@@ -3893,33 +3843,6 @@
     ],
     [
       "strc-flt.mkvi"
-    ]
-  ],
-  "completelistofgraphics": [
-    [
-      "                              1\n\\completelistofgraphics [..,..=..,..]\n                             OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "completelistofintermezzi": [
-    [
-      "                                1\n\\completelistofintermezzi [..,..=..,..]\n                               OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "completelistoflogos": [
-    [
-      "                           1\n\\completelistoflogos [..,..=..,..]\n                          OPT",
-      "1   inherits: \\setupsorting"
-    ],
-    [
-      "strc-syn.mkiv"
     ]
   ],
   "completelistofpublications": [
@@ -3947,15 +3870,6 @@
     ],
     [
       "strc-syn.mkiv"
-    ]
-  ],
-  "completelistoftables": [
-    [
-      "                            1\n\\completelistoftables [..,..=..,..]\n                           OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "completepagenumber": [
@@ -4195,15 +4109,6 @@
       "supp-box.mkiv"
     ]
   ],
-  "copybtxlabeltext": [
-    [
-      "                    1         2\n\\copybtxlabeltext [...] [..,..=..,..]\n                   OPT",
-      "1   LANGUAGE\n\n2   KEY = KEY"
-    ],
-    [
-      "publ-ini.mkiv"
-    ]
-  ],
   "copyfield": [
     [
       "             1     2\n\\copyfield [...] [...]",
@@ -4213,15 +4118,6 @@
       "scrn-fld.mkvi"
     ]
   ],
-  "copyheadtext": [
-    [
-      "                1         2\n\\copyheadtext [...] [..,..=..,..]\n               OPT",
-      "1   LANGUAGE\n\n2   KEY = KEY"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
   "copylabeltext": [
     [
       "                 1         2\n\\copylabeltext [...] [..,..=..,..]\n                OPT",
@@ -4229,24 +4125,6 @@
     ],
     [
       "lang-lab.mkiv"
-    ]
-  ],
-  "copymathlabeltext": [
-    [
-      "                     1         2\n\\copymathlabeltext [...] [..,..=..,..]\n                    OPT",
-      "1   LANGUAGE\n\n2   KEY = KEY"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
-  "copyoperatortext": [
-    [
-      "                    1         2\n\\copyoperatortext [...] [..,..=..,..]\n                   OPT",
-      "1   LANGUAGE\n\n2   KEY = KEY"
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "copypages": [
@@ -4274,33 +4152,6 @@
     ],
     [
       "anch-pos.mkiv"
-    ]
-  ],
-  "copyprefixtext": [
-    [
-      "                  1         2\n\\copyprefixtext [...] [..,..=..,..]\n                 OPT",
-      "1   LANGUAGE\n\n2   KEY = KEY"
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
-  "copytaglabeltext": [
-    [
-      "                    1         2\n\\copytaglabeltext [...] [..,..=..,..]\n                   OPT",
-      "1   LANGUAGE\n\n2   KEY = KEY"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
-  "copyunittext": [
-    [
-      "                1         2\n\\copyunittext [...] [..,..=..,..]\n               OPT",
-      "1   LANGUAGE\n\n2   KEY = KEY"
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "correctwhitespace": [
@@ -4567,7 +4418,7 @@
   "currentdate": [
     [
       "                 1\n\\currentdate [...,...]\n                OPT",
-      "1   yes month day weekday y yy Y m mm M d dd D w W space \\\\\u2423 month:mnem m:mnem d:ord day:ord dd:ord D:ord TEXT"
+      "1   year month day weekday y yy Y m mm M d dd D w W space \\\\\u2423 month:mnem m:mnem d:ord day:ord dd:ord D:ord TEXT referral day:+ day:++ d:+ d:++ dd:+ dd:++ D:+ D:++ month:jalali m:jalali jalali:to jalali:from"
     ],
     [
       "core-con.mkiv"
@@ -5142,7 +4993,7 @@
   "definebreakpoint": [
     [
       "                    1     2         3\n\\definebreakpoint [...] [...] [..,..=..,..]\n                                   OPT",
-      "1   NAME\n\n2   CHARACTER\n\n3   type     = 1 2 3 4 5\n    nleft    = NUMBER\n    nright   = NUMBER\n    left     = COMMAND\n    middle   = COMMAND\n    right    = COMMAND\n    language = LANGUAGE"
+      "1   NAME\n\n2   CHARACTER\n\n3   type     = 1 2 3 4 5\n    nleft    = NUMBER\n    nright   = NUMBER\n    left     = COMMAND\n    middle   = COMMAND\n    right    = COMMAND\n    range    = yes <u>no</u>\n    language = LANGUAGE"
     ],
     [
       "typo-brk.mkiv"
@@ -5482,7 +5333,7 @@
   "definefallbackfamily": [
     [
       "                        1     2     3         4\n\\definefallbackfamily [...] [...] [...] [..,..=..,..]\n                                             OPT",
-      "1   NAME\n\n2   <u>rm</u> ss tt mm hw cg roman serif regular sansserif sans support teletype type mono handwritten calligraphic math mathematics\n\n3   FONT\n\n4   rscale     = NUMBER\n    designsize = default auto\n    goodies    = FILE\n    range      = NUMBER NAME\n    offset     = NUMBER NAME\n    check      = yes <u>no</u>\n    force      = <u>yes</u> no\n    features   = NAME\n    tf         = TEXT\n    bf         = TEXT\n    it         = TEXT\n    sl         = TEXT\n    bi         = TEXT\n    bs         = TEXT\n    sc         = TEXT"
+      "1   NAME\n\n2   <u>rm</u> ss tt mm hw cg roman serif regular sansserif sans support teletype type mono handwritten calligraphic math mathematics\n\n3   FONT\n\n4   rscale     = NUMBER\n    designsize = default auto\n    goodies    = FILE\n    range      = NUMBER NAME\n    offset     = NUMBER NAME\n    check      = yes <u>no</u>\n    force      = yes <u>no</u>\n    features   = NAME\n    tf         = TEXT\n    bf         = TEXT\n    it         = TEXT\n    sl         = TEXT\n    bi         = TEXT\n    bs         = TEXT\n    sc         = TEXT"
     ],
     [
       "                        1     2     3       4\n\\definefallbackfamily [...] [...] [...] [...,...]\n                                           OPT",
@@ -5673,7 +5524,7 @@
   "definefontfeature": [
     [
       "                     1     2         3\n\\definefontfeature [...] [...] [..,..=..,..]\n                          OPT",
-      "1   NAME\n\n2   NAME\n\n3   language         = NAME\n    script           = NAME auto\n    mode             = node base auto none\n    liga             = yes no\n    kern             = yes no\n    extrakerns       = yes no\n    tlig             = yes no\n    trep             = yes no\n    missing          = yes no\n    dummies          = yes no\n    analyze          = yes no\n    unicoding        = yes no\n    expansion        = NAME\n    protrusion       = NAME\n    nostackmath      = yes no\n    realdimensions   = yes no\n    itlc             = yes no\n    textitalics      = yes no\n    mathitalics      = yes no\n    slant            = NUMBER\n    extend           = NUMBER\n    dimensions       = NUMBER\n    boundingbox      = yes no\n    compose          = yes no\n    char-ligatures   = yes no\n    compat-ligatures = yes no\n    goodies          = FILE\n    extrafeatures    = yes no\n    featureset       = NAME\n    colorsheme       = NAME\n    postprocessor    = NAME\n    mathdimensions   = NAME\n    keepligatures    = yes no auto\n    devanagari       = yes no\n    features         = yes no\n    tcom             = yes no\n    anum             = yes no\n    mathsize         = yes no\n    decomposehangul  = yes no\n    mathalternatives = yes no\n    mathgaps         = yes no\n    NAME             = yes <u>no</u>"
+      "1   NAME\n\n2   NAME\n\n3   language         = NAME\n    script           = NAME auto\n    mode             = node base auto none\n    liga             = yes no\n    kern             = yes no\n    extrakerns       = yes no\n    tlig             = yes no\n    trep             = yes no\n    missing          = yes no\n    dummies          = yes no\n    analyze          = yes no\n    unicoding        = yes no\n    expansion        = NAME\n    protrusion       = NAME\n    nostackmath      = yes no\n    realdimensions   = yes no\n    itlc             = yes no\n    textitalics      = yes no\n    mathitalics      = yes no\n    slant            = NUMBER\n    extend           = NUMBER\n    dimensions       = NUMBER\n    boundingbox      = yes no\n    compose          = yes no\n    char-ligatures   = yes no\n    compat-ligatures = yes no\n    goodies          = FILE\n    extrafeatures    = yes no\n    featureset       = NAME\n    colorsheme       = NAME\n    postprocessor    = NAME\n    mathdimensions   = NAME\n    keepligatures    = yes no auto\n    devanagari       = yes no\n    features         = yes no\n    tcom             = yes no\n    anum             = yes no\n    mathsize         = yes no\n    decomposehangul  = yes no\n    mathalternatives = yes no\n    mathgaps         = yes no\n    checkmarks       = <u>yes</u> no\n    NAME             = yes <u>no</u>\n    mathnolimitsmode = NUMBER"
     ],
     [
       "font-fea.mkvi"
@@ -5740,6 +5591,15 @@
     ],
     [
       "strc-mat.mkiv"
+    ]
+  ],
+  "defineformulaframed": [
+    [
+      "                       1     2         3\n\\defineformulaframed [...] [...] [..,..=..,..]\n                            OPT       OPT",
+      "1   NAME\n\n2   NAME\n\n3   inherits: \\setupformulaframed"
+    ],
+    [
+      "math-for.mkiv"
     ]
   ],
   "defineframed": [
@@ -6054,6 +5914,15 @@
     ],
     [
       "page-lay.mkiv"
+    ]
+  ],
+  "definelinefiller": [
+    [
+      "                    1     2         3\n\\definelinefiller [...] [...] [..,..=..,..]\n                         OPT       OPT",
+      "1   NAME\n\n2   NAME\n\n3   inherits: \\setuplinefiller"
+    ],
+    [
+      "node-rul.mkiv"
     ]
   ],
   "definelinenote": [
@@ -7055,6 +6924,14 @@
   ],
   "definetransparency": [
     [
+      "                      1         2\n\\definetransparency [...] [..,..=..,..]",
+      "1   NAME\n\n2   a = NUMBER none normal multiply screen overlay softlight hardlight colordodge colorburn darken lighten difference exclusion hue saturation color luminosity\n    t = NUMBER"
+    ],
+    [
+      "                      1     2\n\\definetransparency [...] [...]",
+      "1   NAME\n\n2   NAME"
+    ],
+    [
       "                      1     2\n\\definetransparency [...] [...]",
       "1   NAME\n\n2   NUMBER"
     ],
@@ -7181,8 +7058,8 @@
   ],
   "delimited": [
     [
-      "             1     2\n\\delimited [...] {...}",
-      "1   NAME\n\n2   CONTENT"
+      "             1     2     3\n\\delimited [...] [...] {...}\n                  OPT",
+      "1   NAME\n\n2   LANGUAGE\n\n3   CONTENT"
     ],
     [
       "typo-del.mkiv"
@@ -7190,8 +7067,8 @@
   ],
   "delimitedtext": [
     [
-      "                 1     2\n\\delimitedtext [...] {...}\n                OPT",
-      "1   NAME\n\n2   CONTENT"
+      "                 1     2     3\n\\delimitedtext [...] [...] {...}\n                OPT   OPT",
+      "1   NAME\n\n2   LANGUAGE\n\n3   CONTENT"
     ],
     [
       "typo-del.mkiv"
@@ -8882,7 +8759,7 @@
   "doifelsepath": [
     [
       "                1     2     3\n\\doifelsepath {...} {...} {...}",
-      "1   FILE\n\n2   TRUE\n\n3   FALSE"
+      "1   PATH\n\n2   TRUE\n\n3   FALSE"
     ],
     [
       "file-ini.mkvi"
@@ -8891,7 +8768,7 @@
   "doifelsepathexists": [
     [
       "                      1     2     3\n\\doifelsepathexists {...} {...} {...}",
-      "1   FILE\n\n2   TRUE\n\n3   FALSE"
+      "1   PATH\n\n2   TRUE\n\n3   FALSE"
     ],
     [
       "file-ini.mkvi"
@@ -10070,7 +9947,7 @@
   "doifpathelse": [
     [
       "                1     2     3\n\\doifpathelse {...} {...} {...}",
-      "1   FILE\n\n2   TRUE\n\n3   FALSE"
+      "1   PATH\n\n2   TRUE\n\n3   FALSE"
     ],
     [
       "file-ini.mkvi"
@@ -10079,7 +9956,7 @@
   "doifpathexistselse": [
     [
       "                      1     2     3\n\\doifpathexistselse {...} {...} {...}",
-      "1   FILE\n\n2   TRUE\n\n3   FALSE"
+      "1   PATH\n\n2   TRUE\n\n3   FALSE"
     ],
     [
       "file-ini.mkvi"
@@ -11429,17 +11306,13 @@
       "buff-ini.mkiv"
     ]
   ],
-  "endnote": [
+  "endhbox": [
     [
-      "               1\n\\endnote [..,..=..,..]",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
+      "\\endhbox",
+      ""
     ],
     [
-      "             1       2\n\\endnote [...,...] {...}\n            OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-not.mkvi"
+      "supp-box.mkiv"
     ]
   ],
   "endofshapebox": [
@@ -11458,6 +11331,24 @@
     ],
     [
       "spac-ver.mkiv"
+    ]
+  ],
+  "endvbox": [
+    [
+      "\\endvbox",
+      ""
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
+  "endvtop": [
+    [
+      "\\endvtop",
+      ""
+    ],
+    [
+      "supp-box.mkiv"
     ]
   ],
   "enskip": [
@@ -11606,15 +11497,6 @@
     ],
     [
       "math-stc.mkvi"
-    ]
-  ],
-  "ethiopic": [
-    [
-      "\\ethiopic",
-      ""
-    ],
-    [
-      "scrp-ini.mkvi"
     ]
   ],
   "etwoheadrightarrowfill": [
@@ -12227,7 +12109,7 @@
   "filterpages": [
     [
       "               1       2           3\n\\filterpages [...] [...,...] [..,..=..,..]\n                                  OPT",
-      "1   FILE\n\n2   even odd NUMBER NUMBER:NUMBER\n\n3   width = DIMENSION\n    n     = NUMBER"
+      "1   FILE\n\n2   even odd NUMBER NUMBER:NUMBER\n\n3   width    = DIMENSION\n    n        = NUMBER\n    category = NAME"
     ],
     [
       "page-sel.mkvi"
@@ -12494,6 +12376,15 @@
       "strc-flt.mkvi"
     ]
   ],
+  "flushboxregister": [
+    [
+      "                   1\n\\flushboxregister ...",
+      "1   CSNAME NUMBER"
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
   "flushcollector": [
     [
       "                  1\n\\flushcollector [...]",
@@ -12501,6 +12392,15 @@
     ],
     [
       "pack-box.mkiv"
+    ]
+  ],
+  "flushedrightlastline": [
+    [
+      "\\flushedrightlastline",
+      ""
+    ],
+    [
+      "spac-ali.mkiv"
     ]
   ],
   "flushlayer": [
@@ -12674,19 +12574,6 @@
       "font-var.mkvi"
     ]
   ],
-  "footnote": [
-    [
-      "                1\n\\footnote [..,..=..,..]",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
-    ],
-    [
-      "              1       2\n\\footnote [...,...] {...}\n             OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-not.mkvi"
-    ]
-  ],
   "footnotetext": [
     [
       "                    1\n\\footnotetext [..,..=..,..]",
@@ -12748,7 +12635,7 @@
   "formula": [
     [
       "             1       2\n\\formula [...,...] {...}\n            OPT",
-      "1   inherits: \\setupbodyfont\n\n2   CONTENT"
+      "1   packed tight middle frame inherits: \\setupbodyfont\n\n2   CONTENT"
     ],
     [
       "strc-mat.mkiv"
@@ -13294,6 +13181,24 @@
       "syst-aux.mkiv"
     ]
   ],
+  "getprivatechar": [
+    [
+      "                  1\n\\getprivatechar {...}",
+      "1   NAME"
+    ],
+    [
+      "font-ini.mkvi"
+    ]
+  ],
+  "getprivateslot": [
+    [
+      "                  1\n\\getprivateslot {...}",
+      "1   NAME"
+    ],
+    [
+      "font-ini.mkvi"
+    ]
+  ],
   "getrandomcount": [
     [
       "                  1    2     3\n\\getrandomcount \\... {...} {...}",
@@ -13816,15 +13721,6 @@
       "spac-ver.mkiv"
     ]
   ],
-  "got": [
-    [
-      "       1    2\n\\got [...] ... \\\\",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
   "goto": [
     [
       "        1     2\n\\goto {...} [...]",
@@ -14023,24 +13919,6 @@
       "font-pre.mkiv"
     ]
   ],
-  "hangul": [
-    [
-      "\\hangul",
-      ""
-    ],
-    [
-      "scrp-ini.mkvi"
-    ]
-  ],
-  "hanzi": [
-    [
-      "\\hanzi",
-      ""
-    ],
-    [
-      "scrp-ini.mkvi"
-    ]
-  ],
   "hash": [
     [
       "\\hash",
@@ -14095,15 +13973,6 @@
       "blob-ini.mkiv"
     ]
   ],
-  "head": [
-    [
-      "       1\n\\head ... \\par",
-      "1   TEXT"
-    ],
-    [
-      "strc-itm.mkvi"
-    ]
-  ],
   "headhbox": [
     [
       "           1    2\n\\headhbox ... {...}\n          OPT",
@@ -14111,15 +13980,6 @@
     ],
     [
       "strc-ren.mkiv"
-    ]
-  ],
-  "headlanguage": [
-    [
-      "\\headlanguage",
-      ""
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "headnumber": [
@@ -14167,22 +14027,13 @@
       "strc-ren.mkiv"
     ]
   ],
-  "headsym": [
+  "headsetupspacing": [
     [
-      "           1       2       3\n\\headsym {...} [...,...] {...}\n                  OPT     OPT",
-      "1   TEXT\n\n2   REFERENCE\n\n3   TEXT"
+      "\\headsetupspacing",
+      ""
     ],
     [
-      "strc-itm.mkvi"
-    ]
-  ],
-  "headtext": [
-    [
-      "            1\n\\headtext {...}",
-      "1   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
+      "strc-ren.mkiv"
     ]
   ],
   "headtextcontent": [
@@ -14194,13 +14045,13 @@
       "strc-ren.mkiv"
     ]
   ],
-  "headtexts": [
+  "headtextdistance": [
     [
-      "             1     2\n\\headtexts {...} {...}",
-      "1   KEY\n\n2   TEXT"
+      "\\headtextdistance",
+      ""
     ],
     [
-      "lang-lab.mkiv"
+      "strc-ren.mkiv"
     ]
   ],
   "headtextwidth": [
@@ -14282,6 +14133,15 @@
     ],
     [
       "spac-ver.mkiv"
+    ]
+  ],
+  "hiddenbar": [
+    [
+      "             1\n\\hiddenbar {...}",
+      "1   CONTENT"
+    ],
+    [
+      "node-rul.mkiv"
     ]
   ],
   "hiddencitation": [
@@ -14738,15 +14598,6 @@
       "spac-hor.mkiv"
     ]
   ],
-  "index": [
-    [
-      "         1     2        3\n\\index [...] {...} [..+...+..]\n        OPT   OPT",
-      "1   TEXT PROCESSOR->TEXT\n\n2   TEXT\n\n3   INDEX"
-    ],
-    [
-      "strc-reg.mkiv"
-    ]
-  ],
   "infofont": [
     [
       "\\infofont",
@@ -14801,33 +14652,6 @@
       "spac-ver.mkiv"
     ]
   ],
-  "ininner": [
-    [
-      "               1             2         3\n\\ininner [..,..=..,..] [..,..=..,..] {...}\n              OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "ininneredge": [
-    [
-      "                   1             2         3\n\\ininneredge [..,..=..,..] [..,..=..,..] {...}\n                  OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "ininnermargin": [
-    [
-      "                     1             2         3\n\\ininnermargin [..,..=..,..] [..,..=..,..] {...}\n                    OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
   "initializeboxstack": [
     [
       "                      1\n\\initializeboxstack {...}",
@@ -14835,33 +14659,6 @@
     ],
     [
       "supp-box.mkiv"
-    ]
-  ],
-  "inleft": [
-    [
-      "              1             2         3\n\\inleft [..,..=..,..] [..,..=..,..] {...}\n             OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "inleftedge": [
-    [
-      "                  1             2         3\n\\inleftedge [..,..=..,..] [..,..=..,..] {...}\n                 OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "inleftmargin": [
-    [
-      "                    1             2         3\n\\inleftmargin [..,..=..,..] [..,..=..,..] {...}\n                   OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
     ]
   ],
   "inline": [
@@ -14936,15 +14733,6 @@
       "page-lin.mkvi"
     ]
   ],
-  "inmargin": [
-    [
-      "                1             2         3\n\\inmargin [..,..=..,..] [..,..=..,..] {...}\n               OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
   "inmframed": [
     [
       "                 1         2\n\\inmframed [..,..=..,..] {...}\n                OPT",
@@ -14961,42 +14749,6 @@
     ],
     [
       "supp-box.mkiv"
-    ]
-  ],
-  "inother": [
-    [
-      "               1             2         3\n\\inother [..,..=..,..] [..,..=..,..] {...}\n              OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "inouter": [
-    [
-      "               1             2         3\n\\inouter [..,..=..,..] [..,..=..,..] {...}\n              OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "inouteredge": [
-    [
-      "                   1             2         3\n\\inouteredge [..,..=..,..] [..,..=..,..] {...}\n                  OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "inoutermargin": [
-    [
-      "                     1             2         3\n\\inoutermargin [..,..=..,..] [..,..=..,..] {...}\n                    OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
     ]
   ],
   "input": [
@@ -15057,37 +14809,10 @@
       "file-ini.mkvi"
     ]
   ],
-  "inright": [
-    [
-      "               1             2         3\n\\inright [..,..=..,..] [..,..=..,..] {...}\n              OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "inrightedge": [
-    [
-      "                   1             2         3\n\\inrightedge [..,..=..,..] [..,..=..,..] {...}\n                  OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "inrightmargin": [
-    [
-      "                     1             2         3\n\\inrightmargin [..,..=..,..] [..,..=..,..] {...}\n                    OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
   "insertpages": [
     [
       "               1       2           3\n\\insertpages [...] [...,...] [..,..=..,..]\n                      OPT         OPT",
-      "1   FILE\n\n2   NUMBER\n\n3   width = DIMENSION\n    n     = NUMBER"
+      "1   FILE\n\n2   NUMBER\n\n3   width    = DIMENSION\n    n        = NUMBER\n    category = NAME"
     ],
     [
       "page-sel.mkvi"
@@ -15637,24 +15362,6 @@
       "strc-itm.mkvi"
     ]
   ],
-  "itm": [
-    [
-      "         1\n\\itm [...,...]\n        OPT",
-      "1   REFERENCE"
-    ],
-    [
-      "strc-itm.mkvi"
-    ]
-  ],
-  "its": [
-    [
-      "\\its",
-      ""
-    ],
-    [
-      "strc-itm.mkvi"
-    ]
-  ],
   "jobfilename": [
     [
       "\\jobfilename",
@@ -15979,15 +15686,6 @@
       "luat-cod.mkiv"
     ]
   ],
-  "latin": [
-    [
-      "\\latin",
-      ""
-    ],
-    [
-      "scrp-ini.mkvi"
-    ]
-  ],
   "layeredtext": [
     [
       "                   1             2         3     4\n\\layeredtext [..,..=..,..] [..,..=..,..] {...} {...}\n                  OPT           OPT",
@@ -16087,15 +15785,6 @@
       "supp-box.mkiv"
     ]
   ],
-  "leftheadtext": [
-    [
-      "                1\n\\leftheadtext {...}",
-      "1   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
   "leftlabeltext": [
     [
       "                 1\n\\leftlabeltext {...}",
@@ -16112,15 +15801,6 @@
     ],
     [
       "spac-ali.mkiv"
-    ]
-  ],
-  "leftmathlabeltext": [
-    [
-      "                     1\n\\leftmathlabeltext {...}",
-      "1   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "leftorrighthbox": [
@@ -16926,15 +16606,6 @@
       "file-res.mkvi"
     ]
   ],
-  "logo": [
-    [
-      "        1     2\n\\logo [...] {...}\n       OPT",
-      "1   NAME\n\n2   CONTENT"
-    ],
-    [
-      "strc-syn.mkiv"
-    ]
-  ],
   "lohi": [
     [
       "        1     2     3\n\\lohi [...] {...} {...}\n       OPT",
@@ -17250,46 +16921,10 @@
       "font-fil.mkvi"
     ]
   ],
-  "mar": [
-    [
-      "       1\n\\mar {...}",
-      "1   TEXT"
-    ],
-    [
-      "strc-itm.mkvi"
-    ]
-  ],
   "margindata": [
     [
       "              1         2             3         4\n\\margindata [...] [..,..=..,..] [..,..=..,..] {...}\n             OPT       OPT           OPT",
       "1   NAME\n\n2   reference = REFERENCE\n    inherits: \\setupmargindata\n\n3   inherits: \\setupmarginframed\n\n4   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "margintext": [
-    [
-      "                  1             2         3\n\\margintext [..,..=..,..] [..,..=..,..] {...}\n                 OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "margintitle": [
-    [
-      "                   1             2         3\n\\margintitle [..,..=..,..] [..,..=..,..] {...}\n                  OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
-    ],
-    [
-      "typo-mar.mkiv"
-    ]
-  ],
-  "marginword": [
-    [
-      "                  1             2         3\n\\marginword [..,..=..,..] [..,..=..,..] {...}\n                 OPT           OPT",
-      "1   reference = REFERENCE\n    inherits: \\setupmargindata\n\n2   inherits: \\setupmarginframed\n\n3   CONTENT"
     ],
     [
       "typo-mar.mkiv"
@@ -17470,33 +17105,6 @@
       "math-ini.mkiv"
     ]
   ],
-  "mathlabellanguage": [
-    [
-      "\\mathlabellanguage",
-      ""
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
-  "mathlabeltext": [
-    [
-      "                 1\n\\mathlabeltext {...}",
-      "1   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
-  "mathlabeltexts": [
-    [
-      "                  1     2\n\\mathlabeltexts {...} {...}",
-      "1   KEY\n\n2   TEXT"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
   "mathop": [
     [
       "          1\n\\mathop {...}",
@@ -17580,8 +17188,8 @@
   ],
   "mathtext": [
     [
-      "            1\n\\mathtext {...}",
-      "1   TEXT"
+      "           1    2\n\\mathtext ... {...}\n          OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17589,8 +17197,8 @@
   ],
   "mathtextbf": [
     [
-      "              1\n\\mathtextbf {...}",
-      "1   TEXT"
+      "             1    2\n\\mathtextbf ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17598,8 +17206,8 @@
   ],
   "mathtextbi": [
     [
-      "              1\n\\mathtextbi {...}",
-      "1   TEXT"
+      "             1    2\n\\mathtextbi ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17607,8 +17215,8 @@
   ],
   "mathtextbs": [
     [
-      "              1\n\\mathtextbs {...}",
-      "1   TEXT"
+      "             1    2\n\\mathtextbs ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17616,8 +17224,8 @@
   ],
   "mathtextit": [
     [
-      "              1\n\\mathtextit {...}",
-      "1   TEXT"
+      "             1    2\n\\mathtextit ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17625,8 +17233,8 @@
   ],
   "mathtextsl": [
     [
-      "              1\n\\mathtextsl {...}",
-      "1   TEXT"
+      "             1    2\n\\mathtextsl ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17634,8 +17242,8 @@
   ],
   "mathtexttf": [
     [
-      "              1\n\\mathtexttf {...}",
-      "1   TEXT"
+      "             1    2\n\\mathtexttf ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17706,8 +17314,8 @@
   ],
   "mathword": [
     [
-      "            1\n\\mathword {...}",
-      "1   TEXT"
+      "           1    2\n\\mathword ... {...}\n          OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17715,8 +17323,8 @@
   ],
   "mathwordbf": [
     [
-      "              1\n\\mathwordbf {...}",
-      "1   TEXT"
+      "             1    2\n\\mathwordbf ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17724,8 +17332,8 @@
   ],
   "mathwordbi": [
     [
-      "              1\n\\mathwordbi {...}",
-      "1   TEXT"
+      "             1    2\n\\mathwordbi ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17733,8 +17341,8 @@
   ],
   "mathwordbs": [
     [
-      "              1\n\\mathwordbs {...}",
-      "1   TEXT"
+      "             1    2\n\\mathwordbs ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17742,8 +17350,8 @@
   ],
   "mathwordit": [
     [
-      "              1\n\\mathwordit {...}",
-      "1   TEXT"
+      "             1    2\n\\mathwordit ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17751,8 +17359,8 @@
   ],
   "mathwordsl": [
     [
-      "              1\n\\mathwordsl {...}",
-      "1   TEXT"
+      "             1    2\n\\mathwordsl ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -17760,8 +17368,8 @@
   ],
   "mathwordtf": [
     [
-      "              1\n\\mathwordtf {...}",
-      "1   TEXT"
+      "             1    2\n\\mathwordtf ... {...}\n            OPT",
+      "1   TEXT\n\n2   TEXT"
     ],
     [
       "math-ini.mkiv"
@@ -18590,13 +18198,13 @@
       "strc-pag.mkiv"
     ]
   ],
-  "nihongo": [
+  "nobar": [
     [
-      "\\nihongo",
-      ""
+      "         1\n\\nobar {...}",
+      "1   CONTENT"
     ],
     [
-      "scrp-ini.mkvi"
+      "node-rul.mkiv"
     ]
   ],
   "nocitation": [
@@ -18679,6 +18287,15 @@
       "spac-hor.mkiv"
     ]
   ],
+  "noitem": [
+    [
+      "\\noitem",
+      ""
+    ],
+    [
+      "strc-itm.mkvi"
+    ]
+  ],
   "nonfrenchspacing": [
     [
       "\\nonfrenchspacing",
@@ -18695,16 +18312,6 @@
     ],
     [
       "supp-mat.mkiv"
-    ]
-  ],
-  "nop": [
-    [
-      "      1\n\\nop ... \\\\\n     OPT",
-      "1   TEXT"
-    ],
-    [
-      "scrn-but.mkvi",
-      "strc-itm.mkvi"
     ]
   ],
   "normal": [
@@ -19001,24 +18608,6 @@
     ],
     [
       "syst-aux.mkiv"
-    ]
-  ],
-  "operatorlanguage": [
-    [
-      "\\operatorlanguage",
-      ""
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
-  "operatortext": [
-    [
-      "                1\n\\operatortext {...}",
-      "1   KEY"
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "ordinaldaynumber": [
@@ -19555,15 +19144,6 @@
       "tabl-mis.mkiv"
     ]
   ],
-  "part": [
-    [
-      "          1       2\n\\part [...,...] {...}\n         OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
   "pdfTeX": [
     [
       "\\pdfTeX",
@@ -19838,15 +19418,6 @@
       "publ-ini.mkiv"
     ]
   ],
-  "placechemical": [
-    [
-      "                   1         2       3     4\n\\placechemical [...,...] [...,...] {...} {...}\n                  OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT\n\n4   CONTENT"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "placecitation": [
     [
       "                 1\n\\placecitation [...]",
@@ -19874,15 +19445,6 @@
       "scrn-wid.mkvi"
     ]
   ],
-  "placecontent": [
-    [
-      "                    1\n\\placecontent [..,..=..,..]\n                   OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-lst.mkvi"
-    ]
-  ],
   "placecurrentformulanumber": [
     [
       "\\placecurrentformulanumber",
@@ -19901,19 +19463,10 @@
       "supp-box.mkiv"
     ]
   ],
-  "placefigure": [
-    [
-      "                 1         2       3     4\n\\placefigure [...,...] [...,...] {...} {...}\n                OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT\n\n4   CONTENT"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "placefloat": [
     [
       "              1       2         3       4     5\n\\placefloat [...] [...,...] [...,...] {...} {...}\n             OPT     OPT       OPT",
-      "1   SINGULAR\n\n2   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n3   REFERENCE\n\n4   TEXT\n\n5   CONTENT"
+      "1   SINGULAR\n\n2   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere effective\n\n3   REFERENCE\n\n4   TEXT\n\n5   CONTENT"
     ],
     [
       "strc-flt.mkvi"
@@ -19922,7 +19475,7 @@
   "placefloatwithsetups": [
     [
       "                        1       2         3       4     5\n\\placefloatwithsetups [...] [...,...] [...,...] {...} {...}\n                               OPT       OPT",
-      "1   NAME\n\n2   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n3   REFERENCE\n\n4   TEXT\n\n5   CONTENT"
+      "1   NAME\n\n2   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere effective\n\n3   REFERENCE\n\n4   TEXT\n\n5   CONTENT"
     ],
     [
       "page-flt.mkiv"
@@ -19955,15 +19508,6 @@
       "pack-rul.mkiv"
     ]
   ],
-  "placegraphic": [
-    [
-      "                  1         2       3     4\n\\placegraphic [...,...] [...,...] {...} {...}\n                 OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT\n\n4   CONTENT"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "placeheadnumber": [
     [
       "                   1\n\\placeheadnumber [...]",
@@ -19991,15 +19535,6 @@
       "scrn-hlp.mkvi"
     ]
   ],
-  "placeindex": [
-    [
-      "                  1\n\\placeindex [..,..=..,..]\n                 OPT",
-      "1   inherits: \\setupregister"
-    ],
-    [
-      "strc-reg.mkiv"
-    ]
-  ],
   "placeinitial": [
     [
       "                1\n\\placeinitial [...]\n               OPT",
@@ -20007,15 +19542,6 @@
     ],
     [
       "typo-drp.mkiv"
-    ]
-  ],
-  "placeintermezzo": [
-    [
-      "                     1         2       3     4\n\\placeintermezzo [...,...] [...,...] {...} {...}\n                    OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT\n\n4   CONTENT"
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "placelayer": [
@@ -20036,15 +19562,6 @@
       "pack-box.mkiv"
     ]
   ],
-  "placelegend": [
-    [
-      "                   1         2     3\n\\placelegend [..,..=..,..] {...} {...}\n                  OPT",
-      "1   inherits: \\setuppairedbox\n\n2   CONTENT\n\n3   TEXT"
-    ],
-    [
-      "pack-com.mkiv"
-    ]
-  ],
   "placelist": [
     [
       "               1           2\n\\placelist [...,...] [..,..=..,..]\n                          OPT",
@@ -20054,33 +19571,6 @@
       "strc-lst.mkvi"
     ]
   ],
-  "placelistofabbreviations": [
-    [
-      "                                1\n\\placelistofabbreviations [..,..=..,..]\n                               OPT",
-      "1   inherits: \\setupsynonyms"
-    ],
-    [
-      "strc-syn.mkiv"
-    ]
-  ],
-  "placelistofchemicals": [
-    [
-      "                            1\n\\placelistofchemicals [..,..=..,..]\n                           OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "placelistoffigures": [
-    [
-      "                          1\n\\placelistoffigures [..,..=..,..]\n                         OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "placelistoffloats": [
     [
       "                         1\n\\placelistoffloats [..,..=..,..]\n                        OPT",
@@ -20088,33 +19578,6 @@
     ],
     [
       "strc-flt.mkvi"
-    ]
-  ],
-  "placelistofgraphics": [
-    [
-      "                           1\n\\placelistofgraphics [..,..=..,..]\n                          OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "placelistofintermezzi": [
-    [
-      "                             1\n\\placelistofintermezzi [..,..=..,..]\n                            OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "placelistoflogos": [
-    [
-      "                        1\n\\placelistoflogos [..,..=..,..]\n                       OPT",
-      "1   inherits: \\setupsorting"
-    ],
-    [
-      "strc-syn.mkiv"
     ]
   ],
   "placelistofpublications": [
@@ -20142,15 +19605,6 @@
     ],
     [
       "strc-syn.mkiv"
-    ]
-  ],
-  "placelistoftables": [
-    [
-      "                         1\n\\placelistoftables [..,..=..,..]\n                        OPT",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "placelocalfootnotes": [
@@ -20299,15 +19753,6 @@
     ],
     [
       "strc-mat.mkiv"
-    ]
-  ],
-  "placetable": [
-    [
-      "                1         2       3     4\n\\placetable [...,...] [...,...] {...} {...}\n               OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT\n\n4   CONTENT"
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "popMPdrawing": [
@@ -20535,24 +19980,6 @@
       "strc-pag.mkiv"
     ]
   ],
-  "prefixlanguage": [
-    [
-      "\\prefixlanguage",
-      ""
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
-  "prefixtext": [
-    [
-      "              1\n\\prefixtext {...}",
-      "1   KEY"
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
   "prependetoks": [
     [
       "               1        2\n\\prependetoks ... \\to \\...",
@@ -20607,15 +20034,6 @@
       "syst-aux.mkiv"
     ]
   ],
-  "presetbtxlabeltext": [
-    [
-      "                      1         2\n\\presetbtxlabeltext [...] [..,..=..,..]\n                     OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "publ-ini.mkiv"
-    ]
-  ],
   "presetdocument": [
     [
       "                      1\n\\presetdocument [..,..=..,..]",
@@ -20634,15 +20052,6 @@
       "scrn-fld.mkvi"
     ]
   ],
-  "presetheadtext": [
-    [
-      "                  1         2\n\\presetheadtext [...] [..,..=..,..]\n                 OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
   "presetlabeltext": [
     [
       "                   1         2\n\\presetlabeltext [...] [..,..=..,..]\n                  OPT",
@@ -20650,51 +20059,6 @@
     ],
     [
       "lang-lab.mkiv"
-    ]
-  ],
-  "presetmathlabeltext": [
-    [
-      "                       1         2\n\\presetmathlabeltext [...] [..,..=..,..]\n                      OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
-  "presetoperatortext": [
-    [
-      "                      1         2\n\\presetoperatortext [...] [..,..=..,..]\n                     OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
-  "presetprefixtext": [
-    [
-      "                    1         2\n\\presetprefixtext [...] [..,..=..,..]\n                   OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
-  "presettaglabeltext": [
-    [
-      "                      1         2\n\\presettaglabeltext [...] [..,..=..,..]\n                     OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
-  "presetunittext": [
-    [
-      "                  1         2\n\\presetunittext [...] [..,..=..,..]\n                 OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "pretocommalist": [
@@ -21155,6 +20519,15 @@
       "file-job.mkvi"
     ]
   ],
+  "protect": [
+    [
+      "\\protect",
+      ""
+    ],
+    [
+      "catc-def.mkiv"
+    ]
+  ],
   "pseudoMixedCapped": [
     [
       "                     1\n\\pseudoMixedCapped {...}",
@@ -21189,15 +20562,6 @@
     ],
     [
       "typo-cap.mkiv"
-    ]
-  ],
-  "psh": [
-    [
-      "       1    2\n\\psh [...] ... \\\\",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "scrn-fld.mkvi"
     ]
   ],
   "purenumber": [
@@ -21338,7 +20702,7 @@
   "pushpath": [
     [
       "            1\n\\pushpath [...] ... \\poppath",
-      "1   FILE"
+      "1   PATH"
     ],
     [
       "file-job.mkvi"
@@ -21398,6 +20762,15 @@
       "spac-hor.mkiv"
     ]
   ],
+  "quads": [
+    [
+      "         1\n\\quads [...]\n        OPT",
+      "1   NUMBER"
+    ],
+    [
+      "spac-hor.mkiv"
+    ]
+  ],
   "quitcommalist": [
     [
       "\\quitcommalist",
@@ -21427,8 +20800,8 @@
   ],
   "quotation": [
     [
-      "             1\n\\quotation {...}",
-      "1   CONTENT"
+      "             1     2\n\\quotation [...] {...}\n            OPT",
+      "1   LANGUAGE\n\n2   CONTENT"
     ],
     [
       "typo-del.mkiv"
@@ -21436,8 +20809,8 @@
   ],
   "quote": [
     [
-      "         1\n\\quote {...}",
-      "1   CONTENT"
+      "         1     2\n\\quote [...] {...}\n        OPT",
+      "1   LANGUAGE\n\n2   CONTENT"
     ],
     [
       "typo-del.mkiv"
@@ -21497,15 +20870,6 @@
       "supp-box.mkiv"
     ]
   ],
-  "ran": [
-    [
-      "       1\n\\ran {...}",
-      "1   TEXT"
-    ],
-    [
-      "strc-itm.mkvi"
-    ]
-  ],
   "randomizetext": [
     [
       "                 1\n\\randomizetext {...}",
@@ -21522,15 +20886,6 @@
     ],
     [
       "supp-ran.mkiv"
-    ]
-  ],
-  "raw": [
-    [
-      "       1    2\n\\raw [...] ... \\\\",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "scrn-but.mkvi"
     ]
   ],
   "rawcounter": [
@@ -21662,7 +21017,7 @@
   "readfixfile": [
     [
       "               1     2     3     4\n\\readfixfile {...} {...} {...} {...}",
-      "1   FILE\n\n2   FILE\n\n3   TRUE\n\n4   FALSE"
+      "1   PATH\n\n2   FILE\n\n3   TRUE\n\n4   FALSE"
     ],
     [
       "file-res.mkvi"
@@ -21689,7 +21044,7 @@
   "readsetfile": [
     [
       "               1     2     3     4\n\\readsetfile {...} {...} {...} {...}",
-      "1   FILE\n\n2   FILE\n\n3   TRUE\n\n4   FALSE"
+      "1   PATH\n\n2   FILE\n\n3   TRUE\n\n4   FALSE"
     ],
     [
       "file-res.mkvi"
@@ -22178,6 +21533,15 @@
     ],
     [
       "font-fea.mkvi"
+    ]
+  ],
+  "resetbar": [
+    [
+      "\\resetbar",
+      ""
+    ],
+    [
+      "node-rul.mkiv"
     ]
   ],
   "resetbreakpoints": [
@@ -22765,15 +22129,6 @@
       "supp-box.mkiv"
     ]
   ],
-  "rightheadtext": [
-    [
-      "                 1\n\\rightheadtext {...}",
-      "1   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
   "rightlabeltext": [
     [
       "                  1\n\\rightlabeltext {...}",
@@ -22790,15 +22145,6 @@
     ],
     [
       "spac-ali.mkiv"
-    ]
-  ],
-  "rightmathlabeltext": [
-    [
-      "                      1\n\\rightmathlabeltext {...}",
-      "1   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "rightorleftpageaction": [
@@ -22880,15 +22226,6 @@
     ],
     [
       "supp-box.mkiv"
-    ]
-  ],
-  "rob": [
-    [
-      "       1    2\n\\rob [...] ... \\\\",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "scrn-fld.mkvi"
     ]
   ],
   "robustaddtocommalist": [
@@ -22976,15 +22313,6 @@
       "supp-box.mkiv"
     ]
   ],
-  "rul": [
-    [
-      "      1\n\\rul ... \\\\",
-      "1   TEXT"
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
   "ruledhbox": [
     [
       "            1    2\n\\ruledhbox ... {...}\n           OPT",
@@ -23064,6 +22392,15 @@
     ],
     [
       "meta-ini.mkiv"
+    ]
+  ],
+  "runninghbox": [
+    [
+      "               1\n\\runninghbox {...}",
+      "1   CONTENT"
+    ],
+    [
+      "supp-box.mkiv"
     ]
   ],
   "safechar": [
@@ -23306,15 +22643,6 @@
     ],
     [
       "strc-sec.mkiv"
-    ]
-  ],
-  "seeindex": [
-    [
-      "            1        2        3\n\\seeindex [...] [..+...+..] {...}\n           OPT",
-      "1   TEXT PROCESSOR->TEXT\n\n2   INDEX\n\n3   TEXT PROCESSOR->TEXT"
-    ],
-    [
-      "strc-reg.mkiv"
     ]
   ],
   "seeregister": [
@@ -23848,6 +23176,15 @@
       "core-env.mkiv"
     ]
   ],
+  "sethboxregister": [
+    [
+      "                  1    2\n\\sethboxregister ... {...}",
+      "1   CSNAME NUMBER\n\n2   CONTENT"
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
   "sethyphenatedurlafter": [
     [
       "                         1\n\\sethyphenatedurlafter {...}",
@@ -23999,6 +23336,15 @@
     ],
     [
       "pack-box.mkiv"
+    ]
+  ],
+  "setlinefiller": [
+    [
+      "                 1\n\\setlinefiller [...]",
+      "1   filler NAME"
+    ],
+    [
+      "node-rul.mkiv"
     ]
   ],
   "setlocalhsize": [
@@ -24523,7 +23869,7 @@
       "1   color = <u>local</u> global\n    mpy   = FILE"
     ],
     [
-      "meta-ini"
+      "meta-ini.mkiv"
     ]
   ],
   "setupMPinstance": [
@@ -24556,7 +23902,7 @@
   "setupTABLE": [
     [
       "                1         2           3\n\\setupTABLE [...,...] [...,...] [..,..=..,..]\n               OPT       OPT",
-      "1   r c x y row column first last start header each odd even one NUMBER -NUMBER\n\n2   first least each two odd even NUMBER -NUMBER\n\n3   extras              = COMMAND\n    left                = COMMAND\n    right               = COMMAND\n    headcolor           = COLOR\n    headstyle           = STYLE COMMAND\n    leftmargindistance  = DIMENSION\n    rightmargindistance = DIMENSION\n    columndistance      = DIMENSION\n    maxwidth            = DIMENSION\n    setups              = NAME\n    textwidth           = DIMENSION <u>local</u>\n    split               = yes no repeat <u>auto</u>\n    header              = repeat\n    option              = stretch tight\n    before              = COMMAND\n    after               = COMMAND\n    samepage            = before after both\n    spaceinbetween      = inherits: \\blank\n    splitoffset         = DIMENSION\n    aligncharacter      = yes <u>no</u>\n    alignmentcharacter  = TEXT\n    distance            = DIMENSION\n    color               = COLOR\n    style               = STYLE COMMAND\n    inherits: \\setupframed"
+      "1   r c x y row column first last start header each odd even one NUMBER -NUMBER\n\n2   first least each two odd even NUMBER -NUMBER\n\n3   extras              = COMMAND\n    left                = COMMAND\n    right               = COMMAND\n    headcolor           = COLOR\n    headstyle           = STYLE COMMAND\n    leftmargindistance  = DIMENSION\n    rightmargindistance = DIMENSION\n    columndistance      = DIMENSION\n    maxwidth            = DIMENSION\n    setups              = NAME\n    textwidth           = DIMENSION <u>local</u>\n    split               = yes no repeat <u>auto</u>\n    header              = repeat\n    option              = stretch tight\n    before              = COMMAND\n    after               = COMMAND\n    samepage            = before after both\n    spaceinbetween      = inherits: \\blank\n    splitoffset         = DIMENSION\n    aligncharacter      = yes <u>no</u>\n    alignmentcharacter  = TEXT number->TEXT text->TEXT\n    distance            = DIMENSION\n    color               = COLOR\n    style               = math STYLE COMMAND\n    inherits: \\setupframed"
     ],
     [
       "tabl-ntb.mkiv"
@@ -24574,7 +23920,7 @@
   "setupalign": [
     [
       "                1\n\\setupalign [...,...]",
-      "1   broad wide <u>bottom</u> height line high low lohi flushright flushleft middle yes no <u>width</u> normal reset inner outer flushinner flushouter left right center disable last paragraph lefttoright righttoleft l2r r2l table lesshyphenation morehyphenation hanging nothanging hz fullhz nohz hyphenated nothyphenated tolerant verytolerant stretch extremestretch final 2*final 3*final 4*final"
+      "1   broad wide <u>bottom</u> height line high low lohi flushright flushleft middle yes no <u>width</u> normal reset inner outer flushinner flushouter left right center disable last end paragraph lefttoright righttoleft l2r r2l table lesshyphenation morehyphenation hanging nothanging hz fullhz nohz hyphenated nothyphenated tolerant verytolerant stretch extremestretch final 2*final 3*final 4*final"
     ],
     [
       "spac-ali.mkiv"
@@ -24632,7 +23978,7 @@
   "setupbar": [
     [
       "              1           2\n\\setupbar [...,...] [..,..=..,..]\n             OPT",
-      "1   NAME\n\n2   color           = COLOR\n    continue        = yes <u>no</u> all\n    unit            = <u>ex</u> em pt in cm mm sp bp pc dd cc nc\n    order           = <u>foreground</u> background\n    rulethickness   = DIMENSION\n    method          = NUMBER\n    offset          = NUMBER\n    dy              = NUMBER\n    max             = NUMBER\n    foregroundstyle = STYLE COMMAND\n    foregroundcolor = COLOR\n    mp              = NAME"
+      "1   NAME\n\n2   color           = COLOR\n    continue        = yes <u>no</u> all\n    empty           = yes <u>no</u>\n    unit            = <u>ex</u> em pt in cm mm sp bp pc dd cc nc\n    order           = <u>foreground</u> background\n    rulethickness   = DIMENSION\n    method          = NUMBER\n    offset          = NUMBER\n    dy              = NUMBER\n    max             = NUMBER\n    foregroundstyle = STYLE COMMAND\n    foregroundcolor = COLOR\n    mp              = NAME\n    left            = TEXT\n    right           = TEXT"
     ],
     [
       "node-rul.mkiv"
@@ -24727,15 +24073,6 @@
     [
       "                     1           2\n\\setupbtxdataset [...,...] [..,..=..,..]\n                    OPT",
       "1   NAME\n\n2   language = LANGUAGE"
-    ],
-    [
-      "publ-ini.mkiv"
-    ]
-  ],
-  "setupbtxlabeltext": [
-    [
-      "                     1         2\n\\setupbtxlabeltext [...] [..,..=..,..]\n                    OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
     ],
     [
       "publ-ini.mkiv"
@@ -24921,15 +24258,6 @@
       "scrn-wid.mkvi"
     ]
   ],
-  "setupcontent": [
-    [
-      "                    1\n\\setupcontent [..,..=..,..]",
-      "1   inherits: \\setuplist"
-    ],
-    [
-      "strc-lst.mkvi"
-    ]
-  ],
   "setupcounter": [
     [
       "                  1           2\n\\setupcounter [...,...] [..,..=..,..]\n                 OPT",
@@ -24951,7 +24279,7 @@
   "setupdelimitedtext": [
     [
       "                        1           2\n\\setupdelimitedtext [...,...] [..,..=..,..]\n                       OPT",
-      "1   NAME\n\n2   before      = COMMAND\n    after       = COMMAND\n    language    = LANGUAGE\n    method      = font\n    repeat      = yes <u>no</u>\n    location    = text paragraph <u>margin</u>\n    left        = COMMAND\n    middle      = COMMAND\n    right       = COMMAND\n    nextleft    = COMMAND\n    nextright   = COMMAND\n    spacebefore = inherits: \\blank\n    spaceafter  = inherits: \\blank\n    leftmargin  = yes no standard DIMENSION\n    rightmargin = yes no standard DIMENSION\n    indenting   = inherits: \\setupindenting\n    indentnext  = yes no auto\n    style       = STYLE COMMAND\n    color       = COLOR\n    symstyle    = STYLE COMMAND\n    symcolor    = COLOR"
+      "1   NAME\n\n2   before      = COMMAND\n    after       = COMMAND\n    language    = local global LANGUAGE\n    method      = font\n    repeat      = yes <u>no</u>\n    location    = text paragraph <u>margin</u>\n    left        = COMMAND\n    middle      = COMMAND\n    right       = COMMAND\n    nextleft    = COMMAND\n    nextright   = COMMAND\n    spacebefore = inherits: \\blank\n    spaceafter  = inherits: \\blank\n    leftmargin  = yes no standard DIMENSION\n    rightmargin = yes no standard DIMENSION\n    indenting   = inherits: \\setupindenting\n    indentnext  = yes no auto\n    style       = STYLE COMMAND\n    color       = COLOR\n    symstyle    = STYLE COMMAND\n    symcolor    = COLOR"
     ],
     [
       "typo-del.mkiv"
@@ -25023,7 +24351,7 @@
   "setupexternalfigure": [
     [
       "                         1           2\n\\setupexternalfigure [...,...] [..,..=..,..]\n                        OPT",
-      "1   NAME\n\n2   width           = DIMENSION\n    height          = DIMENSION\n    label           = NAME\n    page            = NUMBER\n    object          = <u>yes</u> no\n    prefix          = TEXT\n    method          = pdf mps jpg png jp2 jbig svg eps gif tif mov buffer tex cld auto\n    controls        = yes <u>no</u>\n    preview         = yes <u>no</u>\n    mask            = none\n    resolution      = NUMBER\n    color           = COLOR\n    repeat          = yes <u>no</u>\n    factor          = fit broad max auto default\n    hfactor         = fit broad max auto default\n    wfactor         = fit broad max auto default\n    maxwidth        = DIMENSION\n    maxheight       = DIMENSION\n    equalwidth      = DIMENSION\n    equalheight     = DIMENSION\n    scale           = NUMBER\n    xscale          = NUMBER\n    yscale          = NUMBER\n    s               = NUMBER\n    sx              = NUMBER\n    sy              = NUMBER\n    lines           = NUMBER\n    location        = <u>local</u> <u>global</u> default\n    directory       = PATH\n    option          = test frame empty\n    forgroundcolor  = COLOR\n    reset           = yes <u>no</u>\n    background      = color foreground NAME\n    frame           = on <u>off</u>\n    backgroundcolor = COLOR\n    align           = inherits: \\setupalign\n    xmax            = NUMBER\n    ymax            = NUMBER\n    frames          = on <u>off</u>\n    interaction     = yes all <u>none</u> reference layer bookmark\n    bodyfont        = DIMENSION\n    comment         = COMMAND TEXT\n    size            = none media crop trim art\n    cache           = PATH\n    resources       = PATH\n    display         = FILE\n    conversion      = TEXT\n    order           = LIST\n    crossreference  = yes no NUMBER"
+      "1   NAME\n\n2   width           = DIMENSION\n    height          = DIMENSION\n    label           = NAME\n    page            = NUMBER\n    object          = <u>yes</u> no\n    prefix          = TEXT\n    method          = pdf mps jpg png jp2 jbig svg eps gif tif mov buffer tex cld auto\n    controls        = yes <u>no</u>\n    preview         = yes <u>no</u>\n    mask            = none\n    resolution      = NUMBER\n    color           = COLOR\n    arguments       = TEXT\n    repeat          = yes <u>no</u>\n    factor          = fit broad max auto default\n    hfactor         = fit broad max auto default\n    wfactor         = fit broad max auto default\n    maxwidth        = DIMENSION\n    maxheight       = DIMENSION\n    equalwidth      = DIMENSION\n    equalheight     = DIMENSION\n    scale           = NUMBER\n    xscale          = NUMBER\n    yscale          = NUMBER\n    s               = NUMBER\n    sx              = NUMBER\n    sy              = NUMBER\n    lines           = NUMBER\n    location        = <u>local</u> <u>global</u> default\n    directory       = PATH\n    option          = test frame empty\n    forgroundcolor  = COLOR\n    reset           = yes <u>no</u>\n    background      = color foreground NAME\n    frame           = on <u>off</u>\n    backgroundcolor = COLOR\n    align           = inherits: \\setupalign\n    xmax            = NUMBER\n    ymax            = NUMBER\n    frames          = on <u>off</u>\n    interaction     = yes all <u>none</u> reference layer bookmark\n    bodyfont        = DIMENSION\n    comment         = COMMAND TEXT\n    size            = none media crop trim art\n    cache           = PATH\n    resources       = PATH\n    display         = FILE\n    conversion      = TEXT\n    order           = LIST\n    crossreference  = yes no NUMBER"
     ],
     [
       "grph-inc.mkvi"
@@ -25149,7 +24477,7 @@
   "setupfloat": [
     [
       "                1           2\n\\setupfloat [...,...] [..,..=..,..]\n               OPT",
-      "1   SINGULAR\n\n2   indentnext          = yes no auto\n    default             = inherits: \\placefloat\n    fallback            = inherits: \\placefloat\n    inner               = COMMAND\n    criterium           = DIMENSION\n    method              = NUMBER\n    sidemethod          = NUMBER\n    textmethod          = NUMBER\n    sidealign           = height depth line halfline grid <u>normal</u>\n    local               = yes <u>no</u>\n    command             = ONEARGUMENT\n    availablewidth      = DIMENSION\n    availableheight     = DIMENSION\n    minwidth            = DIMENSION\n    maxwidth            = DIMENSION\n    location            = left right middle flushleft flushright center max inner outer innermargin outermargin inneredge outeredge backspace cutspace leftmargin rightmargin leftedge rightedge\n    leftmargindistance  = DIMENSION\n    rightmargindistance = DIMENSION\n    leftmargin          = DIMENSION\n    rightmargin         = DIMENSION\n    innermargin         = DIMENSION\n    outermargin         = DIMENSION\n    bottombefore        = COMMAND\n    bottomafter         = COMMAND\n    spacebefore         = none inherits: \\blank\n    spaceafter          = none inherits: \\blank\n    width               = DIMENSION\n    height              = DIMENSION\n    offset              = DIMENSION none overlay\n    sidespacebefore     = none inherits: \\blank\n    sidespaceafter      = none inherits: \\blank\n    margin              = DIMENSION\n    ntop                = DIMENSION\n    nbottom             = DIMENSION\n    step                = small medium <u>big</u> line depth\n    nlines              = NUMBER\n    cache               = <u>yes</u> no"
+      "1   SINGULAR\n\n2   indentnext          = yes no auto\n    default             = inherits: \\placefloat\n    fallback            = inherits: \\placefloat\n    inner               = COMMAND\n    criterium           = DIMENSION\n    method              = NUMBER\n    sidemethod          = NUMBER\n    textmethod          = NUMBER\n    sidealign           = height depth line halfline grid <u>normal</u>\n    grid                = STRING\n    local               = yes <u>no</u>\n    command             = ONEARGUMENT\n    availablewidth      = DIMENSION\n    availableheight     = DIMENSION\n    minwidth            = DIMENSION\n    maxwidth            = DIMENSION\n    location            = left right middle flushleft flushright center max inner outer innermargin outermargin inneredge outeredge backspace cutspace leftmargin rightmargin leftedge rightedge\n    leftmargindistance  = DIMENSION\n    rightmargindistance = DIMENSION\n    leftmargin          = DIMENSION\n    rightmargin         = DIMENSION\n    innermargin         = DIMENSION\n    outermargin         = DIMENSION\n    bottombefore        = COMMAND\n    bottomafter         = COMMAND\n    spacebefore         = none inherits: \\blank\n    spaceafter          = none inherits: \\blank\n    width               = DIMENSION\n    height              = DIMENSION\n    offset              = DIMENSION none overlay\n    sidespacebefore     = none inherits: \\blank\n    sidespaceafter      = none inherits: \\blank\n    margin              = DIMENSION\n    ntop                = DIMENSION\n    nbottom             = DIMENSION\n    step                = small medium <u>big</u> line depth\n    nlines              = NUMBER\n    cache               = <u>yes</u> no"
     ],
     [
       "strc-flt.mkvi"
@@ -25191,6 +24519,15 @@
       "hand-ini.mkiv"
     ]
   ],
+  "setupfonts": [
+    [
+      "                  1\n\\setupfonts [..,..=..,..]",
+      "1   language = <u>no</u> auto"
+    ],
+    [
+      "font-ini.mkiv"
+    ]
+  ],
   "setupfontsolution": [
     [
       "                       1           2\n\\setupfontsolution [...,...] [..,..=..,..]\n                      OPT",
@@ -25230,7 +24567,16 @@
   "setupformula": [
     [
       "                  1           2\n\\setupformula [...,...] [..,..=..,..]\n                 OPT",
-      "1   NAME\n\n2   location      = left <u>right</u>\n    align         = left middle right flushleft center flushright normal\n    strut         = yes <u>no</u>\n    distance      = DIMENSION\n    left          = COMMAND\n    right         = COMMAND\n    spacebefore   = inherits: \\blank\n    spaceafter    = inherits: \\blank\n    numbercommand = ONEARGUMENT\n    option        = middle\n    margin        = yes no standard DIMENSION\n    leftmargin    = DIMENSION\n    rightmargin   = DIMENSION\n    alternative   = NAME\n    indentnext    = yes no auto\n    grid          = inherits: \\snaptogrid\n    inherits: \\setupcounter"
+      "1   NAME\n\n2   location      = left <u>right</u>\n    align         = left middle right flushleft center flushright normal\n    strut         = yes <u>no</u>\n    distance      = DIMENSION\n    left          = COMMAND\n    right         = COMMAND\n    spacebefore   = inherits: \\blank\n    spaceafter    = inherits: \\blank\n    numbercommand = ONEARGUMENT\n    color         = COLOR\n    numberstyle   = STYLE COMMAND\n    numbercolor   = COLOR\n    option        = packed tight middle frame inherits: \\setupbodyfont\n    margin        = yes no standard DIMENSION\n    leftmargin    = DIMENSION\n    rightmargin   = DIMENSION\n    alternative   = NAME\n    indentnext    = yes no auto\n    grid          = inherits: \\snaptogrid\n    frame         = number\n    inherits: \\setupcounter"
+    ],
+    [
+      "math-for.mkiv"
+    ]
+  ],
+  "setupformulaframed": [
+    [
+      "                        1           2\n\\setupformulaframed [...,...] [..,..=..,..]\n                       OPT",
+      "1   NAME\n\n2   inherits: \\setupframed"
     ],
     [
       "math-for.mkiv"
@@ -25239,7 +24585,7 @@
   "setupframed": [
     [
       "                 1           2\n\\setupframed [...,...] [..,..=..,..]\n                OPT",
-      "1   NAME\n\n2   corner           = <u>rectangular</u> round NUMBER\n    framecorner      = <u>rectangular</u> round NUMBER\n    backgroundcorner = <u>rectangular</u> round NUMBER\n    radius           = DIMENSION\n    frameradius      = DIMENSION\n    backgroundradius = DIMENSION\n    depth            = DIMENSION\n    framedepth       = DIMENSION\n    backgrounddepth  = DIMENSION\n    framecolor       = COLOR\n    topframe         = <u>on</u> off NAME\n    bottomframe      = <u>on</u> off NAME\n    leftframe        = <u>on</u> off NAME\n    rightframe       = <u>on</u> off NAME\n    region           = yes <u>no</u>\n    rulethickness    = DIMENSION\n    frameoffset      = DIMENSION\n    frame            = <u>on</u> off overlay none\n    background       = foreground color NAME\n    backgroundoffset = frame DIMENSION\n    component        = NAME\n    extras           = COMMAND\n    foregroundstyle  = STYLE COMMAND\n    foregroundcolor  = COLOR\n    setups           = NAME\n    offset           = default overlay none DIMENSION\n    width            = local <u>fit</u> max broad fixed DIMENSION\n    height           = fit max <u>broad</u> DIMENSION\n    align            = inherits: \\setupalign\n    strut            = <u>yes</u> no local global\n    autostrut        = <u>yes</u> no\n    location         = height depth high low top middle bottom line lohi hanging keep mathematics <u>normal</u>\n    autowidth        = <u>yes</u> no force\n    lines            = NUMBER\n    top              = COMMAND\n    bottom           = COMMAND\n    blank            = yes <u>no</u>\n    profile          = NAME\n    empty            = yes <u>no</u>\n    loffset          = DIMENSION\n    roffset          = DIMENSION\n    toffset          = DIMENSION\n    boffset          = DIMENSION\n    orientation      = NUMBER"
+      "1   NAME\n\n2   corner           = <u>rectangular</u> round NUMBER\n    framecorner      = <u>rectangular</u> round NUMBER\n    backgroundcorner = <u>rectangular</u> round NUMBER\n    radius           = DIMENSION\n    frameradius      = DIMENSION\n    backgroundradius = DIMENSION\n    depth            = DIMENSION\n    framedepth       = DIMENSION\n    backgrounddepth  = DIMENSION\n    framecolor       = COLOR\n    topframe         = <u>on</u> off NAME\n    bottomframe      = <u>on</u> off NAME\n    leftframe        = <u>on</u> off NAME\n    rightframe       = <u>on</u> off NAME\n    region           = yes <u>no</u>\n    rulethickness    = DIMENSION\n    frameoffset      = DIMENSION\n    frame            = <u>on</u> off overlay none\n    background       = foreground color NAME\n    backgroundoffset = frame DIMENSION\n    component        = NAME\n    extras           = COMMAND\n    foregroundstyle  = STYLE COMMAND\n    foregroundcolor  = COLOR\n    setups           = NAME\n    offset           = default overlay none DIMENSION\n    width            = local <u>fit</u> max broad fixed DIMENSION\n    height           = fit max <u>broad</u> DIMENSION\n    align            = inherits: \\setupalign\n    strut            = <u>yes</u> no none local global\n    autostrut        = <u>yes</u> no\n    location         = height depth high low top middle bottom line lohi hanging keep formula mathematics <u>normal</u>\n    autowidth        = <u>yes</u> no force\n    lines            = NUMBER\n    top              = COMMAND\n    bottom           = COMMAND\n    blank            = yes <u>no</u>\n    profile          = NAME\n    empty            = yes <u>no</u>\n    loffset          = DIMENSION\n    roffset          = DIMENSION\n    toffset          = DIMENSION\n    boffset          = DIMENSION\n    orientation      = NUMBER"
     ],
     [
       "pack-rul.mkiv"
@@ -25275,7 +24621,7 @@
   "setuphead": [
     [
       "               1           2\n\\setuphead [...,...] [..,..=..,..]\n              OPT",
-      "1   SECTION\n\n2   frontpartlabel       = NAME\n    bodypartlabel        = NAME\n    appendixlabel        = NAME\n    backpartlabel        = NAME\n    expansion            = yes <u>no</u> xml\n    catcodes             = NAME\n    sectionresetset      = NAME\n    sectionseparatorset  = NAME\n    sectionconversionset = NAME\n    conversion           = NAME\n    sectionstarter       = COMMAND PROCESSOR->COMMAND\n    sectionstopper       = COMMAND PROCESSOR->COMMAND\n    sectionset           = NAME\n    sectionsegments      = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all SECTION SECTION:SECTION SECTION:* SECTION:all\n    referenceprefix      = + - TEXT\n    style                = STYLE COMMAND\n    color                = COLOR\n    textstyle            = STYLE COMMAND\n    textcolor            = COLOR\n    numberstyle          = STYLE COMMAND\n    numbercolor          = COLOR\n    coupling             = SECTION\n    ownnumber            = yes <u>no</u>\n    beforesection        = COMMAND\n    aftersection         = COMMAND\n    insidesection        = COMMAND\n    incrementnumber      = <u>yes</u> no list empty\n    placehead            = <u>yes</u> no hidden empty\n    number               = <u>yes</u> no\n    page                 = inherits: \\page\n    marking              = page reset\n    header               = start stop high none normal empty nomarking NAME\n    text                 = start stop high none normal empty nomarking NAME\n    footer               = start stop high none normal empty nomarking NAME\n    before               = COMMAND\n    after                = COMMAND\n    inbetween            = COMMAND\n    continue             = <u>yes</u> no\n    aligntitle           = yes <u>no</u> float\n    interlinespace       = NAME\n    interaction          = list reference\n    internalgrid         = NAME\n    grid                 = normal standard yes strict tolerant top bottom both broad fit first last high one low none line strut box min max middle NAME\n    align                = inherits: \\setupalign\n    tolerance            = inherits: \\setuptolerance\n    strut                = <u>yes</u> no\n    hang                 = line broad fit <u>none</u> NUMBER\n    margin               = DIMENSION\n    indentnext           = yes no auto\n    alternative          = text paragraph <u>normal</u> margin inmargin top middle bottom reverse NAME\n    width                = DIMENSION\n    numberwidth          = DIMENSION\n    textwidth            = DIMENSION\n    distance             = DIMENSION\n    commandbefore        = COMMAND\n    commandafter         = COMMAND\n    command              = TWOARGUMENTS\n    textcommand          = ONEARGUMENT\n    deeptextcommand      = ONEARGUMENT\n    numbercommand        = ONEARGUMENT\n    deepnumbercommand    = ONEARGUMENT"
+      "1   SECTION\n\n2   frontpartlabel       = NAME\n    bodypartlabel        = NAME\n    appendixlabel        = NAME\n    backpartlabel        = NAME\n    expansion            = yes <u>no</u> xml\n    catcodes             = NAME\n    sectionresetset      = NAME\n    sectionseparatorset  = NAME\n    sectionconversionset = NAME\n    conversion           = NAME\n    sectionstarter       = COMMAND PROCESSOR->COMMAND\n    sectionstopper       = COMMAND PROCESSOR->COMMAND\n    sectionset           = NAME\n    sectionsegments      = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all SECTION SECTION:SECTION SECTION:* SECTION:all\n    referenceprefix      = + - TEXT\n    style                = STYLE COMMAND\n    color                = COLOR\n    textstyle            = STYLE COMMAND\n    textcolor            = COLOR\n    numberstyle          = STYLE COMMAND\n    numbercolor          = COLOR\n    coupling             = SECTION\n    ownnumber            = yes <u>no</u>\n    beforesection        = COMMAND\n    aftersection         = COMMAND\n    insidesection        = COMMAND\n    incrementnumber      = <u>yes</u> no list empty\n    placehead            = <u>yes</u> no hidden empty\n    number               = <u>yes</u> no\n    page                 = inherits: \\page\n    marking              = page reset\n    header               = start stop high none normal empty nomarking NAME\n    text                 = start stop high none normal empty nomarking NAME\n    footer               = start stop high none normal empty nomarking NAME\n    before               = COMMAND\n    after                = COMMAND\n    inbetween            = COMMAND\n    continue             = <u>yes</u> no\n    aligntitle           = yes <u>no</u> float\n    interlinespace       = NAME\n    interaction          = list reference\n    internalgrid         = NAME\n    grid                 = normal standard yes strict tolerant top bottom both broad fit first last high one low none line strut box min max middle NAME\n    align                = inherits: \\setupalign\n    tolerance            = inherits: \\setuptolerance\n    strut                = <u>yes</u> no\n    hang                 = line broad fit <u>none</u> NUMBER\n    margin               = DIMENSION\n    indentnext           = yes no auto\n    alternative          = text paragraph <u>normal</u> margin inmargin top middle bottom reverse margintext NAME\n    width                = DIMENSION\n    numberwidth          = DIMENSION\n    textwidth            = DIMENSION\n    distance             = DIMENSION\n    textdistance         = DIMENSION\n    commandbefore        = COMMAND\n    commandafter         = COMMAND\n    command              = TWOARGUMENTS\n    textcommand          = ONEARGUMENT\n    deeptextcommand      = ONEARGUMENT\n    numbercommand        = ONEARGUMENT\n    deepnumbercommand    = ONEARGUMENT"
     ],
     [
       "strc-sec.mkiv"
@@ -25284,7 +24630,7 @@
   "setupheadalternative": [
     [
       "                          1           2\n\\setupheadalternative [...,...] [..,..=..,..]\n                         OPT",
-      "1   NAME\n\n2   alternative    = horizontal <u>vertical</u>\n    renderingsetup = NAME"
+      "1   NAME\n\n2   alternative    = horizontal <u>vertical</u> somewhere\n    renderingsetup = NAME"
     ],
     [
       "strc-ren.mkiv"
@@ -25317,13 +24663,13 @@
       "strc-sec.mkiv"
     ]
   ],
-  "setupheadtext": [
+  "setupheads": [
     [
-      "                 1         2\n\\setupheadtext [...] [..,..=..,..]\n                OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
+      "                1           2\n\\setupheads [...,...] [..,..=..,..]\n               OPT",
+      "1   SECTION\n\n2   inherits: \\setuphead"
     ],
     [
-      "lang-lab.mkiv"
+      "strc-sec.mkiv"
     ]
   ],
   "setuphelp": [
@@ -25389,15 +24735,6 @@
       "spac-hor.mkiv"
     ]
   ],
-  "setupindex": [
-    [
-      "                1           2\n\\setupindex [...,...] [..,..=..,..]\n               OPT",
-      "1   NUMBER\n\n2   inherits: \\setupregister"
-    ],
-    [
-      "strc-reg.mkiv"
-    ]
-  ],
   "setupinitial": [
     [
       "                  1           2\n\\setupinitial [...,...] [..,..=..,..]\n                 OPT",
@@ -25450,7 +24787,7 @@
   "setupinteractionscreen": [
     [
       "                              1\n\\setupinteractionscreen [..,..=..,..]",
-      "1   width     = fit max tight DIMENSION\n    height    = fit max tight DIMENSION\n    backspace = DIMENSION\n    horoffset = DIMENSION\n    veroffset = DIMENSION\n    topspace  = DIMENSION\n    option    = fit max singlesided doublesided bookmark <u>auto</u> none default fixed landscape portrait page\n    delay     = <u>none</u> NUMBER"
+      "1   width     = fit max tight DIMENSION\n    height    = fit max tight DIMENSION\n    backspace = DIMENSION\n    horoffset = DIMENSION\n    veroffset = DIMENSION\n    topspace  = DIMENSION\n    option    = fit max singlesided doublesided bookmark <u>auto</u> none default fixed landscape portrait page paper\n    copies    = NUMBER\n    delay     = <u>none</u> NUMBER"
     ],
     [
       "scrn-pag.mkvi"
@@ -25488,8 +24825,21 @@
       "1   NAME NAME:NUMBER\n\n2   before       = COMMAND\n    after        = COMMAND\n    inbetween    = COMMAND\n    beforehead   = COMMAND\n    afterhead    = COMMAND\n    lefttext     = COMMAND\n    righttext    = COMMAND\n    left         = COMMAND\n    right        = COMMAND\n    factor       = NUMBER\n    step         = DIMENSION\n    width        = DIMENSION\n    distance     = DIMENSION\n    option       = intro random continue packed autointro broad text before after nowhite margin inmargin atmargin intext loose fit nofit paragraph joinedup serried stopper unpacked repeat norepeat reverse columns one two three four five six seven eight nine standard NUMBER*broad NUMBER*serried horizontal NAME\n    margin       = yes no standard DIMENSION\n    leftmargin   = yes no standard DIMENSION\n    rightmargin  = yes no standard DIMENSION\n    align        = inherits: \\setupalign\n    indenting    = inherits: \\setupindenting\n    start        = NUMBER\n    symalign     = left middle right flushleft center flushright\n    symbol       = NAME\n    n            = NUMBER\n    indentnext   = yes no auto\n    inner        = COMMAND\n    command      = CSNAME\n    items        = NUMBER\n    maxwidth     = DIMENSION\n    itemalign    = left right middle flushleft flushright inner outer\n    alignsymbol  = yes <u>no</u>\n    textdistance = small medium big none <u>space</u> DIMENSION\n    placestopper = <u>yes</u> no\n    style        = STYLE COMMAND\n    color        = COLOR\n    headstyle    = STYLE COMMAND\n    headcolor    = COLOR\n    marstyle     = STYLE COMMAND\n    marcolor     = COLOR\n    symstyle     = STYLE COMMAND\n    symcolor     = COLOR\n    inherits: \\setupcounter"
     ],
     [
+      "                    1         2           3\n\\setupitemgroup [...,...] [...,...] [..,..=..,..]\n                   OPT       OPT         OPT",
+      "1   each NUMBER\n\n2   inherits: \\setupitemgroup\n\n3   inherits: \\setupitemgroup"
+    ],
+    [
       "                  1       2         3           4\n\\setupitemgroup [...] [...,...] [...,...] [..,..=..,..]\n                         OPT       OPT         OPT",
       "1   NAME\n\n2   each NUMBER\n\n3   intro random continue packed autointro broad text before after nowhite margin inmargin atmargin intext loose fit nofit paragraph joinedup serried stopper unpacked repeat norepeat reverse columns one two three four five six seven eight nine standard NUMBER*broad NUMBER*serried horizontal NAME\n\n4   before       = COMMAND\n    after        = COMMAND\n    inbetween    = COMMAND\n    beforehead   = COMMAND\n    afterhead    = COMMAND\n    lefttext     = COMMAND\n    righttext    = COMMAND\n    left         = COMMAND\n    right        = COMMAND\n    factor       = NUMBER\n    step         = DIMENSION\n    width        = DIMENSION\n    distance     = DIMENSION\n    margin       = yes no standard DIMENSION\n    leftmargin   = yes no standard DIMENSION\n    rightmargin  = yes no standard DIMENSION\n    align        = inherits: \\setupalign\n    indenting    = inherits: \\setupindenting\n    start        = NUMBER\n    symalign     = left middle right flushleft center flushright\n    symbol       = NAME\n    n            = NUMBER\n    indentnext   = yes no auto\n    inner        = COMMAND\n    command      = CSNAME\n    items        = NUMBER\n    maxwidth     = DIMENSION\n    itemalign    = left right middle flushleft flushright inner outer\n    alignsymbol  = yes <u>no</u>\n    textdistance = small medium big none <u>space</u> DIMENSION\n    placestopper = <u>yes</u> no\n    style        = STYLE COMMAND\n    color        = COLOR\n    headstyle    = STYLE COMMAND\n    headcolor    = COLOR\n    marstyle     = STYLE COMMAND\n    marcolor     = COLOR\n    symstyle     = STYLE COMMAND\n    symcolor     = COLOR\n    inherits: \\setupcounter"
+    ],
+    [
+      "strc-itm.mkvi"
+    ]
+  ],
+  "setupitemgroups": [
+    [
+      "                     1           2\n\\setupitemgroups [...,...] [..,..=..,..]\n                    OPT",
+      "1   NAME NAME:NUMBER\n\n2   inherits: \\setupitemgroup"
     ],
     [
       "strc-itm.mkvi"
@@ -25507,7 +24857,7 @@
   "setuplabel": [
     [
       "                1           2\n\\setuplabel [...,...] [..,..=..,..]\n               OPT",
-      "1   NAME\n\n2   title         = yes <u>no</u>\n    number        = <u>yes</u> no\n    numbercommand = ONEARGUMENT\n    titledistance = DIMENSION\n    titlestyle    = STYLE COMMAND\n    titlecolor    = COLOR\n    titlecommand  = ONEARGUMENT\n    titleleft     = COMMAND\n    titleright    = COMMAND\n    left          = COMMAND\n    right         = COMMAND\n    symbol        = COMMAND\n    starter       = COMMAND\n    stopper       = COMMAND\n    coupling      = NAME\n    counter       = NAME\n    level         = NUMBER\n    text          = TEXT\n    headcommand   = ONEARGUMENT\n    before        = COMMAND\n    after         = COMMAND\n    inbetween     = COMMAND\n    alternative   = left right inmargin inleft inright margin leftmargin rightmargin innermargin outermargin serried hanging top command <u>intext</u> NAME\n    align         = inherits: \\setupalign\n    headalign     = inherits: \\setupalign\n    indenting     = inherits: \\setupindenting\n    display       = <u>yes</u> no\n    indentnext    = yes no auto\n    width         = fit broad line DIMENSION\n    distance      = none DIMENSION\n    hang          = fit broad none margin NUMBER\n    closesymbol   = COMMAND\n    closecommand  = ONEARGUMENT\n    expansion     = yes <u>no</u> xml\n    sample        = TEXT\n    margin        = yes no standard DIMENSION\n    style         = STYLE COMMAND\n    color         = COLOR\n    headstyle     = STYLE COMMAND\n    headcolor     = COLOR\n    inherits: \\setupcounter"
+      "1   NAME\n\n2   title           = yes <u>no</u>\n    number          = <u>yes</u> no\n    numbercommand   = ONEARGUMENT\n    titledistance   = DIMENSION\n    titlestyle      = STYLE COMMAND\n    titlecolor      = COLOR\n    titlecommand    = ONEARGUMENT\n    titleleft       = COMMAND\n    titleright      = COMMAND\n    left            = COMMAND\n    right           = COMMAND\n    symbol          = COMMAND\n    starter         = COMMAND\n    stopper         = COMMAND\n    coupling        = NAME\n    counter         = NAME\n    level           = NUMBER\n    text            = TEXT\n    headcommand     = ONEARGUMENT\n    before          = COMMAND\n    after           = COMMAND\n    inbetween       = COMMAND\n    alternative     = left right inmargin inleft inright margin leftmargin rightmargin innermargin outermargin serried hanging top command <u>intext</u> NAME\n    align           = inherits: \\setupalign\n    headalign       = inherits: \\setupalign\n    indenting       = inherits: \\setupindenting\n    display         = <u>yes</u> no\n    indentnext      = yes no auto\n    width           = fit broad line DIMENSION\n    distance        = none DIMENSION\n    hang            = fit broad none margin NUMBER\n    closesymbol     = COMMAND\n    closecommand    = ONEARGUMENT\n    expansion       = yes <u>no</u> xml\n    referenceprefix = + - TEXT\n    sample          = TEXT\n    margin          = yes no standard DIMENSION\n    style           = STYLE COMMAND\n    color           = COLOR\n    headstyle       = STYLE COMMAND\n    headcolor       = COLOR\n    inherits: \\setupcounter"
     ],
     [
       "strc-lab.mkiv"
@@ -25525,7 +24875,7 @@
   "setuplanguage": [
     [
       "                 1         2\n\\setuplanguage [...] [..,..=..,..]\n                OPT",
-      "1   LANGUAGE default\n\n2   default             = LANGUAGE\n    state               = <u>start</u> stop\n    date                = inherits: \\currentdate\n    patterns            = FILE\n    lefthyphenmin       = NUMBER\n    righthyphenmin      = NUMBER\n    lefthyphenchar      = NUMBER\n    righthyphenchar     = NUMBER\n    setups              = NAME\n    spacing             = <u>broad</u> packed\n    font                = auto\n    text                = TEXT\n    limittext           = TEXT\n    hyphen              = TEXT\n    compoundhyphen      = TEXT\n    leftcompoundhyphen  = TEXT\n    rightcompoundhyphen = TEXT\n    leftquote           = COMMAND\n    rightquote          = COMMAND\n    leftquotation       = COMMAND\n    rightquotation      = COMMAND\n    leftspeech          = COMMAND\n    rightspeech         = COMMAND\n    leftsentence        = COMMAND\n    middlespeech        = COMMAND\n    rightsentence       = COMMAND\n    midsentence         = COMMAND\n    leftsubsentence     = COMMAND\n    rightsubsentence    = COMMAND"
+      "1   LANGUAGE default\n\n2   default             = LANGUAGE\n    state               = <u>start</u> stop\n    date                = inherits: \\currentdate\n    patterns            = FILE\n    lefthyphenmin       = NUMBER\n    righthyphenmin      = NUMBER\n    lefthyphenchar      = NUMBER\n    righthyphenchar     = NUMBER\n    setups              = NAME\n    spacing             = <u>broad</u> packed\n    font                = auto\n    text                = TEXT\n    limittext           = TEXT\n    hyphen              = TEXT\n    compoundhyphen      = TEXT\n    leftcompoundhyphen  = TEXT\n    rightcompoundhyphen = TEXT\n    leftquote           = COMMAND\n    rightquote          = COMMAND\n    leftquotation       = COMMAND\n    rightquotation      = COMMAND\n    leftspeech          = COMMAND\n    rightspeech         = COMMAND\n    leftsentence        = COMMAND\n    middlespeech        = COMMAND\n    rightsentence       = COMMAND\n    midsentence         = COMMAND\n    leftsubsentence     = COMMAND\n    rightsubsentence    = COMMAND\n    factor              = yes <u>no</u>"
     ],
     [
       "lang-ini.mkiv"
@@ -25556,7 +24906,7 @@
     ],
     [
       "               1         2\n\\setuplayout [...] [..,..=..,..]\n              OPT",
-      "1   NAME\n\n2   state               = <u>start</u> stop normal repeat\n    margin              = DIMENSION\n    edge                = DIMENSION\n    margindistance      = DIMENSION\n    edgedistance        = DIMENSION\n    leftedgedistance    = DIMENSION\n    rightedgedistance   = DIMENSION\n    leftmargindistance  = DIMENSION\n    rightmargindistance = DIMENSION\n    topdistance         = DIMENSION\n    headerdistance      = DIMENSION\n    footerdistance      = DIMENSION\n    bottomdistance      = DIMENSION\n    preset              = NAME\n    leftmargin          = DIMENSION\n    rightmargin         = DIMENSION\n    leftedge            = DIMENSION\n    rightedge           = DIMENSION\n    header              = DIMENSION\n    footer              = DIMENSION\n    top                 = DIMENSION\n    bottom              = DIMENSION\n    backspace           = DIMENSION\n    topspace            = DIMENSION\n    setups              = NAME\n    cutspace            = DIMENSION\n    width               = DIMENSION middle fit\n    bottomspace         = DIMENSION\n    lines               = NUMBER\n    height              = DIMENSION middle fit\n    horoffset           = DIMENSION\n    veroffset           = DIMENSION\n    columns             = NUMBER\n    columndistance      = DIMENSION\n    method              = default normal NAME\n    location            = left middle right top bottom singlesided doublesided\n    textwidth           = DIMENSION\n    textheight          = DIMENSION\n    nx                  = NUMBER\n    ny                  = NUMBER\n    dx                  = DIMENSION\n    dy                  = DIMENSION\n    scale               = NUMBER\n    sx                  = NUMBER\n    sy                  = NUMBER\n    marking             = on <u>off</u> page empty color\n    grid                = yes <u>no</u> off\n    textdistance        = DIMENSION\n    alternative         = default <u>normal</u> makeup NAME\n    clipoffset          = DIMENSION\n    cropoffset          = DIMENSION\n    trimoffset          = DIMENSION\n    bleedoffset         = DIMENSION\n    artoffset           = DIMENSION"
+      "1   NAME\n\n2   state               = <u>start</u> stop normal repeat\n    margin              = DIMENSION\n    edge                = DIMENSION\n    margindistance      = DIMENSION\n    edgedistance        = DIMENSION\n    leftedgedistance    = DIMENSION\n    rightedgedistance   = DIMENSION\n    leftmargindistance  = DIMENSION\n    rightmargindistance = DIMENSION\n    topdistance         = DIMENSION\n    headerdistance      = DIMENSION\n    footerdistance      = DIMENSION\n    bottomdistance      = DIMENSION\n    preset              = NAME\n    leftmargin          = DIMENSION\n    rightmargin         = DIMENSION\n    leftedge            = DIMENSION\n    rightedge           = DIMENSION\n    header              = DIMENSION\n    footer              = DIMENSION\n    top                 = DIMENSION\n    bottom              = DIMENSION\n    backspace           = DIMENSION\n    topspace            = DIMENSION\n    setups              = NAME\n    cutspace            = DIMENSION\n    width               = DIMENSION middle fit\n    bottomspace         = DIMENSION\n    lines               = NUMBER\n    height              = DIMENSION middle fit\n    horoffset           = DIMENSION\n    veroffset           = DIMENSION\n    columns             = NUMBER\n    columndistance      = DIMENSION\n    method              = default normal NAME\n    location            = left middle right top bottom singlesided doublesided\n    textwidth           = DIMENSION\n    textheight          = DIMENSION\n    nx                  = NUMBER\n    ny                  = NUMBER\n    dx                  = DIMENSION\n    dy                  = DIMENSION\n    scale               = NUMBER\n    sx                  = NUMBER\n    sy                  = NUMBER\n    marking             = on <u>off</u> page empty color one two four\n    grid                = yes <u>no</u> off\n    textdistance        = DIMENSION\n    alternative         = default <u>normal</u> makeup NAME\n    clipoffset          = DIMENSION\n    cropoffset          = DIMENSION\n    trimoffset          = DIMENSION\n    bleedoffset         = DIMENSION\n    artoffset           = DIMENSION"
     ],
     [
       "page-lay.mkiv"
@@ -25571,13 +24921,22 @@
       "page-txt.mkvi"
     ]
   ],
-  "setuplegend": [
+  "setuplinefiller": [
     [
-      "                   1\n\\setuplegend [..,..=..,..]",
-      "1   inherits: \\setuppairedbox"
+      "                     1           2\n\\setuplinefiller [...,...] [..,..=..,..]\n                    OPT",
+      "1   NAME\n\n2   location      = left right <u>both</u>\n    scope         = left right <u>local</u>\n    mp            = NAME\n    height        = DIMENSION\n    depth         = DIMENSION\n    distance      = DIMENSION\n    threshold     = DIMENSION\n    rulethickness = DIMENSION\n    before        = COMMAND\n    after         = COMMAND\n    color         = COLOR\n    textstyle     = STYLE COMMAND\n    textcolor     = COLOR\n    align         = inherits: \\setupalign"
     ],
     [
-      "pack-com.mkiv"
+      "node-rul.mkiv"
+    ]
+  ],
+  "setuplinefillers": [
+    [
+      "                      1           2\n\\setuplinefillers [...,...] [..,..=..,..]\n                     OPT",
+      "1   NAME\n\n2   inherits: \\setuplinefiller"
+    ],
+    [
+      "node-rul.mkiv"
     ]
   ],
   "setuplinenote": [
@@ -25601,7 +24960,7 @@
   "setuplines": [
     [
       "                1           2\n\\setuplines [...,...] [..,..=..,..]\n               OPT",
-      "1   NAME\n\n2   option    = packed\n    before    = COMMAND\n    after     = COMMAND\n    inbetween = COMMAND\n    indenting = inherits: \\setupindenting\n    align     = inherits: \\setupalign\n    space     = yes on off fixed <u>default</u>\n    command   = COMMAND\n    style     = STYLE COMMAND\n    color     = COLOR"
+      "1   NAME\n\n2   option    = packed\n    before    = COMMAND\n    after     = COMMAND\n    inbetween = COMMAND\n    indenting = inherits: \\setupindenting\n    align     = inherits: \\setupalign\n    space     = yes on off fixed <u>default</u>\n    command   = COMMAND\n    style     = STYLE COMMAND\n    color     = COLOR\n    left      = COMMAND\n    right     = COMMAND"
     ],
     [
       "spac-lin.mkiv"
@@ -25628,7 +24987,7 @@
   "setuplist": [
     [
       "               1           2\n\\setuplist [...,...] [..,..=..,..]\n              OPT",
-      "1   LIST\n\n2   state                   = <u>start</u> stop\n    location                = none here\n    type                    = simple command userdata\n    criterium               = <u>local</u> intro reference SECTIONBLOCK:reference all SECTIONBLOCK:all text SECTIONBLOCK:text current SECTIONBLOCK:current here previous SECTIONBLOCK:previous component SECTION SECTIONBLOCK:SECTION\n    list                    = NAME\n    width                   = fit broad auto DIMENSION\n    height                  = fit <u>broad</u> DIMENSION\n    depth                   = fit <u>broad</u> DIMENSION\n    symbol                  = one two three none <u>default</u>\n    label                   = yes <u>no</u> none NAME\n    starter                 = COMMAND\n    stopper                 = COMMAND\n    command                 = THREEARGUMENT\n    numbercommand           = ONEARGUMENT\n    textcommand             = ONEARGUMENT\n    pagecommand             = ONEARGUMENT\n    pagenumber              = <u>yes</u> no always\n    headnumber              = <u>yes</u> no always\n    before                  = COMMAND\n    after                   = COMMAND\n    inbetween               = COMMAND\n    margin                  = none DIMENSION\n    distance                = none DIMENSION\n    aligntitle              = yes <u>no</u>\n    numberalign             = left right middle flushleft flushright inner outer\n    align                   = inherits: \\setupalign\n    hang                    = <u>yes</u> no\n    left                    = COMMAND\n    right                   = COMMAND\n    interaction             = yes no <u>all</u> number text title page sectionnumber pagenumber\n    limittext               = yes no TEXT\n    style                   = STYLE COMMAND\n    color                   = COLOR\n    numberstyle             = STYLE COMMAND\n    numbercolor             = COLOR\n    textstyle               = STYLE COMMAND\n    textcolor               = COLOR\n    pagestyle               = STYLE COMMAND\n    pagecolor               = COLOR\n    reference               = NUMBER\n    extras                  = NAME\n    order                   = command all title\n    alternative             = a <u>b</u> c d e f g left right top bottom command none interactive paragraph horizontal vertical NAME\n    maxwidth                = DIMENSION\n    pageprefix              = yes no\n    pageprefixseparatorset  = NAME\n    pageprefixconversionset = NAME\n    pageprefixset           = NAME\n    pageprefixsegments      = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all SECTION SECTION:SECTION SECTION:* SECTION:all\n    pageprefixconnector     = COMMAND PROCESSOR->COMMAND\n    pageconversionset       = NAME\n    pagestarter             = COMMAND PROCESSOR->COMMAND\n    pagestopper             = COMMAND PROCESSOR->COMMAND\n    inherits: \\setupframed"
+      "1   LIST\n\n2   state                   = <u>start</u> stop\n    location                = none here\n    type                    = simple command userdata\n    criterium               = <u>local</u> intro reference SECTIONBLOCK:reference all SECTIONBLOCK:all text SECTIONBLOCK:text current SECTIONBLOCK:current here previous SECTIONBLOCK:previous component SECTION SECTIONBLOCK:SECTION\n    list                    = NAME\n    width                   = fit broad auto DIMENSION\n    height                  = fit <u>broad</u> DIMENSION\n    depth                   = fit <u>broad</u> DIMENSION\n    symbol                  = one two three none <u>default</u>\n    label                   = yes <u>no</u> none NAME\n    starter                 = COMMAND\n    stopper                 = COMMAND\n    command                 = THREEARGUMENTS\n    numbercommand           = ONEARGUMENT\n    textcommand             = ONEARGUMENT\n    pagecommand             = ONEARGUMENT\n    pagenumber              = <u>yes</u> no always\n    headnumber              = <u>yes</u> no always\n    before                  = COMMAND\n    after                   = COMMAND\n    inbetween               = COMMAND\n    margin                  = none DIMENSION\n    distance                = none DIMENSION\n    aligntitle              = yes <u>no</u>\n    numberalign             = left right middle flushleft flushright inner outer\n    align                   = inherits: \\setupalign\n    hang                    = <u>yes</u> no\n    left                    = COMMAND\n    right                   = COMMAND\n    interaction             = yes no <u>all</u> number text title page sectionnumber pagenumber\n    limittext               = yes no TEXT\n    style                   = STYLE COMMAND\n    color                   = COLOR\n    numberstyle             = STYLE COMMAND\n    numbercolor             = COLOR\n    textstyle               = STYLE COMMAND\n    textcolor               = COLOR\n    pagestyle               = STYLE COMMAND\n    pagecolor               = COLOR\n    reference               = NUMBER\n    extras                  = NAME\n    order                   = command all title\n    alternative             = a <u>b</u> c d e f g left right top bottom command none interactive paragraph horizontal vertical NAME\n    maxwidth                = DIMENSION\n    pageprefix              = yes no\n    pageprefixseparatorset  = NAME\n    pageprefixconversionset = NAME\n    pageprefixset           = NAME\n    pageprefixsegments      = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all SECTION SECTION:SECTION SECTION:* SECTION:all\n    pageprefixconnector     = COMMAND PROCESSOR->COMMAND\n    pageconversionset       = NAME\n    pagestarter             = COMMAND PROCESSOR->COMMAND\n    pagestopper             = COMMAND PROCESSOR->COMMAND\n    inherits: \\setupframed"
     ],
     [
       "strc-lst.mkvi"
@@ -25789,7 +25148,7 @@
   "setupmathematics": [
     [
       "                      1           2\n\\setupmathematics [...,...] [..,..=..,..]\n                     OPT",
-      "1   NAME\n\n2   openup          = yes <u>no</u>\n    symbolset       = NAME\n    functionstyle   = STYLE COMMAND\n    compact         = yes <u>no</u>\n    align           = <u>l2r</u> r2l\n    bidi            = yes <u>no</u>\n    sygreek         = normal <u>italic</u> none\n    lcgreek         = normal <u>italic</u> none\n    ucgreek         = <u>normal</u> italic none\n    italics         = 1 2 <u>3</u> 4 none reset\n    autopunctuation = yes <u>no</u> all\n    setups          = NAME\n    domain          = NAME reset\n    textstyle       = STYLE COMMAND\n    textcolor       = COLOR\n    integral        = limits nolimits <u>autolimits</u> displaylimits none\n    default         = normal <u>italic</u>"
+      "1   NAME\n\n2   openup           = yes <u>no</u>\n    symbolset        = NAME\n    functionstyle    = STYLE COMMAND\n    compact          = yes <u>no</u>\n    align            = <u>l2r</u> r2l\n    bidi             = yes <u>no</u>\n    sygreek          = normal <u>italic</u> none\n    lcgreek          = normal <u>italic</u> none\n    ucgreek          = <u>normal</u> italic none\n    italics          = 1 2 <u>3</u> 4 none reset\n    autopunctuation  = yes <u>no</u> all\n    setups           = NAME\n    domain           = NAME reset\n    textstyle        = STYLE COMMAND\n    textcolor        = COLOR\n    functioncolor    = COLOR\n    integral         = limits nolimits <u>autolimits</u> displaylimits none\n    stylealternative = NAME\n    default          = normal <u>italic</u>\n    fraction         = ams <u>ctx</u>"
     ],
     [
       "math-ini.mkiv"
@@ -25820,15 +25179,6 @@
     ],
     [
       "pack-rul.mkiv"
-    ]
-  ],
-  "setupmathlabeltext": [
-    [
-      "                      1         2\n\\setupmathlabeltext [...] [..,..=..,..]\n                     OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "setupmathmatrix": [
@@ -25879,7 +25229,7 @@
   "setupmixedcolumns": [
     [
       "                       1           2\n\\setupmixedcolumns [...,...] [..,..=..,..]\n                      OPT",
-      "1   NAME\n\n2   grid          = inherits: \\setupgrid\n    rulethickness = DIMENSION\n    method        = otr box\n    before        = COMMAND\n    after         = COMMAND\n    distance      = DIMENSION\n    n             = NUMBER\n    maxheight     = DIMENSION\n    maxwidth      = DIMENSION\n    step          = DIMENSION\n    profile       = NAME\n    align         = inherits: \\setupalign\n    setups        = NAME\n    balance       = yes <u>no</u>\n    splitmethod   = none fixed\n    alternative   = <u>local</u> global\n    internalgrid  = <u>line</u> halfline\n    separator     = rule\n    strut         = yes no\n    color         = COLOR\n    rulecolor     = COLOR\n    direction     = <u>normal</u> reverse\n    inherits: \\setupframed"
+      "1   NAME\n\n2   grid          = inherits: \\definegridsnapping\n    rulethickness = DIMENSION\n    method        = otr box\n    before        = COMMAND\n    after         = COMMAND\n    distance      = DIMENSION\n    n             = NUMBER\n    maxheight     = DIMENSION\n    maxwidth      = DIMENSION\n    step          = DIMENSION\n    profile       = NAME\n    align         = inherits: \\setupalign\n    setups        = NAME\n    balance       = yes <u>no</u>\n    splitmethod   = none fixed\n    alternative   = <u>local</u> global\n    internalgrid  = <u>line</u> halfline\n    separator     = rule\n    strut         = yes no\n    color         = COLOR\n    rulecolor     = COLOR\n    direction     = <u>normal</u> reverse\n    inherits: \\setupframed"
     ],
     [
       "page-mix.mkiv"
@@ -25906,7 +25256,16 @@
   "setupnotation": [
     [
       "                   1           2\n\\setupnotation [...,...] [..,..=..,..]\n                  OPT",
-      "1   NAME\n\n2   title         = yes <u>no</u>\n    number        = <u>yes</u> no\n    type          = note\n    numbercommand = ONEARGUMENT\n    titledistance = DIMENSION\n    titlestyle    = STYLE COMMAND\n    titlecolor    = COLOR\n    titlecommand  = ONEARGUMENT\n    titleleft     = COMMAND\n    titleright    = COMMAND\n    left          = COMMAND\n    right         = COMMAND\n    symbol        = COMMAND\n    starter       = COMMAND\n    stopper       = COMMAND\n    coupling      = NAME\n    counter       = NAME\n    level         = NUMBER\n    text          = TEXT\n    headcommand   = ONEARGUMENT\n    before        = COMMAND\n    after         = COMMAND\n    inbetween     = COMMAND\n    alternative   = left right inmargin inleft inright margin leftmargin rightmargin innermargin outermargin serried hanging top command <u>note</u> NAME\n    align         = inherits: \\setupalign\n    headalign     = inherits: \\setupalign\n    indenting     = inherits: \\setupindenting\n    display       = <u>yes</u> no\n    indentnext    = yes no auto\n    width         = fit broad line DIMENSION\n    distance      = none DIMENSION\n    hang          = fit broad none margin NUMBER\n    closesymbol   = COMMAND\n    closecommand  = ONEARGUMENT\n    expansion     = yes <u>no</u> xml\n    sample        = TEXT\n    margin        = yes no standard DIMENSION\n    style         = STYLE COMMAND\n    color         = COLOR\n    headstyle     = STYLE COMMAND\n    headcolor     = COLOR\n    inherits: \\setupcounter"
+      "1   NAME\n\n2   title           = yes <u>no</u>\n    number          = <u>yes</u> no\n    type            = note\n    numbercommand   = ONEARGUMENT\n    titledistance   = DIMENSION\n    titlestyle      = STYLE COMMAND\n    titlecolor      = COLOR\n    titlecommand    = ONEARGUMENT\n    titleleft       = COMMAND\n    titleright      = COMMAND\n    left            = COMMAND\n    right           = COMMAND\n    symbol          = COMMAND\n    starter         = COMMAND\n    stopper         = COMMAND\n    coupling        = NAME\n    counter         = NAME\n    level           = NUMBER\n    text            = TEXT\n    headcommand     = ONEARGUMENT\n    before          = COMMAND\n    after           = COMMAND\n    inbetween       = COMMAND\n    alternative     = left right inmargin inleft inright margin leftmargin rightmargin innermargin outermargin serried hanging top command <u>note</u> NAME\n    align           = inherits: \\setupalign\n    headalign       = inherits: \\setupalign\n    indenting       = inherits: \\setupindenting\n    display         = <u>yes</u> no\n    indentnext      = yes no auto\n    width           = fit broad line DIMENSION\n    distance        = none DIMENSION\n    hang            = fit broad none margin NUMBER\n    closesymbol     = COMMAND\n    closecommand    = ONEARGUMENT\n    expansion       = yes <u>no</u> xml\n    referenceprefix = + - TEXT\n    sample          = TEXT\n    margin          = yes no standard DIMENSION\n    style           = STYLE COMMAND\n    color           = COLOR\n    headstyle       = STYLE COMMAND\n    headcolor       = COLOR\n    inherits: \\setupcounter"
+    ],
+    [
+      "strc-not.mkvi"
+    ]
+  ],
+  "setupnotations": [
+    [
+      "                    1           2\n\\setupnotations [...,...] [..,..=..,..]\n                   OPT",
+      "1   NAME\n\n2   inherits: \\setupnotation"
     ],
     [
       "strc-not.mkvi"
@@ -25915,7 +25274,16 @@
   "setupnote": [
     [
       "               1           2\n\\setupnote [...,...] [..,..=..,..]\n              OPT",
-      "1   NAME\n\n2   interaction    = <u>yes</u> no number text all\n    symbolcommand  = ONEARGUMENT\n    textcommand    = ONEARGUMENT\n    indicator      = yes <u>no</u>\n    textseparator  = COMMAND\n    width          = DIMENSION\n    height         = DIMENSION\n    distance       = DIMENSION\n    rulecommand    = COMMAND\n    rule           = <u>on</u> off normal left right command paragraph\n    split          = <u>tolerant</u> strict verystrict NUMBER\n    factor         = NUMBER\n    location       = text page high bottom none columns firstcolumn lastcolumn\n    next           = COMMAND\n    n              = NUMBER\n    rulecolor      = COLOR\n    rulethickness  = DIMENSION\n    setups         = NAME\n    interlinespace = NAME\n    paragraph      = yes <u>no</u>\n    before         = COMMAND\n    after          = cd.command\n    inbetween      = COMMAND\n    scope          = page\n    columndistance = DIMENSION\n    continue       = yes <u>no</u>\n    alternative    = grid fixed columns <u>note</u> none\n    criterium      = page\n    bodyfont       = inherits: \\setupbodyfont\n    align          = inherits: \\setupalign\n    textstyle      = STYLE COMMAND\n    textcolor      = COLOR\n    anchor         = next\n    inherits: \\setupframed"
+      "1   NAME\n\n2   interaction    = <u>yes</u> no number text all\n    symbolcommand  = ONEARGUMENT\n    textcommand    = ONEARGUMENT\n    indicator      = yes <u>no</u>\n    textseparator  = COMMAND\n    width          = DIMENSION\n    height         = DIMENSION\n    distance       = DIMENSION\n    rulecommand    = COMMAND\n    rule           = <u>on</u> off normal left right command paragraph\n    split          = <u>tolerant</u> strict verystrict NUMBER\n    factor         = NUMBER\n    location       = text page high bottom none columns firstcolumn lastcolumn\n    next           = COMMAND\n    n              = NUMBER\n    rulecolor      = COLOR\n    rulethickness  = DIMENSION\n    setups         = NAME\n    interlinespace = NAME\n    paragraph      = yes <u>no</u>\n    before         = COMMAND\n    after          = COMMAND\n    inbetween      = COMMAND\n    scope          = page\n    columndistance = DIMENSION\n    continue       = yes <u>no</u>\n    alternative    = grid fixed columns <u>note</u> none\n    criterium      = page\n    bodyfont       = inherits: \\setupbodyfont\n    align          = inherits: \\setupalign\n    textstyle      = STYLE COMMAND\n    textcolor      = COLOR\n    anchor         = next\n    inherits: \\setupframed"
+    ],
+    [
+      "strc-not.mkvi"
+    ]
+  ],
+  "setupnotes": [
+    [
+      "                1           2\n\\setupnotes [...,...] [..,..=..,..]\n               OPT",
+      "1   NAME\n\n2   inherits: \\setupnote"
     ],
     [
       "strc-not.mkvi"
@@ -25937,15 +25305,6 @@
     ],
     [
       "pack-box.mkiv"
-    ]
-  ],
-  "setupoperatortext": [
-    [
-      "                     1         2\n\\setupoperatortext [...] [..,..=..,..]\n                    OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "setupoppositeplacing": [
@@ -26234,15 +25593,6 @@
       "pack-pos.mkiv"
     ]
   ],
-  "setupprefixtext": [
-    [
-      "                   1         2\n\\setupprefixtext [...] [..,..=..,..]\n                  OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
   "setupprocessor": [
     [
       "                    1           2\n\\setupprocessor [...,...] [..,..=..,..]\n                   OPT",
@@ -26344,7 +25694,20 @@
     ],
     [
       "                 1         2\n\\setupregister [...] [..,..=..,..]\n                OPT",
-      "1   NAME:NUMBER\n\n2   referencemethod         = forward\n    expansion               = yes <u>no</u> xml\n    ownnumber               = yes <u>no</u>\n    xmlsetup                = NAME\n    alternative             = a b A B\n    method                  = default before after first last ch mm zm pm mc zc pc uc\n    compress                = yes <u>no</u> all\n    criterium               = local text current previous <u>all</u> SECTION\n    pageprefixseparatorset  = COMMAND\n    pageprefixconversionset = NAME\n    pageprefixstarter       = COMMAND PROCESSOR->COMMAND\n    pageprefixstopper       = COMMAND PROCESSOR->COMMAND\n    pageprefixset           = NAME\n    pageprefixsegments      = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all SECTION SECTION:SECTION SECTION:* SECTION:all\n    pageprefixconnector     = COMMAND\n    pageprefix              = yes no\n    pageseparatorset        = NAME\n    pageconversionset       = NAME\n    pagestarter             = COMMAND PROCESSOR->COMMAND\n    pagestopper             = COMMAND PROCESSOR->COMMAND\n    pagesegments            = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all\n    maxwidth                = DIMENSION\n    indicator               = <u>yes</u> no\n    before                  = COMMAND\n    after                   = COMMAND\n    command                 = ONEARGUMENT\n    textcommand             = ONEARGUMENT\n    deeptextcommand         = ONEARGUMENT\n    pagecommand             = ONEARGUMENT\n    distance                = DIMENSION\n    interaction             = text <u>pagenumber</u>\n    pagenumber              = <u>yes</u> no\n    symbol                  = a <u>n</u> none 1 2 COMMAND\n    language                = default DIN\u24235007-1 DIN\u24235007-2 Duden de-DE de-CH de-AT ru-iso9 ocs-scn LANGUAGE\n    style                   = STYLE COMMAND\n    color                   = COLOR\n    textstyle               = STYLE COMMAND\n    textcolor               = COLOR\n    pagestyle               = STYLE COMMAND\n    pagecolor               = COLOR\n    n                       = NUMBER\n    balance                 = <u>yes</u> no\n    align                   = inherits: \\setupalign\n    numberorder             = <u>numbers</u>"
+      "1   NAME NAME:NUMBER\n\n2   referencemethod         = forward\n    expansion               = yes <u>no</u> xml\n    ownnumber               = yes <u>no</u>\n    xmlsetup                = NAME\n    alternative             = a b A B\n    method                  = default before after first last ch mm zm pm mc zc pc uc\n    compress                = yes <u>no</u> all\n    criterium               = local text current previous <u>all</u> SECTION\n    pageprefixseparatorset  = COMMAND\n    pageprefixconversionset = NAME\n    pageprefixstarter       = COMMAND PROCESSOR->COMMAND\n    pageprefixstopper       = COMMAND PROCESSOR->COMMAND\n    pageprefixset           = NAME\n    pageprefixsegments      = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all SECTION SECTION:SECTION SECTION:* SECTION:all\n    pageprefixconnector     = COMMAND\n    pageprefix              = yes no\n    pageseparatorset        = NAME\n    pageconversionset       = NAME\n    pagestarter             = COMMAND PROCESSOR->COMMAND\n    pagestopper             = COMMAND PROCESSOR->COMMAND\n    pagesegments            = NUMBER NUMBER:NUMBER NUMBER:* NUMBER:all\n    maxwidth                = DIMENSION\n    indicator               = <u>yes</u> no\n    before                  = COMMAND\n    after                   = COMMAND\n    command                 = ONEARGUMENT\n    textcommand             = ONEARGUMENT\n    deeptextcommand         = ONEARGUMENT\n    pagecommand             = ONEARGUMENT\n    distance                = DIMENSION\n    interaction             = text <u>pagenumber</u>\n    pagenumber              = <u>yes</u> no\n    symbol                  = a <u>n</u> none 1 2 COMMAND\n    language                = default DIN\u24235007-1 DIN\u24235007-2 Duden de-DE de-CH de-AT ru-iso9 ocs-scn LANGUAGE\n    style                   = STYLE COMMAND\n    color                   = COLOR\n    textstyle               = STYLE COMMAND\n    textcolor               = COLOR\n    pagestyle               = STYLE COMMAND\n    pagecolor               = COLOR\n    n                       = NUMBER\n    balance                 = <u>yes</u> no\n    align                   = inherits: \\setupalign\n    numberorder             = <u>numbers</u>"
+    ],
+    [
+      "strc-reg.mkiv"
+    ]
+  ],
+  "setupregisters": [
+    [
+      "                    1         2           3\n\\setupregisters [...,...] [...,...] [..,..=..,..]\n                   OPT       OPT",
+      "1   NAME\n\n2   NUMBER\n\n3   inherits: \\setupregister"
+    ],
+    [
+      "                  1         2\n\\setupregisters [...] [..,..=..,..]\n                 OPT",
+      "1   NAME NAME:NUMBER\n\n2   inherits: \\setupregister"
     ],
     [
       "strc-reg.mkiv"
@@ -26394,6 +25757,15 @@
     [
       "                 1           2\n\\setupscript [...,...] [..,..=..,..]\n                OPT",
       "1   NAME\n\n2   method   = hangul hanzi nihongo ethiopic thai test\n    preset   = NAME\n    features = auto"
+    ],
+    [
+      "scrp-ini.mkvi"
+    ]
+  ],
+  "setupscripts": [
+    [
+      "                  1           2\n\\setupscripts [...,...] [..,..=..,..]\n                 OPT",
+      "1   NAME\n\n2   inherits: \\setupscript"
     ],
     [
       "scrp-ini.mkvi"
@@ -26537,7 +25909,7 @@
   "setuptables": [
     [
       "                   1\n\\setuptables [..,..=..,..]",
-      "1   text          = DIMENSION max\n    split         = yes no repeat <u>auto</u>\n    frame         = on off\n    NL            = inherits: \\blank\n    VL            = small <u>medium</u> big none NUMBER\n    HL            = small <u>medium</u> big none NUMBER\n    distance      = small <u>medium</u> big none\n    align         = left middle <u>right</u>\n    commands      = COMMAND\n    bodyfont      = inherits: \\setupbodyfont\n    rulethickness = DIMENSION\n    height        = strut NUMBER\n    depth         = strut NUMBER"
+      "1   text          = DIMENSION max\n    split         = yes no repeat <u>auto</u>\n    frame         = on off\n    NL            = inherits: \\blank\n    VL            = small <u>medium</u> big none NUMBER\n    HL            = small <u>medium</u> big none NUMBER\n    distance      = small <u>medium</u> big none\n    align         = left middle <u>right</u>\n    commands      = COMMAND\n    bodyfont      = inherits: \\setupbodyfont\n    rulethickness = DIMENSION\n    height        = strut NUMBER\n    depth         = strut NUMBER\n    openup        = DIMENSION"
     ],
     [
       "tabl-tab.mkiv"
@@ -26555,7 +25927,7 @@
   "setuptabulation": [
     [
       "                     1           2\n\\setuptabulation [...,...] [..,..=..,..]\n                    OPT",
-      "1   NAME\n\n2   format        = TEMPLATE none\n    before        = COMMAND\n    after         = COMMAND\n    distance      = small <u>medium</u> big none blank <u>depth</u> grid DIMENSION\n    align         = left middle right dimension\n    rule          = line <u>normal</u>\n    rulecolor     = COLOR\n    rulethickness = DIMENSION\n    bodyfont      = inherits: \\setupbodyfont\n    indenting     = yes <u>no</u>\n    split         = yes no repeat <u>auto</u>\n    unit          = DIMENSION\n    margin        = DIMENSION\n    inner         = COMMAND\n    EQ            = COMMAND\n    header        = <u>yes</u> repeat text\n    frame         = on <u>off</u>\n    title         = TEXT"
+      "1   NAME\n\n2   format        = TEMPLATE none\n    before        = COMMAND\n    after         = COMMAND\n    distance      = small <u>medium</u> big none blank <u>depth</u> grid DIMENSION\n    align         = left middle right dimension\n    rule          = line <u>normal</u>\n    rulecolor     = COLOR\n    rulethickness = DIMENSION\n    bodyfont      = inherits: \\setupbodyfont\n    indenting     = yes <u>no</u>\n    split         = yes no repeat <u>auto</u>\n    unit          = DIMENSION\n    margin        = DIMENSION\n    inner         = COMMAND\n    EQ            = COMMAND\n    header        = <u>yes</u> repeat text\n    frame         = on <u>off</u>\n    title         = TEXT\n    keeptogether  = <u>yes</u> no"
     ],
     [
       "tabl-tbl.mkiv"
@@ -26568,15 +25940,6 @@
     ],
     [
       "strc-tag.mkiv"
-    ]
-  ],
-  "setuptaglabeltext": [
-    [
-      "                     1         2\n\\setuptaglabeltext [...] [..,..=..,..]\n                    OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "setuptext": [
@@ -26691,15 +26054,6 @@
     [
       "               1           2\n\\setupunit [...,...] [..,..=..,..]\n              OPT",
       "1   NAME\n\n2   method      = 1 2 3 4 5 6\n    language    = LANGUAGE\n    alternative = text mathematics\n    order       = reverse <u>normal</u>\n    separator   = small medium big <u>normal</u> none NAME\n    space       = small medium big <u>normal</u> none NAME\n    style       = STYLE COMMAND\n    color       = COLOR"
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
-  "setupunittext": [
-    [
-      "                 1         2\n\\setupunittext [...] [..,..=..,..]\n                OPT",
-      "1   LANGUAGE\n\n2   KEY = VALUE"
     ],
     [
       "phys-dim.mkiv"
@@ -26840,6 +26194,15 @@
       "core-env.mkiv"
     ]
   ],
+  "setvboxregister": [
+    [
+      "                  1    2\n\\setvboxregister ... {...}",
+      "1   CSNAME NUMBER\n\n2   CONTENT"
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
   "setvisualizerfont": [
     [
       "                     1\n\\setvisualizerfont [...]\n                    OPT",
@@ -26847,6 +26210,15 @@
     ],
     [
       "trc-vis.mkiv"
+    ]
+  ],
+  "setvtopregister": [
+    [
+      "                  1    2\n\\setvtopregister ... {...}",
+      "1   CSNAME NUMBER\n\n2   CONTENT"
+    ],
+    [
+      "supp-box.mkiv"
     ]
   ],
   "setwidthof": [
@@ -26915,24 +26287,6 @@
   "shift": [
     [
       "         1\n\\shift {...}",
-      "1   CONTENT"
-    ],
-    [
-      "node-rul.mkiv"
-    ]
-  ],
-  "shiftdown": [
-    [
-      "             1\n\\shiftdown {...}",
-      "1   CONTENT"
-    ],
-    [
-      "node-rul.mkiv"
-    ]
-  ],
-  "shiftup": [
-    [
-      "           1\n\\shiftup {...}",
       "1   CONTENT"
     ],
     [
@@ -27951,11 +27305,47 @@
   ],
   "speech": [
     [
-      "          1\n\\speech {...}",
-      "1   CONTENT"
+      "          1     2\n\\speech [...] {...}\n         OPT",
+      "1   LANGUAGE\n\n2   CONTENT"
     ],
     [
       "typo-del.mkiv"
+    ]
+  ],
+  "splitatasterisk": [
+    [
+      "                  1    2    3\n\\splitatasterisk ... \\... \\...",
+      "1   TEXT\n\n2   CSNAME\n\n3   CSNAME"
+    ],
+    [
+      "syst-aux.mkiv"
+    ]
+  ],
+  "splitatcolon": [
+    [
+      "               1    2    3\n\\splitatcolon ... \\... \\...",
+      "1   TEXT\n\n2   CSNAME\n\n3   CSNAME"
+    ],
+    [
+      "syst-aux.mkiv"
+    ]
+  ],
+  "splitatcolons": [
+    [
+      "                1    2    3\n\\splitatcolons ... \\... \\...",
+      "1   TEXT\n\n2   CSNAME\n\n3   CSNAME"
+    ],
+    [
+      "syst-aux.mkiv"
+    ]
+  ],
+  "splitatcomma": [
+    [
+      "               1    2    3\n\\splitatcomma ... \\... \\...",
+      "1   TEXT\n\n2   CSNAME\n\n3   CSNAME"
+    ],
+    [
+      "syst-aux.mkiv"
     ]
   ],
   "splitdfrac": [
@@ -28120,32 +27510,6 @@
       "java-ini.mkiv"
     ]
   ],
-  "startLUA": [
-    [
-      "                1\n\\startLUA [..,..=..,..] ... \\stopLUA\n               OPT",
-      "1   inherits: \\setuptyping"
-    ],
-    [
-      "              1\n\\startLUA [...,...] ... \\stopLUA\n             OPT",
-      "1   continue"
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
-  "startMP": [
-    [
-      "               1\n\\startMP [..,..=..,..] ... \\stopMP\n              OPT",
-      "1   inherits: \\setuptyping"
-    ],
-    [
-      "             1\n\\startMP [...,...] ... \\stopMP\n            OPT",
-      "1   continue"
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
   "startMPclip": [
     [
       "               1\n\\startMPclip {...} ... \\stopMPclip",
@@ -28254,19 +27618,6 @@
       "meta-ini.mkiv"
     ]
   ],
-  "startPARSEDXML": [
-    [
-      "                      1\n\\startPARSEDXML [..,..=..,..] ... \\stopPARSEDXML\n                     OPT",
-      "1   inherits: \\setuptyping"
-    ],
-    [
-      "                    1\n\\startPARSEDXML [...,...] ... \\stopPARSEDXML\n                   OPT",
-      "1   continue"
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
   "startTABLE": [
     [
       "                  1\n\\startTABLE [..,..=..,..] ... \\stopTABLE\n                 OPT",
@@ -28312,19 +27663,6 @@
       "tabl-ntb.mkiv"
     ]
   ],
-  "startTEX": [
-    [
-      "                1\n\\startTEX [..,..=..,..] ... \\stopTEX\n               OPT",
-      "1   inherits: \\setuptyping"
-    ],
-    [
-      "              1\n\\startTEX [...,...] ... \\stopTEX\n             OPT",
-      "1   continue"
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
   "startTEXpage": [
     [
       "                    1\n\\startTEXpage [..,..=..,..] ... \\stopTEXpage\n                   OPT",
@@ -28332,28 +27670,6 @@
     ],
     [
       "page-app.mkiv"
-    ]
-  ],
-  "startXML": [
-    [
-      "                1\n\\startXML [..,..=..,..] ... \\stopXML\n               OPT",
-      "1   inherits: \\setuptyping"
-    ],
-    [
-      "              1\n\\startXML [...,...] ... \\stopXML\n             OPT",
-      "1   continue"
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
-  "startalign": [
-    [
-      "                  1\n\\startalign [..,..=..,..] ... \\stopalign\n                 OPT",
-      "1   inherits: \\setupmathalignment"
-    ],
-    [
-      "math-ali.mkiv"
     ]
   ],
   "startalignment": [
@@ -28374,13 +27690,13 @@
       "core-env.mkiv"
     ]
   ],
-  "startappendices": [
+  "startaside": [
     [
-      "                       1\n\\startappendices [..,..=..,..] ... \\stopappendices\n                      OPT",
-      "1   bookmark = TEXT\n    inherits: \\setupsectionblock"
+      "              1       2\n\\startaside [...] [...,...] ... \\stopaside\n             OPT     OPT",
+      "1   LANGUAGE\n\n2   inherits: \\startnarrower"
     ],
     [
-      "strc-sbe.mkiv"
+      "typo-del.mkiv"
     ]
   ],
   "startattachment": [
@@ -28399,15 +27715,6 @@
     ],
     [
       "pack-bck.mkvi"
-    ]
-  ],
-  "startbackmatter": [
-    [
-      "                       1\n\\startbackmatter [..,..=..,..] ... \\stopbackmatter\n                      OPT",
-      "1   bookmark = TEXT\n    inherits: \\setupsectionblock"
-    ],
-    [
-      "strc-sbe.mkiv"
     ]
   ],
   "startbar": [
@@ -28430,38 +27737,11 @@
   ],
   "startblockquote": [
     [
-      "                     1\n\\startblockquote [...,...] ... \\stopblockquote\n                    OPT",
-      "1   inherits: \\startnarrower"
+      "                   1       2\n\\startblockquote [...] [...,...] ... \\stopblockquote\n                  OPT     OPT",
+      "1   LANGUAGE\n\n2   inherits: \\startnarrower"
     ],
     [
       "typo-del.mkiv"
-    ]
-  ],
-  "startbodymatter": [
-    [
-      "                       1\n\\startbodymatter [..,..=..,..] ... \\stopbodymatter\n                      OPT",
-      "1   bookmark = TEXT\n    inherits: \\setupsectionblock"
-    ],
-    [
-      "strc-sbe.mkiv"
-    ]
-  ],
-  "startboxedcolumns": [
-    [
-      "                         1\n\\startboxedcolumns [..,..=..,..] ... \\stopboxedcolumns\n                        OPT",
-      "1   inherits: \\setupmixedcolumns"
-    ],
-    [
-      "page-mix.mkiv"
-    ]
-  ],
-  "startbtxlabeltext": [
-    [
-      "                     1     2\n\\startbtxlabeltext [...] [...] ... \\stopbtxlabeltext\n                    OPT",
-      "1   LANGUAGE\n\n2   KEY"
-    ],
-    [
-      "publ-ini.mkiv"
     ]
   ],
   "startbtxrenderingdefinitions": [
@@ -28482,24 +27762,6 @@
       "buff-ini.mkiv"
     ]
   ],
-  "startbut": [
-    [
-      "            1\n\\startbut [...] ... \\stopbut",
-      "1   REFERENCE"
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
-  "startcases": [
-    [
-      "                  1\n\\startcases [..,..=..,..] ... \\stopcases\n                 OPT",
-      "1   inherits: \\setupmathcases"
-    ],
-    [
-      "math-ali.mkiv"
-    ]
-  ],
   "startcatcodetable": [
     [
       "                     1\n\\startcatcodetable \\... ... \\stopcatcodetable",
@@ -28516,15 +27778,6 @@
     ],
     [
       "spac-ali.mkiv"
-    ]
-  ],
-  "startchapter": [
-    [
-      "                    1             2\n\\startchapter [..,..=..,..] [..,..=..,..] ... \\stopchapter\n                   OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "startcharacteralign": [
@@ -28590,6 +27843,15 @@
       "colo-ext.mkiv"
     ]
   ],
+  "startcoloronly": [
+    [
+      "                  1\n\\startcoloronly [...] ... \\stopcoloronly",
+      "1   COLOR"
+    ],
+    [
+      "colo-ini.mkiv"
+    ]
+  ],
   "startcolorset": [
     [
       "                 1\n\\startcolorset [...] ... \\stopcolorset",
@@ -28615,15 +27877,6 @@
     ],
     [
       "page-mul.mkiv"
-    ]
-  ],
-  "startcom": [
-    [
-      "\\startcom ... \\stopcom",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
     ]
   ],
   "startcombination": [
@@ -28717,8 +27970,8 @@
   ],
   "startdelimited": [
     [
-      "                  1       2\n\\startdelimited [...] [...,...] ... \\stopdelimited\n                         OPT",
-      "1   NAME\n\n2   inherits: \\startnarrower"
+      "                  1     2       3\n\\startdelimited [...] [...] [...,...] ... \\stopdelimited\n                       OPT     OPT",
+      "1   NAME\n\n2   LANGUAGE\n\n3   inherits: \\startnarrower"
     ],
     [
       "typo-del.mkiv"
@@ -28726,8 +27979,8 @@
   ],
   "startdelimitedtext": [
     [
-      "                      1       2\n\\startdelimitedtext [...] [...,...] ... \\stopdelimitedtext\n                     OPT     OPT",
-      "1   NAME\n\n2   inherits: \\startnarrower"
+      "                      1     2       3\n\\startdelimitedtext [...] [...] [...,...] ... \\stopdelimitedtext\n                     OPT   OPT     OPT",
+      "1   NAME\n\n2   LANGUAGE\n\n3   inherits: \\startnarrower"
     ],
     [
       "typo-del.mkiv"
@@ -28782,6 +28035,15 @@
       "attr-eff.mkiv"
     ]
   ],
+  "startelement": [
+    [
+      "                1         2\n\\startelement {...} [..,..=..,..] ... \\stopelement\n                         OPT",
+      "1   NAME\n\n2   KEY = VALUE"
+    ],
+    [
+      "strc-tag.mkiv"
+    ]
+  ],
   "startembeddedxtable": [
     [
       "                           1\n\\startembeddedxtable [..,..=..,..] ... \\stopembeddedxtable\n                          OPT",
@@ -28793,19 +28055,6 @@
     ],
     [
       "tabl-xtb.mkvi"
-    ]
-  ],
-  "startendnote": [
-    [
-      "                    1\n\\startendnote [..,..=..,..] ... \\stopendnote\n                   OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
-    ],
-    [
-      "                  1\n\\startendnote [...,...] ... \\stopendnote\n                 OPT",
-      "1   REFERENCE"
-    ],
-    [
-      "strc-not.mkvi"
     ]
   ],
   "startenumeration": [
@@ -28879,15 +28128,6 @@
       "grph-inc.mkiv"
     ]
   ],
-  "startfact": [
-    [
-      "             1         2\n\\startfact [...] [..,..=..,..] ... \\stopfact\n            OPT       OPT",
-      "1   NAME\n\n2   inherits: \\setuptabulate"
-    ],
-    [
-      "tabl-tbl.mkiv"
-    ]
-  ],
   "startfigure": [
     [
       "               1     2         3\n\\startfigure [...] [...] [..,..=..,..] ... \\stopfigure\n                              OPT",
@@ -28895,15 +28135,6 @@
     ],
     [
       "grph-fig.mkiv"
-    ]
-  ],
-  "startfiguretext": [
-    [
-      "                     1         2       3\n\\startfiguretext [...,...] [...,...] {...} ... \\stopfiguretext\n                    OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT"
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "startfittingpage": [
@@ -28931,7 +28162,7 @@
   "startfloattext": [
     [
       "                    1         2       3\n\\startfloattext [...,...] [...,...] {...} ... \\stopfloattext\n                   OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT"
+      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere effective\n\n2   REFERENCE\n\n3   TEXT"
     ],
     [
       "strc-flt.mkvi"
@@ -28964,23 +28195,10 @@
       "font-sol.mkvi"
     ]
   ],
-  "startfootnote": [
-    [
-      "                     1\n\\startfootnote [..,..=..,..] ... \\stopfootnote\n                    OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    list      = TEXT\n    reference = REFERENCE"
-    ],
-    [
-      "                   1\n\\startfootnote [...,...] ... \\stopfootnote\n                  OPT",
-      "1   REFERENCE"
-    ],
-    [
-      "strc-not.mkvi"
-    ]
-  ],
   "startformula": [
     [
       "                  1\n\\startformula [...,...] ... \\stopformula\n                 OPT",
-      "1   inherits: \\setupbodyfont"
+      "1   packed tight middle frame inherits: \\setupbodyfont"
     ],
     [
       "strc-mat.mkiv"
@@ -29022,24 +28240,6 @@
       "pack-rul.mkiv"
     ]
   ],
-  "startfrontmatter": [
-    [
-      "                        1\n\\startfrontmatter [..,..=..,..] ... \\stopfrontmatter\n                       OPT",
-      "1   bookmark = TEXT\n    inherits: \\setupsectionblock"
-    ],
-    [
-      "strc-sbe.mkiv"
-    ]
-  ],
-  "startgot": [
-    [
-      "            1\n\\startgot [...] ... \\stopgot",
-      "1   REFERENCE"
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
   "startgoto": [
     [
       "             1\n\\startgoto [...] ... \\stopgoto",
@@ -29047,15 +28247,6 @@
     ],
     [
       "strc-ref.mkvi"
-    ]
-  ],
-  "startgraphictext": [
-    [
-      "                      1         2       3\n\\startgraphictext [...,...] [...,...] {...} ... \\stopgraphictext\n                     OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT"
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "startgridsnapping": [
@@ -29080,6 +28271,15 @@
       "supp-box.mkiv"
     ]
   ],
+  "starthboxregister": [
+    [
+      "                    1\n\\starthboxregister ... ... \\stophboxregister",
+      "1   CSNAME NUMBER"
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
   "starthead": [
     [
       "               1       2\n\\starthead [...,...] {...} ... \\stophead\n              OPT",
@@ -29087,15 +28287,6 @@
     ],
     [
       "strc-itm.mkvi"
-    ]
-  ],
-  "startheadtext": [
-    [
-      "                 1     2\n\\startheadtext [...] [...] ... \\stopheadtext\n                OPT",
-      "1   LANGUAGE\n\n2   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "starthelp": [
@@ -29188,15 +28379,6 @@
       "mult-ini.mkiv"
     ]
   ],
-  "startintermezzotext": [
-    [
-      "                         1         2       3\n\\startintermezzotext [...,...] [...,...] {...} ... \\stopintermezzotext\n                        OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "startintertext": [
     [
       "\\startintertext ... \\stopintertext",
@@ -29219,15 +28401,6 @@
     [
       "                  1       2           3\n\\startitemgroup [...] [...,...] [..,..=..,..] ... \\stopitemgroup\n                 OPT     OPT         OPT",
       "1   NAME\n\n2   inherits: \\setupitemgroup\n\n3   inherits: \\setupitemgroup"
-    ],
-    [
-      "strc-itm.mkvi"
-    ]
-  ],
-  "startitemize": [
-    [
-      "                  1           2\n\\startitemize [...,...] [..,..=..,..] ... \\stopitemize\n                 OPT         OPT",
-      "1   inherits: \\setupitemgroup\n\n2   inherits: \\setupitemgroup"
     ],
     [
       "strc-itm.mkvi"
@@ -29269,15 +28442,6 @@
       "spac-ali.mkiv"
     ]
   ],
-  "startlegend": [
-    [
-      "               1         2\n\\startlegend [...] [..,..=..,..] ... \\stoplegend\n              OPT       OPT",
-      "1   NAME\n\n2   inherits: \\setuptabulate"
-    ],
-    [
-      "tabl-tbl.mkiv"
-    ]
-  ],
   "startline": [
     [
       "             1\n\\startline [...]",
@@ -29305,6 +28469,15 @@
       "spac-ver.mkiv"
     ]
   ],
+  "startlinefiller": [
+    [
+      "                   1         2\n\\startlinefiller [...] [..,..=..,..] ... \\stoplinefiller\n                            OPT",
+      "1   filler NAME\n\n2   inherits: \\setuplinefiller"
+    ],
+    [
+      "node-rul.mkiv"
+    ]
+  ],
   "startlinenote": [
     [
       "                 1     2\n\\startlinenote [...] {...}",
@@ -29317,7 +28490,7 @@
   "startlinenumbering": [
     [
       "                      1         2\n\\startlinenumbering [...] [..,..=..,..] ... \\stoplinenumbering\n                     OPT       OPT",
-      "1   NAME\n\n2   inherits: \\setuplinenumbering"
+      "1   NAME\n\n2   continue = yes <u>no</u>\n    start    = NUMBER\n    step     = NUMBER\n    method   = page <u>first</u> next"
     ],
     [
       "                      1     2\n\\startlinenumbering [...] [...] ... \\stoplinenumbering\n                     OPT   OPT",
@@ -29519,15 +28692,6 @@
       "math-ali.mkiv"
     ]
   ],
-  "startmathlabeltext": [
-    [
-      "                      1     2\n\\startmathlabeltext [...] [...] ... \\stopmathlabeltext\n                     OPT",
-      "1   LANGUAGE\n\n2   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
   "startmathmatrix": [
     [
       "                       1\n\\startmathmatrix [..,..=..,..] ... \\stopmathmatrix\n                      OPT",
@@ -29564,15 +28728,6 @@
       "math-ali.mkiv"
     ]
   ],
-  "startmatrix": [
-    [
-      "                   1\n\\startmatrix [..,..=..,..] ... \\stopmatrix\n                  OPT",
-      "1   inherits: \\setupmathmatrix"
-    ],
-    [
-      "math-ali.mkiv"
-    ]
-  ],
   "startmaxaligned": [
     [
       "\\startmaxaligned ... \\stopmaxaligned",
@@ -29585,7 +28740,7 @@
   "startmdformula": [
     [
       "                    1\n\\startmdformula [...,...] ... \\stopmdformula\n                   OPT",
-      "1   inherits: \\setupbodyfont"
+      "1   packed tight middle frame inherits: \\setupbodyfont"
     ],
     [
       "strc-mat.mkiv"
@@ -29661,7 +28816,7 @@
   "startmpformula": [
     [
       "                    1\n\\startmpformula [...,...] ... \\stopmpformula\n                   OPT",
-      "1   inherits: \\setupbodyfont"
+      "1   packed tight middle frame inherits: \\setupbodyfont"
     ],
     [
       "strc-mat.mkiv"
@@ -29738,15 +28893,6 @@
       "syst-aux.mkiv"
     ]
   ],
-  "startnop": [
-    [
-      "\\startnop ... \\stopnop",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
   "startnotallmodes": [
     [
       "                      1\n\\startnotallmodes [...,...] ... \\stopnotallmodes",
@@ -29785,15 +28931,6 @@
     ],
     [
       "core-env.mkiv"
-    ]
-  ],
-  "startoperatortext": [
-    [
-      "                     1     2\n\\startoperatortext [...] [...] ... \\stopoperatortext\n                    OPT",
-      "1   LANGUAGE\n\n2   KEY"
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "startopposite": [
@@ -29940,37 +29077,10 @@
       "typo-bld.mkiv"
     ]
   ],
-  "startpart": [
-    [
-      "                 1             2\n\\startpart [..,..=..,..] [..,..=..,..] ... \\stoppart\n                OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "startplacechemical": [
-    [
-      "                          1             2\n\\startplacechemical [..,..=..,..] [..,..=..,..] ... \\stopplacechemical\n                         OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n    reference = REFERENCE\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "startplacefigure": [
-    [
-      "                        1             2\n\\startplacefigure [..,..=..,..] [..,..=..,..] ... \\stopplacefigure\n                       OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n    reference = REFERENCE\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "startplacefloat": [
     [
-      "                   1         2             3\n\\startplacefloat [...] [..,..=..,..] [..,..=..,..] ... \\stopplacefloat\n                  OPT       OPT           OPT",
-      "1   SINGULAR\n\n2   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n    reference = REFERENCE\n\n3   KEY = VALUE"
+      "                       1             2\n\\startplacefloat [..,..=..,..] [..,..=..,..] ... \\stopplacefloat\n                      OPT           OPT",
+      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere effective\n    reference = REFERENCE\n\n2   KEY = VALUE"
     ],
     [
       "strc-flt.mkvi"
@@ -29979,7 +29089,7 @@
   "startplaceformula": [
     [
       "                         1\n\\startplaceformula [..,..=..,..] ... \\stopplaceformula\n                        OPT",
-      "1   title     = TEXT\n    suffix    = TEXT\n    reference = + - TEXT"
+      "1   title     = TEXT\n    suffix    = TEXT\n    reference = + - REFERENCE"
     ],
     [
       "                       1\n\\startplaceformula [...,...] ... \\stopplaceformula\n                      OPT",
@@ -29989,33 +29099,6 @@
       "strc-mat.mkiv"
     ]
   ],
-  "startplacegraphic": [
-    [
-      "                         1             2\n\\startplacegraphic [..,..=..,..] [..,..=..,..] ... \\stopplacegraphic\n                        OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n    reference = REFERENCE\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "startplaceintermezzo": [
-    [
-      "                            1             2\n\\startplaceintermezzo [..,..=..,..] [..,..=..,..] ... \\stopplaceintermezzo\n                           OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n    reference = REFERENCE\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "startplacelegend": [
-    [
-      "                        1\n\\startplacelegend [..,..=..,..] ... \\stopplacelegend\n                       OPT",
-      "1   inherits: \\setuppairedbox"
-    ],
-    [
-      "pack-com.mkiv"
-    ]
-  ],
   "startplacepairedbox": [
     [
       "                       1         2\n\\startplacepairedbox [...] [..,..=..,..] ... \\stopplacepairedbox\n                      OPT       OPT",
@@ -30023,15 +29106,6 @@
     ],
     [
       "pack-com.mkiv"
-    ]
-  ],
-  "startplacetable": [
-    [
-      "                       1             2\n\\startplacetable [..,..=..,..] [..,..=..,..] ... \\stopplacetable\n                      OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    location  = split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n    reference = REFERENCE\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "startpositioning": [
@@ -30068,15 +29142,6 @@
     ],
     [
       "page-pst.mkiv"
-    ]
-  ],
-  "startprefixtext": [
-    [
-      "                   1     2\n\\startprefixtext [...] [...] ... \\stopprefixtext\n                  OPT",
-      "1   LANGUAGE\n\n2   KEY"
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "startprocessassignmentcommand": [
@@ -30150,15 +29215,6 @@
       "colo-ini.mkiv"
     ]
   ],
-  "startpsh": [
-    [
-      "            1\n\\startpsh [...] ... \\stoppsh",
-      "1   REFERENCE"
-    ],
-    [
-      "scrn-fld.mkvi"
-    ]
-  ],
   "startpublication": [
     [
       "                    1         2\n\\startpublication [...] [..,..=..,..] ... \\stoppublication\n                   OPT       OPT",
@@ -30170,8 +29226,8 @@
   ],
   "startquotation": [
     [
-      "                    1\n\\startquotation [...,...] ... \\stopquotation\n                   OPT",
-      "1   inherits: \\startnarrower"
+      "                  1       2\n\\startquotation [...] [...,...] ... \\stopquotation\n                 OPT     OPT",
+      "1   LANGUAGE\n\n2   inherits: \\startnarrower"
     ],
     [
       "typo-del.mkiv"
@@ -30179,8 +29235,8 @@
   ],
   "startquote": [
     [
-      "\\startquote ... \\stopquote",
-      ""
+      "              1\n\\startquote [...] ... \\stopquote\n             OPT",
+      "1   LANGUAGE"
     ],
     [
       "typo-del.mkiv"
@@ -30193,15 +29249,6 @@
     ],
     [
       "typo-cap.mkiv"
-    ]
-  ],
-  "startraw": [
-    [
-      "            1\n\\startraw [...] ... \\stopraw",
-      "1   REFERENCE"
-    ],
-    [
-      "scrn-but.mkvi"
     ]
   ],
   "startrawsetups": [
@@ -30262,24 +29309,6 @@
       "spac-ali.mkiv"
     ]
   ],
-  "startrob": [
-    [
-      "            1\n\\startrob [...] ... \\stoprob",
-      "1   REFERENCE"
-    ],
-    [
-      "scrn-fld.mkvi"
-    ]
-  ],
-  "startrul": [
-    [
-      "\\startrul ... \\stoprul",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
   "startscript": [
     [
       "               1\n\\startscript [...] ... \\stopscript",
@@ -30292,7 +29321,7 @@
   "startsdformula": [
     [
       "                    1\n\\startsdformula [...,...] ... \\stopsdformula\n                   OPT",
-      "1   inherits: \\setupbodyfont"
+      "1   packed tight middle frame inherits: \\setupbodyfont"
     ],
     [
       "strc-mat.mkiv"
@@ -30403,7 +29432,7 @@
   "startspformula": [
     [
       "                    1\n\\startspformula [...,...] ... \\stopspformula\n                   OPT",
-      "1   inherits: \\setupbodyfont"
+      "1   packed tight middle frame inherits: \\setupbodyfont"
     ],
     [
       "strc-mat.mkiv"
@@ -30494,15 +29523,6 @@
       "strc-mat.mkiv"
     ]
   ],
-  "startsubject": [
-    [
-      "                    1             2\n\\startsubject [..,..=..,..] [..,..=..,..] ... \\stopsubject\n                   OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
   "startsubjectlevel": [
     [
       "                     1         2             3\n\\startsubjectlevel [...] [..,..=..,..] [..,..=..,..] ... \\stopsubjectlevel\n                    OPT       OPT           OPT",
@@ -30510,15 +29530,6 @@
     ],
     [
       "strc-lev.mkvi"
-    ]
-  ],
-  "startsubsection": [
-    [
-      "                       1             2\n\\startsubsection [..,..=..,..] [..,..=..,..] ... \\stopsubsection\n                      OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "startsubsentence": [
@@ -30537,69 +29548,6 @@
     ],
     [
       "math-ali.mkiv"
-    ]
-  ],
-  "startsubsubject": [
-    [
-      "                       1             2\n\\startsubsubject [..,..=..,..] [..,..=..,..] ... \\stopsubsubject\n                      OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "startsubsubsection": [
-    [
-      "                          1             2\n\\startsubsubsection [..,..=..,..] [..,..=..,..] ... \\stopsubsubsection\n                         OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "startsubsubsubject": [
-    [
-      "                          1             2\n\\startsubsubsubject [..,..=..,..] [..,..=..,..] ... \\stopsubsubsubject\n                         OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "startsubsubsubsection": [
-    [
-      "                             1             2\n\\startsubsubsubsection [..,..=..,..] [..,..=..,..] ... \\stopsubsubsubsection\n                            OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "startsubsubsubsubject": [
-    [
-      "                             1             2\n\\startsubsubsubsubject [..,..=..,..] [..,..=..,..] ... \\stopsubsubsubsubject\n                            OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "startsubsubsubsubsection": [
-    [
-      "                                1             2\n\\startsubsubsubsubsection [..,..=..,..] [..,..=..,..] ... \\stopsubsubsubsubsection\n                               OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "startsubsubsubsubsubject": [
-    [
-      "                                1             2\n\\startsubsubsubsubsubject [..,..=..,..] [..,..=..,..] ... \\stopsubsubsubsubsubject\n                               OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "startsymbolset": [
@@ -30655,15 +29603,6 @@
       "tabl-tab.mkiv"
     ]
   ],
-  "starttabletext": [
-    [
-      "                    1         2       3\n\\starttabletext [...,...] [...,...] {...} ... \\stoptabletext\n                   OPT       OPT",
-      "1   split always left right inner outer backspace cutspace inleft inright inmargin leftmargin rightmargin leftedge rightedge innermargin outermargin inneredge outeredge text opposite reset height depth [+-]line halfline grid high low fit 90 180 270 nonumber none local here force margin [+-]hang hanging tall both middle offset top bottom auto page leftpage rightpage somewhere\n\n2   REFERENCE\n\n3   TEXT"
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "starttabulate": [
     [
       "                  1          2\n\\starttabulate [|...|] [..,..=..,..] ... \\stoptabulate\n                 OPT        OPT",
@@ -30702,15 +29641,6 @@
     ],
     [
       "tabl-tbl.mkiv"
-    ]
-  ],
-  "starttaglabeltext": [
-    [
-      "                     1     2\n\\starttaglabeltext [...] [...] ... \\stoptaglabeltext\n                    OPT",
-      "1   LANGUAGE\n\n2   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "starttexcode": [
@@ -30794,15 +29724,6 @@
       "pack-mrl.mkiv"
     ]
   ],
-  "starttitle": [
-    [
-      "                  1             2\n\\starttitle [..,..=..,..] [..,..=..,..] ... \\stoptitle\n                 OPT           OPT",
-      "1   title     = TEXT\n    bookmark  = TEXT\n    marking   = TEXT\n    list      = TEXT\n    reference = REFERENCE\n    ownnumber = TEXT\n\n2   KEY = VALUE"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
   "starttokens": [
     [
       "               1\n\\starttokens [...] ... \\stoptokens",
@@ -30812,13 +29733,13 @@
       "toks-tra.mkiv"
     ]
   ],
-  "starttxt": [
+  "starttransparent": [
     [
-      "\\starttxt ... \\stoptxt",
-      ""
+      "                    1\n\\starttransparent [...] ... \\stoptransparent",
+      "1   COLOR"
     ],
     [
-      "scrn-but.mkvi"
+      "colo-ini.mkiv"
     ]
   ],
   "starttypescript": [
@@ -30870,15 +29791,6 @@
       "meta-ini.mkiv"
     ]
   ],
-  "startunittext": [
-    [
-      "                 1     2\n\\startunittext [...] [...] ... \\stopunittext\n                OPT",
-      "1   LANGUAGE\n\n2   KEY"
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
   "startunpacked": [
     [
       "\\startunpacked ... \\stopunpacked",
@@ -30924,6 +29836,15 @@
       "publ-ini.mkiv"
     ]
   ],
+  "startvboxregister": [
+    [
+      "                    1\n\\startvboxregister ... ... \\stopvboxregister",
+      "1   CSNAME NUMBER"
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
   "startvboxtohbox": [
     [
       "\\startvboxtohbox ... \\stopvboxtohbox",
@@ -30949,6 +29870,15 @@
     ],
     [
       "attr-lay.mkiv"
+    ]
+  ],
+  "startvtopregister": [
+    [
+      "                    1\n\\startvtopregister ... ... \\stopvtopregister",
+      "1   CSNAME NUMBER"
+    ],
+    [
+      "supp-box.mkiv"
     ]
   ],
   "startxcell": [
@@ -31119,24 +30049,6 @@
       "java-ini.mkiv"
     ]
   ],
-  "stopLUA": [
-    [
-      "\\stopLUA",
-      ""
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
-  "stopMP": [
-    [
-      "\\stopMP",
-      ""
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
   "stopMPclip": [
     [
       "\\stopMPclip",
@@ -31245,15 +30157,6 @@
       "meta-ini.mkiv"
     ]
   ],
-  "stopPARSEDXML": [
-    [
-      "\\stopPARSEDXML",
-      ""
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
   "stopTABLE": [
     [
       "\\stopTABLE",
@@ -31299,15 +30202,6 @@
       "tabl-ntb.mkiv"
     ]
   ],
-  "stopTEX": [
-    [
-      "\\stopTEX",
-      ""
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
   "stopTEXpage": [
     [
       "\\stopTEXpage",
@@ -31315,24 +30209,6 @@
     ],
     [
       "page-app.mkiv"
-    ]
-  ],
-  "stopXML": [
-    [
-      "\\stopXML",
-      ""
-    ],
-    [
-      "buff-ver.mkiv"
-    ]
-  ],
-  "stopalign": [
-    [
-      "\\stopalign",
-      ""
-    ],
-    [
-      "math-ali.mkiv"
     ]
   ],
   "stopalignment": [
@@ -31353,13 +30229,13 @@
       "core-env.mkiv"
     ]
   ],
-  "stopappendices": [
+  "stopaside": [
     [
-      "\\stopappendices",
+      "\\stopaside",
       ""
     ],
     [
-      "strc-sbe.mkiv"
+      "typo-del.mkiv"
     ]
   ],
   "stopattachment": [
@@ -31378,15 +30254,6 @@
     ],
     [
       "pack-bck.mkvi"
-    ]
-  ],
-  "stopbackmatter": [
-    [
-      "\\stopbackmatter",
-      ""
-    ],
-    [
-      "strc-sbe.mkiv"
     ]
   ],
   "stopbar": [
@@ -31416,33 +30283,6 @@
       "typo-del.mkiv"
     ]
   ],
-  "stopbodymatter": [
-    [
-      "\\stopbodymatter",
-      ""
-    ],
-    [
-      "strc-sbe.mkiv"
-    ]
-  ],
-  "stopboxedcolumns": [
-    [
-      "\\stopboxedcolumns",
-      ""
-    ],
-    [
-      "page-mix.mkiv"
-    ]
-  ],
-  "stopbtxlabeltext": [
-    [
-      "\\stopbtxlabeltext",
-      ""
-    ],
-    [
-      "publ-ini.mkiv"
-    ]
-  ],
   "stopbtxrenderingdefinitions": [
     [
       "\\stopbtxrenderingdefinitions",
@@ -31461,24 +30301,6 @@
       "buff-ini.mkiv"
     ]
   ],
-  "stopbut": [
-    [
-      "\\stopbut",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
-  "stopcases": [
-    [
-      "\\stopcases",
-      ""
-    ],
-    [
-      "math-ali.mkiv"
-    ]
-  ],
   "stopcatcodetable": [
     [
       "\\stopcatcodetable",
@@ -31495,15 +30317,6 @@
     ],
     [
       "spac-ali.mkiv"
-    ]
-  ],
-  "stopchapter": [
-    [
-      "\\stopchapter",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "stopcharacteralign": [
@@ -31569,6 +30382,15 @@
       "colo-ext.mkiv"
     ]
   ],
+  "stopcoloronly": [
+    [
+      "\\stopcoloronly",
+      ""
+    ],
+    [
+      "colo-ini.mkiv"
+    ]
+  ],
   "stopcolorset": [
     [
       "\\stopcolorset",
@@ -31594,15 +30416,6 @@
     ],
     [
       "page-mul.mkiv"
-    ]
-  ],
-  "stopcom": [
-    [
-      "\\stopcom",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
     ]
   ],
   "stopcombination": [
@@ -31749,6 +30562,15 @@
       "attr-eff.mkiv"
     ]
   ],
+  "stopelement": [
+    [
+      "\\stopelement",
+      ""
+    ],
+    [
+      "strc-tag.mkiv"
+    ]
+  ],
   "stopembeddedxtable": [
     [
       "\\stopembeddedxtable",
@@ -31756,15 +30578,6 @@
     ],
     [
       "tabl-xtb.mkvi"
-    ]
-  ],
-  "stopendnote": [
-    [
-      "\\stopendnote",
-      ""
-    ],
-    [
-      "strc-not.mkvi"
     ]
   ],
   "stopenumeration": [
@@ -31830,15 +30643,6 @@
       "grph-inc.mkiv"
     ]
   ],
-  "stopfact": [
-    [
-      "\\stopfact",
-      ""
-    ],
-    [
-      "tabl-tbl.mkiv"
-    ]
-  ],
   "stopfigure": [
     [
       "\\stopfigure",
@@ -31846,15 +30650,6 @@
     ],
     [
       "grph-fig.mkiv"
-    ]
-  ],
-  "stopfiguretext": [
-    [
-      "\\stopfiguretext",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "stopfittingpage": [
@@ -31911,15 +30706,6 @@
       "font-sol.mkvi"
     ]
   ],
-  "stopfootnote": [
-    [
-      "\\stopfootnote",
-      ""
-    ],
-    [
-      "strc-not.mkvi"
-    ]
-  ],
   "stopformula": [
     [
       "\\stopformula",
@@ -31965,24 +30751,6 @@
       "pack-rul.mkiv"
     ]
   ],
-  "stopfrontmatter": [
-    [
-      "\\stopfrontmatter",
-      ""
-    ],
-    [
-      "strc-sbe.mkiv"
-    ]
-  ],
-  "stopgot": [
-    [
-      "\\stopgot",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
   "stopgoto": [
     [
       "\\stopgoto",
@@ -31990,15 +30758,6 @@
     ],
     [
       "strc-ref.mkvi"
-    ]
-  ],
-  "stopgraphictext": [
-    [
-      "\\stopgraphictext",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "stopgridsnapping": [
@@ -32019,6 +30778,15 @@
       "supp-box.mkiv"
     ]
   ],
+  "stophboxregister": [
+    [
+      "\\stophboxregister",
+      ""
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
   "stophead": [
     [
       "\\stophead",
@@ -32026,15 +30794,6 @@
     ],
     [
       "strc-itm.mkvi"
-    ]
-  ],
-  "stopheadtext": [
-    [
-      "\\stopheadtext",
-      ""
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "stophelp": [
@@ -32127,15 +30886,6 @@
       "mult-ini.mkiv"
     ]
   ],
-  "stopintermezzotext": [
-    [
-      "\\stopintermezzotext",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "stopintertext": [
     [
       "\\stopintertext",
@@ -32157,15 +30907,6 @@
   "stopitemgroup": [
     [
       "\\stopitemgroup",
-      ""
-    ],
-    [
-      "strc-itm.mkvi"
-    ]
-  ],
-  "stopitemize": [
-    [
-      "\\stopitemize",
       ""
     ],
     [
@@ -32208,15 +30949,6 @@
       "spac-ali.mkiv"
     ]
   ],
-  "stoplegend": [
-    [
-      "\\stoplegend",
-      ""
-    ],
-    [
-      "tabl-tbl.mkiv"
-    ]
-  ],
   "stopline": [
     [
       "            1\n\\stopline [...]",
@@ -32242,6 +30974,15 @@
     ],
     [
       "spac-ver.mkiv"
+    ]
+  ],
+  "stoplinefiller": [
+    [
+      "\\stoplinefiller",
+      ""
+    ],
+    [
+      "node-rul.mkiv"
     ]
   ],
   "stoplinenote": [
@@ -32442,15 +31183,6 @@
       "math-ali.mkiv"
     ]
   ],
-  "stopmathlabeltext": [
-    [
-      "\\stopmathlabeltext",
-      ""
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
   "stopmathmatrix": [
     [
       "\\stopmathmatrix",
@@ -32481,15 +31213,6 @@
   "stopmatrices": [
     [
       "\\stopmatrices",
-      ""
-    ],
-    [
-      "math-ali.mkiv"
-    ]
-  ],
-  "stopmatrix": [
-    [
-      "\\stopmatrix",
       ""
     ],
     [
@@ -32649,15 +31372,6 @@
       "syst-aux.mkiv"
     ]
   ],
-  "stopnop": [
-    [
-      "\\stopnop",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
-    ]
-  ],
   "stopnotallmodes": [
     [
       "\\stopnotallmodes",
@@ -32692,15 +31406,6 @@
     ],
     [
       "core-env.mkiv"
-    ]
-  ],
-  "stopoperatortext": [
-    [
-      "\\stopoperatortext",
-      ""
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "stopopposite": [
@@ -32847,33 +31552,6 @@
       "typo-bld.mkiv"
     ]
   ],
-  "stoppart": [
-    [
-      "\\stoppart",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "stopplacechemical": [
-    [
-      "\\stopplacechemical",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "stopplacefigure": [
-    [
-      "\\stopplacefigure",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "stopplacefloat": [
     [
       "\\stopplacefloat",
@@ -32892,33 +31570,6 @@
       "strc-mat.mkiv"
     ]
   ],
-  "stopplacegraphic": [
-    [
-      "\\stopplacegraphic",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "stopplaceintermezzo": [
-    [
-      "\\stopplaceintermezzo",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
-  "stopplacelegend": [
-    [
-      "\\stopplacelegend",
-      ""
-    ],
-    [
-      "pack-com.mkiv"
-    ]
-  ],
   "stopplacepairedbox": [
     [
       "\\stopplacepairedbox",
@@ -32926,15 +31577,6 @@
     ],
     [
       "pack-com.mkiv"
-    ]
-  ],
-  "stopplacetable": [
-    [
-      "\\stopplacetable",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
     ]
   ],
   "stoppositioning": [
@@ -32971,15 +31613,6 @@
     ],
     [
       "page-pst.mkiv"
-    ]
-  ],
-  "stopprefixtext": [
-    [
-      "\\stopprefixtext",
-      ""
-    ],
-    [
-      "phys-dim.mkiv"
     ]
   ],
   "stopprocessassignmentcommand": [
@@ -33045,15 +31678,6 @@
       "colo-ini.mkiv"
     ]
   ],
-  "stoppsh": [
-    [
-      "\\stoppsh",
-      ""
-    ],
-    [
-      "scrn-fld.mkvi"
-    ]
-  ],
   "stoppublication": [
     [
       "\\stoppublication",
@@ -33088,15 +31712,6 @@
     ],
     [
       "typo-cap.mkiv"
-    ]
-  ],
-  "stopraw": [
-    [
-      "\\stopraw",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
     ]
   ],
   "stoprawsetups": [
@@ -33151,24 +31766,6 @@
     ],
     [
       "spac-ali.mkiv"
-    ]
-  ],
-  "stoprob": [
-    [
-      "\\stoprob",
-      ""
-    ],
-    [
-      "scrn-fld.mkvi"
-    ]
-  ],
-  "stoprul": [
-    [
-      "\\stoprul",
-      ""
-    ],
-    [
-      "scrn-but.mkvi"
     ]
   ],
   "stopscript": [
@@ -33360,15 +31957,6 @@
       "strc-mat.mkiv"
     ]
   ],
-  "stopsubject": [
-    [
-      "\\stopsubject",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
   "stopsubjectlevel": [
     [
       "\\stopsubjectlevel",
@@ -33376,15 +31964,6 @@
     ],
     [
       "strc-lev.mkvi"
-    ]
-  ],
-  "stopsubsection": [
-    [
-      "\\stopsubsection",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "stopsubsentence": [
@@ -33403,69 +31982,6 @@
     ],
     [
       "math-ali.mkiv"
-    ]
-  ],
-  "stopsubsubject": [
-    [
-      "\\stopsubsubject",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "stopsubsubsection": [
-    [
-      "\\stopsubsubsection",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "stopsubsubsubject": [
-    [
-      "\\stopsubsubsubject",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "stopsubsubsubsection": [
-    [
-      "\\stopsubsubsubsection",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "stopsubsubsubsubject": [
-    [
-      "\\stopsubsubsubsubject",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "stopsubsubsubsubsection": [
-    [
-      "\\stopsubsubsubsubsection",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "stopsubsubsubsubsubject": [
-    [
-      "\\stopsubsubsubsubsubject",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "stopsymbolset": [
@@ -33513,15 +32029,6 @@
       "tabl-tab.mkiv"
     ]
   ],
-  "stoptabletext": [
-    [
-      "\\stoptabletext",
-      ""
-    ],
-    [
-      "strc-flt.mkvi"
-    ]
-  ],
   "stoptabulate": [
     [
       "\\stoptabulate",
@@ -33556,15 +32063,6 @@
     ],
     [
       "tabl-tbl.mkiv"
-    ]
-  ],
-  "stoptaglabeltext": [
-    [
-      "\\stoptaglabeltext",
-      ""
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "stoptexcode": [
@@ -33648,15 +32146,6 @@
       "pack-mrl.mkiv"
     ]
   ],
-  "stoptitle": [
-    [
-      "\\stoptitle",
-      ""
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
   "stoptokens": [
     [
       "\\stoptokens",
@@ -33666,13 +32155,13 @@
       "toks-tra.mkiv"
     ]
   ],
-  "stoptxt": [
+  "stoptransparent": [
     [
-      "\\stoptxt",
+      "\\stoptransparent",
       ""
     ],
     [
-      "scrn-but.mkvi"
+      "colo-ini.mkiv"
     ]
   ],
   "stoptypescript": [
@@ -33720,15 +32209,6 @@
       "meta-ini.mkiv"
     ]
   ],
-  "stopunittext": [
-    [
-      "\\stopunittext",
-      ""
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
   "stopunpacked": [
     [
       "\\stopunpacked",
@@ -33774,6 +32254,15 @@
       "publ-ini.mkiv"
     ]
   ],
+  "stopvboxregister": [
+    [
+      "\\stopvboxregister",
+      ""
+    ],
+    [
+      "supp-box.mkiv"
+    ]
+  ],
   "stopvboxtohbox": [
     [
       "\\stopvboxtohbox",
@@ -33799,6 +32288,15 @@
     ],
     [
       "attr-lay.mkiv"
+    ]
+  ],
+  "stopvtopregister": [
+    [
+      "\\stopvtopregister",
+      ""
+    ],
+    [
+      "supp-box.mkiv"
     ]
   ],
   "stopxcell": [
@@ -34106,24 +32604,6 @@
       "font-sty.mkvi"
     ]
   ],
-  "sub": [
-    [
-      "\\sub",
-      ""
-    ],
-    [
-      "strc-itm.mkvi"
-    ]
-  ],
-  "subject": [
-    [
-      "             1       2\n\\subject [...,...] {...}\n            OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
   "subpagenumber": [
     [
       "\\subpagenumber",
@@ -34131,15 +32611,6 @@
     ],
     [
       "strc-pag.mkiv"
-    ]
-  ],
-  "subsection": [
-    [
-      "                1       2\n\\subsection [...,...] {...}\n               OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "subsentence": [
@@ -34158,69 +32629,6 @@
     ],
     [
       "syst-aux.mkiv"
-    ]
-  ],
-  "subsubject": [
-    [
-      "                1       2\n\\subsubject [...,...] {...}\n               OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "subsubsection": [
-    [
-      "                   1       2\n\\subsubsection [...,...] {...}\n                  OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "subsubsubject": [
-    [
-      "                   1       2\n\\subsubsubject [...,...] {...}\n                  OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "subsubsubsection": [
-    [
-      "                      1       2\n\\subsubsubsection [...,...] {...}\n                     OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "subsubsubsubject": [
-    [
-      "                      1       2\n\\subsubsubsubject [...,...] {...}\n                     OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "subsubsubsubsection": [
-    [
-      "                         1       2\n\\subsubsubsubsection [...,...] {...}\n                        OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
-    ]
-  ],
-  "subsubsubsubsubject": [
-    [
-      "                         1       2\n\\subsubsubsubsubject [...,...] {...}\n                        OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "subtractfeature": [
@@ -34327,15 +32735,6 @@
     ],
     [
       "spac-ver.mkiv"
-    ]
-  ],
-  "sym": [
-    [
-      "       1\n\\sym {...}",
-      "1   TEXT"
-    ],
-    [
-      "strc-itm.mkvi"
     ]
   ],
   "symbol": [
@@ -34538,24 +32937,6 @@
     ],
     [
       "strc-tag.mkiv"
-    ]
-  ],
-  "taglabellanguage": [
-    [
-      "\\taglabellanguage",
-      ""
-    ],
-    [
-      "lang-lab.mkiv"
-    ]
-  ],
-  "taglabeltext": [
-    [
-      "                1\n\\taglabeltext {...}",
-      "1   KEY"
-    ],
-    [
-      "lang-lab.mkiv"
     ]
   ],
   "tbinom": [
@@ -34817,15 +33198,6 @@
       "math-frc.mkiv"
     ]
   ],
-  "thai": [
-    [
-      "\\thai",
-      ""
-    ],
-    [
-      "scrp-ini.mkvi"
-    ]
-  ],
   "thainumerals": [
     [
       "                1\n\\thainumerals {...}",
@@ -35004,15 +33376,6 @@
     ],
     [
       "font-pre.mkiv"
-    ]
-  ],
-  "title": [
-    [
-      "           1       2\n\\title [...,...] {...}\n          OPT",
-      "1   REFERENCE\n\n2   TEXT"
-    ],
-    [
-      "strc-sec.mkiv"
     ]
   ],
   "tlap": [
@@ -35208,6 +33571,15 @@
       "colo-ini.mkiv"
     ]
   ],
+  "transparent": [
+    [
+      "               1     2\n\\transparent [...] {...}",
+      "1   COLOR\n\n2   CONTENT"
+    ],
+    [
+      "colo-ini.mkiv"
+    ]
+  ],
   "trel": [
     [
       "        1     2\n\\trel {...} {...}\n       OPT   OPT",
@@ -35341,20 +33713,6 @@
     ],
     [
       "font-ini.mkvi"
-    ]
-  ],
-  "txt": [
-    [
-      "       1       2\n\\txt {...} [...,...]\n              OPT",
-      "1   TEXT\n\n2   REFERENCE"
-    ],
-    [
-      "      1\n\\txt ... \\\\",
-      "1   TEXT"
-    ],
-    [
-      "scrn-but.mkvi",
-      "strc-itm.mkvi"
     ]
   ],
   "txx": [
@@ -35829,24 +34187,6 @@
       "phys-dim.mkiv"
     ]
   ],
-  "unitlanguage": [
-    [
-      "\\unitlanguage",
-      ""
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
-  "unittext": [
-    [
-      "            1\n\\unittext {...}",
-      "1   KEY"
-    ],
-    [
-      "phys-dim.mkiv"
-    ]
-  ],
   "unknown": [
     [
       "\\unknown",
@@ -35858,7 +34198,7 @@
   ],
   "unprotect": [
     [
-      "\\unprotect ... \\\u200bprotect",
+      "\\unprotect ... \\protect",
       ""
     ],
     [
@@ -36345,7 +34685,7 @@
   "usepath": [
     [
       "             1\n\\usepath [...,...]",
-      "1   FILE"
+      "1   PATH"
     ],
     [
       "file-job.mkvi"
@@ -36417,7 +34757,7 @@
   "usesubpath": [
     [
       "                1\n\\usesubpath [...,...]",
-      "1   FILE"
+      "1   PATH"
     ],
     [
       "file-job.mkvi"
@@ -36696,7 +35036,7 @@
   "vspacing": [
     [
       "              1\n\\vspacing [...,...]\n             OPT",
-      "1   preference samepage max force disable nowhite back overlay always weak strong default before inbetween after fixed flexible none small medium big line halfline quarterline formula white height depth standard NUMBER*small NUMBER*medium NUMBER*big NUMBER*line NUMBER*halfline NUMBER*quarterline NUMBER*formula NUMBER*white NUMBER*height NUMBER*depth category:NUMBER order:NUMBER penalty:NUMBER DIMENSION NAME"
+      "1   preference samepage max force enable disable nowhite back overlay always weak strong default before inbetween after fixed flexible none small medium big line halfline quarterline formula white height depth standard NUMBER*small NUMBER*medium NUMBER*big NUMBER*line NUMBER*halfline NUMBER*quarterline NUMBER*formula NUMBER*white NUMBER*height NUMBER*depth category:NUMBER order:NUMBER penalty:NUMBER DIMENSION NAME"
     ],
     [
       "spac-ver.mkiv"
@@ -38045,15 +36385,6 @@
     ],
     [
       "anch-pos.mkiv"
-    ]
-  ],
-  "\u200bprotect": [
-    [
-      "\\\u200bprotect",
-      ""
-    ],
-    [
-      "catc-def.mkiv"
     ]
   ]
 }
