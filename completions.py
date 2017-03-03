@@ -1,56 +1,13 @@
 import sublime
 import sublime_plugin
-import json
-import re
 import os
+import re
 
 
-COMMAND_LEN_UPPER_BOUND = 40
-
-
-def load_commands(profile):
-    try:
-        this_package_path = os.path.dirname(__file__)
-        version = profile.get("command_popups", {}).get("version")
-        if not version:
-            name = "Minimals"
-        name = "commands {version}.json".format(version=version)
-        commands_json = os.path.join(this_package_path, "interface", name)
-        with open(commands_json) as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return
-
-
-def protect_html_whitespace(string):
-    return string.replace(" ", "&nbsp;").replace("\n", "<br />")
-
-
-# we use <u> style markup to indicate default arguments in commands.json,
-# so we give special attention to preserving those tags
-def protect_html_brackets(string, ignore_tags=["u"]):
-    new_string = string.replace("<", "&lt;").replace(">", "&gt;")
-    for tag in ignore_tags:
-        new_string = new_string.replace(
-            "&lt;{tag}&gt;".format(tag=tag),
-            "<{tag}>".format(tag=tag))
-        new_string = new_string.replace(
-            "&lt;/{tag}&gt;".format(tag=tag),
-            "</{tag}>".format(tag=tag))
-    return new_string
-
-
-def protect_html(string, ignore_tags=["u"]):
-    return protect_html_whitespace(
-        protect_html_brackets(string, ignore_tags=ignore_tags))
-
-
-def is_context(view):
-    try:
-        return view.match_selector(
-            view.sel()[0].begin(), "text.tex.context")
-    except:
-        return False
+import sys
+sys.path.insert(1, os.path.abspath(os.path.dirname(__file__)))
+from scripts import parsing
+from scripts import common
 
 
 class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
@@ -73,7 +30,12 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
             if self.current_profile.get("name") not in self.commands:
                 dict_ = self.commands[self.current_profile.get("name")] = {}
-                dict_["commands"] = load_commands(self.current_profile)
+                dict_["commands"] = common.load_commands(
+                    os.path.join(
+                        os.path.abspath(os.path.dirname(__file__)),
+                        "interface"
+                    ),
+                    self.current_profile)
                 dict_["command_names"] = sorted(dict_["commands"].keys())
                 dict_["command_completions"] = [
                     ["\\{name}".format(name=name), ""]
@@ -83,7 +45,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             pass
 
     def on_query_completions(self, view, prefix, locations):
-        if not is_context(view):
+        if not common.is_context(view):
             return
 
         self.reload_settings()
@@ -93,47 +55,27 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
     def on_modified(self, view):
         self.reload_settings()
-        should_show_popup = is_context(view) \
-            and self.current_profile.get("command_popups", {}).get("on")
-        if not should_show_popup:
+        shouldnt_show_popup = not (
+            common.is_context(view) and
+            self.current_profile.get("command_popups", {}).get("on")
+        )
+        if shouldnt_show_popup:
             return
 
-        previous_text_range = [
-            max(0, view.sel()[0].begin() - COMMAND_LEN_UPPER_BOUND),
-            view.sel()[0].begin()
-        ]
-
-        command_name = self.get_command_name(view, *previous_text_range)
-        if not command_name:
+        command_name, tail = common.last_command_in_region(
+            view, sublime.Region(0, view.sel()[0].end()))
+        if not (command_name and re.match(r"\A[^\S\n]*\Z", tail)):
             view.hide_popup()
             return
 
-        popup_text = self.get_popup_text(command_name)
-        kwargs = {
-            "location": -1,
-            "max_width": 600,
-            "flags": sublime.COOPERATE_WITH_AUTO_COMPLETE,
-        }
-        view.show_popup(popup_text, **kwargs)
-
-    def get_command_name(self, view, start, stop):
-        previous_text = view.substr(sublime.Region(start, stop))
-        match = re.match(r"[^\S\n]*([a-zA-Z]+)\\", previous_text[::-1])
-        if match:
-            name = match.group(1)[::-1]
-            range_ = [stop - end for end in reversed(match.span(1))]
-            scope_is_command = view.match_selector(
-                range_[0],
-                ", ".join([
-                    "support.function.control-word.context",
-                    "keyword.control-word.context",
-                    "entity.control-word.tex.context"
-                ])
+        if command_name in self.commands.get(
+                self.current_profile.get("name")).get("command_names", []):
+            view.show_popup(
+                self.get_popup_text(command_name),
+                location=-1,
+                max_width=600,
+                flags=sublime.COOPERATE_WITH_AUTO_COMPLETE
             )
-            name_is_command = name in self.commands.get(
-                self.current_profile.get("name")).get("command_names")
-            if scope_is_command and name_is_command:
-                return name
 
     def get_popup_text(self, command_name):
         style_sheet = """
@@ -168,9 +110,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                     <code>{syntax}</code>
                 </div>
             """
-            parts = {
-                "syntax": protect_html(variation[0])
-            }
+            parts = {"syntax": common.protect_html(variation[0])}
             if len(variation[1]) > 0:
                 new_signature += """
                     <br />
@@ -178,7 +118,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                         <code>{doc_string}</code>
                     </div>
                 """
-                parts["doc_string"] = protect_html(variation[1])
+                parts["doc_string"] = common.protect_html(variation[1])
             signatures.append(new_signature.format(**parts))
 
         full_signature = \
@@ -193,6 +133,6 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 <div class='files'>
                     <code>{files}</code>
                 </div>
-            """.format(files=protect_html(" ".join(files)))
+            """.format(files=common.protect_html(" ".join(files)))
 
         return full_signature

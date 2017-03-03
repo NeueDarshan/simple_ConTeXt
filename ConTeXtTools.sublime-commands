@@ -1,3 +1,14 @@
 [
-  {"caption": "ConTeXtTools: Switch profile", "command": "contexttools_profile_selector"},
+  {
+    "caption": "ConTeXtTools: Switch profile",
+    "command": "contexttools_profile_selector",
+  },
+  {
+    "caption": "ConTeXtTools: Generate profile interface",
+    "command": "contexttools_generate_interface",
+  },
+  {
+    "caption": "ConTeXtTools: Select reference",
+    "command": "contexttools_reference_selector",
+  },
 ]

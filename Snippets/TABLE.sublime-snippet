@@ -1,15 +1,9 @@
 <snippet>
     <content><![CDATA[
-\bTABLE[${1:options}]
-  \bTR
-    \bTC a \eTC
-    \bTC b \eTC
-  \eTR
-  \bTR
-    \bTC c \eTC
-    \bTC d \eTC
-  \eTR
-\eTABLE
+\startTABLE[${1:options}]$0
+  \NC a \NC b \NC\NR
+  \NC c \NC d \NC\NR
+\stopTABLE
 ]]></content>
     <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
     <tabTrigger>TABLE</tabTrigger>

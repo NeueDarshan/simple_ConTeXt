@@ -1,77 +1,13 @@
-import sublime_plugin
 import sublime
+import sublime_plugin
 import subprocess
 import time
 import os
-import re
 
 
-def file_with_ext(file, ext):
-    return os.path.splitext(os.path.basename(file))[0] + ext
-
-
-def is_context(view):
-    try:
-        return view.match_selector(
-            view.sel()[0].begin(), "text.tex.context")
-    except:
-        return False
-
-
-def prep_environ_path(profile):
-    context_path = profile.get("context_executable", {}).get("path")
-    if not context_path:
-        return
-    context_path = os.path.normpath(context_path)
-
-    passes_initial_check = isinstance(context_path, str) \
-        and os.path.exists(context_path)
-    if passes_initial_check:
-        PATH = os.environ["PATH"].split(os.pathsep)
-        if context_path not in PATH:
-            PATH.insert(0, context_path)
-        else:
-            PATH.remove(context_path)
-            PATH.insert(0, context_path)
-        os.environ["PATH"] = os.pathsep.join(PATH)
-
-
-def parse_log_for_error(file_bytes):
-    file_str = file_bytes.decode(encoding="utf-8")
-    file_str = file_str.replace("\r\n", "\n").replace("\r", "\n")
-
-    def is_error(line):
-        return re.match(
-            r"^.*?>\s*(.*?)\s+error\s+on\s+line\s+([0-9]+).*?!\s*(.*?)$",
-            line)
-
-    def is_code_snippet(line):
-        return re.match(r"^\s*[0-9]+", line)
-
-    def is_blank_line(line):
-        return (len(line) == 0 or re.match(r"^\s*$", line))
-
-    start_of_error = 0
-    log = file_str.split("\n")
-    for i, line in enumerate(log):
-        error = is_error(line)
-        if error:
-            error_summary = "{} error on line {}: {}".format(*error.groups())
-            start_of_error = i + 1
-            break
-
-    while is_blank_line(log[start_of_error]):
-        start_of_error += 1
-
-    cur_line = start_of_error
-    while not is_code_snippet(log[cur_line]):
-        cur_line += 1
-    end_of_error = cur_line
-
-    while is_blank_line(log[end_of_error]):
-        end_of_error -= 1
-
-    return "\n\n".join([error_summary] + log[start_of_error:end_of_error - 1])
+import sys
+sys.path.insert(1, os.path.abspath(os.path.dirname(__file__)))
+from scripts import common
 
 
 class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
@@ -89,14 +25,14 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
                 self.current_profile = profile
                 break
 
-        prep_environ_path(self.current_profile)
+        common.prep_environ_path(self.current_profile)
 
     def run(self):
         start_time = time.time()
         self.reload_settings()
 
         active_view = self.window.active_view()
-        if not is_context(active_view):
+        if not common.is_context(active_view):
             return
 
         # setup the 'build panel'/'output view'
@@ -121,7 +57,7 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
             # identity the file to compile, and its location
             input_dir, input_name = os.path.split(
                 active_view.file_name())
-            input_base_name = file_with_ext(input_name, "")
+            input_base_name = common.file_with_ext(input_name, "")
             # change dir to the target files dir, so any output is put there
             os.chdir(input_dir)
 
@@ -185,7 +121,7 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
             # report our failure
             #  |-- parse the log for the error message
             try:
-                err_message = parse_log_for_error(result[0])
+                err_message = common.parse_log_for_error(result[0])
             except UnboundLocalError as err:
                 err_message = repr(err)
             #  |-- construct a suitable error message
