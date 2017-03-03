@@ -7,7 +7,6 @@ scope: text.log.context.build-result
 contexts:
   main:
     - include: result
-    - include: timing
     - include: error
 
   result:
@@ -16,22 +15,10 @@ contexts:
     - match: '^Success!'
       scope: entity.success.build-result
 
-  timing:
-    - match: '^\[Finished in ([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)s\]'
-
   error:
     - match: '^tex error on line ([[:digit:]]+)'
       captures:
         '1': constant.numeric
-      push: [
-        error.context/,
-        error.tail/,
-      ]
+      push: error.tail/
   error.tail/:
-    - include: scope:text.log.context#system.error.tex.tail/
-  error.context/:
-    - match: ''
-      set: scope:text.log.context#system.error.tex.context/
-      with_prototype:
-        - match: '^(?=\[Finished in ([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)s\])'
-          pop: true
+    - include: scope:text.log.context#system.error.tex.tail.end/

@@ -1,20 +1,20 @@
 <snippet>
     <content><![CDATA[
-\startxtable[${1:options}]
-  \startxrow$0
-    \startxcell a \stopxcell
-    \startxcell b \stopxcell
-  \stopxrow
-  \startxrow
-    \startxcell c \stopxcell
-    \startxcell d \stopxcell
-  \stopxrow
-\stopxtable
+\bTABLE[${1:options}]
+  \bTR$0
+    \bTC a \eTC
+    \bTC b \eTC
+  \eTR
+  \bTR
+    \bTC c \eTC
+    \bTC d \eTC
+  \eTR
+\eTABLE
 ]]></content>
     <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
-    <tabTrigger>xtable</tabTrigger>
+    <tabTrigger>table</tabTrigger>
     <!-- Optional: Set a scope to limit where the snippet will trigger -->
     <scope>text.tex.context</scope>
     <!-- Optional: Set a description that will show up in the Snippets menu -->
-    <description>xtable</description>
+    <description>TABLE</description>
 </snippet>

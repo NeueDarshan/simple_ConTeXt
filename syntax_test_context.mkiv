@@ -145,12 +145,11 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 
 % TEMPLATES a.k.a. LMX
 \bTABLE
-  <?lua for row=1,5 do -- build a table ?>
-% ^^                                       entity.tag.begin.context
-%   ^^^                                    entity.tag.lua.context
-%       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^    source.lua
-%                      ^^^^^^^^^^^^^^^^    comment
-%                                       ^^ entity.tag.end.context
+  <?lua for row=1,5 do ?>
+% ^^                      entity.tag.begin.context
+%   ^^^                   entity.tag.lua.context
+%       ^^^^^^^^^^^^^^    source.lua
+%                      ^^ entity.tag.end.context
     \bTR
       <?lua for col=1,5 do ?>
         \bTD

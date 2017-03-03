@@ -661,7 +661,7 @@ contexts:
     - include: control.word.generic
 
   control.word.tab:
-    - match: '\\(NB|[BCHNR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R)\b'
+    - match: '\\(NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R)\b'
       scope: keyword.control-word.tab.context
       push: generic.lists*/
 
