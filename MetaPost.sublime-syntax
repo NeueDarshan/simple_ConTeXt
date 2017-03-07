@@ -40,14 +40,17 @@ contexts:
         - meta_scope: string.metapost
         - match: '"'
           pop: true
+        - match: '\n'
+          scope: invalid.illegal.unclosed-string.metapost
+          pop: true
         - match: '%([%jcymdHM]|\{(jobname|charcode|year|month|day|hour|minute)\})'
           scope: constant.other.escape.metapost
         - include: comment
-    - match: '\b(beveled|black|blue|butt|(bp|cc|cm|dd|pc|in|mm|pt)|cycle|ditto|down|EOF|epsilon|evenly|false|green|(full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(pen|picture)|origin|pen(circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|whatever|white|withdots)\b'
+    - match: '\b(beveled|black|blue|butt|(bp|cc|cm|dd|pc|in|mm|pt)|cycle|ditto|down|EOF|eps(ilon)?|evenly|false|green|(full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(pen|picture)|blankpicture|origin|pen(circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|whatever|white|withdots)\b'
       scope: constant.other.metapost
 
   variables:
-    - match: '\b(ah(angle|length)|background|bboxmargin|charcode|current(pen|picture)|cuttings|day|default(colormodel|font|pen|scale)|dotlabeldiam|extra_(begin|end)fig|hour|hppp|jobname|labeloffset|line(cap|join)|minute|miterlimit|month|mpprocset|number(precision|system)|output(filename|format|formatoptions|template)|pausing|prologues|restoreclipcolor|showstopping|time|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)\b'
+    - match: '\b(ah(angle|length)|background|bboxmargin|charcode|current(pen|picture)|cuttings|day|default(colormodel|font|pen|scale)|dotlabeldiam|extra_(begin|end)fig|hour|hppp|jobname|join_radius|labeloffset|line(cap|join)|minute|miterlimit|month|mpprocset|number(precision|system)|output(filename|format|formatoptions|template)|pausing|prologues|restoreclipcolor|showstopping|time|tolerance|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)\b'
       scope: variable.parameter.internal.metapost
 
   labels:
@@ -57,19 +60,20 @@ contexts:
   operators:
     - match: '\b(and|atleast|controls|curl|cut(after|before|ends)|dashed|div|dotprod|glyph|infont|intersection(point|times)|mod|not|of|or|off|on|reflectedabout|rotated(around)?|scaled|shifted|slanted|softjoin|tension|to|transformed|with((cmyk|grey|out|rgb)?color|gray|greyscale|(pre|post)script|pen)|[xyz]scaled)\b'
       scope: keyword.operator.metapost
-    - match: '\.{2,3}|-{2}'
+    - match: '[\.\-]{2,3}'
       scope: keyword.path-operator.metapost
     - match: '([:<>]?=|<>|\+-\+|[*+]{2}|[<>&*/+-])'
       scope: keyword.operator.metapost
 
   functions:
-    - match: '\b(abs|addto|also|angle|arclength|arctime|ASCII|batchmode|bbox|(sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|dashpattern|decimal|decr|dir|direction(point|time)?|doublepath|draw(arrow|dblarrow|dot|fill|options)?|err(help|message)|(scroll|(error|non)stop)mode|filenametemplate|fill(draw)?|filled|flex|floor|fontmap(file|line)|fontsize|hex|image|incr|input|interim|interpath|inverse|known|length|let|loggingall|makepath|makepen|max|message|mexp|min|mlog|newinternal|(normal|uniform)deviate|oct|odd|pickup|penoffset|point|(post|pre)control|readfrom|reverse|round|save|scantokens|setbounds|shipout|show(dependencies||token|variable)?|special|sqrt|str|stroked|sub(path|string)|superellipse|tensepath|textual|(top|bot|lft|rt)|tracing(all|none)|un(draw(dot|fill)?|fill(draw)?)|unitvector|unknown|[ul][rl]corner|write|(black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)\b'
+    - match: '\b(abs|addto|also|angle|arclength|arctime|ASCII|byte|batchmode|bbox|(sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|dashpattern|decimal|decr|dir|direction(point|time)?|doublepath|draw(arrow|dblarrow|dot|fill|options)?|err(help|message)|(scroll|(error|non)stop)mode|filenametemplate|fill(draw)?|filled|flex|floor|fontmap(file|line)|fontsize|hex|hide|image|incr|input|interim|interpath|inverse|known|length|loggingall|makepath|makepen|max|message|mexp|min|mlog|newinternal|(normal|uniform)deviate|oct|odd|pickup|penoffset|point|(post|pre)control|readfrom|reverse|round|save|scantokens|setbounds|shipout|show(dependencies||token|variable)?|special|sqrt|str|stroked|sub(path|string)|superellipse|tensepath|textual|turningnumber|(top|bot|lft|rt)|tracing(all|none)|un(draw(dot|fill)?|fill(draw)?)|unitvector|unknown|[ul][rl]corner|write|(black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)\b'
       scope: support.function.metapost
 
   definitions:
     - include: definitions.binarydef
     - include: definitions.otherdef
-    - match: '\b(enddef)\b'
+    - include: definitions.let
+    - match: '\benddef\b'
       scope: support.class.metapost
 
   definitions.binarydef:
@@ -78,7 +82,7 @@ contexts:
       push: [
         definitions.equals/,
         definitions.variable/,
-        definitions.macro/,
+        definitions.aux_macro/,
         definitions.variable/,
       ]
 
@@ -94,18 +98,30 @@ contexts:
     - include: definitions.type
     - include: definitions.variable
 
+  definitions.let:
+    - match: '\blet\b'
+      scope: support.class.metapost
+      push: [
+        definitions.equals/,
+        definitions.macro/,
+      ]
+
   definitions.type:
-    - match: '\b(expr|of|suffix|text)\b'
+    - match: '\b(primary|expr|of|suffix|text)\b'
       scope: storage.type.metapost
   definitions.variable:
-    - match: '\w+'
+    - match: '[[:alpha:]_]+|[^,\s()=[:alpha:]_]+'
       scope: variable.parameter.metapost
   definitions.variable/:
-    - match: '\w+'
+    - match: '[[:alpha:]_]+|[^,\s()=[:alpha:]_]+'
       scope: variable.parameter.metapost
       pop: true
   definitions.macro/:
-    - match: '\w+'
+    - match: '[^\s()=]+'
+      scope: entity.name.function.metapost
+      pop: true
+  definitions.aux_macro/:
+    - match: '[[:alpha:]_]+|[^,\s()=[:alpha:]_]+'
       scope: entity.name.function.metapost
       pop: true
   definitions.equals/:

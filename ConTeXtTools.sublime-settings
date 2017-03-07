@@ -1,23 +1,36 @@
 {
-  "profiles": [
+  "current_profile": "Default",
+  "profile_defaults":
+  {
+    "command_popups":
+    {
+      "on": true,
+      "show_files": false,
+      "version": "Minimals"
+    },
+    "context_executable":
+    {
+      "options":
+      {
+        "autogenerate": true,
+        "jit": true,
+        "synctex": true
+      }
+    },
+    "references":
+    {
+      "command_regex": "[a-zA-Z]*ref",
+      "reference_regex": "[a-zA-Z]+:[a-zA-Z:-_]+"
+    }
+  },
+  "profiles":
+  [
     {
       "name": "Default",
       "context_executable":
       {
-        "options":
-        {
-          "autogenerate": true,
-        },
         "path": null,
-      },
-      "command_popups":
-      {
-        "on": true,
-        "version": null,
-        "show_file": false,
       },
     },
   ],
-
-  "current_profile": "Default",
 }

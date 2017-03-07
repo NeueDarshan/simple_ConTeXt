@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-name: ConTeXt build panel
+name: ConTeXt Build Panel
 hidden: true
 scope: text.log.context.build-result
 

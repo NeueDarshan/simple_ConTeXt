@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-name: ConTeXt log
+name: ConTeXt Log
 file_extensions:
   - log
 scope: text.log.context
@@ -13,6 +13,7 @@ contexts:
         - include: mark
         - include: snippet
         - include: boxes
+        - include: comment
         - match: '.'
           pop: true
 
@@ -155,6 +156,10 @@ contexts:
         '2': constant.numeric.log.context
         '3': constant.numeric.log.context
         '4': constant.numeric.log.context
+
+  comment:
+    - match: '%.*'
+      scope: comment.log.context
 
   constants:
     - match: '[[:digit:]]+|U\+\h+'
