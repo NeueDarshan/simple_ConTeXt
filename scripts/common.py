@@ -8,6 +8,16 @@ def file_with_ext(file, ext):
     return os.path.splitext(os.path.basename(file))[0] + ext
 
 
+def deep_update(main, new):
+    for k, v in new.items():
+        if isinstance(v, dict):
+            if k not in main:
+                main[k] = {}
+            deep_update(main[k], v)
+        else:
+            main[k] = v
+
+
 def is_context(view):
     try:
         return view.match_selector(
@@ -16,11 +26,8 @@ def is_context(view):
         return False
 
 
-def load_commands(path_, profile):
+def load_commands(path_, version):
     try:
-        version = profile.get("command_popups", {}).get("version")
-        if not version:
-            version = "Minimals"
         name = "commands {version}.json".format(version=version)
         commands_json = os.path.join(path_, name)
         with open(commands_json) as f:
@@ -52,22 +59,17 @@ def protect_html(string, ignore_tags=["u"]):
         protect_html_brackets(string, ignore_tags=ignore_tags))
 
 
-def prep_environ_path(profile):
-    context_path = profile.get("context_executable", {}).get("path")
-    if not context_path:
-        return
-    context_path = os.path.normpath(context_path)
-
-    passes_initial_check = isinstance(context_path, str) \
-        and os.path.exists(context_path)
-    if passes_initial_check:
-        PATH = os.environ["PATH"].split(os.pathsep)
-        if context_path not in PATH:
-            PATH.insert(0, context_path)
-        else:
-            PATH.remove(context_path)
-            PATH.insert(0, context_path)
-        os.environ["PATH"] = os.pathsep.join(PATH)
+def prep_environ_path(context_path):
+    if isinstance(context_path, str) and context_path:
+        context_path = os.path.abspath(context_path)
+        if os.path.exists(context_path):
+            PATH = os.environ["PATH"].split(os.pathsep)
+            if context_path not in PATH:
+                PATH.insert(0, context_path)
+            else:
+                PATH.remove(context_path)
+                PATH.insert(0, context_path)
+            os.environ["PATH"] = os.pathsep.join(PATH)
 
 
 def parse_log_for_error(file_bytes):
@@ -127,3 +129,39 @@ def last_command_in_region(view, region):
         tail = view.substr(sublime.Region(command.end(), region.end()))
         return view.substr(command)[1:], tail
     return None, None
+
+
+def reload_settings(self):
+    self.settings = sublime.load_settings("ConTeXtTools.sublime-settings")
+    self.profile_defaults = self.settings.get("profile_defaults", {})
+    self.profiles = self.settings.get("profiles", {})
+    self.current_profile_name = self.settings.get("current_profile")
+
+    self.profile_names = []
+    self.current_profile_index = 0
+    for i, profile in enumerate(self.profiles):
+        name = profile.get("name")
+        self.profile_names.append(name)
+        if name == self.current_profile_name:
+            self.current_profile_index = i
+
+    inherits = self.profiles[self.current_profile_index].get("inherits")
+    if inherits:
+        if isinstance(inherits, str):
+            inherits = [inherits]
+    else:
+        inherits = ["profile_defaults"]
+
+    self.current_profile = {}
+    for profile_name in inherits:
+        if profile_name == "profile_defaults":
+            new_settings = self.profile_defaults
+        else:
+            new_settings = {}
+            for profile in self.profiles:
+                if profile.get("name") == profile_name:
+                    new_settings = profile
+                    break
+        deep_update(self.current_profile, new_settings)
+    deep_update(
+        self.current_profile, self.profiles[self.current_profile_index])

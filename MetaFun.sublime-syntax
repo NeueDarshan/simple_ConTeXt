@@ -1,0 +1,71 @@
+%YAML 1.2
+---
+name: MetaFun
+file_extensions:
+  - mp
+  - mpii
+  - mpiv
+scope: source.metapost.metafun
+
+contexts:
+  prototype:
+    - include: comment
+
+  main:
+    - include: types
+    - include: constants
+    - include: variables
+    - include: labels
+    - include: operators
+    - include: functions
+    - include: definitions
+    - include: loops
+    - include: environments
+    - include: TeX
+
+  comment:
+    - include: scope:source.metapost#comment
+
+  types:
+    - include: scope:source.metapost#types
+
+  constants:
+    - match: '\b(Page(Offset|Depth|StateAvailable)?|(Top|Bottom|Back|Cut)Space|(Left|Right|Inner|Outer)(Edge|Margin)(Width|Distance)|(Top|Header|Footer|Bottom)(Height|Distance)|(Makeup|Text)(Height|Width)|(Print)?Paper(Height|Width)|LayoutColumn(s|Distance|Width)|(Top|BaseLine)Skip|([HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(Right|Odd)Page|InPageBody|(Real|Last)?PageNumber|NOf(Pages|Columns)|Current(Column|Layout|Width|Height)|Overlay(Box|Offset|Color|Depth|Height|Line(Color|Width)|Width)|Strut(Depth|Height)|shadedup|fullsquare|(full|unit)diamond|[ul][lr]triangle|(unit|[btrl]|[ul][lr])circle|yellow)\b'
+      scope: constant.other.metapost.metafun
+    - include: scope:source.metapost#constants
+
+  variables:
+    - match: '\b(ah(variant|dimple))\b'
+      scope: variable.parameter.internal.metapost.metafun
+    - include: scope:source.metapost#variables
+
+  labels:
+    - match: '\b((the)?textext|(thefree|free(dot)?)label)(\.(top|[ul]?(lft|rt)|bot|origin|raw))?\b'
+      scope: support.function.label.metapost.metafun
+    - match: '\b(thelabel|(dot)?labels?)\.(origin|raw)\b'
+      scope: support.function.label.metapost.metafun
+    - include: scope:source.metapost#labels
+
+  operators:
+    - match: '\b(along|(bottom|left|[ul][rl]|right|top)?enlarged|blownup|cornered|crossed|curved|laddered|paralleled|punked|random(ized|shifted)|shadedinto|shortened|smoothed|softened|stretched|squeezed|superellipsed|[ul][rl]moved|uncolored|with(shade(method|direction)?|fillcolor|transparency)|[xy]shifted|([xy]|xy)sized|xyscaled)\b'
+      scope: keyword.operator.metapost.metafun
+    - include: scope:source.metapost#operators
+
+  functions:
+    - match: '\b(addbackground|(cos|sin|cot|tan)|a(cos|sin|tan)|a?(cos|sin)h|(cot|tan)d|inv(cos|sin)|anglebetween|bb(width|height)|(bottom|top)boundary|boundingbox|cmyk|condition|(circular|linear)_shade|d{2,3}ecimal|externalfigure|exp|graphictext|grayed|(inner|outer)boundingbox|inv(erted)?|(left|right|center|point)arrow|(left|right)boundary|loadfigure|ln|log|paired|re((map(ped)?)?color|setcolormap|draw|fill)|register|roundedsquare|simplified|sqr|tensecircle|transparent|tripled|unspiked)\b'
+      scope: support.function.metapost.metafun
+    - include: scope:source.metapost#functions
+
+  definitions:
+    - include: scope:source.metapost#definitions
+
+  loops:
+    - include: scope:source.metapost#loops
+
+  environments:
+    - match: '\b(Start|Stop)Page\b'
+      scope: support.class.metapost
+    - include: scope:source.metapost#environments
+
+  TeX:
+    - include: scope:source.metapost#TeX

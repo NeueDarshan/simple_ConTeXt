@@ -1,7 +1,6 @@
 import sublime
 import sublime_plugin
 import re
-import copy
 
 
 import sys
@@ -22,42 +21,29 @@ class ContexttoolsReferenceInsert(sublime_plugin.TextCommand):
 
 
 class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.current_ref_regex = ""
-
     def reload_settings(self):
-        try:
-            self.settings = sublime.load_settings(
-                "ConTeXtTools.sublime-settings")
-            profile_name = self.settings.get("current_profile")
-
-            for profile in self.settings.get("profiles", {}):
-                if profile.get("name") == profile_name:
-                    self.current_ref_regex = profile.get(
-                        "references", {}).get("reference_regex")
-                    break
-
-        except TypeError:
-            pass
+        common.reload_settings(self)
+        current_ref_regex = self.current_profile.get(
+            "references", {}).get("reference_regex", "[a-zA-Z]+:[a-zA-Z:-_]+")
 
         view = self.window.active_view()
         potential_references = view.find_by_selector(
             "text.tex.context meta.environment.list.context")
 
-        refs = set()
+        references = set()
         for region in potential_references:
-            str_ = view.substr(region)
+            potential_ref = view.substr(region)
             main_match = re.match(
-                r"\[(" + self.current_ref_regex + r")\]", str_)
+                r"\[(" + current_ref_regex + r")\]", potential_ref)
             alt_match = re.match(
-                r"\[.*?\breference=(" + self.current_ref_regex + r").*?\]",
-                str_)
+                r"\[.*?\breference=(" + current_ref_regex + r").*?\]",
+                potential_ref)
             if alt_match:
-                refs.add(alt_match.group(1).strip())
+                references.add(alt_match.group(1).strip())
             elif main_match:
-                refs.add(main_match.group(1).strip())
-        self.references = sorted(refs)
+                references.add(main_match.group(1).strip())
+
+        self.references = sorted(references)
 
     def run(self):
         if common.is_context(self.window.active_view()):
@@ -78,9 +64,10 @@ class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
 
 
 class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.current_cmd_regex = ""
+    def reload_settings(self):
+        common.reload_settings(self)
+        self.current_cmd_regex = self.current_profile.get(
+            "references", {}).get("command_regex", "[a-zA-Z]*ref")
 
     def on_modified(self, view):
         self.reload_settings()
@@ -88,26 +75,9 @@ class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
         command_name, tail = common.last_command_in_region(
             view, sublime.Region(0, view.sel()[0].end()))
 
-        if not command_name:
-            return
-
         if (
+            command_name and
             re.match(r"\A" + self.current_cmd_regex + r"\Z", command_name) and
-            re.match(r"\A[^\S\n]*" + r"\[" + r"[^\S\n]*\Z", tail)
+            re.match(r"\A[^\S\n]*\[[^\S\n]*\Z", tail)
         ):
             view.window().run_command("contexttools_reference_selector")
-
-    def reload_settings(self):
-        try:
-            self.settings = sublime.load_settings(
-                "ConTeXtTools.sublime-settings")
-            profile_name = self.settings.get("current_profile")
-
-            for profile in self.settings.get("profiles", {}):
-                if profile.get("name") == profile_name:
-                    self.current_cmd_regex = profile.get(
-                        "references", {}).get("command_regex")
-                    break
-
-        except TypeError:
-            pass

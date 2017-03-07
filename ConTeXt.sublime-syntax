@@ -21,7 +21,7 @@ contexts:
     - include: MetaFun
     - include: JavaScript
     - include: XML
-    - include: LMX
+    - include: templates
     - include: ConTeXt
     - include: TeX
     - include: control
@@ -90,7 +90,7 @@ contexts:
 
   math.main:
     - include: math.constant
-    - include: LMX
+    - include: templates
     - include: math.operator
     - include: math.text
     - include: math.dummy-group
@@ -318,53 +318,19 @@ contexts:
     - include: MetaFun.main
 
   MetaFun.main:
-    - include: scope:source.metapost#types
-    - include: scope:source.metapost#definitions
-    - include: scope:source.metapost#loops
-    - include: scope:source.metapost#comment
-    - include: MetaFun.constants
-    - include: MetaFun.variables
-    - include: MetaFun.labels
-    - include: LMX
-    - include: MetaFun.operators
-    - include: MetaFun.functions
-    - include: MetaFun.environments
+    - include: scope:source.metapost.metafun#types
+    - include: scope:source.metapost.metafun#definitions
+    - include: scope:source.metapost.metafun#loops
+    - include: scope:source.metapost.metafun#comment
+    - include: scope:source.metapost.metafun#constants
+    - include: scope:source.metapost.metafun#variables
+    - include: scope:source.metapost.metafun#labels
+    - include: templates
+    - include: scope:source.metapost.metafun#operators
+    - include: scope:source.metapost.metafun#functions
+    - include: scope:source.metapost.metafun#environments
     - include: MetaFun.TeX
     - include: MetaFun.ConTeXt
-
-  MetaFun.constants:
-    - match: '\b(Page(Offset|Depth|StateAvailable)?|(Top|Bottom|Back|Cut)Space|(Left|Right|Inner|Outer)(Edge|Margin)(Width|Distance)|(Top|Header|Footer|Bottom)(Height|Distance)|(Makeup|Text)(Height|Width)|(Print)?Paper(Height|Width)|LayoutColumn(s|Distance|Width)|(Top|BaseLine)Skip|([HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(Right|Odd)Page|InPageBody|(Real|Last)?PageNumber|NOf(Pages|Columns)|Current(Column|Layout|Width|Height)|Overlay(Box|Offset|Color|Depth|Height|Line(Color|Width)|Width)|Strut(Depth|Height)|shadedup|fullsquare|(full|unit)diamond|[ul][lr]triangle|(unit|[btrl]|[ul][lr])circle|yellow)\b'
-      scope: constant.other.metapost.metafun
-    - include: scope:source.metapost#constants
-
-  MetaFun.variables:
-    - match: '\b(ah(variant|dimple))\b'
-      scope: variable.parameter.internal.metapost.metafun
-    - include: scope:source.metapost#variables
-
-  MetaFun.labels:
-    - match: '\b((the)?textext|(thefree|free(dot)?)label)(\.(top|[ul]?(lft|rt)|bot|origin|raw))?\b'
-      scope: support.function.label.metapost.metafun
-    - match: '\b(thelabel|(dot)?labels?)\.(origin|raw)\b'
-      scope: support.function.label.metapost.metafun
-    - include: scope:source.metapost#labels
-
-  MetaFun.operators:
-    - match: '\b(along|(bottom|left|[ul][rl]|right|top)?enlarged|blownup|cornered|crossed|curved|laddered|paralleled|punked|random(ized|shifted)|shadedinto|shortened|smoothed|softened|stretched|squeezed|superellipsed|[ul][rl]moved|uncolored|with(shade(method|direction)?|fillcolor|transparency)|[xy]shifted|([xy]|xy)sized|xyscaled)\b'
-      scope: keyword.operator.metapost.metafun
-    - match: '-{3}'
-      scope: keyword.path-operator.metapost.metafun
-    - include: scope:source.metapost#operators
-
-  MetaFun.functions:
-    - match: '\b(addbackground|(cos|sin|cot|tan)|a(cos|sin|tan)|a?(cos|sin)h|(cot|tan)d|inv(cos|sin)|anglebetween|bb(width|height)|(bottom|top)boundary|boundingbox|cmyk|condition|(circular|linear)_shade|d{2,3}ecimal|externalfigure|exp|graphictext|grayed|(inner|outer)boundingbox|inv(erted)?|(left|right|center|point)arrow|(left|right)boundary|loadfigure|ln|log|paired|re((map(ped)?)?color|setcolormap|draw|fill)|register|roundedsquare|simplified|sqr|tensecircle|transparent|tripled|unspiked)\b'
-      scope: support.function.metapost.metafun
-    - include: scope:source.metapost#functions
-
-  MetaFun.environments:
-    - match: '\b(Start|Stop)Page\b'
-      scope: support.class.metapost
-    - include: scope:source.metapost#environments
 
   MetaFun.TeX:
     - match: '\b(b|verbatim)(tex)\b'
@@ -409,7 +375,7 @@ contexts:
         - include: comment.TeX
         - include: control.word.generic.no-arguments
         - include: control.symbol
-        - include: LMX
+        - include: templates
 
   JavaScript.block.code.core/:
     - match: ''
@@ -420,7 +386,7 @@ contexts:
         - include: comment.TeX
         - include: control.word.generic.no-arguments
         - include: control.symbol
-        - include: LMX
+        - include: templates
 
   JavaScript.block.scope:
     - meta_content_scope: source.js
@@ -466,28 +432,28 @@ contexts:
         - match: '(?=\\stopXML\b)'
           pop: true
 
-  LMX:
-    - include: LMX.snippets
+  templates:
+    - include: templates.snippets
 
-  LMX.snippets:
+  templates.snippets:
     - match: '(<\?)(lua)\b'
       captures:
         '1': entity.tag.begin.context
         '2': entity.tag.lua.context
-      push: LMX.lua.scope
+      push: templates.lua.scope
       with_prototype:
         - match: '(\?>)'
           captures:
             '1': entity.tag.end.context
           pop: true
-        - include: LMX.functions
+        - include: templates.functions
 
-  LMX.lua.scope:
+  templates.lua.scope:
     - meta_include_prototype: false
     - meta_content_scope: source.lua
     - include: scope:source.lua
 
-  LMX.functions:
+  templates.functions:
     - match: '\b(inject)\b'
       scope: support.function.lua
 

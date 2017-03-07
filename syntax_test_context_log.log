@@ -1,0 +1,115 @@
+% SYNTAX TEST "Packages/ConTeXtTools/ConTeXt Log.sublime-syntax"
+
+% <- text.log.context
+
+system          > synctex functionality is enabled (1), expect runtime overhead!
+% <-              entity.system.log.context
+%               ^ support.function.separator.log.context
+
+ConTeXt  ver: yyyy.mm.dd hh:mm MKIV xxxx  fmt: yyyy.mm.dd  int: <lang>/<lang>
+%        ^^^                                                                  support.function.version.log.context
+%             ^^^^^^^^^^^^^^^^^^^^^^^^^^                                      constant.other.version.log.context
+%                                         ^^^                                 support.function.version.log.context
+%                                              ^^^^^^^^^^                     constant.other.version.log.context
+%                                                          ^^^                support.function.version.log.context
+%                                                               ^^^^^^^^^^^^^ constant.other.version.log.context
+
+system          > ConTeXt  ver: yyyy.mm.dd hh:mm MKIV xxxx  fmt: yyyy.mm.dd  int: <lang>/<lang>
+% <-                                                                                            entity.system.log.context
+%               ^                                                                               support.function.separator.log.context
+%                          ^^^                                                                  support.function.version.log.context
+%                               ^^^^^^^^^^^^^^^^^^^^^^^^^^                                      constant.other.version.log.context
+%                                                           ^^^                                 support.function.version.log.context
+%                                                                ^^^^^^^^^^                     constant.other.version.log.context
+%                                                                            ^^^                support.function.version.log.context
+%                                                                                 ^^^^^^^^^^^^^ constant.other.version.log.context
+
+open source     > level 1, order 1, name '<path>/cont-yes.mkiv'
+% <-                                                           entity.system.log.context
+%               ^                                              support.function.separator.log.context
+%                       ^                                      constant.numeric.log.context
+%                                ^                             constant.numeric.log.context
+%                                         ^^^^^^^^^^^^^^^^^^^^ string.log.context
+
+system          > files > jobname '<file-name>', input './<file-name>.mkiv', result '<file-name>'
+% <-                                                                                             entity.system.log.context
+%               ^                                                                                support.function.separator.log.context
+%                 ^^^^^                                                                          entity.system.log.context
+%                       ^                                                                        support.function.separator.log.context
+%                                  ^^^^^^^^^^^                                                   string.log.context
+%                                                       ^^^^^^^^^^^^^^^^^^                       string.log.context
+%                                                                                    ^^^^^^^^^^^ string.log.context
+
+lua error       > lua error on line 7 in file <path-to-input-file>/<file-name>.mkiv:
+% <-              invalid.illegal.error.log.context
+%               ^ support.function.separator.log.context
+
+[ctxlua]:3: module '<noexist>.lua' not found:
+  no field package.preload['<noexist>.lua']
+  no file '.\<noexist>\lua.lua'
+  % etc ...
+
+stack traceback:
+  [C]: in function 'require'
+  [ctxlua]:3: in main chunk
+
+ 1     \setupbodyfont
+ 2       [pagella, 11pt]
+ 3
+ 4     \startluacode
+ 5       userdata = userdata or {}
+ 6 >>    userdata.module = require "<noexist>.lua"
+%^    constant.numeric.log.context
+%  ^^ invalid.illegal.error.log.context
+ 7     \stopluacode
+ 8
+ 9     \starttext
+10
+% <- text.log.context text.tex.context
+11     Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+
+% <- text.log.context - text.tex.context
+
+?
+
+Underfull \hbox (badness 2197) in paragraph at lines 151--156
+% <-                                                          invalid.illegal.error.log.context
+%                        ^^^^                                 constant.numeric.log.context
+%                                                    ^^^      constant.numeric.log.context
+%                                                         ^^^ constant.numeric.log.context
+\3>pagella-10pt-rm-tf-0--0 We’ve im-ple-mented it from scratch in Lua
+
+\hbox(7.28+2.81)x205.89372, glue set 2.80316, direction TLT
+.\3>pagella-10pt-rm-tf-0--0 W
+.\kern -0.65
+.\3>pagella-10pt-rm-tf-0--0 e
+.\3>pagella-10pt-rm-tf-0--0 ’
+.\kern -0.2
+.etc.
+
+used file       >    1: filename=cont-yes.mkiv filetype=tex foundname=<path>/cont-yes.mkiv usedmethod=database
+% <-                                                                                                   entity.system.log.context
+%               ^                                                                                      support.function.separator.log.context
+%                    ^                                                                                 constant.numeric.log.context
+%                       ^^^^^^^^                                                                       variable.parameter.key.log.context
+%                               ^                                                                      keyword.equals.log.context
+%                                              ^^^^^^^^                                                variable.parameter.key.log.context
+%                                                      ^                                               keyword.equals.log.context
+%                                                           ^^^^^^^^^                                  variable.parameter.key.log.context
+%                                                                    ^                                 keyword.equals.log.context
+%                                                                                          ^^^^^^^^^^  variable.parameter.key.log.context
+%                                                                                                    ^ keyword.equals.log.context
+% etc ...
+
+used option     > autogenerate="true"
+% <-                                 entity.system.log.context
+%               ^                    support.function.separator.log.context
+%                 ^^^^^^^^^^^^       variable.parameter.key.log.context
+%                             ^      keyword.equals.log.context
+%                               ^^^^ string.log.context
+% etc ...
+
+mkiv lua stats  > used backend: pdf (backend for directly generating pdf output)
+% <-                                 entity.system.log.context
+%               ^                    support.function.separator.log.context
+% etc ...
