@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>name</key>
+  <string>Symbol List</string>
+  <key>scope</key>
+  <string>text.tex.context meta.other.section</string>
+  <key>settings</key>
+  <dict>
+    <key>showInSymbolList</key>
+    <integer>1</integer>
+    <key>symbolTransformation</key>
+    <string>
+      s/\\(part).*?{(.*?)}/$2/g;
+      s/\\(chapter|title).*?{(.*?)}/    $2/g;
+      s/\\(section).*?\[.*?title=(?:(.*?)\,.*?|(.*?))\]/        $2$3/g;
+      s/\\(section|subject).*?{(.*?)}/        $2/g;
+      s/\\((?:sub){1}(?:section|subject)).*?{(.*?)}/            $2/g;
+      s/\\((?:sub){2}(?:section|subject)).*?{(.*?)}/                $2/g;
+      s/\\((?:sub){3}(?:section|subject)).*?{(.*?)}/                    $2/g;
+      s/\\((?:sub){4}(?:section|subject)).*?{(.*?)}/                        $2/g;
+      s/\\start(part).*?\[.*?title=(?:(.*?)\,.*?|(.*?))\]/$2$3/g;
+      s/\\start(chapter|title).*?\[.*?title=(?:(.*?)\,.*?|(.*?))\]/    $2$3/g;
+      s/\\start(section|subject).*?\[.*?title=(?:(.*?)\,.*?|(.*?))\]/        $2$3/g;
+      s/\\start((?:sub){1}(?:section|subject)).*?\[.*?title=(?:(.*?)\,.*?|(.*?))\]/            $2$3/g;
+      s/\\start((?:sub){2}(?:section|subject)).*?\[.*?title=(?:(.*?)\,.*?|(.*?))\]/                $2$3/g;
+      s/\\start((?:sub){3}(?:section|subject)).*?\[.*?title=(?:(.*?)\,.*?|(.*?))\]/                    $2$3/g;
+      s/\\start((?:sub){4}(?:section|subject)).*?\[.*?title=(?:(.*?)\,.*?|(.*?))\]/                        $2$3/g;
+    </string>
+  </dict>
+  <key>uuid</key>
+  <string>005BE156-8D74-4036-AF38-283708645115</string>
+</dict>
+</plist>

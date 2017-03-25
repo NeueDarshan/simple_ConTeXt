@@ -24,24 +24,31 @@ class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
     def reload_settings(self):
         common.reload_settings(self)
         current_ref_regex = self.current_profile.get(
-            "references", {}).get("reference_regex", "[a-zA-Z]+:[a-zA-Z:-_]+")
-
-        view = self.window.active_view()
-        potential_references = view.find_by_selector(
-            "text.tex.context meta.environment.list.context")
+            "references", {}).get(
+                "reference_regex", r"[a-zA-Z]+\:[a-zA-Z]+")
 
         references = set()
+        view = self.window.active_view()
+
+        definite_references = view.find_by_selector(
+            "text.tex.context meta.other.reference.context")
+        for region in definite_references:
+            raw_ref = view.substr(region).strip()
+            debraced_ref = re.match(r"\A{(.*?)}\Z", raw_ref)
+            if debraced_ref:
+                references.add(debraced_ref.group(1).strip())
+            else:
+                references.add(raw_ref.strip())
+
+        potential_references = view.find_by_selector(
+            "text.tex.context meta.brackets.context"
+            " - meta.other.value.context")
         for region in potential_references:
-            potential_ref = view.substr(region)
-            main_match = re.match(
-                r"\[(" + current_ref_regex + r")\]", potential_ref)
-            alt_match = re.match(
-                r"\[.*?\breference=(" + current_ref_regex + r").*?\]",
-                potential_ref)
-            if alt_match:
-                references.add(alt_match.group(1).strip())
-            elif main_match:
-                references.add(main_match.group(1).strip())
+            raw_ref = view.substr(region)
+            ref_match = re.match(
+                r"\A\s*\[(" + current_ref_regex + r")\]\s*\Z", raw_ref)
+            if ref_match:
+                references.add(ref_match.group(1).strip())
 
         self.references = sorted(references)
 
@@ -59,15 +66,15 @@ class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
             )
 
     def is_visible(self, *args):
-        return self.window.active_view().match_selector(
-            0, "text.tex.context")
+        return self.window.active_view().match_selector(0, "text.tex.context")
 
 
 class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
     def reload_settings(self):
         common.reload_settings(self)
         self.current_cmd_regex = self.current_profile.get(
-            "references", {}).get("command_regex", "[a-zA-Z]*ref")
+            "references", {}).get(
+                "command_regex", "[a-zA-Z]*ref")
 
     def on_modified(self, view):
         self.reload_settings()
