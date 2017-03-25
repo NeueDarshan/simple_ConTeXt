@@ -2,160 +2,113 @@
 
 % <- text.tex.context
 
-\starttext
-% <- support.function.control-word.context
+  \starttext
+% ^^^^^^^^^^ support.function.general.context
+% ^          punctuation.definition.backslash.context
 
 % LUA
-\startLUA[before={\blank[small]}]
-  %       ^^^^^^                 variable.parameter.key.context
-  %             ^                keyword.operator.equals.context
-  %       ^^^^^^^^^^^^^^^^^^^^^^ meta.environment.list.context
-  context(
-    5 % 2
-  %   ^^^ - comment
-  )
-  -- context("b")
-  % <- comment
-  context("a")
-  % <- source.lua - comment
-\stopLUA
-
 \startluacode
   context(
     5 % 2
-  %   ^^^ - comment
+  %   ^^^ - comment.line.percentage.context
   )
   -- context("b")
-  % <- comment
+  % <- comment.line.double-dash.lua
   context("a")
-  % <- source.lua - comment
+  % <- source.lua.major.embedded.context - comment.line.percentage.context
 \stopluacode
 
 \startlua
   context(
     5 % 2
-  %   ^^^ comment
+  %   ^^^ comment.line.percentage.context
   )
   -- context("b")
-  % <- comment
+  % <- comment.line.double-dash.lua
   context("a")
-  % <- source.lua comment
+  % <- source.lua.minor.embedded.context comment.line.double-dash.lua
 \stoplua
 
 \ctxlua{
   context(
     5 % 2
-  %   ^^^ comment
+  %   ^^^ comment.line.percentage.context
   )
   -- context("b")
-  % <- comment
+  % <- comment.line.double-dash.lua
   context("a")
-  % <- source.lua comment
+  % <- source.lua.minor.embedded.context
 }
-
-\luacode{...} \lateluacode{...} \ctxluacode{...} \ctxlatelua{...}
-%        ^^^                                                     source.lua
-%                          ^^^                                   source.lua
-%                                           ^^^                  source.lua
-%                                                            ^^^ source.lua
-\ctxdirectlua{...} \directlua{...}
-%             ^^^                 source.lua
-%                             ^^^ source.lua
 
 % METAPOST/METAFUN
 \startuniqueMPgraphic{foo}{x, y}
-  % setup a pair:
-  % <- comment.metapost
-  pair p;  p := (\MPvar{x}, \MPvar{y});
-  %              ^^^^^^            support.function.control-word.context
-  %                         ^^^^^^ support.function.control-word.context
+%                     ^^^        meta.braces.context
+%                          ^^^^  meta.braces.context
+%                    ^^^^^^^^^^^ - source.metapost.metafun.embedded.context
   draw (unitcircle shifted p) scaled 1cm withcolor red;
-  % <- source.metapost
+  % <- source.metapost.metafun.embedded.context
 \stopuniqueMPgraphic
-
-\startMP[numbering=line] draw unitdiamond; \stopMP
-%        ^^^^^^^^^                         variable.parameter.key.context
-%                 ^                        keyword.operator.equals.context
-%        ^^^^^^^^^^^^^^                    meta.environment.list.context
-%                        ^^^^^^^^^^^^^^^^^ source.metapost
-\startstaticMPfigure{foo} draw unitsquare; \stopstaticMPfigure
-%                         ^^^^^^^^^^^^^^^^ source.metapost
-\startMPinclusions[+]{foo} draw fullcircle; \stopMPinclusions
-%                          ^^^^^^^^^^^^^^^^ source.metapost
-
-% JAVASCRIPT
-\startJSpreamble foo used now
-  %              ^^^          entity.name.context
-  %                       ^^^ constant.other.context
-  % factorial function:
-  % <- comment
-  function factorial(n) {
-    if (n === 0 || n === 1) return 1;
-    return n * factorial(n - 1)
-  }
-  % <- source.js
-\stopJSpreamble
-
-\startJScode bar uses foo factorial(10) \stopJScode
-%            ^^^                        entity.name.context
-%                     ^^^               entity.name.context
-%                         ^^^^^^^^^^^^^ source.js
-
-% XML
-\startXML <div> foo </div> \stopXML
-%         ^^^^^^^^^^^^^^^^ text.xml
 
 % MATH
 Adding $1$, \m{2} and \math[three]{3} gives \mathematics{6}.
-%       ^                                                  meta.environment.math
-%              ^                                           meta.environment.math
-%                                  ^                       meta.environment.math
-%                                                        ^ meta.environment.math
+%      ^                                                   punctuation.section.dollar.begin.context
+%       ^                                                  meta.environment.math.inline.context
+%        ^                                                 punctuation.section.dollar.end.context
+%              ^                                           meta.environment.math.inline.context
+%                                  ^                       meta.environment.math.inline.context
+%                                                        ^ meta.environment.math.inline.context
 
 \startformula e^{iπ} = -1 \stopformula
-%             ^^^^^^^^^^^ meta.environment.math
+%             ^^^^^^^^^^^ meta.environment.math.block.context
 
 % VERBATIM
 The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
-%                      ^^^^^^                                variable.parameter.key.context
-%                            ^                               keyword.operator.equals.context
-%                      ^^^^^^^^^^                            meta.environment.list.context
-%                                  ^                         markup.raw.context - comment
-%                                                         ^^ markup.raw.context - variable.parameter.tex.context
+%                      ^^^^^^                                  variable.parameter.context
+%                            ^                                 keyword.operator.assignment.context
+%                             ^^^                              meta.other.value.context
+%                     ^                                        punctuation.section.brackets.begin.context
+%                     ^^^^^^^^^^^^                             meta.brackets.context
+%                                ^                             punctuation.section.brackets.end.context
+%                                 ^                            punctuation.section.braces.begin.context
+%                                  ^                           markup.raw.inline.context - comment.line.percentage.context
+%                                   ^                          punctuation.section.braces.end.context
+%                                 ^^^                          meta.braces.context
+%                                                       ^^     punctuation.section.angles.begin.context
+%                                                         ^^   markup.raw.inline.context - variable.parameter.context
+%                                                           ^^ punctuation.section.angles.end.context
+%                                                       ^^^^^^ meta.angles.context
 
 \starttyping
   [option=xml]
-%  ^^^^^^     variable.parameter.key.context
-%        ^    keyword.operator.equals.context
-%  ^^^^^^^^^^ meta.environment.list.context
+%  ^^^^^^     variable.parameter.context
+%        ^    keyword.operator.assignment.context
+%  ^^^^^^^^^^ meta.brackets.context
   <cd:command name="MPcolor" file="colo-ini.mkiv">
     <cd:arguments>
       <cd:resolve name="argument-color"/>
     </cd:arguments>
   </cd:command>
-  % <- markup.raw.context
+  % <- markup.raw.block.context - comment.line.percentage.context
 \stoptyping
 
 % COMMENTS
 
-% Lorem ipsum
-% <- comment
-\starthiding consectetur adipisicing elit. \stophiding
-%            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ comment
+  % Lorem ipsum
+% ^^^^^^^^^^^^^ comment.line.percentage.context
+% ^             punctuation.definition.comment.context
 
 % TEMPLATES a.k.a. LMX
 \bTABLE
   <?lua for row=1,5 do ?>
-% ^^                      entity.tag.begin.context
-%   ^^^                   entity.tag.lua.context
-%       ^^^^^^^^^^^^^^    source.lua
-%                      ^^ entity.tag.end.context
+% ^^                      punctuation.definition.tag.begin.context
+%   ^^^                   entity.name.tag.lua.context
+%       ^^^^^^^^^^^^^^    source.lua.embedded.context
+%                      ^^ punctuation.definition.tag.end.context
+% ^^^^^^^^^^^^^^^^^^^^^^^ meta.preprocessor.lua.context meta.tag.lua.context
     \bTR
       <?lua for col=1,5 do ?>
         \bTD
           cell (<?lua inject(row) ?>, <?lua inject(col) ?>)
-          %           ^^^^^^                       support.function
-          %                                 ^^^^^^ support.function
         \eTD
       <?lua end ?>
     \eTR
@@ -163,36 +116,47 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 \eTABLE
 
 % DEFINITIONS
-\def \foo #1{!! #1 !!}
-% <-                  support.function.control-word.context
-%    ^^^^             entity.control-word.tex.context
-%         ^^          variable.parameter.tex.context
-%               ^^    variable.parameter.tex.context
-%            ^^^^^^^^ meta.environment.brace.group.tex.context
+  \def \foo #1{!! #1 !!}
+% ^^^^                   storage.type.function.general.context
+%      ^^^^              entity.name.function.general.context
+%           ^            punctuation.definition.variable.context
+%           ^^           variable.parameter.context
+%                 ^      punctuation.definition.variable.context
+%                 ^^     variable.parameter.context
+%              ^^^^^^^^  meta.braces.context
 
-\define[1] \foo {!! #1 !!}
-% <-                      support.function.control-word.context
-%       ^                 constant.numeric.context
-%          ^^^^           entity.control-word.tex.context
-%                   ^^    variable.parameter.tex.context
-%                ^^^^^^^^ meta.environment.brace.group.tex.context
+  \define [1] \foo {!! #1 !!}
+% ^^^^^^^                     storage.type.function.general.context
+%             ^^^^            entity.name.function.general.context
+%                      ^      punctuation.definition.variable.context
+%                      ^^     variable.parameter.context
+%                    ^^^^^^^^ meta.braces.context
 
-\starttexdefinition foo #1
-% <-                       support.function.control-word.context
-%                   ^^^    entity.control-word.tex.context
-%                       ^^ variable.parameter.tex.context
-  !! #1 !!
-%    ^^                    variable.parameter.tex.context
-\stoptexdefinition
+  \starttexdefinition nospaces unexpanded foo #1
+% ^^^^^^^^^^^^^^^^^^^                            storage.type.function.general.context
+%                     ^^^^^^^^                   storage.modifier.context
+%                              ^^^^^^^^^^        storage.modifier.context
+%                                         ^^^    entity.name.function.general.context
+%                                             ^  punctuation.definition.variable.context
+%                                             ^^ variable.parameter.context
+    !! #1 !!
+%      ^                                         punctuation.definition.variable.context
+%      ^^                                        variable.parameter.context
+  \stoptexdefinition
 
 % mkvi style definitions
-\def \foo #a[#{b}]{
-%         ^^      variable.parameter.tex.context
-%            ^^^^ variable.parameter.tex.context
-  !! #a !! #{b} !!
-%    ^^         variable.parameter.tex.context
-%          ^^^^ variable.parameter.tex.context
-}
+  \def \foo #a[#{b}]{!! #a !! #{b} !!}
+% ^^^^                                 storage.type.function.general.context
+%      ^^^^                            entity.name.function.general.context
+%           ^                          punctuation.definition.variable.context
+%           ^^                         variable.parameter.context
+%              ^                       punctuation.definition.variable.context
+%              ^^^                     variable.parameter.context
+%                       ^              punctuation.definition.variable.context
+%                       ^^             variable.parameter.context
+%                             ^        punctuation.definition.variable.context
+%                             ^^^      variable.parameter.context
+%                   ^^^^^^^^^^^^^^^^^^ meta.braces.context
 
 \stoptext
-% <- support.function.control-word.context
+% <- support.function.general.context

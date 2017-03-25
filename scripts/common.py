@@ -112,9 +112,12 @@ def parse_log_for_error(file_bytes):
 
 def context_command_selector():
     return ", ".join([
-        "support.function.control-word.context",
-        "keyword.control-word.context",
-        "entity.control-word.tex.context"
+        "storage.type.function.general.context",
+        "support.function.general.context",
+        "keyword.control.conditional.context",
+        "keyword.other.alignment.context",
+        "entity.name.function.general.context",
+        "entity.name.function.symbol.context",
     ])
 
 
@@ -129,6 +132,29 @@ def last_command_in_region(view, region):
         tail = view.substr(sublime.Region(command.end(), region.end()))
         return view.substr(command)[1:], tail
     return None, None
+
+
+# def region_ends_with_command_and_args(view, region):
+#     candidate_commands = [
+#         command
+#         for command in view.find_by_selector(context_command_selector())
+#         if region.contains(command)
+#     ]
+#     if len(candidate_commands) > 0:
+#         command = candidate_commands[-1]
+#     else:
+#         return
+#
+#     ending_args_sel = "text.tex.context" + \
+#         " (meta.braces.context, meta.brackets.context)"
+#     match = True
+#     for point in range(command.end(), region.end()):
+#         if not view.match_selector(point, ending_args_sel):
+#             match = False
+#             break
+#
+#     if match:
+#         return view.substr(command)[1:]
 
 
 def reload_settings(self):
