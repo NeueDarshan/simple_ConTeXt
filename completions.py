@@ -6,7 +6,6 @@ import re
 
 import sys
 sys.path.insert(1, os.path.abspath(os.path.dirname(__file__)))
-from scripts import parsing
 from scripts import common
 
 
