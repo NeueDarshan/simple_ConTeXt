@@ -7,8 +7,8 @@ import json
 import sys
 import os
 sys.path.insert(1, os.path.abspath(os.path.dirname(__file__)))
-# from scripts import parsing
 from scripts import common
+from scripts import parsing
 
 
 class ContexttoolsProfileSelector(sublime_plugin.WindowCommand):
@@ -44,29 +44,37 @@ class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
         if not (0 <= index < len(self.profile_names)):
             return
 
-        return
+        name = self.profile_names[index]
+        self.settings.set("current_profile", name)
+        self.reload_settings()
 
-        # name_ = self.profile_names[index]
-        # chosen_profile = {}
-        # for profile in self.settings.get("profiles", {}):
-        #     if profile.get("name") == name_:
-        #         chosen_profile = profile
-        #         break
-        # name = "context-en-{}.xml".format(name_)
+        context = self.current_profile.get("context_program", {})
+        command = context.get("name", "context")
+        options = context.get("options", {})
+        version = self.current_profile.get(
+            "command_popups", {}).get("version", name)
+        common.deep_update(
+            options,
+            {
+                "extra": "setups",
+                "overview": True,
+                "save": True
+            }
+        )
+        command = common.process_options(command, options, None, None)
+        os.chdir(os.path.join(
+            sublime.packages_path(), "ConTeXtTools", "interface"))
 
-        # os.chdir(os.path.join(
-        #     sublime.packages_path(), "ConTeXtTools", "scripts"))
-        # common.prep_environ_path(chosen_profile)
+        path = self.current_profile.get("context_program", {}).get("path")
+        with common.ModPath(path):
+            subprocess.call(command)
+            os.remove("context-extra.pdf")
+            os.rename("context-en.xml", "context-en-{}.xml".format(version))
 
-        # subprocess.call(["context", "--extra=setups", "--overview", "--save"])
-        # os.remove("context-extra.pdf")
-        # os.rename("context-en.xml", name)
-
-        # structured_commands = parsing.parse_context_tree(
-        #     name, pre_process=parsing.fix_context_tree_2016)
-        # os.remove(name)
-
-        # parsing.simplify_commands(structured_commands)
-        # flat_commands = parsing.rendered_command_dict(structured_commands)
-        # with open("commands {}.json".format(name_), mode="w") as f:
-        #     json.dump(flat_commands, f, sort_keys=True, indent=2)
+            structured_commands = parsing.parse_context_tree(
+                "context-en-{}.xml".format(version),
+                pre_process=parsing.fix_tree)
+            parsing.simplify_commands(structured_commands)
+            flat_commands = parsing.rendered_command_dict(structured_commands)
+            with open("commands-en-{}.json".format(version), mode="w") as f:
+                json.dump(flat_commands, f, sort_keys=True, indent=2)

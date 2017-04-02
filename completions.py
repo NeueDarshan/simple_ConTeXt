@@ -13,25 +13,31 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.commands_cache = {}
+        self.version = None
 
     def reload_settings(self):
         common.reload_settings(self)
+        self.version = self.current_profile.get(
+            "command_popups", {}).get("version", self.current_profile_name)
 
-        name = self.current_profile_name
-        if name not in self.commands_cache:
-            self.commands_cache[name] = {
-                "commands": common.load_commands(
-                    os.path.join(
-                        os.path.abspath(os.path.dirname(__file__)),
-                        "interface"),
-                    self.current_profile.get(
-                        "command_popups", {}).get("version", "Minimals"))
-            }
-            self.commands_cache[name]["command_names"] = sorted(
-                self.commands_cache[name]["commands"].keys())
-            self.commands_cache[name]["command_completions"] = [
-                ["\\" + command, ""]
-                for command in self.commands_cache[name]["command_names"]]
+        if self.current_profile_name not in self.commands_cache:
+            try:
+                path = os.path.join(
+                    os.path.abspath(os.path.dirname(__file__)), "interface")
+                commands = common.load_commands(path, self.version)
+                if not commands:
+                    return
+
+                self.commands_cache[self.version] = {"commands": commands}
+                self.commands_cache[self.version]["command_names"] = sorted(
+                    self.commands_cache[self.version]["commands"].keys()
+                )
+                self.commands_cache[self.version]["command_completions"] = [
+                    ["\\" + command, ""] for command in
+                    self.commands_cache[self.version]["command_names"]
+                ]
+            except FileNotFoundError as e:
+                return
 
     def on_query_completions(self, view, prefix, locations):
         if not common.is_context(view):
@@ -39,16 +45,14 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         self.reload_settings()
         return self.commands_cache.get(
-            self.current_profile_name, {}).get("command_completions", [])
+            self.version, {}).get("command_completions", [])
 
     def on_modified(self, view):
-        self.reload_settings()
+        if not common.is_context(view):
+            return
 
-        shouldnt_show_popup = not (
-            common.is_context(view) and
-            self.current_profile.get("command_popups", {}).get("on")
-        )
-        if shouldnt_show_popup:
+        self.reload_settings()
+        if not self.current_profile.get("command_popups", {}).get("on"):
             return
 
         command_name, tail = common.last_command_in_region(
@@ -58,7 +62,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             return
 
         if command_name in self.commands_cache.get(
-                self.current_profile_name).get("command_names", []):
+                self.version, {}).get("command_names", []):
             view.show_popup(
                 self.get_popup_text(command_name),
                 location=-1,
@@ -91,7 +95,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         signatures = []
         return_ = self.commands_cache.get(
-            self.current_profile_name).get("commands", {}).get(command_name)
+            self.version, {}).get("commands", {}).get(command_name)
         command, files = return_[:-1], return_[-1]
 
         for variation in command:

@@ -182,82 +182,18 @@ def handle_syntax_element(element, definitions):
     raise Exception("unknown argument type '{}'".format(element.tag))
 
 
-def fix_context_tree_2016(root_node):
-    # fix \setupitemgroup, resolve->inherit
-    itemgroup = root_node.find(
-        './/cd:interface[@file="i-itemgroup.xml"]', namespaces=NAMESPACES)
-    setupitemgroup = itemgroup.findall(
-        './/cd:command[@name="setupitemgroup"]', namespaces=NAMESPACES)
-    for variant in setupitemgroup:
-        query = './/cd:arguments//cd:assignments' \
-            + '//cd:parameter[@name="indenting"]//cd:resolve'
-        problem = variant.find(query, namespaces=NAMESPACES)
-        problem.tag = "{{{cd}}}inherit".format(**NAMESPACES)
-
-    # fix \definefontfamilypreset, assignment->assignments
-    fontfamily = root_node.find(
-        './/cd:interface[@file="i-fontfamily.xml"]', namespaces=NAMESPACES)
-    definefontfamilypreset = fontfamily.iterfind(
-        './/cd:command[@name="definefontfamilypreset"]', namespaces=NAMESPACES)
-    for variant in definefontfamilypreset:
-        query = './/cd:arguments//cd:assignment'
-        problem = variant.find(query, namespaces=NAMESPACES)
-        if problem:
-            problem.tag = "{{{cd}}}assignments".format(**NAMESPACES)
-
-    # fix \setupfittingpage, defaut->default
-    fittingpage = root_node.find(
-        './/cd:interface[@file="i-fittingpage.xml"]', namespaces=NAMESPACES)
-    setupfittingpage = fittingpage.find(
-        './/cd:command[@name="setupfittingpage"]', namespaces=NAMESPACES)
-    query = './/cd:arguments//cd:assignments//cd:parameter[@name="paper"]' \
-        + '//cd:constant[@type="defaut"]'
-    problem = setupfittingpage.find(query, namespaces=NAMESPACES)
-    problem.set("type", "default")
-
-    # fix \currentdate, moth->month
-    conversion = root_node.find(
-        './/cd:interface[@file="i-conversion.xml"]', namespaces=NAMESPACES)
-    currentdate = conversion.find(
-        './/cd:command[@name="currentdate"]', namespaces=NAMESPACES)
-    query = './/cd:arguments//cd:keywords//cd:constant[@type="moth"]'
-    problem = currentdate.find(query, namespaces=NAMESPACES)
-    problem.set("type", "month")
-
-    # '\​protect' -> '\protect' (no zero-width whitespace at start)
-    catcodes = root_node.find(
-        './/cd:interface[@file="i-catcodes.xml"]', namespaces=NAMESPACES)
-    protect = catcodes.find(
-        './/cd:command[@name="protect"]', namespaces=NAMESPACES)
-    protect.set("end", "")
-
-    # fix \defineenumerations, defineenumerations->defineenumeration
-    enumeration = root_node.find(
-        './/cd:interface[@file="i-enumeration.xml"]', namespaces=NAMESPACES)
-    defineenumerations = enumeration.find(
-        './/cd:command[@name="defineenumerations"]', namespaces=NAMESPACES)
-    defineenumerations.set("name", "defineenumeration")
-
-    # fix: keyword-name-optional-list->keyword-name-list-optional
+def fix_tree(root):
     query = './/cd:interface//cd:command//cd:arguments//' \
         + 'cd:resolve[@name="keyword-name-optional-list"]'
-    problem_commands = root_node.findall(query, namespaces=NAMESPACES)
+    problem_commands = root.findall(query, namespaces=NAMESPACES)
     for command in problem_commands:
         command.set("name", "keyword-name-list-optional")
 
-    # fix: we don't understand a file attribute in the interface element in the
-    # main parsers, we only understand it on the command element itself. As
-    # such, we tweak the XML to obey this convention.
-    xml = root_node.find(
+    xml = root.find(
         './/cd:interface[@file="i-xml.xml"]', namespaces=NAMESPACES)
     for child in xml:
         child.set("file", "lxml-ini.mkiv")
 
-    # add the new common argument types:
-    #   + argument-content
-    #   + argument-content-optional
-    #   + argument-content-list
-    #   + argument-content-list-optional
     new_arguments = [
         """<cd:define
         xmlns:cd="http://www.pragma-ade.com/commands"
@@ -289,100 +225,12 @@ def fix_context_tree_2016(root_node):
             <cd:keywords delimiters="braces" list="yes" optional="yes">
                 <cd:constant type="cd:content"/>
             </cd:keywords>
-        </cd:define>"""]
+        </cd:define>""",
+    ]
 
     query = './/cd:interface[@file="i-common-definitions.xml"]' \
         + '//cd:interface[@file="i-common-argument.xml"]'
-    common_arguments = root_node.find(query, namespaces=NAMESPACES)
-    for arg in new_arguments:
-        common_arguments.append(ET.fromstring(arg))
-
-
-def fix_context_tree_2017(root_node):
-    # fix \definefontfamilypreset, assignment->assignments
-    fontfamily = root_node.find(
-        './/cd:interface[@file="i-fontfamily.xml"]', namespaces=NAMESPACES)
-    definefontfamilypreset = fontfamily.iterfind(
-        './/cd:command[@name="definefontfamilypreset"]', namespaces=NAMESPACES)
-    for variant in definefontfamilypreset:
-        query = './/cd:arguments//cd:assignment'
-        problem = variant.find(query, namespaces=NAMESPACES)
-        if problem:
-            problem.tag = "{{{cd}}}assignments".format(**NAMESPACES)
-
-    # fix \setupfittingpage, defaut->default
-    fittingpage = root_node.find(
-        './/cd:interface[@file="i-fittingpage.xml"]', namespaces=NAMESPACES)
-    setupfittingpage = fittingpage.find(
-        './/cd:command[@name="setupfittingpage"]', namespaces=NAMESPACES)
-    query = './/cd:arguments//cd:assignments//cd:parameter[@name="paper"]' \
-        + '//cd:constant[@type="defaut"]'
-    problem = setupfittingpage.find(query, namespaces=NAMESPACES)
-    problem.set("type", "default")
-
-    # '\​protect' -> '\protect' (no zero-width whitespace at start)
-    catcodes = root_node.find(
-        './/cd:interface[@file="i-catcodes.xml"]', namespaces=NAMESPACES)
-    protect = catcodes.find(
-        './/cd:command[@name="protect"]', namespaces=NAMESPACES)
-    protect.set("end", "")
-
-    # fix: keyword-name-optional-list->keyword-name-list-optional
-    query = './/cd:interface//cd:command//cd:arguments//' \
-        + 'cd:resolve[@name="keyword-name-optional-list"]'
-    problem_commands = root_node.findall(query, namespaces=NAMESPACES)
-    for command in problem_commands:
-        command.set("name", "keyword-name-list-optional")
-
-    # fix: we don't understand a file attribute in the interface element in the
-    # main parsers, we only understand it on the command element itself. As
-    # such, we tweak the XML to obey this convention.
-    xml = root_node.find(
-        './/cd:interface[@file="i-xml.xml"]', namespaces=NAMESPACES)
-    for child in xml:
-        child.set("file", "lxml-ini.mkiv")
-
-    # add the new common argument types:
-    #   + argument-content
-    #   + argument-content-optional
-    #   + argument-content-list
-    #   + argument-content-list-optional
-    new_arguments = [
-        """<cd:define
-        xmlns:cd="http://www.pragma-ade.com/commands"
-        name="argument-content">
-            <cd:keywords delimiters="braces">
-                <cd:constant type="cd:content"/>
-            </cd:keywords>
-        </cd:define>""",
-
-        """<cd:define
-        xmlns:cd="http://www.pragma-ade.com/commands"
-        name="argument-content-optional">
-            <cd:keywords delimiters="braces" optional="yes">
-                <cd:constant type="cd:content"/>
-            </cd:keywords>
-        </cd:define>""",
-
-        """<cd:define
-        xmlns:cd="http://www.pragma-ade.com/commands"
-        name="argument-content-list">
-            <cd:keywords delimiters="braces" list="yes">
-                <cd:constant type="cd:content"/>
-            </cd:keywords>
-        </cd:define>""",
-
-        """<cd:define
-        xmlns:cd="http://www.pragma-ade.com/commands"
-        name="argument-content-list-optional">
-            <cd:keywords delimiters="braces" list="yes" optional="yes">
-                <cd:constant type="cd:content"/>
-            </cd:keywords>
-        </cd:define>"""]
-
-    query = './/cd:interface[@file="i-common-definitions.xml"]' \
-        + '//cd:interface[@file="i-common-argument.xml"]'
-    common_arguments = root_node.find(query, namespaces=NAMESPACES)
+    common_arguments = root.find(query, namespaces=NAMESPACES)
     for arg in new_arguments:
         common_arguments.append(ET.fromstring(arg))
 
@@ -681,30 +529,3 @@ def simplify_commands(commands):
     for name, command in commands.items():
         command["syntax_variants"] = simplified_syntax_variants(
             command["syntax_variants"])
-
-
-def main():
-    # structured_commands = parse_context_tree(
-    #     "context-en-2016.xml", pre_process=fix_context_tree_2016)
-    # simplify_commands(structured_commands)
-    # flat_commands = rendered_command_dict(structured_commands)
-    # with open("commands TeXLive 2016.json", mode="w") as f:
-    #     json.dump(flat_commands, f, sort_keys=True, indent=2)
-
-    # structured_commands = parse_context_tree(
-    #     "context-en-min.xml", pre_process=fix_context_tree_2017)
-    # simplify_commands(structured_commands)
-    # flat_commands = rendered_command_dict(structured_commands)
-    # with open("commands Minimals.json", mode="w") as f:
-    #     json.dump(flat_commands, f, sort_keys=True, indent=2)
-
-
-    structured_commands = parse_context_tree("context-en.xml")
-    # simplify_commands(structured_commands)
-    # flat_commands = rendered_command_dict(structured_commands)
-    # with open("commands a.json", mode="w") as f:
-    #     json.dump(flat_commands, f, sort_keys=True, indent=2)
-
-
-if __name__ == "__main__":
-    main()

@@ -27,13 +27,10 @@ def is_context(view):
 
 
 def load_commands(path_, version):
-    try:
-        name = "commands {version}.json".format(version=version)
-        commands_json = os.path.join(path_, name)
-        with open(commands_json) as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return
+    name = "commands-en-{}.json".format(version)
+    commands_json = os.path.join(path_, name)
+    with open(commands_json) as f:
+        return json.load(f)
 
 
 def protect_html_whitespace(string):
@@ -59,17 +56,25 @@ def protect_html(string, ignore_tags=["u"]):
         protect_html_brackets(string, ignore_tags=ignore_tags))
 
 
-def prep_environ_path(context_path):
-    if isinstance(context_path, str) and context_path:
-        context_path = os.path.abspath(context_path)
-        if os.path.exists(context_path):
-            PATH = os.environ["PATH"].split(os.pathsep)
-            if context_path not in PATH:
-                PATH.insert(0, context_path)
-            else:
-                PATH.remove(context_path)
-                PATH.insert(0, context_path)
-            os.environ["PATH"] = os.pathsep.join(PATH)
+class ModPath:
+    def __init__(self, path):
+        self.new = path
+        self.orig = os.environ["PATH"]
+
+    def __enter__(self):
+        if isinstance(self.new, str) and self.new:
+            new = os.path.abspath(self.new)
+            if os.path.exists(new):
+                PATH = self.orig.split(os.pathsep)
+                if new not in PATH:
+                    PATH.insert(0, new)
+                else:
+                    PATH.remove(new)
+                    PATH.insert(0, new)
+                os.environ["PATH"] = os.pathsep.join(PATH)
+
+    def __exit__(self, *args):
+        os.environ["PATH"] = self.orig
 
 
 def parse_log_for_error(file_bytes):
@@ -191,3 +196,47 @@ def reload_settings(self):
         deep_update(self.current_profile, new_settings)
     deep_update(
         self.current_profile, self.profiles[self.current_profile_index])
+
+
+def process_options(name, options, input_, input_base):
+    if isinstance(options, str):
+        if input_:
+            command = [name] + options.split(" ") + [input_]
+        else:
+            command = [name] + options.split(" ")
+
+    elif isinstance(options, dict):
+        command = [name]
+
+        if options.get("result"):
+            if input_base:
+                output_file_name = sublime.expand_variables(
+                    options["result"], {"name": input_base})
+                command.append("--result={}".format(output_file_name))
+            del options["result"]
+
+        for option, value in options.items():
+            if isinstance(value, bool):
+                if value:
+                    command.append("--{}".format(option))
+            elif isinstance(value, dict):
+                normalized_value = " ".join(
+                    "{}={}".format(k, v) for k, v in value.items())
+                command.append("--{}={}".format(option, normalized_value))
+            else:
+                if option == "script":
+                    command.insert(1, "--{}".format(option))
+                    command.insert(2, "{}".format(value))
+                else:
+                    command.append("--{}={}".format(option, value))
+
+        if input_:
+            command.append(input_)
+
+    else:
+        if input_:
+            command = [name, input_]
+        else:
+            command = [name]
+
+    return command

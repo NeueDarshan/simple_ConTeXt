@@ -337,6 +337,7 @@ contexts:
   MetaFun.scope:
     - include: scope:source.metapost.metafun#comment
     - include: scope:source.metapost.metafun
+    - include: Lua
     - include: control.word
 
   templates:
