@@ -97,9 +97,29 @@ should be terminated with a matching `\stopTABLE`. The line `tabl-ntb.mkiv`
 indicates the source file where this command is defined, and can be turned on
 or off with the `command_popups/show_files` key.
 
-Pop-ups can be turned on or off by with the `command_popups/on` key, and
-`command_popups/version` can be used to specify which version of the ConTeXt
-interface files to use.
+The colouring of the pop-ups is determined by the `command_popups/colors` key.
+(The values are used for CSS styling of the HTML-based pop-ups, so any valid
+way of specifying a colour in CSS works. Thus `red`, `rgb(255, 0, 0)` and
+`#ff0000` are all valid.) For example, the options
+
+```JSON
+"command_popups":
+{
+  "colors":
+  {
+    "background": "rgb(225, 225, 225)",
+    "primary": "rgb(36, 151, 227)",
+    "secondary": "rgb(86, 86, 86)"
+  }
+}
+```
+
+go well with the colour scheme "Monokai Extended Light".
+
+Pop-ups can be turned on or off completely with the `command_popups/on` key,
+and `command_popups/version` can be used to specify which version of the
+ConTeXt interface files to use (as different versions of ConTeXt can have
+different interfaces).
 
 # Snippets
 
@@ -161,9 +181,10 @@ One
 
 # References
 
-References are tricky. There are two main tasks to automate,
+References are tricky. There are two main tasks to automate:
 
-  - keeping track of the "labels" defined so far, things like `[eq:pythagoras]`,
+  - keeping track of the "labels" defined so far, things like
+    `[eq:pythagoras]`;
   - automatically prompting the user to choose a label when they type certain
     commands, e.g. after typing `\eqref`.
 
@@ -198,8 +219,7 @@ certain characters e.g. a "-" character in a character class `[...]`.
 Currently the builder is pretty basic. It uses the `context_program/path` key
 (if given) to locate the main program, and calls it (by default "context", can
 be set via `context_program/name`) (passing the options in
-`context_program/options`, if any) on the current ConTeXt file. At the moment
-it has an unintentional side effect of modifying the PATH variable for the OS.
+`context_program/options`, if any) on the current ConTeXt file.
 
 The value of `context_program/options` offers quite some, well, options. You
 can assign a string to it such as `--once --synctex` and this will get passed
@@ -230,15 +250,15 @@ directives.
 
 # Settings and Profiles
 
-The settings are intended to be flexible. A basic setup could be something
-like:
+The settings are intended to be flexible. A simple setup could be something
+like this.
 
 ```JSON
 {
   "profiles":
   [
     {
-      "name": "main profile",
+      "name": "main",
       "command_popups":
       {
         "on": true,
@@ -258,8 +278,9 @@ like:
 ```
 
 Alternatively, you can use the `profile_defaults` key to assign settings common
-to *all* profiles, and then overwrite these settings on a profile by profile
-basis. For example:
+to *all* profiles, and then overwrite these settings on a profile-by-profile
+basis. For example (this time calling `mtxrun --script context ...` instead of
+`context ...`):
 
 ```JSON
 {
