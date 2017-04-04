@@ -101,12 +101,20 @@ contexts:
     - include: templates
     - include: ConTeXt.verbatim
     - include: TeX.parameter
+    - include: math.control.word
     - include: control.word.without-generic
     - include: control.word.generic.no-arguments
     - include: control.symbol
     - include: math.inner-group
     - include: math.number
     - include: math.operator
+
+  math.control.word:
+    - match: '(\\)start(align|mathalignment)\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: generic.list*/
 
   math.number:
     - include: generic.real-or-integer
@@ -671,7 +679,7 @@ contexts:
     - match: ''
       set:
         - meta_include_prototype: false
-        - meta_content_scope: markup.raw.block.context meta.other.buffer.context
+        - meta_content_scope: meta.other.buffer.context
         - match: '(\\)stopbuffer\b'
           captures:
             '0': support.function.general.context

@@ -20,7 +20,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         self.version = self.current_profile.get(
             "command_popups", {}).get("version", self.current_profile_name)
 
-        if self.current_profile_name not in self.commands_cache:
+        if self.version not in self.commands_cache:
             try:
                 path = os.path.join(
                     os.path.abspath(os.path.dirname(__file__)), "interface")
@@ -71,27 +71,30 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             )
 
     def get_popup_text(self, command_name):
+        colors = self.current_profile.get(
+            "command_popups", {}).get("colors", {})
         style_sheet = """
             html {{
-                background-color: {background_color};
+                background-color: {background};
             }}
             .syntax {{
-                color: {syntax_color};
+                color: {syntax};
                 font-size: 1.2em;
             }}
             .doc_string {{
-                color: {doc_string_color};
+                color: {doc_string};
                 font-size: 1em;
             }}
             .files {{
-                color: {file_color};
+                color: {file};
                 font-size: 1em;
             }}
         """.format(
-            background_color="#151515",
-            syntax_color="#8ea6b7",
-            doc_string_color="#956837",
-            file_color="#8ea6b7")
+            background=colors.get("background", "#151515"),
+            syntax=colors.get("primary", "#8ea6b7"),
+            doc_string=colors.get("secondary", "#956837"),
+            file=colors.get("primary", "#8ea6b7")
+        )
 
         signatures = []
         return_ = self.commands_cache.get(
