@@ -5,6 +5,7 @@
   - [Commands](#commands)
     - [Completions](#completions)
     - [Pop-Ups](#pop-ups)
+    - [Generating an Interface](#generating-an-interface)
   - [Snippets](#snippets)
   - [Symbols](#symbols)
   - [References](#references)
@@ -44,7 +45,19 @@ There are a couple of "sublime-syntax" files provided related to using ConTeXt.
 
 "Commands" means TeX/ConTeXt macros, such as `\starttext`. "Core" commands
 means those commands defined in the XML interface files ConTeXt generates.
-There are features so far for core commands, "completions" and "pop-ups".
+There are three features so far for core commands: "browsing", "completions"
+and "pop-ups".
+
+## Browsing
+
+This is just a quick example feature making use of the interface JSON files. In
+the command palette (`Ctrl+Shift+P`) there is a command called "ConTeXtTools:
+Browse interface commands"; you can choose an interface (provided one has
+already been created, see the [interface](#generating-an-interface) section)
+and then peruse the library of core commands at your leisure.
+
+You can do the same kind of thing with completions, but this provides a nicer
+interface for it.
 
 ## Completions
 
@@ -94,8 +107,8 @@ of key-value assignments (so for example, something like
 `[color=red, style=bold]`), and that the recognized options are the same as
 those of the `\setupTABLE` command. Furthermore, it shows that `\startTABLE`
 should be terminated with a matching `\stopTABLE`. The line `tabl-ntb.mkiv`
-indicates the source file where this command is defined, and can be turned on
-or off with the `command_popups/show_files` key.
+indicates the source file where this command is defined, if you're curious, and
+can be turned on or off with the `command_popups/show_files` key.
 
 The colouring of the pop-ups is determined by the `command_popups/colors` key.
 (The values are used for CSS styling of the HTML-based pop-ups, so any valid
@@ -114,12 +127,47 @@ way of specifying a colour in CSS works. Thus `red`, `rgb(255, 0, 0)` and
 }
 ```
 
-go well with the colour scheme "Monokai Extended Light".
+complement the "Light" version of [Monokai Extended][monokai].
 
 Pop-ups can be turned on or off completely with the `command_popups/on` key,
 and `command_popups/version` can be used to specify which version of the
 ConTeXt interface files to use (as different versions of ConTeXt can have
 different interfaces).
+
+## Generating an Interface
+
+All the [command](#commands) features rely on so-called "interface" files.
+These are simply json files, created automatically from the XML files that a
+ConTeXt installation provides. Different installations of ConTeXt will define
+different commands, and thus the XML files for each will differ. So there is an
+`interfaces` key at top-level in the settings, which should contain key-value
+pairs like so:
+
+```JSON
+"interfaces":
+{
+  "one":
+  {
+    "main": "/path/to/main/interface",
+    "modules": "/path/to/module/interface"
+  }
+}
+```
+
+"Main" should point to the main XML files (they are named in the scheme
+`i-<name>.xml`), e.g. something like
+`C:/texlive/2016/texmf-dist/tex/context/interface/mkiv` for a windows TeXLive
+2016 installation. Optionally you can locate the module XML files, probably
+right next the the main ones if they are anywhere (e.g. at
+`C:\texlive\2016\texmf-dist\tex\context\interface\third`), and then
+ConTeXtTools will also understand the commands defined in the ConTeXt modules.
+(Well, some of them, not all of them have associated XML files.)
+
+Then you should bring up the command palette (`Ctrl+Shift+P`) and select
+"ConTeXtTools: Generate profile interface", and select the interface you just
+configured in the settings file. Any errors will be reported in the console.
+Assuming it was successful, the other features should now work. (Remember to
+also switch to a profile using that "interface" if necessary.)
 
 # Snippets
 
@@ -262,7 +310,8 @@ like this.
       "command_popups":
       {
         "on": true,
-        "show_files": false
+        "show_files": false,
+        "interface": "context"
       },
       "context_program":
       {
@@ -273,7 +322,15 @@ like this.
         }
       }
     }
-  ]
+  ],
+  "interfaces":
+  {
+    "context":
+    {
+      "main": "C:/path/to/interface/mkiv",
+      "modules": "C:/path/to/interface/third"
+    }
+  }
 }
 ```
 
@@ -293,7 +350,7 @@ basis. For example (this time calling `mtxrun --script context ...` instead of
     },
     "context_program":
     {
-      "path": "C:/path/to/context/program/",
+      "path": "~/path/to/context/program/",
       "name": "mtxrun",
       "options":
       {
@@ -352,3 +409,4 @@ the options explicitly given in this profile (i.e. set the
 [titles]: http://wiki.contextgarden.net/Titles
 [metapost]: http://www.tug.org/metapost.html
 [metafun]: http://wiki.contextgarden.net/MetaFun
+[monokai]: http://github.com/jonschlinkert/sublime-monokai-extended

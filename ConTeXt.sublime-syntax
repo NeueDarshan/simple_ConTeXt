@@ -52,11 +52,25 @@ contexts:
         '0': support.function.general.context
         '1': punctuation.definition.backslash.context
       push: [
-        math.display.core/,
+        math.formula.core/,
         generic.list*/,
       ]
+    - match: '(\\)start(display|d)math\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push:
+        - meta_content_scope: meta.environment.math.block.context
+        - match: '(?=\\stop\2math\b)'
+          pop: true
+        - include: math.main
+    - match: '(\\)display(math|mathematics)\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: math.display.group*/
 
-  math.display.core/:
+  math.formula.core/:
     - match: ''
       set:
         - meta_content_scope: meta.environment.math.block.context
@@ -81,6 +95,20 @@ contexts:
         math.group*/,
         generic.list*/,
       ]
+    - match: '(\\)inline(math|mathematics)\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: math.group*/
+    - match: '(\\)start(imath|mathmode)\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push:
+        - meta_content_scope: meta.environment.math.inline.context
+        - match: '(?=\\stop\2\b)'
+          pop: true
+        - include: math.main
 
   math.group/:
     - match: '\{'
@@ -96,32 +124,60 @@ contexts:
     - include: generic.pop-at-group-end/
     - include: math.main
 
+  math.display.group/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: math.display.group.core/
+  math.display.group*/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.pop-if-no-group/
+    - include: math.display.group/
+  math.display.group.core/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: meta.environment.math.block.context
+    - include: generic.pop-at-group-end/
+    - include: math.main
+
   math.main:
     - include: Lua
     - include: templates
     - include: ConTeXt.verbatim
     - include: TeX.parameter
-    - include: math.control.word
-    - include: control.word.without-generic
-    - include: control.word.generic.no-arguments
     - include: control.symbol
     - include: math.inner-group
     - include: math.number
     - include: math.operator
+    - include: math.variable
+    - include: math.control.word
+    - include: control.word.without-generic
+    - include: control.word.generic.no-arguments
 
   math.control.word:
-    - match: '(\\)start(align|mathalignment)\b'
+    - match: '(\\)text\b'
       captures:
         '0': support.function.general.context
         '1': punctuation.definition.backslash.context
-      push: generic.list*/
+      push: generic.group*/
+    - match: '(\\)start[[:alpha:]]+'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: generic.lists-or-groups*/
 
   math.number:
     - include: generic.real-or-integer
+    - match: '∞'
+      scope: constant.numeric.context
 
   math.operator:
     - match: '([\+\-\*/=\^_<>])'
       scope: keyword.operator.math.context
+    - match: '(\\)[lg]eq\b'
+      scope: keyword.operator.math.context
+
+  math.variable:
+    - match: '[[:alpha:]]'
+      scope: variable.other.math.tex.context
 
   math.inner-group:
     - match: '\{'
@@ -143,7 +199,7 @@ contexts:
         '1': punctuation.definition.backslash.context
       push:
         - meta_include_prototype: false
-        - meta_content_scope: source.lua.major.embedded.context
+        - meta_content_scope: source.lua.embedded.context
         - include: Lua.scope
       with_prototype:
         - match: '(?=\\stopluacode\b)'
@@ -159,37 +215,6 @@ contexts:
       with_prototype:
         - match: '(?=\\stoplua\b)'
           pop: true
-
-  Lua.scope:
-    - include: control.word.generic.no-arguments
-    - include: Lua.scope.anonymous-functions
-    - include: Lua.scope.prototype-friendly-inline-comments
-    - include: scope:source.lua
-
-  Lua.scope.anonymous-functions:
-    - match: '\b(function)\b\s*(?:([a-zA-Z_.:]+[.:])?([a-zA-Z_]\w*))?\s*(\()([^)]*)(\))'
-      captures:
-        '0': meta.function.lua
-        '1': keyword.control.lua
-        '2': entity.name.function.scope.lua
-        '3': entity.name.function.lua
-        '4': punctuation.definition.parameters.begin.lua
-        '5': variable.parameter.function.lua
-        '6': punctuation.definition.parameters.end.lua
-
-  Lua.scope.prototype-friendly-inline-comments:
-    - match: '--(?!\[\[)'
-      scope: punctuation.definition.comment.lua
-      push:
-        - meta_scope: comment.line.double-dash.lua
-        - match: '$\n?'
-          pop: true
-
-  Lua.scope.leaky-inline-comments:
-    - match: '--(?!\[\[)'
-      scope: punctuation.definition.comment.lua
-      push:
-        - meta_scope: comment.line.double-dash.lua
 
   Lua.inline:
     - match: '(\\)(ctx|direct)lua\b'
@@ -211,13 +236,11 @@ contexts:
       set:
         - meta_scope: meta.braces.context
         - meta_content_scope: source.lua.minor.embedded.context
-        - include: Lua.scope
-      with_prototype:
         - match: '\}'
           scope: punctuation.section.braces.end.context
           pop: true
         - include: Lua.dummy-group
-
+        - include: Lua.scope
   Lua.dummy-group:
     - match: '\{'
       push:
@@ -225,6 +248,20 @@ contexts:
           pop: true
         - include: Lua.dummy-group
         - include: Lua.scope
+
+  Lua.scope:
+    - include: control.symbol
+    - include: control.word.generic.no-arguments
+    - include: Lua.scope.comment.include-friendly
+    - include: scope:source.lua
+
+  Lua.scope.comment.include-friendly:
+    - match: '--(?!\[\[)'
+      scope: punctuation.definition.comment.lua
+      push:
+        - meta_scope: comment.line.double-dash.lua
+        - match: '$\n?'
+          pop: true
 
   MetaFun:
     - include: MetaFun.block
@@ -250,6 +287,9 @@ contexts:
     - match: '(\\)startuseMPgraphic\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
       push: [MetaFun.block.useMPgraphic.core/, generic.group*/, generic.group*/]
+    - match: '(\\)startusableMPgraphic\b'
+      captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
+      push: [MetaFun.block.usableMPgraphic.core/, generic.group*/, generic.group*/]
     - match: '(\\)startreusableMPgraphic\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
       push: [MetaFun.block.reusableMPgraphic.core/, generic.group*/, generic.group*/]
@@ -274,79 +314,98 @@ contexts:
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopMPcode\b)'
           pop: true
-        - include: MetaFun.scope
   MetaFun.block.MPpage.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopMPpage\b)'
           pop: true
-        - include: MetaFun.scope
   MetaFun.block.uniqueMPgraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopuniqueMPgraphic\b)'
           pop: true
-        - include: MetaFun.scope
   MetaFun.block.uniqueMPpagegraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopuniqueMPpagegraphic\b)'
           pop: true
-        - include: MetaFun.scope
   MetaFun.block.useMPgraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopuseMPgraphic\b)'
           pop: true
+  MetaFun.block.usableMPgraphic.core/:
+    - match: ''
+      set:
+        - meta_include_prototype: false
+        - meta_content_scope: source.metapost.metafun.embedded.context
         - include: MetaFun.scope
+      with_prototype:
+        - match: '(?=\\stopusableMPgraphic\b)'
+          pop: true
   MetaFun.block.reusableMPgraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopreusableMPgraphic\b)'
           pop: true
-        - include: MetaFun.scope
   MetaFun.block.staticMPfigure.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopstaticMPfigure\b)'
           pop: true
-        - include: MetaFun.scope
   MetaFun.block.MPdefinitions.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopMPdefinitions\b)'
           pop: true
-        - include: MetaFun.scope
   MetaFun.block.MPinclusions.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.scope
+      with_prototype:
         - match: '(?=\\stopMPinclusions\b)'
           pop: true
-        - include: MetaFun.scope
 
   MetaFun.scope:
+    - include: Lua
+    - include: control.symbol
+    - include: control.word.generic.no-arguments
     - include: scope:source.metapost.metafun#comment
     - include: scope:source.metapost.metafun
-    - include: Lua
-    - include: control.word
 
   templates:
     - include: templates.snippets
@@ -374,7 +433,7 @@ contexts:
   ConTeXt:
     - include: ConTeXt.headings
     - include: ConTeXt.verbatim
-    - include: ConTeXt.definitions
+    # - include: ConTeXt.definitions
     - include: ConTeXt.quotes
     - include: ConTeXt.font
 
@@ -588,7 +647,7 @@ contexts:
   ConTeXt.headings.list-common-3/:
     - include: generic.pop-at-list-end/
     - include: generic.list.assignments
-    - include: generic.real-or-integer.dimension
+    - include: generic.number
     - include: main
 
   ConTeXt.verbatim:
@@ -686,116 +745,116 @@ contexts:
             '1': punctuation.definition.backslash.context
           pop: true
 
-  ConTeXt.definitions:
-    - include: ConTeXt.define
-    - include: ConTeXt.texdef
-
-  ConTeXt.define:
-    - match: '(\\)define\b'
-      captures:
-        '0': storage.type.function.general.context
-        '1': punctuation.definition.backslash.context
-      push: ConTeXt.define.num*/
-
-  ConTeXt.define.num*/:
-    - meta_scope: meta.function.context
-    - match: '(?=\[)'
-      set: ConTeXt.define.num.core/
-    - include: generic.gobble-whitespace
-    - match: '(?=[^\[])'
-      set: ConTeXt.define.name/
-
-  ConTeXt.define.num.core/:
-    - match: '\['
-      scope: punctuation.section.brackets.begin.context
-      set:
-        - meta_scope: meta.brackets.context meta.function.parameters.context
-        - match: '\]'
-          scope: punctuation.section.brackets.end.context
-          set: ConTeXt.define.name/
-        - include: generic.real-or-integer
-        - include: main
-
-  ConTeXt.define.name/:
-    - meta_content_scope: meta.function.context
-    - match: '(\\)[[:alpha:]]+'
-      captures:
-        '0': entity.name.function.general.context
-        '1': punctuation.definition.backslash.context
-      set: ConTeXt.define.group/
-    - match: '(\\)[^[:alpha:]]'
-      captures:
-        '0': entity.name.function.symbol.context
-        '1': punctuation.definition.backslash.context
-      set: ConTeXt.define.group/
-    - match: '[^\s]'
-      scope: entity.name.function.active.context
-      set: ConTeXt.define.group/
-
-  ConTeXt.define.group/:
-    - meta_content_scope: meta.function.context
-    - include: control.word.generic.no-arguments
-    - include: control.symbol
-    - include: control.active-character
-    - include: TeX.def.group/
-
-  ConTeXt.texdef:
-    - match: '(\\)starttexdefinition\b'
-      captures:
-        '0': storage.type.function.general.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        ConTeXt.texdef.name/,
-        ConTeXt.texdef.expanded*/,
-        ConTeXt.texdef.unexpanded*/,
-        ConTeXt.texdef.global*/,
-        ConTeXt.texdef.spaces*/,
-      ]
-
-  ConTeXt.texdef.spaces*/:
-    - match: '\b(no)?spaces\b'
-      scope: storage.modifier.context
-    - include: ConTeXt.texdef.common/
-  ConTeXt.texdef.global*/:
-    - match: '\bglobal\b'
-      scope: storage.modifier.context
-    - include: ConTeXt.texdef.common/
-  ConTeXt.texdef.unexpanded*/:
-    - match: '\bunexpanded\b'
-      scope: storage.modifier.context
-    - include: ConTeXt.texdef.common/
-  ConTeXt.texdef.expanded*/:
-    - match: '\bexpanded\b'
-      scope: storage.modifier.context
-    - include: ConTeXt.texdef.common/
-
-  ConTeXt.texdef.common/:
-    - include: generic.gobble-whitespace
-    - match: '(?=[^\s])'
-      pop: true
-
-  ConTeXt.texdef.name/:
-    - meta_scope: meta.function.context
-    - match: '[[:alpha:]]+'
-      scope: entity.name.function.general.context
-      set: ConTeXt.texdef.parameters/
-
-  ConTeXt.texdef.parameters/:
-    - meta_content_scope: meta.function.parameters.context
-    - include: TeX.parameter
-    - include: generic.gobble-whitespace
-    - match: '$|(?=[^\s])'
-      set: ConTeXt.texdef.main/
-
-  ConTeXt.texdef.main/:
-    - meta_content_scope: meta.function.context
-    - match: '(\\)stoptexdefinition\b'
-      captures:
-        '0': meta.function.context storage.type.function.general.context
-        '1': punctuation.definition.backslash.context
-      pop: true
-    - include: main
-
+  # ConTeXt.definitions:
+  #   - include: ConTeXt.define
+  #   - include: ConTeXt.texdef
+  #
+  # ConTeXt.define:
+  #   - match: '(\\)define\b'
+  #     captures:
+  #       '0': storage.type.function.general.context
+  #       '1': punctuation.definition.backslash.context
+  #     push: ConTeXt.define.num*/
+  #
+  # ConTeXt.define.num*/:
+  #   - meta_scope: meta.function.context
+  #   - match: '(?=\[)'
+  #     set: ConTeXt.define.num.core/
+  #   - include: generic.gobble-whitespace
+  #   - match: '(?=[^\[])'
+  #     set: ConTeXt.define.name/
+  #
+  # ConTeXt.define.num.core/:
+  #   - match: '\['
+  #     scope: punctuation.section.brackets.begin.context
+  #     set:
+  #       - meta_scope: meta.brackets.context meta.function.parameters.context
+  #       - match: '\]'
+  #         scope: punctuation.section.brackets.end.context
+  #         set: ConTeXt.define.name/
+  #       - include: generic.integer
+  #       - include: main
+  #
+  # ConTeXt.define.name/:
+  #   - meta_content_scope: meta.function.context
+  #   - match: '(\\)[[:alpha:]]+'
+  #     captures:
+  #       '0': entity.name.function.general.context
+  #       '1': punctuation.definition.backslash.context
+  #     set: ConTeXt.define.group/
+  #   - match: '(\\)[^[:alpha:]]'
+  #     captures:
+  #       '0': entity.name.function.symbol.context
+  #       '1': punctuation.definition.backslash.context
+  #     set: ConTeXt.define.group/
+  #   - match: '[^\s]'
+  #     scope: entity.name.function.active.context
+  #     set: ConTeXt.define.group/
+  #
+  # ConTeXt.define.group/:
+  #   - meta_content_scope: meta.function.context
+  #   - include: control.word.generic.no-arguments
+  #   - include: control.symbol
+  #   - include: control.active-character
+  #   - include: TeX.def.group/
+  #
+  # ConTeXt.texdef:
+  #   - match: '(\\)starttexdefinition\b'
+  #     captures:
+  #       '0': storage.type.function.general.context
+  #       '1': punctuation.definition.backslash.context
+  #     push: [
+  #       ConTeXt.texdef.name/,
+  #       ConTeXt.texdef.expanded*/,
+  #       ConTeXt.texdef.unexpanded*/,
+  #       ConTeXt.texdef.global*/,
+  #       ConTeXt.texdef.spaces*/,
+  #     ]
+  #
+  # ConTeXt.texdef.spaces*/:
+  #   - match: '\b(no)?spaces\b'
+  #     scope: storage.modifier.context
+  #   - include: ConTeXt.texdef.common/
+  # ConTeXt.texdef.global*/:
+  #   - match: '\bglobal\b'
+  #     scope: storage.modifier.context
+  #   - include: ConTeXt.texdef.common/
+  # ConTeXt.texdef.unexpanded*/:
+  #   - match: '\bunexpanded\b'
+  #     scope: storage.modifier.context
+  #   - include: ConTeXt.texdef.common/
+  # ConTeXt.texdef.expanded*/:
+  #   - match: '\bexpanded\b'
+  #     scope: storage.modifier.context
+  #   - include: ConTeXt.texdef.common/
+  #
+  # ConTeXt.texdef.common/:
+  #   - include: generic.gobble-whitespace
+  #   - match: '(?=[^\s])'
+  #     pop: true
+  #
+  # ConTeXt.texdef.name/:
+  #   - meta_scope: meta.function.context
+  #   - match: '[[:alpha:]]+'
+  #     scope: entity.name.function.general.context
+  #     set: ConTeXt.texdef.parameters/
+  #
+  # ConTeXt.texdef.parameters/:
+  #   - meta_content_scope: meta.function.parameters.context
+  #   - include: TeX.parameter
+  #   - include: generic.gobble-whitespace
+  #   - match: '$|(?=[^\s])'
+  #     set: ConTeXt.texdef.main/
+  #
+  # ConTeXt.texdef.main/:
+  #   - meta_content_scope: meta.function.context
+  #   - match: '(\\)stoptexdefinition\b'
+  #     captures:
+  #       '0': meta.function.context storage.type.function.general.context
+  #       '1': punctuation.definition.backslash.context
+  #     pop: true
+  #   - include: main
+  #
   ConTeXt.quotes:
     - include: ConTeXt.quotes.inline
     - include: ConTeXt.quotes.block
@@ -872,7 +931,7 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.emphasis/
+          set: generic.font.emphasis/
         - include: generic.pop-if-no-group/
   ConTeXt.font.command.boldface:
     - match: '(\\)(small)?bold\b'
@@ -880,7 +939,7 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.boldface/
+          set: generic.font.boldface/
         - include: generic.pop-if-no-group/
   ConTeXt.font.command.italic:
     - match: '(\\)italic\b'
@@ -888,7 +947,7 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.italic/
+          set: generic.font.italic/
         - include: generic.pop-if-no-group/
   ConTeXt.font.command.slanted:
     - match: '(\\)(small)?slanted\b'
@@ -896,7 +955,7 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.slanted/
+          set: generic.font.slanted/
         - include: generic.pop-if-no-group/
   ConTeXt.font.command.bold-italic:
     - match: '(\\)(small)?(bolditalic|italicbold)\b'
@@ -904,7 +963,7 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.bold-italic/
+          set: generic.font.bold-italic/
         - include: generic.pop-if-no-group/
   ConTeXt.font.command.bold-slanted:
     - match: '(\\)(small)?(boldslanted|slantedbold)\b'
@@ -912,7 +971,7 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.bold-slanted/
+          set: generic.font.bold-slanted/
         - include: generic.pop-if-no-group/
   ConTeXt.font.command.sans-bold:
     - match: '(\\)sansbold\b'
@@ -920,7 +979,7 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.sans-bold/
+          set: generic.font.sans-bold/
         - include: generic.pop-if-no-group/
   ConTeXt.font.command.typewriter:
     - match: '(\\)mono\b'
@@ -928,7 +987,7 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.typewriter/
+          set: generic.font.typewriter/
         - include: generic.pop-if-no-group/
   ConTeXt.font.command.typewriter-bold:
     - match: '(\\)monobold\b'
@@ -936,49 +995,8 @@ contexts:
       push:
         - match: '\{'
           scope: punctuation.section.braces.begin.context
-          set: ConTeXt.font.typewriter-bold/
+          set: generic.font.typewriter-bold/
         - include: generic.pop-if-no-group/
-
-  ConTeXt.font.emphasis/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.italic.emphasis.context
-    - include: ConTeXt.font.common/
-  ConTeXt.font.boldface/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.bold.boldface.context
-    - include: ConTeXt.font.common/
-  ConTeXt.font.italic/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.italic.italic.context
-    - include: ConTeXt.font.common/
-  ConTeXt.font.slanted/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.italic.slanted.context
-    - include: ConTeXt.font.common/
-  ConTeXt.font.bold-italic/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.italic.italic.context markup.bold.boldface.context
-    - include: ConTeXt.font.common/
-  ConTeXt.font.bold-slanted/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.italic.slanted.context markup.bold.boldface.context
-    - include: ConTeXt.font.common/
-  ConTeXt.font.sans-bold/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.bold.boldface.context
-    - include: ConTeXt.font.common/
-  ConTeXt.font.typewriter/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.raw.typewriter.context
-    - include: ConTeXt.font.common/
-  ConTeXt.font.typewriter-bold/:
-    - meta_scope: meta.braces.context
-    - meta_content_scope: markup.bold.boldface.context markup.raw.typewriter.context
-    - include: ConTeXt.font.common/
-
-  ConTeXt.font.common/:
-    - include: main
-    - include: generic.pop-at-group-end/
 
   TeX:
     - include: TeX.parameter
@@ -988,58 +1006,58 @@ contexts:
     - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})[[:digit:]]'
       captures:
         '0': variable.parameter.context
-        '1': punctuation.definition.variable.context
+        # '1': punctuation.definition.variable.context
     - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})([[:alpha:]]+|\{[[:alpha:]\.\-:_]+\})'
       captures:
         '0': variable.parameter.context meta.preprocessor.context
-        '1': punctuation.definition.variable.context
+        # '1': punctuation.definition.variable.context
 
-  TeX.def:
-    - match: '(\\)[egx]?def\b'
-      captures:
-        '0': storage.type.function.general.context
-        '1': punctuation.definition.backslash.context
-      push: TeX.def.name/
+  # TeX.def:
+  #   - match: '(\\)[egx]?def\b'
+  #     captures:
+  #       '0': storage.type.function.general.context
+  #       '1': punctuation.definition.backslash.context
+  #     push: TeX.def.name/
 
-  TeX.def.name/:
-    - meta_scope: meta.function.context
-    - match: '(\\)[[:alpha:]]+'
-      captures:
-        '0': entity.name.function.general.context
-        '1': punctuation.definition.backslash.context
-      set: TeX.def.parameters/
-    - match: '(\\)[^[:alpha:]]'
-      captures:
-        '0': entity.name.function.symbol.context
-        '1': punctuation.definition.backslash.context
-      set: TeX.def.parameters/
-    - match: '[^\s]'
-      scope: entity.name.function.active.context
-      set: TeX.def.parameters/
+  # TeX.def.name/:
+  #   - meta_scope: meta.function.context
+  #   - match: '(\\)[[:alpha:]]+'
+  #     captures:
+  #       '0': entity.name.function.general.context
+  #       '1': punctuation.definition.backslash.context
+  #     set: TeX.def.parameters/
+  #   - match: '(\\)[^[:alpha:]]'
+  #     captures:
+  #       '0': entity.name.function.symbol.context
+  #       '1': punctuation.definition.backslash.context
+  #     set: TeX.def.parameters/
+  #   - match: '[^\s]'
+  #     scope: entity.name.function.active.context
+  #     set: TeX.def.parameters/
 
-  TeX.def.parameters/:
-    - meta_content_scope: meta.function.parameters.context
-    - include: TeX.parameter
-    - include: control.word.generic.no-arguments
-    - include: control.symbol
-    - include: control.active-character
-    - match: '(?=\{)'
-      set: TeX.def.group/
+  # TeX.def.parameters/:
+  #   - meta_content_scope: meta.function.parameters.context
+  #   - include: TeX.parameter
+  #   - include: control.word.generic.no-arguments
+  #   - include: control.symbol
+  #   - include: control.active-character
+  #   - match: '(?=\{)'
+  #     set: TeX.def.group/
 
-  TeX.def.group/:
-    - match: '\{'
-      scope: punctuation.section.braces.begin.context meta.function.context
-      set: TeX.def.group.core/
-  TeX.def.group.core/:
-    - meta_content_scope: meta.function.context
-    - meta_scope: meta.braces.context
-    - include: TeX.def.pop-at-group-end/
-    - include: main
+  # TeX.def.group/:
+  #   - match: '\{'
+  #     scope: punctuation.section.braces.begin.context meta.function.context
+  #     set: TeX.def.group.core/
+  # TeX.def.group.core/:
+  #   - meta_content_scope: meta.function.context
+  #   - meta_scope: meta.braces.context
+  #   - include: TeX.def.pop-at-group-end/
+  #   - include: main
 
-  TeX.def.pop-at-group-end/:
-    - match: '\}'
-      scope: meta.function.context punctuation.section.braces.end.context
-      pop: true
+  # TeX.def.pop-at-group-end/:
+  #   - match: '\}'
+  #     scope: meta.function.context punctuation.section.braces.end.context
+  #     pop: true
 
   control:
     - include: control.word
@@ -1057,7 +1075,7 @@ contexts:
   control.word.alignment:
     - match: '(\\)(NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R)\b'
       captures:
-        '0': keyword.other.alignment.context
+        '0': entity.name.other.alignment.context
         '1': punctuation.definition.backslash.context
       push:
         - include: generic.pop-if-any-whitespace/
@@ -1104,7 +1122,7 @@ contexts:
     - match: '(?=[^\[\{])'
       pop: true
   generic.pop-if-blank-line/:
-    - match: '^\s*$\n?'
+    - match: '(?=^\s*$\n?)'
       pop: true
     - match: '\s+'
   generic.pop-if-any-whitespace/:
@@ -1162,39 +1180,94 @@ contexts:
   generic.group.emphasis/:
     - match: '(\\)(emph|em)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.emphasis/
+      set:
+        - match: ''
+          set: generic.font.emphasis/
   generic.group.boldface/:
     - match: '(\\)(boldface|(small)?bold|bf(xx|[xabcd])?)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.boldface/
+      set:
+        - match: ''
+          set: generic.font.boldface/
   generic.group.italic/:
     - match: '(\\)(italic|it(xx|[xabcd])?)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.italic/
+      set:
+        - match: ''
+          set: generic.font.italic/
   generic.group.slanted/:
     - match: '(\\)((small)?slanted|sl(xx|[xabcd])?)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.slanted/
+      set:
+        - match: ''
+          set: generic.font.slanted/
   generic.group.bold-italic/:
     - match: '(\\)((small)?(bolditalic|italicbold)|bi(xx|[xabcd])?)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.bold-italic/
+      set:
+        - match: ''
+          set: generic.font.bold-italic/
   generic.group.bold-slanted/:
     - match: '(\\)((small)?(boldslanted|slantedbold)|bs(xx|[xabcd])?)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.bold-slanted/
+      set:
+        - match: ''
+          set: generic.font.bold-slanted/
   generic.group.sans-bold/:
     - match: '(\\)sansbold\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.sans-bold/
+      set:
+        - match: ''
+          set: generic.font.sans-bold/
   generic.group.typewriter/:
     - match: '(\\)(mono|tt(xx|[xabcd])?)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.typewriter/
+      set:
+        - match: ''
+          set: generic.font.typewriter/
   generic.group.typewriter-bold/:
     - match: '(\\)monobold\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      set: ConTeXt.font.typewriter-bold/
+      set:
+        - match: ''
+          set: generic.font.typewriter-bold/
+
+  generic.font.emphasis/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.emphasis.context
+    - include: generic.group.core/
+  generic.font.boldface/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context
+    - include: generic.group.core/
+  generic.font.italic/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.italic.context
+    - include: generic.group.core/
+  generic.font.slanted/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.slanted.context
+    - include: generic.group.core/
+  generic.font.bold-italic/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.italic.context markup.bold.boldface.context
+    - include: generic.group.core/
+  generic.font.bold-slanted/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.slanted.context markup.bold.boldface.context
+    - include: generic.group.core/
+  generic.font.sans-bold/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context
+    - include: generic.group.core/
+  generic.font.typewriter/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.raw.typewriter.context
+    - include: generic.group.core/
+  generic.font.typewriter-bold/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context markup.raw.typewriter.context
+    - include: generic.group.core/
 
   generic.group-with-assignments:
     - match: '\{'
@@ -1238,7 +1311,7 @@ contexts:
     - meta_scope: meta.brackets.context
     - include: generic.pop-at-list-end/
     - include: generic.list.assignments
-    - include: generic.real-or-integer.dimension
+    - include: generic.number
     - include: main
 
   generic.list-or-group:
@@ -1256,6 +1329,10 @@ contexts:
     - include: generic.pop-if-no-list-or-group/
     - include: generic.list-or-group
 
+  generic.number:
+    - include: generic.real-or-integer.dimension
+    - include: generic.real-or-integer
+
   generic.real-or-integer:
     - include: generic.real
     - include: generic.integer
@@ -1267,7 +1344,7 @@ contexts:
     - match: '[[:digit:]]*\.[[:digit:]]+'
       scope: constant.numeric.float.context
   generic.real.dimension:
-    - match: '([[:digit:]]*\.[[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)'
+    - match: '([[:digit:]]*\.[[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\b'
       captures:
         '1': constant.numeric.float.context
         '2': keyword.other.unit.context
@@ -1275,7 +1352,7 @@ contexts:
     - match: '[[:digit:]]+'
       scope: constant.numeric.integer.context
   generic.integer.dimension:
-    - match: '([[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)?'
+    - match: '([[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\b'
       captures:
         '1': constant.numeric.integer.context
         '2': keyword.other.unit.context
@@ -1290,7 +1367,7 @@ contexts:
         - match: '(?=[\],])'
           pop: true
         - include: main
-    - match: '([[:alpha:]\.\-:_]+)(=)'
+    - match: '([[:alpha:][:digit:]\.\-:_]+)(=)'
       captures:
         '1': variable.parameter.context
         '2': keyword.operator.assignment.context
@@ -1299,8 +1376,7 @@ contexts:
         - match: '(?=[\],])'
           pop: true
         - include: main
-        - include: generic.real-or-integer.dimension
-        - include: generic.real-or-integer
+        - include: generic.number
     - match: '='
       scope: keyword.operator.assignment.context
 
@@ -1314,7 +1390,7 @@ contexts:
         - match: '(?=[\},])'
           pop: true
         - include: main
-    - match: '([[:alpha:]\.\-:_]+)(=)'
+    - match: '([[:alpha:][:digit:]\.\-:_]+)(=)'
       captures:
         '1': variable.parameter.context
         '2': keyword.operator.assignment.context
@@ -1323,7 +1399,6 @@ contexts:
         - match: '(?=[\},])'
           pop: true
         - include: main
-        - include: generic.real-or-integer.dimension
-        - include: generic.real-or-integer
+        - include: generic.number
     - match: '='
       scope: keyword.operator.assignment.context
