@@ -1,10 +1,14 @@
 [
   {
     "caption": "ConTeXtTools: Switch profile",
-    "command": "contexttools_profile_selector",
+    "command": "contexttools_profile_selector"
   },
   {
     "caption": "ConTeXtTools: Generate profile interface",
-    "command": "contexttools_generate_interface",
+    "command": "contexttools_generate_interface"
   },
+  {
+    "caption": "ConTeXtTools: Browse interface commands",
+    "command": "contexttools_query_interface_commands"
+  }
 ]

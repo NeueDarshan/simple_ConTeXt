@@ -4,15 +4,14 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>text.tex.context entity.name.headings.subsection</string>
+  <string>text.tex.context entity.name.headings.subsubsubsection</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>
     <integer>1</integer>
     <key>symbolTransformation</key>
     <string>
-      s/\A\s*\{\s*(.*?)\s*\}\s*\Z/            $1/g;
-      s/\A\s*(.*?)\s*\Z/            $1/g;
+      s/\A\s*(\{\s*(.*?)\s*\}|(.*?))\s*\Z/          $2$3/g;
     </string>
   </dict>
 </dict>

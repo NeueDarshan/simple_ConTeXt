@@ -27,7 +27,7 @@ def is_context(view):
 
 
 def load_commands(path_, version):
-    name = "commands-en-{}.json".format(version)
+    name = "commands {}.json".format(version)
     commands_json = os.path.join(path_, name)
     with open(commands_json) as f:
         return json.load(f)
@@ -167,6 +167,7 @@ def reload_settings(self):
     self.profile_defaults = self.settings.get("profile_defaults", {})
     self.profiles = self.settings.get("profiles", {})
     self.current_profile_name = self.settings.get("current_profile")
+    self.interfaces = self.settings.get("interfaces", {})
 
     self.profile_names = []
     self.current_profile_index = 0
@@ -196,6 +197,11 @@ def reload_settings(self):
         deep_update(self.current_profile, new_settings)
     deep_update(
         self.current_profile, self.profiles[self.current_profile_index])
+
+    self.current_interface_name = self.current_profile.get(
+        "command_popups", {}).get("interface")
+    self.current_interface = self.interfaces.get(
+        self.current_interface_name, {})
 
 
 def process_options(name, options, input_, input_base):

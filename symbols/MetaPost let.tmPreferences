@@ -4,15 +4,14 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>text.tex.context entity.name.headings.subsubsubsection</string>
+  <string>source.metapost entity.name.function.let</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>
     <integer>1</integer>
     <key>symbolTransformation</key>
     <string>
-      s/\A\s*\{\s*(.*?)\s*\}\s*\Z/                    $1/g;
-      s/\A\s*(.*?)\s*\Z/                    $1/g;
+      s/\A(.*)\Z/$1 \[let\]/g;
     </string>
   </dict>
 </dict>

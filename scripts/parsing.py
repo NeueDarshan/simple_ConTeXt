@@ -4,7 +4,6 @@ import xml.etree.ElementTree as ET
 import collections
 import itertools
 import copy
-import json
 
 
 NAMESPACES = {
@@ -183,16 +182,10 @@ def handle_syntax_element(element, definitions):
 
 
 def fix_tree(root):
-    query = './/cd:interface//cd:command//cd:arguments//' \
-        + 'cd:resolve[@name="keyword-name-optional-list"]'
-    problem_commands = root.findall(query, namespaces=NAMESPACES)
-    for command in problem_commands:
+    query = './cd:command//cd:resolve[@name="keyword-name-optional-list"]'
+    problems = root.findall(query, namespaces=NAMESPACES)
+    for command in problems:
         command.set("name", "keyword-name-list-optional")
-
-    xml = root.find(
-        './/cd:interface[@file="i-xml.xml"]', namespaces=NAMESPACES)
-    for child in xml:
-        child.set("file", "lxml-ini.mkiv")
 
     new_arguments = [
         """<cd:define
@@ -227,12 +220,8 @@ def fix_tree(root):
             </cd:keywords>
         </cd:define>""",
     ]
-
-    query = './/cd:interface[@file="i-common-definitions.xml"]' \
-        + '//cd:interface[@file="i-common-argument.xml"]'
-    common_arguments = root.find(query, namespaces=NAMESPACES)
     for arg in new_arguments:
-        common_arguments.append(ET.fromstring(arg))
+        root.append(ET.fromstring(arg))
 
 
 def parse_command_instance(element, definitions):
@@ -242,7 +231,7 @@ def parse_command_instance(element, definitions):
         "file": element.get("file"),
     }
 
-    arguments = element.find(".//cd:arguments", namespaces=NAMESPACES)
+    arguments = element.find("./cd:arguments", namespaces=NAMESPACES)
     if arguments:
         for argument in arguments:
             command["syntax"].append(
@@ -277,93 +266,82 @@ def parse_command_instance(element, definitions):
         return [command]
 
 
-def parse_context_tree(xml, pre_process=None):
-    tree = ET.parse(xml)
-    root = tree.getroot()
-    if pre_process:
-        pre_process(root)
-
-    definition_list = [
-        child for child in root.iterfind(
-            ".//cd:interface//cd:define", namespaces=NAMESPACES)]
+def parse_context_tree(xml):
+    def_list = [
+        child for child in xml.getroot().iterfind(
+            "./cd:define", namespaces=NAMESPACES)]
     command_list = [
-        child for child in root.iterfind(
-            ".//cd:interface//cd:command", namespaces=NAMESPACES)]
+        child for child in xml.getroot().iterfind(
+            "./cd:command", namespaces=NAMESPACES)]
 
-    command_dict = {}
+    commands = {}
     for command in command_list:
         try:
-            instances = parse_command_instance(command, definition_list)
+            instances = parse_command_instance(command, def_list)
+            for instance in instances:
+                name = instance["name"]
+                syntax = instance["syntax"]
+
+                if name not in commands:
+                    commands[name] = {
+                        "syntax_variants": [syntax],
+                        "files": [instance["file"]],
+                    }
+
+                elif not any(
+                    syntax == prev_syntax
+                    for prev_syntax in commands[name]["syntax_variants"]
+                ):
+                    commands[name]["syntax_variants"].append(syntax)
+                    if instance["file"] not in commands[name]["files"]:
+                        commands[name]["files"].append(instance["file"])
+
         except Exception as e:
-            print('While parsing command "{}" got error "{}"'.format(
-                command.get("name"), e))
-        for command_instance in instances:
-            name = command_instance["name"]
-            new_command_syntax = command_instance["syntax"]
+            message = 'While parsing command "{}" got error "{}"'
+            print(message.format(command.get("name"), e))
 
-            if name not in command_dict:
-                command_dict[name] = {
-                    "syntax_variants": [new_command_syntax],
-                    "files": [command_instance["file"]],
-                }
-
-            elif not any(
-                new_command_syntax == previous_command_syntax
-                    for previous_command_syntax
-                    in command_dict[name]["syntax_variants"]
-            ):
-                command_dict[name]["syntax_variants"].append(
-                    new_command_syntax)
-                if command_instance["file"] not in command_dict[name]["files"]:
-                    command_dict[name]["files"].append(
-                        command_instance["file"])
-
-    return command_dict
+    return commands
 
 
-def rendered_command_dict(commands):
-    rendered_commands = {}
-
-    def _translate_keyword(object_):
-        if isinstance(object_, str):
-            return object_
-        elif isinstance(object_, dict):
-            if object_.get("default"):
-                return "<u>{}</u>".format(object_["content"])
+def rendered_command(name, dict_):
+    def _translate_keyword(obj):
+        if isinstance(obj, str):
+            return obj
+        elif isinstance(obj, dict):
+            if obj.get("default"):
+                return "<u>{}</u>".format(obj["content"])
             else:
-                return object_["content"]
+                return obj["content"]
         else:
-            raise Exception(
-                "unexpected entry of type '{}'".format(type(object_)))
+            message = "unexpected entry of type '{}'"
+            raise Exception(message.format(type(obj)))
 
-    def _process_str(description, n, lines):
-        lines.append("{:<2}  {}".format(n, description))
+    def _process_str(desc, n, lines):
+        lines.append("{:<2}  {}".format(n, desc))
 
-    def _process_list(description, n, lines):
-        if len(description) == 0:
-            return
-        lines.append("{:<2}  {}".format(
-            n, " ".join(_translate_keyword(item) for item in description)
-        ))
+    def _process_list(desc, n, lines):
+        if len(desc) > 0:
+            str_ = " ".join(_translate_keyword(item) for item in desc)
+            lines.append("{:<2}  {}".format(n, str_))
 
-    def _process_dict(description, n, lines):
-        if len(description) == 0:
+    def _process_dict(desc, n, lines):
+        if len(desc) == 0:
             return
 
-        template = "{:<%s} = {}" % max(len(cmd) for cmd in description)
+        template = "{:<%s} = {}" % max(len(cmd) for cmd in desc)
         assignments = []
-        for key, value in description.items():
-            if isinstance(value, str):
-                assignments.append(template.format(key, value))
-            elif isinstance(value, list):
+        for key, val in desc.items():
+            if isinstance(val, str):
+                assignments.append(template.format(key, val))
+            elif isinstance(val, list):
                 assignments.append(template.format(
-                    key, " ".join(_translate_keyword(e) for e in value)))
-            elif isinstance(value, dict):
+                    key, " ".join(_translate_keyword(e) for e in val)))
+            elif isinstance(val, dict):
                 assignments.append(template.format(
-                    key, _translate_keyword(value)))
+                    key, _translate_keyword(val)))
             else:
                 message = "unexpected entry of type '{}' in argument '{}'"
-                raise Exception(message.format(type(value), key))
+                raise Exception(message.format(type(val), key))
 
         for i, assignment in enumerate(assignments):
             if i == 0:
@@ -384,87 +362,75 @@ def rendered_command_dict(commands):
             else:
                 lines.append("{:<2}  inherits: \\{}".format(n, inheritance))
 
-    for name, info in commands.items():
-        rendered_commands[name] = []
+    result = []
+    for syntax in dict_["syntax_variants"]:
+        str_ = [None] * 3
+        str_[1] = "\\" + name
+        str_[0] = " " * len(str_[1])
+        str_[2] = " " * len(str_[1])
 
-        try:
-            for syntax_variant in info["syntax_variants"]:
-                full_rendering = [None] * 3
-                full_rendering[1] = "\\" + name
-                full_rendering[0] = " " * len(full_rendering[1])
-                full_rendering[2] = " " * len(full_rendering[1])
+        doc_string = []
+        if syntax:
+            n = 1
+            for var in syntax:
+                desc = var["description"]
+                inherits = var["inherits"]
+                string = var["rendering"]
+                len_ = len(string)
 
-                doc_string = []
-                if syntax_variant:
-                    n = 1
-                    for variant in syntax_variant:
-                        description = variant["description"]
-                        inherits = variant["inherits"]
-                        rendering = variant["rendering"]
-                        length = len(rendering)
+                if (desc is None) and (inherits is None):
+                    str_[0] += " " * (len_+1)
+                    str_[1] += " " + string
+                    str_[2] += " " * (len_+1)
 
-                        if (description is None) and (inherits is None):
-                            full_rendering[0] += " " * (length+1)
-                            full_rendering[1] += " " + rendering
-                            full_rendering[2] += " " * (length+1)
+                else:
+                    lines = []
+                    str_[1] += " " + string
+                    if len_ > 3:
+                        temp = "  {:^%s}" % (len_-1)
+                        str_[0] += temp.format(n)
+                        str_[2] += temp.format(
+                            "OPT" if var["optional"] else "")
+                    else:
+                        temp = " {:^%s}" % len_
+                        str_[0] += temp.format(n)
+                        str_[2] += temp.format(
+                            "OPT" if var["optional"] else "")
 
-                        else:
-                            lines = []
-                            full_rendering[1] += " " + rendering
-                            if length > 3:
-                                str_ = "  {:^%s}" % (length-1)
-                                full_rendering[0] += str_.format(n)
-                                full_rendering[2] += str_.format(
-                                    "OPT" if variant["optional"] else "")
-                            else:
-                                str_ = " {:^%s}" % length
-                                full_rendering[0] += str_.format(n)
-                                full_rendering[2] += str_.format(
-                                    "OPT" if variant["optional"] else "")
+                    if isinstance(desc, str):
+                        _process_str(desc, n, lines)
+                    elif isinstance(desc, list):
+                        _process_list(desc, n, lines)
+                    elif isinstance(desc, dict):
+                        _process_dict(desc, n, lines)
+                    else:
+                        msg = "unexpected argument of type '{}'"
+                        raise Exception(msg.format(type(desc)))
 
-                            if isinstance(description, str):
-                                _process_str(description, n, lines)
-                            elif isinstance(description, list):
-                                _process_list(description, n, lines)
-                            elif isinstance(description, dict):
-                                _process_dict(description, n, lines)
-                            else:
-                                str_ = "unexpected argument of type '{}'"
-                                raise Exception(str_.format(type(description)))
+                    if inherits is None:
+                        pass
+                    elif isinstance(inherits, str):
+                        _inherit_str(inherits, n, lines)
+                    elif isinstance(inherits, list):
+                        _inherit_list(inherits, n, lines)
+                    else:
+                        msg = "unexpected inheritance of type '{}'"
+                        raise Exception(msg.format(type(inherits)))
 
-                            if isinstance(inherits, str):
-                                _inherit_str(inherits, n, lines)
-                            elif isinstance(inherits, list):
-                                _inherit_list(inherits, n, lines)
-                            elif inherits is None:
-                                pass
-                            else:
-                                str_ = "unexpected inheritance of type '{}'"
-                                raise Exception(str_.format(type(inherits)))
+                    doc_string.append(lines)
+                    n += 1
 
-                            doc_string.append(lines)
-                            n += 1
+        for i in range(2, -1, -1):
+            str_[i] = str_[i].rstrip()
+            if len(str_[i]) == 0:
+                del str_[i]
 
-                for i in range(2, -1, -1):
-                    full_rendering[i] = full_rendering[i].rstrip()
-                    if len(full_rendering[i]) == 0:
-                        del full_rendering[i]
+        result.append([
+            "\n".join(str_),
+            "\n\n".join("\n".join(lines) for lines in doc_string)
+        ])
 
-                rendered_commands[name].append([
-                    "\n".join(full_rendering),
-                    "\n\n".join("\n".join(lines) for lines in doc_string)
-                ])
-
-            rendered_commands[name].append(info["files"])
-
-        except Exception as e:
-            message = "error '{}' occurred whilst processing command '{}'"
-            raise Exception(message.format(repr(e), name))
-
-    for name, entry in rendered_commands.items():
-        rendered_commands[name] = sorted(entry[:-1]) + [entry[-1]]
-
-    return rendered_commands
+    return sorted(result), dict_["files"]
 
 
 def simplified_syntax_variants(variants):

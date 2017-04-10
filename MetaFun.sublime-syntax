@@ -3,69 +3,131 @@
 name: MetaFun
 file_extensions:
   - mp
-  - mpii
-  - mpiv
+  - mf
 scope: source.metapost.metafun
-
 contexts:
   prototype:
     - include: comment
 
   main:
-    - include: types
     - include: constants
-    - include: variables
-    - include: labels
+    - include: terminator
+    - include: types
+    - include: keywords
+    - include: internal-parameters
     - include: operators
     - include: functions
     - include: definitions
-    - include: loops
     - include: environments
     - include: TeX
 
   comment:
     - include: scope:source.metapost#comment
 
+  constants:
+    - match: '\b(Page(Offset|Depth|StateAvailable)?|(Top|Bottom|Back|Cut)Space|(Left|Right|Inner|Outer)(Edge|Margin)(Width|Distance)|(Top|Header|Footer|Bottom)(Height|Distance)|(Makeup|Text)(Height|Width)|(Print)?Paper(Height|Width)|LayoutColumn(s|Distance|Width)|(Top|BaseLine)Skip|([HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(Right|Odd)Page|InPageBody|(Real|Last)?PageNumber|NOf(Pages|Columns)|Current(Column|Layout|Width|Height)|Overlay(Box|Offset|Color|Depth|Height|Line(Color|Width)|Width)|Strut(Depth|Height)|shadedup|fullsquare|(full|unit)diamond|[ul][lr]triangle|(unit|[btrl]|[ul][lr])circle|yellow)\b'
+      scope: constant.language.metapost.metafun
+    - include: scope:source.metapost#constants
+
+  terminator:
+    - include: scope:source.metapost#terminator
+
   types:
     - include: scope:source.metapost#types
 
-  constants:
-    - match: '\b(Page(Offset|Depth|StateAvailable)?|(Top|Bottom|Back|Cut)Space|(Left|Right|Inner|Outer)(Edge|Margin)(Width|Distance)|(Top|Header|Footer|Bottom)(Height|Distance)|(Makeup|Text)(Height|Width)|(Print)?Paper(Height|Width)|LayoutColumn(s|Distance|Width)|(Top|BaseLine)Skip|([HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(Right|Odd)Page|InPageBody|(Real|Last)?PageNumber|NOf(Pages|Columns)|Current(Column|Layout|Width|Height)|Overlay(Box|Offset|Color|Depth|Height|Line(Color|Width)|Width)|Strut(Depth|Height)|shadedup|fullsquare|(full|unit)diamond|[ul][lr]triangle|(unit|[btrl]|[ul][lr])circle|yellow)\b'
-      scope: constant.other.metapost.metafun
-    - include: scope:source.metapost#constants
+  keywords:
+    - include: scope:source.metapost#keywords
 
-  variables:
+  internal-parameters:
     - match: '\b(ah(variant|dimple))\b'
-      scope: variable.parameter.internal.metapost.metafun
-    - include: scope:source.metapost#variables
-
-  labels:
-    - match: '\b((the)?textext|(thefree|free(dot)?)label)(\.(top|[ul]?(lft|rt)|bot|origin|raw))?\b'
-      scope: support.function.label.metapost.metafun
-    - match: '\b(thelabel|(dot)?labels?)\.(origin|raw)\b'
-      scope: support.function.label.metapost.metafun
-    - include: scope:source.metapost#labels
+      scope: constant.language.metpost.metafun
+    - include: scope:source.metapost#internal-parameters
 
   operators:
     - match: '\b(along|(bottom|left|[ul][rl]|right|top)?enlarged|blownup|cornered|crossed|curved|laddered|paralleled|punked|random(ized|shifted)|shadedinto|shortened|smoothed|softened|stretched|squeezed|superellipsed|[ul][rl]moved|uncolored|with(shade(method|direction)?|fillcolor|transparency)|[xy]shifted|([xy]|xy)sized|xyscaled)\b'
-      scope: keyword.operator.metapost.metafun
+      scope: keyword.operator.word.metapost.metafun
     - include: scope:source.metapost#operators
 
   functions:
-    - match: '\b(addbackground|(cos|sin|cot|tan)|a(cos|sin|tan)|a?(cos|sin)h|(cot|tan)d|inv(cos|sin)|anglebetween|bb(width|height)|(bottom|top)boundary|boundingbox|cmyk|condition|(circular|linear)_shade|d{2,3}ecimal|externalfigure|exp|graphictext|grayed|(inner|outer)boundingbox|inv(erted)?|(left|right|center|point)arrow|(left|right)boundary|loadfigure|ln|log|paired|re((map(ped)?)?color|setcolormap|draw|fill)|register|roundedsquare|simplified|sqr|tensecircle|transparent|tripled|unspiked)\b'
-      scope: support.function.metapost.metafun
+    - include: functions.generic
+    - include: functions.labels
     - include: scope:source.metapost#functions
 
-  definitions:
-    - include: scope:source.metapost#definitions
+  functions.generic:
+    - match: '\b(addbackground|(cos|sin|cot|tan)|a(cos|sin|tan)|a?(cos|sin)h|(cot|tan)d|inv(cos|sin)|anglebetween|bb(width|height)|(bottom|top)boundary|boundingbox|cmyk|condition|(circular|linear)_shade|d{2,3}ecimal|externalfigure|exp|graphictext|grayed|(inner|outer)boundingbox|inv(erted)?|(left|right|center|point)arrow|(left|right)boundary|loadfigure|ln|log|paired|re((map(ped)?)?color|setcolormap|draw|fill)|register|roundedsquare|simplified|sqr|tensecircle|transparent|tripled|unspiked)\b'
+      scope: support.function.general.metapost.metafun
 
-  loops:
-    - include: scope:source.metapost#loops
+  functions.labels:
+    - match: '\b((the)?textext|(thefree|free(dot)?)label)(\.(top|[ul]?(lft|rt)|bot|origin|raw))?\b'
+      scope: support.function.general.metapost.metafun
+    - match: '\b(thelabel|(dot)?labels?)\.(origin|raw)\b'
+      scope: support.function.general.metapost.metafun
+    - include: scope:source.metapost#functions.labels
+
+  definitions:
+    - include: definitions.binarydef
+    - include: definitions.def
+    - include: scope:source.metapost#definitions.let
+    - match: '\benddef\b'
+      scope: storage.type.function.general.metapost
+
+  definitions.def:
+    - match: '\b(var)?def\b'
+      scope: storage.type.function.general.metapost
+      push: [
+        definitions.def.args*/,
+        scope:source.metapost#definitions.name*/,
+      ]
+
+  definitions.def.args*/:
+    - match: '='
+      scope: keyword.operator.assignment.metapost
+      set: definitions.def.main/
+    - match: '\b(expr|suffix|text|primary)\b'
+      scope: storage.type.metapost
+    - match: '[^\s;\:=(),]+'
+      scope: variable.parameter.metapost
+    - match: '[(),]'
+    - include: scope:source.metapost#definitions.pop-if-something/
+
+  definitions.binarydef:
+    - match: '\b(primary|secondary|tertiary)def\b'
+      scope: storage.type.function.general.metapost
+      push: [
+        definitions.binarydef.main*/,
+        scope:source.metapost#definitions.var*/,
+        scope:source.metapost#definitions.name*/,
+        scope:source.metapost#definitions.var*/,
+      ]
+
+  definitions.binarydef.main*/:
+    - match: '='
+      scope: keyword.operator.assignment.metapost
+      set: definitions.def.main/
+    - include: scope:source.metapost#definitions.pop-if-something/
+
+  definitions.def.main/:
+    - match: '\benddef\b'
+      scope: storage.type.function.general.metapost
+      pop: true
+    - include: main
 
   environments:
+    - include: scope:source.metapost#environments.fig
+    - include: environments.group
+    - include: scope:source.metapost#environments.end
     - match: '\b(Start|Stop)Page\b'
-      scope: support.class.metapost
-    - include: scope:source.metapost#environments
+      scope: entity.name.other.metapost
+
+  environments.group:
+    - match: '\bbegingroup\b'
+      scope: entity.name.other.group.metapost
+      set:
+        - meta_content_scope: meta.other.group.metapost
+        - match: '\bendgroup\b'
+          scope: entity.name.other.group.metapost
+          pop: true
+        - include: main
 
   TeX:
     - include: scope:source.metapost#TeX
