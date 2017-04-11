@@ -303,65 +303,71 @@ def parse_context_tree(xml):
     return commands
 
 
-def rendered_command(name, dict_):
-    def _translate_keyword(obj):
-        if isinstance(obj, str):
-            return obj
-        elif isinstance(obj, dict):
-            if obj.get("default"):
-                return "<u>{}</u>".format(obj["content"])
-            else:
-                return obj["content"]
+def _translate_keyword(obj):
+    if isinstance(obj, str):
+        return obj
+    elif isinstance(obj, dict):
+        if obj.get("default"):
+            return "<u>{}</u>".format(obj["content"])
         else:
-            message = "unexpected entry of type '{}'"
-            raise Exception(message.format(type(obj)))
+            return obj["content"]
+    else:
+        message = "unexpected entry of type '{}'"
+        raise Exception(message.format(type(obj)))
 
-    def _process_str(desc, n, lines):
-        lines.append("{:<2}  {}".format(n, desc))
 
-    def _process_list(desc, n, lines):
-        if len(desc) > 0:
-            str_ = " ".join(_translate_keyword(item) for item in desc)
-            lines.append("{:<2}  {}".format(n, str_))
+def _process_str(desc, n, lines):
+    lines.append("{:<2}  {}".format(n, desc))
 
-    def _process_dict(desc, n, lines):
-        if len(desc) == 0:
-            return
 
-        template = "{:<%s} = {}" % max(len(cmd) for cmd in desc)
-        assignments = []
-        for key, val in desc.items():
-            if isinstance(val, str):
-                assignments.append(template.format(key, val))
-            elif isinstance(val, list):
-                assignments.append(template.format(
-                    key, " ".join(_translate_keyword(e) for e in val)))
-            elif isinstance(val, dict):
-                assignments.append(template.format(
-                    key, _translate_keyword(val)))
-            else:
-                message = "unexpected entry of type '{}' in argument '{}'"
-                raise Exception(message.format(type(val), key))
+def _process_list(desc, n, lines):
+    if len(desc) > 0:
+        str_ = " ".join(_translate_keyword(item) for item in desc)
+        lines.append("{:<2}  {}".format(n, str_))
 
-        for i, assignment in enumerate(assignments):
-            if i == 0:
-                lines.append("{:<2}  {}".format(n, assignment))
-            else:
-                lines.append("    {}".format(assignment))
 
-    def _inherit_str(inherits, n, lines):
+def _process_dict(desc, n, lines):
+    if len(desc) == 0:
+        return
+
+    template = "{:<%s} = {}" % max(len(cmd) for cmd in desc)
+    assignments = []
+    for key, val in desc.items():
+        if isinstance(val, str):
+            assignments.append(template.format(key, val))
+        elif isinstance(val, list):
+            assignments.append(template.format(
+                key, " ".join(_translate_keyword(e) for e in val)))
+        elif isinstance(val, dict):
+            assignments.append(template.format(
+                key, _translate_keyword(val)))
+        else:
+            message = "unexpected entry of type '{}' in argument '{}'"
+            raise Exception(message.format(type(val), key))
+
+    for i, assignment in enumerate(assignments):
+        if i == 0:
+            lines.append("{:<2}  {}".format(n, assignment))
+        else:
+            lines.append("    {}".format(assignment))
+
+
+def _inherit_str(inherits, n, lines):
+    if len(lines) > 0:
+        lines.append("    inherits: \\{}".format(inherits))
+    else:
+        lines.append("{:<2}  inherits: \\{}".format(n, inherits))
+
+
+def _inherit_list(inherits, n, lines):
+    for inheritance in inherits:
         if len(lines) > 0:
-            lines.append("    inherits: \\{}".format(inherits))
+            lines.append("    inherits: \\{}".format(inheritance))
         else:
-            lines.append("{:<2}  inherits: \\{}".format(n, inherits))
+            lines.append("{:<2}  inherits: \\{}".format(n, inheritance))
 
-    def _inherit_list(inherits, n, lines):
-        for inheritance in inherits:
-            if len(lines) > 0:
-                lines.append("    inherits: \\{}".format(inheritance))
-            else:
-                lines.append("{:<2}  inherits: \\{}".format(n, inheritance))
 
+def rendered_command(name, dict_):
     result = []
     for syntax in dict_["syntax_variants"]:
         str_ = [None] * 3
