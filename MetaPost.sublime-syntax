@@ -261,11 +261,9 @@ contexts:
     - match: '\b(b|verbatim)tex\b'
       scope: entity.name.other.tex.metapost
       push:
-        - meta_include_prototype: false
         - meta_content_scope: text.tex.embedded.metapost
         - include: scope:text.tex#main
       with_prototype:
-        - include: scope:text.tex#comments
         - match: '(?=\betex\b)'
           pop: true
     - match: '\betex\b'

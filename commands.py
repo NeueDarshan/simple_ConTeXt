@@ -2,6 +2,7 @@ import sublime
 import sublime_plugin
 import xml.etree.ElementTree as ET
 import json
+import collections
 
 
 import sys
@@ -94,19 +95,23 @@ class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
         commands = parsing.parse_context_tree(xml)
         parsing.simplify_commands(commands)
 
-        out_file = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)),
-            "interface",
-            "commands {}.json".format(name))
-        with open(out_file, mode="w", encoding="utf-8") as f:
+        path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), "interface")
+        os.makedirs(path, exist_ok=True)
+
+        with open(
+            os.path.join(path, "commands {}.json".format(name)),
+            mode="w",
+            encoding="utf-8"
+        ) as f:
             json.dump(commands, f, sort_keys=True)
 
 
 class ContexttoolsQueryInterfaceCommands(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.json_names = []
-        self.json_commands = []
+        self.json_files = collections.OrderedDict()
+        self.choice = 0
 
     def reload_settings(self):
         common.reload_settings(self)
@@ -114,51 +119,63 @@ class ContexttoolsQueryInterfaceCommands(sublime_plugin.WindowCommand):
     def run(self):
         self.reload_settings()
 
-        self.json_names = []
+        names = []
         for file in os.listdir(os.path.join(
             os.path.abspath(os.path.dirname(__file__)),
             "interface"
         )):
             if file.endswith(".json") and file.startswith("commands "):
-                self.json_names.append(file[9:-5])
-        self.json_names = sorted(self.json_names)
-        self.window.show_quick_panel(self.json_names, self._run_choose)
+                names.append(file[9:-5])
+        names = sorted(names)
+        for name in sorted(names):
+            self.json_files[name] = []
+
+        self.window.show_quick_panel(
+            list(self.json_files.keys()), self._run_choose)
 
     def _run_choose(self, index):
-        if not (0 <= index < len(self.json_names)):
+        if not (0 <= index < len(self.json_files)):
             return
+
+        name = list(self.json_files.keys())[index]
+        self.choice = name
 
         with open(
             os.path.join(
                 os.path.abspath(os.path.dirname(__file__)),
                 "interface",
-                "commands {}.json".format(self.json_names[index])
+                "commands {}.json".format(name)
             )
         ) as f:
-            set_ = set()
-            for name, details in json.load(f).items():
+            f_ = json.load(f, object_pairs_hook=collections.OrderedDict)
+            for cmd, details in f_.items():
                 for var in details["syntax_variants"]:
-                    set_.add(
-                        "\\{} ".format(name) +
-                        " ".join(arg["rendering"] for arg in var)
-                    )
-            self.json_commands = sorted(set_)
+                    self.json_files[name].append({"details": var, "name": cmd})
             self.window.show_quick_panel(
-                self.json_commands,
+                [
+                    "\\{} ".format(var["name"]) +
+                    " ".join(d["rendering"] for d in var["details"])
+                    for var in self.json_files[name]
+                ],
                 self._run_print,
                 flags=sublime.MONOSPACE_FONT | sublime.KEEP_OPEN_ON_FOCUS_LOST
             )
 
     def _run_print(self, index):
-        if (0 <= index < len(self.json_commands)):
+        if (0 <= index < len(self.json_files[self.choice])):
+            var = self.json_files[self.choice][index]
             self.window.run_command(
                 "contexttools_interface_command_insert",
-                {"command": self.json_commands[index]}
+                {
+                    "command":
+                        "\\{} ".format(var["name"]) +
+                        " ".join(d["rendering"] for d in var["details"])
+                }
             )
 
 
 class ContexttoolsInterfaceCommandInsert(sublime_plugin.TextCommand):
-    def run(self, edit, command):
+    def run(self, edit, command=""):
         for region in self.view.sel():
             self.view.insert(edit, region.begin(), command)
 

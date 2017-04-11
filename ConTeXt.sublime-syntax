@@ -404,9 +404,18 @@ contexts:
     - include: Lua
     - include: control.symbol
     - include: control.word.generic.no-arguments
-    - include: scope:source.metapost.metafun#comment
+    # - include: MetaFun.TeX
     - include: scope:source.metapost.metafun
 
+  # MetaFun.TeX:
+  #   - match: '\b(b|verbatim)tex\b'
+  #     scope: entity.name.other.tex.metapost
+  #     push:
+  #       - meta_content_scope: text.tex.context.embedded.metapost
+  #       - include: main
+  #       - match: '(?=\betex\b)'
+  #         pop: true
+  #
   templates:
     - include: templates.snippets
 
@@ -1018,7 +1027,7 @@ contexts:
   #       '0': storage.type.function.general.context
   #       '1': punctuation.definition.backslash.context
   #     push: TeX.def.name/
-
+  #
   # TeX.def.name/:
   #   - meta_scope: meta.function.context
   #   - match: '(\\)[[:alpha:]]+'
@@ -1034,7 +1043,7 @@ contexts:
   #   - match: '[^\s]'
   #     scope: entity.name.function.active.context
   #     set: TeX.def.parameters/
-
+  #
   # TeX.def.parameters/:
   #   - meta_content_scope: meta.function.parameters.context
   #   - include: TeX.parameter
@@ -1043,7 +1052,7 @@ contexts:
   #   - include: control.active-character
   #   - match: '(?=\{)'
   #     set: TeX.def.group/
-
+  #
   # TeX.def.group/:
   #   - match: '\{'
   #     scope: punctuation.section.braces.begin.context meta.function.context
@@ -1053,12 +1062,12 @@ contexts:
   #   - meta_scope: meta.braces.context
   #   - include: TeX.def.pop-at-group-end/
   #   - include: main
-
+  #
   # TeX.def.pop-at-group-end/:
   #   - match: '\}'
   #     scope: meta.function.context punctuation.section.braces.end.context
   #     pop: true
-
+  #
   control:
     - include: control.word
     - include: control.symbol
