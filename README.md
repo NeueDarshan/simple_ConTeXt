@@ -110,24 +110,31 @@ should be terminated with a matching `\stopTABLE`. The line `tabl-ntb.mkiv`
 indicates the source file where this command is defined, if you're curious, and
 can be turned on or off with the `command_popups/show_files` key.
 
-The colouring of the pop-ups is determined by the `command_popups/colors` key.
-(The values are used for CSS styling of the HTML-based pop-ups, so any valid
-way of specifying a colour in CSS works. Thus `red`, `rgb(255, 0, 0)` and
-`#ff0000` are all valid.) For example, the options
+The colouring of the pop-ups is determined by the
+`command_popups/visuals/colors` key. (The values are used for CSS styling of
+the HTML-based pop-ups, so any valid way of specifying a colour in CSS works.
+Thus `red`, `rgb(255, 0, 0)` and `#ff0000` are all valid.) For example, the
+options
 
 ```JSON
 "command_popups":
 {
-  "colors":
+  "visuals":
   {
-    "background": "rgb(225, 225, 225)",
-    "primary": "rgb(36, 151, 227)",
-    "secondary": "rgb(86, 86, 86)"
+    "colors":
+    {
+      "background": "rgb(225, 225, 225)",
+      "primary": "rgb(36, 151, 227)",
+      "secondary": "rgb(86, 86, 86)"
+    }
   }
 }
 ```
 
 complement the "Light" version of [Monokai Extended][monokai].
+
+The other key in `command_popups/visuals` is `line_break`, which you can set to
+any integer and then pop-ups will line-break at that many characters.
 
 Pop-ups can be turned on or off completely with the `command_popups/on` key,
 and `command_popups/version` can be used to specify which version of the

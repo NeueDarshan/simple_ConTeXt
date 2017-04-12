@@ -316,58 +316,151 @@ def _translate_keyword(obj):
         raise Exception(message.format(type(obj)))
 
 
-def _process_str(desc, n, lines):
-    lines.append("{:<2}  {}".format(n, desc))
+def _len(str_):
+    return len(str_.replace("<u>", "").replace("</u>", ""))
 
 
-def _process_list(desc, n, lines):
+def _split(str_, chars, max_parts=None):
+    if isinstance(max_parts, int):
+        if max_parts <= 1:
+            return [str_]
+        else:
+            parts = str_.split()
+            if len(parts) > 1:
+                result = [parts[0]]
+                for i, part in enumerate(parts[1:]):
+                    if len(result) < max_parts:
+                        if _len(result[-1] + " " + part) > chars:
+                            result.append(part)
+                        else:
+                            result[-1] += " " + part
+                    else:
+                        result[-1] += " " + " ".join(p for p in parts[i + 1:])
+                        break
+                return result
+            else:
+                return parts
+    else:
+        parts = str_.split()
+        if len(parts) > 1:
+            result = [parts[0]]
+            for i, part in enumerate(parts[1:]):
+                if _len(result[-1] + " " + part) > chars:
+                    result.append(part)
+                else:
+                    result[-1] += " " + part
+            return result
+        else:
+            return parts
+
+
+def _process_str(desc, lines, first, next_, break_=None):
+    if break_ and isinstance(break_, int):
+        k = len(desc) - len(desc.split(maxsplit=1)[-1])
+        init = desc[:k]
+        rest = desc[k:]
+        lines.append(first + init)
+        if len(rest) == 0:
+            return
+
+        parts = _split(rest, break_, max_parts=2)
+        lines[-1] += parts[0]
+        if len(parts) > 1:
+            next_parts = _split(parts[1], break_)
+            for i, part in enumerate(next_parts):
+                lines.append(next_ + part)
+    else:
+        lines.append(first + desc)
+
+
+def _process_list(desc, n, lines, break_=None):
     if len(desc) > 0:
-        str_ = " ".join(_translate_keyword(item) for item in desc)
-        lines.append("{:<2}  {}".format(n, str_))
+        _process_str(
+            " ".join(_translate_keyword(item) for item in desc),
+            lines,
+            "{:<2}  ".format(n),
+            "    ",
+            break_=break_
+        )
 
 
-def _process_dict(desc, n, lines):
+def _process_dict(desc, n, lines, break_=None):
     if len(desc) == 0:
         return
 
-    template = "{:<%s} = {}" % max(len(cmd) for cmd in desc)
-    assignments = []
+    max_ = max(len(cmd) for cmd in desc)
+    template = "{:<%s} = {}" % max_
+    i = 0
+
     for key, val in desc.items():
         if isinstance(val, str):
-            assignments.append(template.format(key, val))
+            _process_str(
+                template.format(key, val),
+                lines,
+                "    " if i > 0 else "{:<2}  ".format(n),
+                " " * (max_ + 6),
+                break_=break_
+            )
         elif isinstance(val, list):
-            assignments.append(template.format(
-                key, " ".join(_translate_keyword(e) for e in val)))
+            _process_str(
+                template.format(
+                    key, " ".join(_translate_keyword(e) for e in val)
+                ),
+                lines,
+                "    " if i > 0 else "{:<2}  ".format(n),
+                " " * (max_ + 6),
+                break_=break_
+            )
         elif isinstance(val, dict):
-            assignments.append(template.format(
-                key, _translate_keyword(val)))
+            _process_str(
+                template.format(key, _translate_keyword(val)),
+                lines,
+                "    " if i > 0 else "{:<2}  ".format(n),
+                " " * (max_ + 6),
+                break_=break_
+            )
         else:
             message = "unexpected entry of type '{}' in argument '{}'"
             raise Exception(message.format(type(val), key))
-
-    for i, assignment in enumerate(assignments):
-        if i == 0:
-            lines.append("{:<2}  {}".format(n, assignment))
-        else:
-            lines.append("    {}".format(assignment))
+        i += 1
 
 
-def _inherit_str(inherits, n, lines):
+def _inherit_str(inherits, n, lines, break_=None):
     if len(lines) > 0:
-        lines.append("    inherits: \\{}".format(inherits))
+        _process_str(
+            "inherits: \\{}".format(inherits),
+            lines,
+            "    ",
+            "    ",
+            break_=break_)
     else:
-        lines.append("{:<2}  inherits: \\{}".format(n, inherits))
+        _process_str(
+            "inherits: \\{}".format(inherits),
+            lines,
+            "{:<2}  ".format(n),
+            "    ",
+            break_=break_)
 
 
-def _inherit_list(inherits, n, lines):
+def _inherit_list(inherits, n, lines, break_=None):
     for inheritance in inherits:
         if len(lines) > 0:
-            lines.append("    inherits: \\{}".format(inheritance))
+            _process_str(
+                "inherits: \\{}".format(inherits),
+                lines,
+                "    ",
+                "    ",
+                break_=break_)
         else:
-            lines.append("{:<2}  inherits: \\{}".format(n, inheritance))
+            _process_str(
+                "inherits: \\{}".format(inherits),
+                lines,
+                "{:<2}  ".format(n),
+                "    ",
+                break_=break_)
 
 
-def rendered_command(name, dict_):
+def rendered_command(name, dict_, break_=None):
     result = []
     for syntax in dict_["syntax_variants"]:
         str_ = [None] * 3
@@ -385,15 +478,15 @@ def rendered_command(name, dict_):
                 len_ = len(string)
 
                 if (desc is None) and (inherits is None):
-                    str_[0] += " " * (len_+1)
+                    str_[0] += " " * (len_ + 1)
                     str_[1] += " " + string
-                    str_[2] += " " * (len_+1)
+                    str_[2] += " " * (len_ + 1)
 
                 else:
                     lines = []
                     str_[1] += " " + string
                     if len_ > 3:
-                        temp = "  {:^%s}" % (len_-1)
+                        temp = "  {:^%s}" % (len_ - 1)
                         str_[0] += temp.format(n)
                         str_[2] += temp.format(
                             "OPT" if var["optional"] else "")
@@ -404,11 +497,17 @@ def rendered_command(name, dict_):
                             "OPT" if var["optional"] else "")
 
                     if isinstance(desc, str):
-                        _process_str(desc, n, lines)
+                        _process_str(
+                            desc,
+                            lines,
+                            "{:<2}  ".format(n),
+                            "    ",
+                            break_=break_
+                        )
                     elif isinstance(desc, list):
-                        _process_list(desc, n, lines)
+                        _process_list(desc, n, lines, break_=break_)
                     elif isinstance(desc, dict):
-                        _process_dict(desc, n, lines)
+                        _process_dict(desc, n, lines, break_=break_)
                     else:
                         msg = "unexpected argument of type '{}'"
                         raise Exception(msg.format(type(desc)))
@@ -416,9 +515,9 @@ def rendered_command(name, dict_):
                     if inherits is None:
                         pass
                     elif isinstance(inherits, str):
-                        _inherit_str(inherits, n, lines)
+                        _inherit_str(inherits, n, lines, break_=break_)
                     elif isinstance(inherits, list):
-                        _inherit_list(inherits, n, lines)
+                        _inherit_list(inherits, n, lines, break_=break_)
                     else:
                         msg = "unexpected inheritance of type '{}'"
                         raise Exception(msg.format(type(inherits)))

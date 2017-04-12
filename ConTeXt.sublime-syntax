@@ -144,6 +144,7 @@ contexts:
     - include: ConTeXt.verbatim
     - include: TeX.parameter
     - include: control.symbol
+    - include: math.cases
     - include: math.inner-group
     - include: math.number
     - include: math.operator
@@ -164,6 +165,58 @@ contexts:
         '1': punctuation.definition.backslash.context
       push: generic.lists-or-groups*/
 
+  math.cases:
+    - match: '(\\)startcases\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: [
+        math.cases.core/,
+        generic.list*/,
+      ]
+
+  math.cases.core/:
+    - match: '(\\)stopcases\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      pop: true
+    - include: math.cases.row
+    - include: math.main
+
+  math.cases.row:
+    - match: '(\\)NC\b'
+      captures:
+        '0': entity.name.other.alignment.context
+        '1': punctuation.definition.backslash.context
+      push: math.cases.row.column-one/
+
+  math.cases.row.column-one/:
+    - match: '(\\)NC\b'
+      captures:
+        '0': entity.name.other.alignment.context
+        '1': punctuation.definition.backslash.context
+      set: math.cases.row.column-two.text/
+    - match: '(\\)MC\b'
+      captures:
+        '0': entity.name.other.alignment.context
+        '1': punctuation.definition.backslash.context
+      set: math.cases.row.column-two.math/
+    - include: math.main
+
+  math.cases.row.column-two.text/:
+    - include: math.cases.row.column-two.pop-if-newrow/
+    - include: main
+  math.cases.row.column-two.math/:
+    - include: math.cases.row.column-two.pop-if-newrow/
+    - include: math.main
+  math.cases.row.column-two.pop-if-newrow/:
+    - match: '(\\)NR\b'
+      captures:
+        '0': entity.name.other.alignment.context
+        '1': punctuation.definition.backslash.context
+      pop: true
+
   math.number:
     - include: generic.real-or-integer
     - match: '∞'
@@ -172,7 +225,9 @@ contexts:
   math.operator:
     - match: '([\+\-\*/=\^_<>])'
       scope: keyword.operator.math.context
-    - match: '(\\)[lg]eq\b'
+    - match: '[≠]'
+      scope: keyword.operator.math.context
+    - match: '(\\)[lg]eq?\b'
       scope: keyword.operator.math.context
 
   math.variable:
@@ -210,7 +265,6 @@ contexts:
         '1': punctuation.definition.backslash.context
       push:
         - meta_content_scope: source.lua.minor.embedded.context
-        - include: Lua.scope.leaky-inline-comments
         - include: Lua.scope
       with_prototype:
         - match: '(?=\\stoplua\b)'
@@ -1009,7 +1063,7 @@ contexts:
 
   TeX:
     - include: TeX.parameter
-    - include: TeX.def
+    # - include: TeX.def
 
   TeX.parameter:
     - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})[[:digit:]]'
@@ -1368,46 +1422,33 @@ contexts:
 
   generic.list.assignments:
     - match: '\b(reference)(=)'
-      captures:
-        '1': variable.parameter.context
-        '2': keyword.operator.assignment.context
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context meta.other.reference.context
-        - match: '(?=[\],])'
-          pop: true
-        - include: main
-    - match: '([[:alpha:][:digit:]\.\-:_]+)(=)'
-      captures:
-        '1': variable.parameter.context
-        '2': keyword.operator.assignment.context
+        - include: generic.list.assignments.common/
+    - match: '\b(title)(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      push:
+        - meta_content_scope: meta.other.value.context entity.name.headings.other.context
+        - include: generic.list.assignments.common/
+    - match: '\b([[:alpha:][:digit:]\.\-:_]+)?(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context
-        - match: '(?=[\],])'
-          pop: true
-        - include: main
+        - include: generic.list.assignments.common/
         - include: generic.number
-    - match: '='
-      scope: keyword.operator.assignment.context
+
+  generic.list.assignments.common/:
+    - match: '(?=[\],])'
+      pop: true
+    - include: main
 
   generic.group.assignments:
-    - match: '\b(reference)(=)'
-      captures:
-        '1': variable.parameter.context
-        '2': keyword.operator.assignment.context
-      push:
-        - meta_content_scope: meta.other.value.context meta.other.reference.context
-        - match: '(?=[\},])'
-          pop: true
-        - include: main
-    - match: '([[:alpha:][:digit:]\.\-:_]+)(=)'
-      captures:
-        '1': variable.parameter.context
-        '2': keyword.operator.assignment.context
+    - match: '\b([[:alpha:][:digit:]\.\-:_]+)?(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context
         - match: '(?=[\},])'
           pop: true
         - include: main
         - include: generic.number
-    - match: '='
-      scope: keyword.operator.assignment.context

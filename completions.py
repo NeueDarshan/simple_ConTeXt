@@ -10,6 +10,25 @@ from scripts import common
 from scripts import parsing
 
 
+STYLE_SHEET = """
+    html {{
+        background-color: {background};
+    }}
+    .syntax {{
+        color: {syntax};
+        font-size: 1.2em;
+    }}
+    .doc_string {{
+        color: {doc_string};
+        font-size: 1em;
+    }}
+    .files {{
+        color: {file};
+        font-size: 1em;
+}}
+"""
+
+
 class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,35 +82,22 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             )
 
     def get_popup_text(self, name):
-        colors = self.current_profile.get(
-            "command_popups", {}).get("colors", {})
-        style_sheet = """
-            html {{
-                background-color: {background};
-            }}
-            .syntax {{
-                color: {syntax};
-                font-size: 1.2em;
-            }}
-            .doc_string {{
-                color: {doc_string};
-                font-size: 1em;
-            }}
-            .files {{
-                color: {file};
-                font-size: 1em;
-            }}
-        """.format(
-            background=colors.get("background", "#151515"),
-            syntax=colors.get("primary", "#8ea6b7"),
-            doc_string=colors.get("secondary", "#956837"),
-            file=colors.get("primary", "#8ea6b7")
+        visuals = self.current_profile.get(
+            "command_popups", {}).get("visuals", {})
+        colors = visuals.get("colors", {})
+        line_break = visuals.get("line_break")
+        style = STYLE_SHEET.format(
+            background=colors.get("background", "rgb(46, 47, 41)"),
+            syntax=colors.get("primary", "rgb(36, 151, 227)"),
+            doc_string=colors.get("secondary", "rgb(151, 151, 148)"),
+            file=colors.get("primary", "rgb(36, 151, 227)")
         )
 
         signatures = []
         command = self.commands_cache.get(
             self.current_interface_name, {}).get("details", {}).get(name)
-        variations, files = parsing.rendered_command(name, command)
+        variations, files = parsing.rendered_command(
+            name, command, break_=line_break)
 
         for variation in variations:
             new_signature = """
@@ -110,7 +116,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 parts["doc_string"] = common.protect_html(variation[1])
             signatures.append(new_signature.format(**parts))
 
-        full_signature = "<style>{}</style>".format(style_sheet) + \
+        full_signature = "<style>{}</style>".format(style) + \
             "<br />".join(signatures)
 
         show_files = files and \
