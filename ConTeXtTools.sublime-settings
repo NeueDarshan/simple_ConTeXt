@@ -1,36 +1,30 @@
 {
-  "current_profile": "Default",
+  "current_profile": "default",
+  "interfaces": {},
   "profile_defaults":
   {
     "command_popups":
     {
       "on": true,
-      "show_files": false,
-      "version": "Minimals"
+      "show_files": true
     },
-    "context_executable":
+    "context_program":
     {
       "options":
       {
-        "autogenerate": true,
-        "jit": true,
-        "synctex": true
+        "autogenerate": true
       }
     },
     "references":
     {
-      "command_regex": "[a-zA-Z]*ref",
-      "reference_regex": "[a-zA-Z]+:[a-zA-Z:-_]+"
+      "command_regex": "(at|in|[a-zA-Z]*ref)",
+      "reference_regex": "[a-zA-Z]+:[a-zA-Z\\-:_]+"
     }
   },
   "profiles":
   [
     {
-      "name": "Default",
-      "context_executable":
-      {
-        "path": null,
-      },
-    },
-  ],
+      "name": "default"
+    }
+  ]
 }
