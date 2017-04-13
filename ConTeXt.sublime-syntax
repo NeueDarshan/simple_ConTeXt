@@ -202,20 +202,24 @@ contexts:
         '0': entity.name.other.alignment.context
         '1': punctuation.definition.backslash.context
       set: math.cases.row.column-two.math/
+    - include: math.cases.pop-if-newrow/
     - include: math.main
 
   math.cases.row.column-two.text/:
-    - include: math.cases.row.column-two.pop-if-newrow/
+    - include: math.cases.pop-if-newrow/
     - include: main
   math.cases.row.column-two.math/:
-    - include: math.cases.row.column-two.pop-if-newrow/
+    - include: math.cases.pop-if-newrow/
     - include: math.main
-  math.cases.row.column-two.pop-if-newrow/:
+  math.cases.pop-if-newrow/:
     - match: '(\\)NR\b'
       captures:
         '0': entity.name.other.alignment.context
         '1': punctuation.definition.backslash.context
-      pop: true
+      set:
+        - include: generic.pop-if-any-whitespace/
+        - include: generic.list-or-group
+        - include: generic.pop/
 
   math.number:
     - include: generic.real-or-integer
@@ -494,12 +498,60 @@ contexts:
       scope: support.function.lua
 
   ConTeXt:
+    # - include: ConTeXt.tables
     - include: ConTeXt.headings
     - include: ConTeXt.verbatim
     # - include: ConTeXt.definitions
     - include: ConTeXt.quotes
     - include: ConTeXt.font
 
+  # ConTeXt.tables:
+  #   - include: ConTeXt.tabulate
+  #
+  # ConTeXt.tabulate:
+  #   - match: '(\\)starttabulate\b'
+  #     captures:
+  #       '0': support.function.general.context
+  #       '1': punctuation.definition.backslash.context
+  #     push: [
+  #       generic.list*/,
+  #       ConTeXt.tabulate.list.name-or-template*/,
+  #     ]
+  #
+  # ConTeXt.tabulate.list.name-or-template/:
+  #   - match: '\['
+  #     scope: punctuation.section.brackets.begin.context
+  #     set: ConTeXt.tabulate.list.name-or-template.core/
+  # ConTeXt.tabulate.list.name-or-template*/:
+  #   - include: generic.pop-if-blank-line/
+  #   - include: generic.pop-if-no-list/
+  #   - include: ConTeXt.tabulate.list.name-or-template/
+  # ConTeXt.tabulate.list.name-or-template.core/:
+  #   - include: generic.gobble-whitespace
+  #   - match: '(?=[^\]]*\|)'
+  #     set: ConTeXt.tabulate.list.template.core/
+  #   - match: ''
+  #     set: ConTeXt.tabulate.list.name.core/
+  #
+  # ConTeXt.tabulate.list.name.core/:
+  #   - meta_scope: meta.brackets.context
+  #   - include: generic.list.core/
+  #   - include: main
+  #
+  # ConTeXt.tabulate.list.template.core/:
+  #   - meta_scope: meta.brackets.context
+  #   - include: generic.pop-at-list-end/
+  #   - match: '\|'
+  #     scope: punctuation.separator.column.context
+  #   - match: '[lcr]'
+  #     scope: keyword.other.alignment.context
+  #   - match: '(w)\s*\(\s*([[:digit:]]*\.[[:digit:]]+|[[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)?\)'
+  #     captures:
+  #       '1': none
+  #       '2': constant.numeric.float.context
+  #       '3': keyword.other.unit.context
+  #   - include: main
+  #
   ConTeXt.headings:
     - include: ConTeXt.headings.inline
     - include: ConTeXt.headings.block
