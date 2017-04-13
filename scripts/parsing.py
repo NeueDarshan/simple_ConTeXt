@@ -356,15 +356,8 @@ def _split(str_, chars, max_parts=None):
 
 def _process_str(desc, lines, first, next_, break_=None):
     if break_ and isinstance(break_, int):
-        k = len(desc) - len(desc.split(maxsplit=1)[-1])
-        init = desc[:k]
-        rest = desc[k:]
-        lines.append(first + init)
-        if len(rest) == 0:
-            return
-
-        parts = _split(rest, break_, max_parts=2)
-        lines[-1] += parts[0]
+        parts = _split(desc, break_, max_parts=2)
+        lines.append(first + parts[0])
         if len(parts) > 1:
             next_parts = _split(parts[1], break_)
             for i, part in enumerate(next_parts):
@@ -380,7 +373,7 @@ def _process_list(desc, n, lines, break_=None):
             lines,
             "{:<2}  ".format(n),
             "    ",
-            break_=break_
+            break_=(break_ - 4) if isinstance(break_, int) else break_
         )
 
 
@@ -389,35 +382,41 @@ def _process_dict(desc, n, lines, break_=None):
         return
 
     max_ = max(len(cmd) for cmd in desc)
-    template = "{:<%s} = {}" % max_
-    i = 0
+    template = "{:<%s} = " % max_
+    rest = " " * (max_ + 7)
+    line_break = (break_ - max_ - 7) if isinstance(break_, int) else break_
 
+    def _init(i, k):
+        if i > 0:
+            return "    " + template.format(k)
+        else:
+            return ("{:<2}  " + template).format(n, k)
+
+    i = 0
     for key, val in desc.items():
         if isinstance(val, str):
             _process_str(
-                template.format(key, val),
+                val,
                 lines,
-                "    " if i > 0 else "{:<2}  ".format(n),
-                " " * (max_ + 6),
-                break_=break_
+                _init(i, key),
+                rest,
+                break_=line_break
             )
         elif isinstance(val, list):
             _process_str(
-                template.format(
-                    key, " ".join(_translate_keyword(e) for e in val)
-                ),
+                " ".join(_translate_keyword(e) for e in val),
                 lines,
-                "    " if i > 0 else "{:<2}  ".format(n),
-                " " * (max_ + 6),
-                break_=break_
+                _init(i, key),
+                rest,
+                break_=line_break
             )
         elif isinstance(val, dict):
             _process_str(
-                template.format(key, _translate_keyword(val)),
+                _translate_keyword(val),
                 lines,
-                "    " if i > 0 else "{:<2}  ".format(n),
-                " " * (max_ + 6),
-                break_=break_
+                _init(i, key),
+                rest,
+                break_=line_break
             )
         else:
             message = "unexpected entry of type '{}' in argument '{}'"
