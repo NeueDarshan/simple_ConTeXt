@@ -110,10 +110,15 @@ contexts:
     - include: functions.input
     - include: functions.labels
     - include: functions.generic
+    - include: functions.parameter
 
   functions.generic:
     - match: '\b(abs|addto|also|angle|arclength|arctime|ASCII|byte|batchmode|bbox|(sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|decimal|decr|dir|direction(point|time)?|doublepath|draw(arrow|dblarrow|dot|fill|options)?|err(help|message)|(scroll|(error|non)stop)mode|filenametemplate|fill(draw)?|filled|flex|floor|fontmap(file|line)|fontsize|hex|hide|image|incr|interpath|inverse|known|length|loggingall|makepath|makepen|max|message|mexp|min|mlog|(normal|uniform)deviate|oct|odd|pickup|penoffset|point|(post|pre)control|readfrom|reverse|round|scantokens|setbounds|shipout|show(dependencies|token|variable)?|special|sqrt|str|stroked|sub(path|string)|superellipse|tensepath|textual|turningnumber|(top|bot|lft|rt)|tracing(all|none)|un(draw(dot|fill)?|fill(draw)?)|unitvector|unknown|[ul][rl]corner|write|(black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)\b'
       scope: support.function.general.metapost
+
+  functions.parameter:
+    - match: '@\#'
+      scope: variable.parameter.suffix.metapost
 
   functions.dashpattern:
     - match: '\bdashpattern\b'
@@ -163,7 +168,7 @@ contexts:
       set: definitions.def.main/
     - match: '\b(expr|suffix|of|text|primary)\b'
       scope: storage.type.metapost
-    - match: '[^\s;\:=(),]+'
+    - match: '[^\s;\:=()\#@%,]+'
       scope: variable.parameter.metapost
     - match: '[(),]'
     - include: definitions.pop-if-something/
@@ -179,7 +184,7 @@ contexts:
       ]
 
   definitions.let:
-    - match: '\b(let)\b\s*([^\s;=()]+)\s*(=)\s*([^\s;=()]+)'
+    - match: '\b(let)\b\s*([^\s;\:=()\#@%,]+)\s*(=)\s*([^\s;\:=()\#@%,]+)'
       captures:
         '1': storage.type.function.general.metapost
         '2': entity.name.function.let.metapost
@@ -187,12 +192,12 @@ contexts:
         '4': support.function.general.metapost
 
   definitions.var*/:
-    - match: '[^\s;\:=()]+'
+    - match: '[^\s;\:=()\#@%,]+'
       scope: variable.parameter.metapost
       pop: true
     - include: definitions.pop-if-something/
   definitions.name*/:
-    - match: '[^\s;\:=()]+'
+    - match: '[^\s;\:=()\#@%,]+'
       scope: entity.name.function.general.metapost
       pop: true
     - include: definitions.pop-if-something/
