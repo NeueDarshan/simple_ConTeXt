@@ -11,20 +11,23 @@ from scripts import parsing
 
 
 STYLE_SHEET = """
-    html {{
-        background-color: {background};
-    }}
-    .syntax {{
-        color: {syntax};
-        font-size: 1.2em;
-    }}
-    .doc_string {{
-        color: {doc_string};
-        font-size: 1em;
-    }}
-    .files {{
-        color: {file};
-        font-size: 1em;
+html {{
+    background-color: {background};
+}}
+.syntax {{
+    color: {syntax};
+    font-size: 1.1em;
+}}
+.doc_string {{
+    color: {doc_string};
+    font-size: 1em;
+}}
+.files {{
+    color: {file};
+    font-size: 1em;
+}}
+code {{
+    font-family: monospace;
 }}
 """
 
