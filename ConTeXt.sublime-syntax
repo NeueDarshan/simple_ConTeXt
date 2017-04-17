@@ -225,14 +225,20 @@ contexts:
     - include: generic.real-or-integer
     - match: '∞'
       scope: constant.numeric.context
+    - match: '(\\)infty\b'
+      captures:
+        '0': constant.other.math.context
+        '1': punctuation.definition.backslash.context
 
   math.operator:
     - match: '([\+\-\*/=\^_<>])'
       scope: keyword.operator.math.context
-    - match: '[≠]'
+    - match: '[⋅±∓≤≥≃≈≠≡≅≢→∊∈∉∍∋∌⊂⊄⊃⊅⊆⊊⊈⊇⊋⊉]'
       scope: keyword.operator.math.context
-    - match: '(\\)[lg]eq?\b'
-      scope: keyword.operator.math.context
+    - match: '(\\)([lg]e(q?|qslant)|cdot|to|(n|not)?(in|ni)|n?su[bp]set(eq)?|su[bp]setneq|pm|mp|n?equiv|n?eq|cong|simeq|approx)\b'
+      captures:
+        '0': keyword.operator.math.context
+        '1': punctuation.definition.backslash.context
 
   math.variable:
     - match: '[[:alpha:]]'
@@ -641,7 +647,7 @@ contexts:
     - include: generic.pop-if-no-group/
   ConTeXt.headings.group-common-2/:
     - include: generic.pop-at-group-end/
-    - include: generic.group.font/
+    - include: ConTeXt.font.group-commands
     - include: main
 
   ConTeXt.headings.block:
