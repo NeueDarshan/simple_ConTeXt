@@ -265,23 +265,21 @@ contexts:
       push:
         - meta_include_prototype: false
         - meta_content_scope: source.lua.embedded.context
-        - include: Lua.scope
-      with_prototype:
         - match: '(?=\\stopluacode\b)'
           pop: true
+        - include: Lua.scope
     - match: '(\\)startlua\b'
       captures:
         '0': support.function.general.context
         '1': punctuation.definition.backslash.context
       push:
         - meta_content_scope: source.lua.minor.embedded.context
-        - include: Lua.scope
-      with_prototype:
         - match: '(?=\\stoplua\b)'
           pop: true
+        - include: Lua.scope
 
   Lua.inline:
-    - match: '(\\)(ctx|direct)lua\b'
+    - match: '(\\)((ctx|direct)lua|cldcontext)\b'
       captures:
         '0': support.function.general.context
         '1': punctuation.definition.backslash.context
@@ -315,7 +313,7 @@ contexts:
 
   Lua.scope:
     - include: control.symbol
-    - include: control.word.generic.no-arguments
+    - include: control.word.generic
     - include: Lua.scope.comment.include-friendly
     - include: scope:source.lua
 
@@ -378,108 +376,98 @@ contexts:
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopMPcode\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.MPpage.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopMPpage\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.uniqueMPgraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopuniqueMPgraphic\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.uniqueMPpagegraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopuniqueMPpagegraphic\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.useMPgraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopuseMPgraphic\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.usableMPgraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopusableMPgraphic\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.reusableMPgraphic.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopreusableMPgraphic\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.staticMPfigure.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopstaticMPfigure\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.MPdefinitions.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopMPdefinitions\b)'
           pop: true
+        - include: MetaFun.scope
   MetaFun.block.MPinclusions.core/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - include: MetaFun.scope
-      with_prototype:
         - match: '(?=\\stopMPinclusions\b)'
           pop: true
+        - include: MetaFun.scope
 
   MetaFun.scope:
     - include: Lua
     - include: control.symbol
-    - include: control.word.generic.no-arguments
-    # - include: MetaFun.TeX
+    - include: control.word.generic
+    - include: MetaFun.TeX
     - include: scope:source.metapost.metafun
 
-  # MetaFun.TeX:
-  #   - match: '\b(b|verbatim)tex\b'
-  #     scope: entity.name.other.tex.metapost
-  #     push:
-  #       - meta_content_scope: text.tex.context.embedded.metapost
-  #       - include: main
-  #       - match: '(?=\betex\b)'
-  #         pop: true
-  #
+  MetaFun.TeX:
+    - match: '\b(b|verbatim)tex\b'
+      scope: entity.name.other.tex.metapost
+      push:
+        - meta_content_scope: text.tex.context.embedded.metafun
+        - include: main
+        - match: '(?=\betex\b)'
+          pop: true
+
   templates:
     - include: templates.snippets
 
@@ -492,12 +480,14 @@ contexts:
         - meta_include_prototype: false
         - meta_scope: meta.preprocessor.lua.context meta.tag.lua.context
         - meta_content_scope: source.lua.embedded.context
-        - include: scope:source.lua
-        - include: templates.lua-functions
-      with_prototype:
         - match: '\?>'
           scope: punctuation.definition.tag.end.context
           pop: true
+        - include: templates.Lua.scope
+
+  templates.Lua.scope:
+    - include: templates.lua-functions
+    - include: scope:source.lua
 
   templates.lua-functions:
     - match: '\b(inject)\b'
