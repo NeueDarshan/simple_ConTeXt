@@ -314,10 +314,10 @@ contexts:
   Lua.scope:
     - include: control.symbol
     - include: control.word.generic
-    - include: Lua.scope.comment.include-friendly
+    - include: Lua.scope.comment.embed-friendly
     - include: scope:source.lua
 
-  Lua.scope.comment.include-friendly:
+  Lua.scope.comment.embed-friendly:
     - match: '--(?!\[\[)'
       scope: punctuation.definition.comment.lua
       push:
@@ -464,9 +464,9 @@ contexts:
       scope: entity.name.other.tex.metapost
       push:
         - meta_content_scope: text.tex.context.embedded.metafun
-        - include: main
         - match: '(?=\betex\b)'
           pop: true
+        - include: main
 
   templates:
     - include: templates.snippets
@@ -494,60 +494,123 @@ contexts:
       scope: support.function.lua
 
   ConTeXt:
-    # - include: ConTeXt.tables
+    - include: ConTeXt.tables
     - include: ConTeXt.headings
     - include: ConTeXt.verbatim
     # - include: ConTeXt.definitions
     - include: ConTeXt.quotes
     - include: ConTeXt.font
 
-  # ConTeXt.tables:
-  #   - include: ConTeXt.tabulate
-  #
-  # ConTeXt.tabulate:
-  #   - match: '(\\)starttabulate\b'
-  #     captures:
-  #       '0': support.function.general.context
-  #       '1': punctuation.definition.backslash.context
-  #     push: [
-  #       generic.list*/,
-  #       ConTeXt.tabulate.list.name-or-template*/,
-  #     ]
-  #
-  # ConTeXt.tabulate.list.name-or-template/:
-  #   - match: '\['
-  #     scope: punctuation.section.brackets.begin.context
-  #     set: ConTeXt.tabulate.list.name-or-template.core/
-  # ConTeXt.tabulate.list.name-or-template*/:
-  #   - include: generic.pop-if-blank-line/
-  #   - include: generic.pop-if-no-list/
-  #   - include: ConTeXt.tabulate.list.name-or-template/
-  # ConTeXt.tabulate.list.name-or-template.core/:
-  #   - include: generic.gobble-whitespace
-  #   - match: '(?=[^\]]*\|)'
-  #     set: ConTeXt.tabulate.list.template.core/
-  #   - match: ''
-  #     set: ConTeXt.tabulate.list.name.core/
-  #
-  # ConTeXt.tabulate.list.name.core/:
-  #   - meta_scope: meta.brackets.context
-  #   - include: generic.list.core/
-  #   - include: main
-  #
-  # ConTeXt.tabulate.list.template.core/:
-  #   - meta_scope: meta.brackets.context
-  #   - include: generic.pop-at-list-end/
-  #   - match: '\|'
-  #     scope: punctuation.separator.column.context
-  #   - match: '[lcr]'
-  #     scope: keyword.other.alignment.context
-  #   - match: '(w)\s*\(\s*([[:digit:]]*\.[[:digit:]]+|[[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)?\)'
-  #     captures:
-  #       '1': none
-  #       '2': constant.numeric.float.context
-  #       '3': keyword.other.unit.context
-  #   - include: main
-  #
+  ConTeXt.tables:
+    - include: ConTeXt.tabulate
+
+  ConTeXt.tabulate:
+    - match: '(\\)start(tabulate|table)\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: [
+        generic.list*/,
+        ConTeXt.tabulate.list.name-or-template*/,
+      ]
+    - match: '(\\)(REF|ReFormat)\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: [
+        generic.group*/,
+        ConTeXt.tabulate.list.template*/,
+      ]
+    - match: '(\\)Use\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: [
+        generic.group*/,
+        ConTeXt.tabulate.list.template*/,
+        generic.group-with-numbers*/,
+      ]
+
+  ConTeXt.tabulate.parens/:
+    - match: '\('
+      scope: punctuation.section.parens.begin.context
+      set: ConTeXt.tabulate.parens.number.core/
+  ConTeXt.tabulate.parens*/:
+    - include: generic.pop-if-blank-line/
+    - match: '(?=[^\(])'
+      pop: true
+    - include: ConTeXt.tabulate.parens/
+  ConTeXt.tabulate.parens.number.core/:
+    - meta_scope: meta.parens.context
+    - match: '\)'
+      scope: punctuation.section.parens.end.context
+      pop: true
+    - include: generic.real-or-integer.dimension
+    - include: main
+
+  ConTeXt.tabulate.list.name-or-template/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: ConTeXt.tabulate.list.name-or-template.core/
+  ConTeXt.tabulate.list.name-or-template*/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.pop-if-no-list/
+    - include: ConTeXt.tabulate.list.name-or-template/
+  ConTeXt.tabulate.list.name-or-template.core/:
+    - include: generic.gobble-whitespace
+    - match: '(?=[^\]]*\|)'
+      set: ConTeXt.tabulate.list.template.core/
+    - match: ''
+      set: ConTeXt.tabulate.list.name.core/
+
+  ConTeXt.tabulate.list.name.core/:
+    - meta_scope: meta.brackets.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  ConTeXt.tabulate.list.template/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: ConTeXt.tabulate.list.template.core/
+  ConTeXt.tabulate.list.template*/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.pop-if-no-list/
+    - include: ConTeXt.tabulate.list.template/
+
+  ConTeXt.tabulate.list.template.core/:
+    - meta_scope: meta.brackets.context
+    - include: generic.pop-at-list-end/
+    - include: ConTeXt.tabulate.list.template.keys
+
+  ConTeXt.tabulate.list.template.keys:
+    - match: '\|'
+      scope: punctuation.separator.column.context
+    - match: '[lcrx]'
+      scope: string.unquoted.table.context
+    - match: '[wp]'
+      scope: string.unquoted.table.context
+      push: ConTeXt.tabulate.parens*/
+    - match: '([nNqQ])([[:digit:]]+)\.([[:digit:]]+) ' # space is deliberate
+      captures:
+        '1': string.unquoted.table.context
+        '2': constant.numeric.integer.context
+        '3': constant.numeric.integer.context
+    - match: '[mM]'
+      scope: constant.language.table.context
+    - match: '[BISRT]'
+      scope: constant.language.table.context
+    - match: '[f]'
+      scope: constant.language.table.context
+      push: generic.group*/
+    - match: '([sojk])([[:digit:]])'
+      captures:
+        '1': support.function.table.context
+        '2': constant.numeric.integer.context
+    - match: '[sojk]'
+      scope: support.function.table.context
+      push: generic.group-with-numbers*/
+    - include: main
+
   ConTeXt.headings:
     - include: ConTeXt.headings.inline
     - include: ConTeXt.headings.block
@@ -555,25 +618,39 @@ contexts:
   ConTeXt.headings.inline:
     - match: '(\\)part\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.headings.part.group*/, generic.list*/]
+      push: [ConTeXt.headings.part.group*/, ConTeXt.headings.reference.list*/]
     - match: '(\\)(chapter|title)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.headings.chapter.group*/, generic.list*/]
+      push: [ConTeXt.headings.chapter.group*/, ConTeXt.headings.reference.list*/]
     - match: '(\\)(section|subject)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.headings.section.group*/, generic.list*/]
+      push: [ConTeXt.headings.section.group*/, ConTeXt.headings.reference.list*/]
     - match: '(\\)sub(section|subject)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.headings.subsection.group*/, generic.list*/]
+      push: [ConTeXt.headings.subsection.group*/, ConTeXt.headings.reference.list*/]
     - match: '(\\)subsub(section|subject)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.headings.subsubsection.group*/, generic.list*/]
+      push: [ConTeXt.headings.subsubsection.group*/, ConTeXt.headings.reference.list*/]
     - match: '(\\)subsubsub(section|subject)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.headings.subsubsubsection.group*/, generic.list*/]
+      push: [ConTeXt.headings.subsubsubsection.group*/, ConTeXt.headings.reference.list*/]
     - match: '(\\)subsubsubsub(section|subject)\b'
       captures: {'0': support.function.general.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.headings.subsubsubsubsection.group*/, generic.list*/]
+      push: [ConTeXt.headings.subsubsubsubsection.group*/, ConTeXt.headings.reference.list*/]
+
+  ConTeXt.headings.reference.list/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: ConTeXt.headings.reference.list.core/
+  ConTeXt.headings.reference.list*/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.pop-if-no-list/
+    - include: ConTeXt.headings.reference.list/
+  ConTeXt.headings.reference.list.core/:
+    - meta_scope: meta.brackets.context
+    - meta_content_scope: meta.other.reference.context
+    - include: generic.pop-at-list-end/
+    - include: main
 
   ConTeXt.headings.part.group*/:
     - include: ConTeXt.headings.group-common-1/
@@ -775,31 +852,49 @@ contexts:
         ConTeXt.verbatim.inline.group-or-angles*/,
         generic.list*/,
       ]
+    - match: '(\\)tex\b'
+      captures:
+        '0': support.function.general.context
+        '1': punctuation.definition.backslash.context
+      push: ConTeXt.verbatim.inline.group*/
 
   ConTeXt.verbatim.inline.group-or-angles*/:
-    - match: '\{'
-      scope: punctuation.section.braces.begin.context
-      set:
-        - meta_include_prototype: false
-        - meta_content_scope: markup.raw.inline.context
-        - meta_scope: meta.braces.context
-        - match: '\}'
-          scope: punctuation.section.braces.end.context
-          pop: true
-        - include: ConTeXt.verbatim.inline.dummy-group
-    - match: '<<'
-      scope: punctuation.section.angles.begin.context
-      set:
-        - meta_include_prototype: false
-        - meta_content_scope: markup.raw.inline.context
-        - meta_scope: meta.angles.context
-        - match: '>>'
-          scope: punctuation.section.angles.end.context
-          pop: true
-        - include: ConTeXt.verbatim.inline.dummy-angles
+    - include: ConTeXt.verbatim.inline.group
+    - include: ConTeXt.verbatim.inline.angles
     - include: generic.gobble-whitespace
     - match: '(?=[^\{<])'
       pop: true
+
+  ConTeXt.verbatim.inline.group*/:
+    - include: ConTeXt.verbatim.inline.group
+    - include: generic.gobble-whitespace
+    - include: generic.pop-if-no-group/
+
+  ConTeXt.verbatim.inline.group:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.verbatim.inline.group.core/
+  ConTeXt.verbatim.inline.group.core/:
+    - meta_include_prototype: false
+    - meta_content_scope: markup.raw.block.context #markup.raw.inline.context
+    - meta_scope: meta.braces.context
+    - match: '\}'
+      scope: punctuation.section.braces.end.context
+      pop: true
+    - include: ConTeXt.verbatim.inline.dummy-group
+
+  ConTeXt.verbatim.inline.angles:
+    - match: '<<'
+      scope: punctuation.section.angles.begin.context
+      set: ConTeXt.verbatim.inline.angles.core/
+  ConTeXt.verbatim.inline.angles.core/:
+    - meta_include_prototype: false
+    - meta_content_scope: markup.raw.block.context #markup.raw.inline.context
+    - meta_scope: meta.angles.context
+    - match: '>>'
+      scope: punctuation.section.angles.end.context
+      pop: true
+    - include: ConTeXt.verbatim.inline.dummy-angles
 
   ConTeXt.verbatim.inline.dummy-group:
     - match: '\{'
@@ -1095,10 +1190,10 @@ contexts:
     - meta_content_scope: meta.braces.context markup.bold.boldface.context
     - include: ConTeXt.font.group.core/
   ConTeXt.font.typewriter.core/:
-    - meta_content_scope: meta.braces.context markup.raw.typewriter.context
+    - meta_content_scope: meta.braces.context markup.raw.block.context # markup.raw.typewriter.context
     - include: ConTeXt.font.group.core/
   ConTeXt.font.typewriter-bold.core/:
-    - meta_content_scope: meta.braces.context markup.raw.typewriter.context markup.bold.boldface.context
+    - meta_content_scope: meta.braces.context markup.raw.block.context markup.bold.boldface.context #markup.raw.typewriter.context
     - include: ConTeXt.font.group.core/
 
   ConTeXt.font.group.core/:
@@ -1321,6 +1416,21 @@ contexts:
   generic.group.core/:
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
+    - include: ConTeXt.font.group-commands
+    - include: main
+
+  generic.group-with-numbers/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: generic.group-with-numbers.core/
+  generic.group-with-numbers*/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.pop-if-no-group/
+    - include: generic.group-with-numbers/
+  generic.group-with-numbers.core/:
+    - meta_scope: meta.braces.context
+    - include: generic.pop-at-group-end/
+    - include: generic.number
     - include: ConTeXt.font.group-commands
     - include: main
 
