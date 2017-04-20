@@ -374,7 +374,6 @@ contexts:
   MetaFun.block.MPcode.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPcode\b)'
           pop: true
@@ -382,7 +381,6 @@ contexts:
   MetaFun.block.MPpage.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPpage\b)'
           pop: true
@@ -390,7 +388,6 @@ contexts:
   MetaFun.block.uniqueMPgraphic.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopuniqueMPgraphic\b)'
           pop: true
@@ -398,7 +395,6 @@ contexts:
   MetaFun.block.uniqueMPpagegraphic.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopuniqueMPpagegraphic\b)'
           pop: true
@@ -406,7 +402,6 @@ contexts:
   MetaFun.block.useMPgraphic.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopuseMPgraphic\b)'
           pop: true
@@ -414,7 +409,6 @@ contexts:
   MetaFun.block.usableMPgraphic.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopusableMPgraphic\b)'
           pop: true
@@ -422,7 +416,6 @@ contexts:
   MetaFun.block.reusableMPgraphic.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopreusableMPgraphic\b)'
           pop: true
@@ -430,7 +423,6 @@ contexts:
   MetaFun.block.staticMPfigure.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopstaticMPfigure\b)'
           pop: true
@@ -438,7 +430,6 @@ contexts:
   MetaFun.block.MPdefinitions.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPdefinitions\b)'
           pop: true
@@ -446,7 +437,6 @@ contexts:
   MetaFun.block.MPinclusions.core/:
     - match: ''
       set:
-        - meta_include_prototype: false
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPinclusions\b)'
           pop: true
