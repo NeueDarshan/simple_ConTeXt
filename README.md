@@ -133,8 +133,71 @@ options
 
 complement the "Light" version of [Monokai Extended][monokai].
 
-The other key in `command_popups/visuals` is `line_break`, which you can set to
-any integer and then pop-ups will line-break at that many characters.
+The other keys in `command_popups/visuals` are:
+
+  - `line_break`, which you can set to any integer and then pop-ups will
+    line-break at that many characters.
+  - `sort_keys`, a boolean for sorting keys in case of a key-value argument or
+    leaving them be in the default order. For example,
+
+    ```TeX
+                           1           2
+    \setupsectionblock [...,...] [..,..=..,..]
+                          OPT
+
+    1   NAME
+
+    2   after  = COMMAND
+        before = COMMAND
+        number = yes no
+        page   = inherits: \page
+    ```
+
+    is when `sort_keys` is `true` (the default), instead of
+
+    ```TeX
+                           1           2
+    \setupsectionblock [...,...] [..,..=..,..]
+                          OPT
+
+    1   NAME
+
+    2   page   = inherits: \page
+        after  = COMMAND
+        number = yes no
+        before = COMMAND
+    ```
+
+    when it's `false`.
+  - `sort_lists`, similar to `sort_keys` but applies to situations where there
+    is a list of options in an argument. Defaults to `true`. For example,
+
+    ```TeX
+
+                       1
+    \setupbodyfont [...,...]
+                      OPT
+
+    1   big calligraphic cg global handwritten hw mono regular reset rm roman
+        sans sansserif script scriptscript serif small ss support teletype tt
+        type x xx DIMENSION NAME
+    ```
+
+    when it's on versus
+
+    ```TeX
+
+                       1
+    \setupbodyfont [...,...]
+                      OPT
+
+    1   DIMENSION NAME global reset x xx small big script scriptscript rm ss tt
+        hw cg roman serif regular sans sansserif support type teletype mono
+        handwritten calligraphic
+    ```
+
+    when it's not.
+
 
 Pop-ups can be turned on or off completely with the `command_popups/on` key,
 and `command_popups/version` can be used to specify which version of the
