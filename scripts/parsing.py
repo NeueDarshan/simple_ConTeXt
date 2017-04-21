@@ -354,6 +354,14 @@ def _split(str_, chars, max_parts=None):
             return parts
 
 
+def _sorted(list_):
+    def _key(obj):
+        return obj.get("content") if isinstance(obj, dict) else obj
+    lower = [e for e in list_ if not _key(e).isupper()]
+    upper = [e for e in list_ if _key(e).isupper()]
+    return sorted(lower, key=_key) + sorted(upper, key=_key)
+
+
 def _process_str(desc, lines, first, next_, break_=None):
     if break_ and isinstance(break_, int):
         parts = _split(desc, break_, max_parts=2)
@@ -366,10 +374,11 @@ def _process_str(desc, lines, first, next_, break_=None):
         lines.append(first + desc)
 
 
-def _process_list(desc, n, lines, break_=None):
+def _process_list(desc, n, lines, break_=None, sort_lists=False):
     if len(desc) > 0:
+        iter_ = _sorted(desc) if sort_lists else desc
         _process_str(
-            " ".join(_translate_keyword(item) for item in desc),
+            " ".join(_translate_keyword(item) for item in iter_),
             lines,
             "{:<2}  ".format(n),
             "    ",
@@ -377,7 +386,9 @@ def _process_list(desc, n, lines, break_=None):
         )
 
 
-def _process_dict(desc, n, lines, break_=None):
+def _process_dict(
+    desc, n, lines, break_=None, sort_keys=False, sort_lists=False
+):
     if len(desc) == 0:
         return
 
@@ -393,7 +404,8 @@ def _process_dict(desc, n, lines, break_=None):
             return ("{:<2}  " + template).format(n, k)
 
     i = 0
-    for key, val in desc.items():
+    iter_ = sorted(desc.items()) if sort_keys else desc.items()
+    for key, val in iter_:
         if isinstance(val, str):
             _process_str(
                 val,
@@ -403,8 +415,9 @@ def _process_dict(desc, n, lines, break_=None):
                 break_=line_break
             )
         elif isinstance(val, list):
+            list_iter = _sorted(val) if sort_lists else val
             _process_str(
-                " ".join(_translate_keyword(e) for e in val),
+                " ".join(_translate_keyword(e) for e in list_iter),
                 lines,
                 _init(i, key),
                 rest,
@@ -441,8 +454,9 @@ def _inherit_str(inherits, n, lines, break_=None):
             break_=break_)
 
 
-def _inherit_list(inherits, n, lines, break_=None):
-    for inheritance in inherits:
+def _inherit_list(inherits, n, lines, break_=None, sort_lists=False):
+    iter_ = _sorted(inherits) if sort_lists else inherits
+    for inheritance in iter_:
         if len(lines) > 0:
             _process_str(
                 "inherits: \\{}".format(inherits),
@@ -459,7 +473,9 @@ def _inherit_list(inherits, n, lines, break_=None):
                 break_=break_)
 
 
-def rendered_command(name, dict_, break_=None):
+def rendered_command(
+    name, dict_, break_=None, sort_keys=False, sort_lists=False
+):
     result = []
     for syntax in dict_["syntax_variants"]:
         str_ = [None] * 3
@@ -504,9 +520,14 @@ def rendered_command(name, dict_, break_=None):
                             break_=break_
                         )
                     elif isinstance(desc, list):
-                        _process_list(desc, n, lines, break_=break_)
+                        _process_list(
+                            desc, n, lines,
+                            break_=break_, sort_lists=sort_lists)
                     elif isinstance(desc, dict):
-                        _process_dict(desc, n, lines, break_=break_)
+                        _process_dict(
+                            desc, n, lines,
+                            break_=break_, sort_keys=sort_keys,
+                            sort_lists=sort_lists)
                     else:
                         msg = "unexpected argument of type '{}'"
                         raise Exception(msg.format(type(desc)))
@@ -514,9 +535,13 @@ def rendered_command(name, dict_, break_=None):
                     if inherits is None:
                         pass
                     elif isinstance(inherits, str):
-                        _inherit_str(inherits, n, lines, break_=break_)
+                        _inherit_str(
+                            inherits, n, lines,
+                            break_=break_, sort_lists=sort_lists)
                     elif isinstance(inherits, list):
-                        _inherit_list(inherits, n, lines, break_=break_)
+                        _inherit_list(
+                            inherits, n, lines,
+                            break_=break_, sort_lists=sort_lists)
                     else:
                         msg = "unexpected inheritance of type '{}'"
                         raise Exception(msg.format(type(inherits)))

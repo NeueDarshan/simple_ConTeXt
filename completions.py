@@ -88,7 +88,6 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         visuals = self.current_profile.get(
             "command_popups", {}).get("visuals", {})
         colors = visuals.get("colors", {})
-        line_break = visuals.get("line_break")
         style = STYLE_SHEET.format(
             background=colors.get("background", "rgb(46, 47, 41)"),
             syntax=colors.get("primary", "rgb(36, 151, 227)"),
@@ -100,7 +99,12 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         command = self.commands_cache.get(
             self.current_interface_name, {}).get("details", {}).get(name)
         variations, files = parsing.rendered_command(
-            name, command, break_=line_break)
+            name,
+            command,
+            break_=visuals.get("line_break", None),
+            sort_keys=visuals.get("sort_keys", True),
+            sort_lists=visuals.get("sort_lists", True)
+        )
 
         for variation in variations:
             new_signature = """
