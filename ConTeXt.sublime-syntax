@@ -382,6 +382,9 @@ contexts:
     - match: '(\\)startMPinclusions\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
       push: [MetaFun.block.MPinclusions.core/, generic.group*/, generic.list*/]
+    - match: '(\\)startMPextensions\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: [MetaFun.block.MPextensions.core/, generic.group*/]
     - match: '(\\)startMPpage\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
       push: [MetaFun.block.MPpage.core/, generic.list*/]
