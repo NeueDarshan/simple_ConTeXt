@@ -535,9 +535,7 @@ def rendered_command(
                     if inherits is None:
                         pass
                     elif isinstance(inherits, str):
-                        _inherit_str(
-                            inherits, n, lines,
-                            break_=break_, sort_lists=sort_lists)
+                        _inherit_str(inherits, n, lines, break_=break_)
                     elif isinstance(inherits, list):
                         _inherit_list(
                             inherits, n, lines,
