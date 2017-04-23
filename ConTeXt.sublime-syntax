@@ -367,6 +367,9 @@ contexts:
     - match: '(\\)startMPinclusions\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
       push: [MetaFun.block.MPinclusions.core/, generic.group*/, generic.list*/]
+    - match: '(\\)startMPextensions\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: [MetaFun.block.MPextensions.core/, generic.group*/]
     - match: '(\\)startMPpage\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
       push: [MetaFun.block.MPpage.core/, generic.list*/]
@@ -432,6 +435,13 @@ contexts:
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPdefinitions\b)'
+          pop: true
+        - include: MetaFun.scope
+  MetaFun.block.MPextensions.core/:
+    - match: ''
+      set:
+        - meta_content_scope: source.metapost.metafun.embedded.context
+        - match: '(?=\\stopMPextensions\b)'
           pop: true
         - include: MetaFun.scope
   MetaFun.block.MPinclusions.core/:
