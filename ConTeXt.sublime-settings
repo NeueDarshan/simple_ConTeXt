@@ -1,10 +1,10 @@
 {
-  "spelling_selector": "text.tex.context - (source comment, source - string, comment - source, markup.raw, meta.preprocessor, meta.other.buffer, meta.environment.math, meta.other.control.word, meta.brackets - meta.other.heading)",
   "auto_complete_triggers":
   [
     {
       "characters": "\\",
       "selector": "text.tex.context"
     }
-  ]
+  ],
+  "spelling_selector": "text.tex.context - (markup.raw, source - string, comment.line.percentage.context, meta.other.control.word, meta.other.buffer, meta.preprocessor, meta.brackets - meta.other.title, variable.parameter, meta.environment.math)",
 }
