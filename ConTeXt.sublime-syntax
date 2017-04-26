@@ -357,103 +357,113 @@ contexts:
   MetaFun.block:
     - match: '(\\)startuniqueMPgraphic\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.uniqueMPgraphic.core/, generic.group*/, generic.group*/]
+      push: [MetaFun.block.uniqueMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startuniqueMPpagegraphic\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.uniqueMPpagegraphic.core/, generic.group*/, generic.group*/]
+      push: [MetaFun.block.uniqueMPpagegraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startuseMPgraphic\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.useMPgraphic.core/, generic.group*/, generic.group*/]
+      push: [MetaFun.block.useMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startusableMPgraphic\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.usableMPgraphic.core/, generic.group*/, generic.group*/]
+      push: [MetaFun.block.usableMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startreusableMPgraphic\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.reusableMPgraphic.core/, generic.group*/, generic.group*/]
+      push: [MetaFun.block.reusableMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startstaticMPfigure\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.staticMPfigure.core/, generic.group*/]
+      push: [MetaFun.block.staticMPfigure.main/, generic.group*/]
     - match: '(\\)startMPcode\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.MPcode.core/, generic.group*/]
+      push: [MetaFun.block.MPcode.main/, generic.group*/]
     - match: '(\\)startMPdefinitions\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.MPdefinitions.core/, generic.group*/]
+      push: [MetaFun.block.MPdefinitions.main/, generic.group*/]
     - match: '(\\)startMPinclusions\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.MPinclusions.core/, generic.group*/, generic.list*/]
+      push: [MetaFun.block.MPinclusions.main/, generic.group*/, generic.list*/]
     - match: '(\\)startMPpage\b'
       captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [MetaFun.block.MPpage.core/, generic.list*/]
+      push: [MetaFun.block.MPpage.main/, generic.list*/]
+    - match: '(\\)startMPextensions\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: [MetaFun.block.MPextensions.main/, generic.group*/]
 
-  MetaFun.block.MPcode.core/:
+  MetaFun.block.MPcode.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPcode\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.MPpage.core/:
+  MetaFun.block.MPpage.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPpage\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.uniqueMPgraphic.core/:
+  MetaFun.block.uniqueMPgraphic.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopuniqueMPgraphic\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.uniqueMPpagegraphic.core/:
+  MetaFun.block.uniqueMPpagegraphic.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopuniqueMPpagegraphic\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.useMPgraphic.core/:
+  MetaFun.block.useMPgraphic.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopuseMPgraphic\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.usableMPgraphic.core/:
+  MetaFun.block.usableMPgraphic.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopusableMPgraphic\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.reusableMPgraphic.core/:
+  MetaFun.block.reusableMPgraphic.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopreusableMPgraphic\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.staticMPfigure.core/:
+  MetaFun.block.staticMPfigure.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopstaticMPfigure\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.MPdefinitions.core/:
+  MetaFun.block.MPdefinitions.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPdefinitions\b)'
           pop: true
         - include: MetaFun.main
-  MetaFun.block.MPinclusions.core/:
+  MetaFun.block.MPinclusions.main/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPinclusions\b)'
+          pop: true
+        - include: MetaFun.main
+  MetaFun.block.MPextensions.main/:
+    - match: ''
+      set:
+        - meta_content_scope: source.metapost.metafun.embedded.context
+        - match: '(?=\\stopMPextensions\b)'
           pop: true
         - include: MetaFun.main
 
