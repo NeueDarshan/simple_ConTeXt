@@ -4,7 +4,7 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>text.tex.context source.metapost, text.tex.context source.lua</string>
+  <string>text.tex.context source</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>
