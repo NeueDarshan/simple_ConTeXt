@@ -19,17 +19,11 @@ def deep_update(main, new):
 
 
 def is_context(view):
-    try:
-        return view.match_selector(
-            view.sel()[0].begin(), "text.tex.context")
-    except:
-        return False
+    return view.match_selector(view.sel()[0].begin(), "text.tex.context")
 
 
 def load_commands(path_, version):
-    name = "commands {}.json".format(version)
-    commands_json = os.path.join(path_, name)
-    with open(commands_json) as f:
+    with open(os.path.join(path_, "commands {}.json".format(version))) as f:
         return json.load(f)
 
 
@@ -40,20 +34,21 @@ def protect_html_whitespace(string):
 # we use <u> style markup to indicate default arguments in the json files,
 # so we give special attention to preserving those tags
 def protect_html_brackets(string, ignore_tags=["u"]):
-    new_string = string.replace("<", "&lt;").replace(">", "&gt;")
+    protected = string.replace("<", "&lt;").replace(">", "&gt;")
     for tag in ignore_tags:
-        new_string = new_string.replace(
-            "&lt;{tag}&gt;".format(tag=tag),
-            "<{tag}>".format(tag=tag))
-        new_string = new_string.replace(
-            "&lt;/{tag}&gt;".format(tag=tag),
-            "</{tag}>".format(tag=tag))
-    return new_string
+        protected = protected.replace(
+            "&lt;{}&gt;".format(tag), "<{}>".format(tag)
+        )
+        protected = protected.replace(
+            "&lt;/{}&gt;".format(tag), "</{}>".format(tag)
+        )
+    return protected
 
 
 def protect_html(string, ignore_tags=["u"]):
     return protect_html_whitespace(
-        protect_html_brackets(string, ignore_tags=ignore_tags))
+        protect_html_brackets(string, ignore_tags=ignore_tags)
+    )
 
 
 class ModPath:
@@ -81,85 +76,78 @@ def parse_log_for_error(file_bytes):
     file_str = file_bytes.decode(encoding="utf-8")
     file_str = file_str.replace("\r\n", "\n").replace("\r", "\n")
 
-    def is_error(line):
+    def _is_error(line):
         return re.match(
             r"^.*?>\s*(.*?)\s+error\s+on\s+line\s+([0-9]+).*?!\s*(.*?)$",
-            line)
+            line
+        )
 
-    def is_code_snippet(line):
+    def _is_code_snippet(line):
         return re.match(r"^\s*[0-9]+", line)
 
-    def is_blank_line(line):
-        return (len(line) == 0 or re.match(r"^\s*$", line))
+    def _is_blank_line(line):
+        return len(line) == 0 or re.match(r"^\s*$", line)
 
     start_of_error = 0
     log = file_str.split("\n")
     for i, line in enumerate(log):
-        error = is_error(line)
+        error = _is_error(line)
         if error:
             error_summary = "{} error on line {}: {}".format(*error.groups())
             start_of_error = i + 1
             break
 
-    while is_blank_line(log[start_of_error]):
+    while _is_blank_line(log[start_of_error]):
         start_of_error += 1
 
     cur_line = start_of_error
-    while not is_code_snippet(log[cur_line]):
+    while not _is_code_snippet(log[cur_line]):
         cur_line += 1
     end_of_error = cur_line
 
-    while is_blank_line(log[end_of_error]):
+    while _is_blank_line(log[end_of_error]):
         end_of_error -= 1
 
     return "\n\n".join([error_summary] + log[start_of_error:end_of_error - 1])
 
 
-def context_command_selector():
-    return ", ".join([
-        "storage.type.function.general.context",
-        "support.function.general.context",
-        "keyword.control.conditional.context",
-        "keyword.other.alignment.context",
-        "entity.name.function.general.context",
-        "entity.name.function.symbol.context",
-    ])
-
-
-def last_command_in_region(view, region):
-    candidate_commands = [
-        command
-        for command in view.find_by_selector(context_command_selector())
-        if region.contains(command)
+def commands_in_view(view, begin=None, end=None):
+    blocks = view.find_by_selector("meta.other.control.word.context")
+    starts = [
+        p for p in view.find_by_selector(
+            "meta.other.control.word.context "
+            "punctuation.definition.backslash.context"
+        )
     ]
-    if len(candidate_commands) > 0:
-        command = candidate_commands[-1]
-        tail = view.substr(sublime.Region(command.end(), region.end()))
-        return view.substr(command)[1:], tail
-    return None, None
+
+    words = []
+    for i, s in enumerate(starts):
+        a = s.begin()
+        try:
+            b = starts[i+1].begin()
+        except IndexError:
+            b = len(view)
+        for w in blocks:
+            if w.intersects(s):
+                b = min(b, w.end())
+        words.append(sublime.Region(a, b))
+
+    def _filter(w, begin=None, end=None):
+        if begin is not None and w.begin() < begin:
+            return False
+        elif end is not None and w.end() > end:
+            return False
+        else:
+            return True
+
+    return [w for w in words if _filter(w, begin=begin, end=end)]
 
 
-# def region_ends_with_command_and_args(view, region):
-#     candidate_commands = [
-#         command
-#         for command in view.find_by_selector(context_command_selector())
-#         if region.contains(command)
-#     ]
-#     if len(candidate_commands) > 0:
-#         command = candidate_commands[-1]
-#     else:
-#         return
-#
-#     ending_args_sel = "text.tex.context" + \
-#         " (meta.braces.context, meta.brackets.context)"
-#     match = True
-#     for point in range(command.end(), region.end()):
-#         if not view.match_selector(point, ending_args_sel):
-#             match = False
-#             break
-#
-#     if match:
-#         return view.substr(command)[1:]
+def last_command_in_view(view, begin=None, end=None):
+    try:
+        return commands_in_view(view, begin=begin, end=end)[-1]
+    except IndexError:
+        return
 
 
 def reload_settings(self):
@@ -196,12 +184,14 @@ def reload_settings(self):
                     break
         deep_update(self.current_profile, new_settings)
     deep_update(
-        self.current_profile, self.profiles[self.current_profile_index])
+        self.current_profile, self.profiles[self.current_profile_index]
+    )
 
     self.current_interface_name = self.current_profile.get(
         "command_popups", {}).get("interface")
     self.current_interface = self.interfaces.get(
-        self.current_interface_name, {})
+        self.current_interface_name, {}
+    )
 
 
 def process_options(name, options, input_, input_base):
@@ -217,7 +207,8 @@ def process_options(name, options, input_, input_base):
         if options.get("result"):
             if input_base:
                 output_file_name = sublime.expand_variables(
-                    options["result"], {"name": input_base})
+                    options["result"], {"name": input_base}
+                )
                 command.append("--result={}".format(output_file_name))
             del options["result"]
 
@@ -227,7 +218,8 @@ def process_options(name, options, input_, input_base):
                     command.append("--{}".format(option))
             elif isinstance(value, dict):
                 normalized_value = " ".join(
-                    "{}={}".format(k, v) for k, v in value.items())
+                    "{}={}".format(k, v) for k, v in value.items()
+                )
                 command.append("--{}={}".format(option, normalized_value))
             else:
                 if option == "script":

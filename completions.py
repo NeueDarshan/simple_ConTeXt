@@ -1,11 +1,17 @@
 import sublime
 import sublime_plugin
-import os
 import re
+import os
+
+
+PACKAGE = os.path.abspath(
+    # os.path.join(sublime.packages_path(), "ConTeXtTools")
+    os.path.dirname(__file__)
+)
 
 
 import sys
-sys.path.insert(1, os.path.abspath(os.path.dirname(__file__)))
+sys.path.insert(1, PACKAGE)
 from scripts import common
 from scripts import parsing
 
@@ -42,10 +48,10 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         name = self.current_interface_name
         if name not in self.commands_cache:
             try:
-                path = os.path.join(
-                    os.path.abspath(os.path.dirname(__file__)), "interface")
-                self.commands_cache[name] = \
-                    {"details": common.load_commands(path, name)}
+                path = os.path.join(PACKAGE, "interface")
+                self.commands_cache[name] = {
+                    "details": common.load_commands(path, name)
+                }
                 self.commands_cache[name]["commands"] = sorted([
                     ["\\" + command, ""]
                     for command in self.commands_cache[name]["details"]
@@ -69,9 +75,15 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         if not self.current_profile.get("command_popups", {}).get("on"):
             return
 
-        name, tail = common.last_command_in_region(
-            view, sublime.Region(0, view.sel()[0].end()))
-        if not (name and re.match(r"\A[^\S\n]*\Z", tail)):
+        end = view.sel()[0].end()
+        cmd = common.last_command_in_view(view, end=end)
+        if not cmd:
+            view.hide_popup()
+            return
+
+        name = view.substr(cmd)[1:]
+        tail = view.substr(sublime.Region(cmd.end(), end))
+        if not re.match(r"\A[^\S\n]*\Z", tail):
             view.hide_popup()
             return
 

@@ -53,7 +53,8 @@ def _translate_constant(element):
 def _iter_power_set(iterable):
     list_ = list(iterable)
     return itertools.chain.from_iterable(
-        itertools.combinations(list_, n) for n in range(len(list_) + 1))
+        itertools.combinations(list_, n) for n in range(len(list_) + 1)
+    )
 
 
 def handle_sub_element(element, definitions):
@@ -66,14 +67,16 @@ def handle_sub_element(element, definitions):
     elif _tag_is(element, "resolve"):
         possible_references = [
             def_ for def_ in definitions
-            if element.get("name") == def_.get("name")]
+            if element.get("name") == def_.get("name")
+        ]
         def_ = possible_references.pop()
         def_.tag = "{%s}keywords" % NAMESPACES["cd"]
         return handle_syntax_element(def_, definitions)["description"]
 
     else:
         raise Exception(
-            "unknown tag '{}' in keywords list".format(element.tag))
+            "unknown tag '{}' in keywords list".format(element.tag)
+        )
 
 
 def handle_keywords(element, definitions):
@@ -141,7 +144,8 @@ def handle_resolve(element, definitions):
     try:
         possible_references = [
             definition for definition in definitions
-            if element.get("name") == definition.get("name")]
+            if element.get("name") == definition.get("name")
+        ]
         definition = possible_references.pop()
         return handle_syntax_element(definition[0], definitions)
 
@@ -235,7 +239,8 @@ def parse_command_instance(element, definitions):
     if arguments:
         for argument in arguments:
             command["syntax"].append(
-                handle_syntax_element(argument, definitions))
+                handle_syntax_element(argument, definitions)
+            )
 
     if element.get("type") == "environment":
         command["name"] = element.get("begin", "start") + element.get("name")
@@ -269,10 +274,14 @@ def parse_command_instance(element, definitions):
 def parse_context_tree(xml):
     def_list = [
         child for child in xml.getroot().iterfind(
-            "./cd:define", namespaces=NAMESPACES)]
+            "./cd:define", namespaces=NAMESPACES
+        )
+    ]
     command_list = [
         child for child in xml.getroot().iterfind(
-            "./cd:command", namespaces=NAMESPACES)]
+            "./cd:command", namespaces=NAMESPACES
+        )
+    ]
 
     commands = {}
     for command in command_list:
@@ -407,13 +416,7 @@ def _process_dict(
     iter_ = sorted(desc.items()) if sort_keys else desc.items()
     for key, val in iter_:
         if isinstance(val, str):
-            _process_str(
-                val,
-                lines,
-                _init(i, key),
-                rest,
-                break_=line_break
-            )
+            _process_str(val, lines, _init(i, key), rest, break_=line_break)
         elif isinstance(val, list):
             list_iter = _sorted(val) if sort_lists else val
             _process_str(
@@ -444,14 +447,16 @@ def _inherit_str(inherits, n, lines, break_=None):
             lines,
             "    ",
             "    ",
-            break_=break_)
+            break_=break_
+        )
     else:
         _process_str(
             "inherits: \\{}".format(inherits),
             lines,
             "{:<2}  ".format(n),
             "    ",
-            break_=break_)
+            break_=break_
+        )
 
 
 def _inherit_list(inherits, n, lines, break_=None, sort_lists=False):
@@ -463,14 +468,16 @@ def _inherit_list(inherits, n, lines, break_=None, sort_lists=False):
                 lines,
                 "    ",
                 "    ",
-                break_=break_)
+                break_=break_
+            )
         else:
             _process_str(
                 "inherits: \\{}".format(inherits),
                 lines,
                 "{:<2}  ".format(n),
                 "    ",
-                break_=break_)
+                break_=break_
+            )
 
 
 def rendered_command(
@@ -504,12 +511,14 @@ def rendered_command(
                         temp = "  {:^%s}" % (len_ - 1)
                         str_[0] += temp.format(n)
                         str_[2] += temp.format(
-                            "OPT" if var["optional"] else "")
+                            "OPT" if var["optional"] else ""
+                        )
                     else:
                         temp = " {:^%s}" % len_
                         str_[0] += temp.format(n)
                         str_[2] += temp.format(
-                            "OPT" if var["optional"] else "")
+                            "OPT" if var["optional"] else ""
+                        )
 
                     if isinstance(desc, str):
                         _process_str(
@@ -522,12 +531,14 @@ def rendered_command(
                     elif isinstance(desc, list):
                         _process_list(
                             desc, n, lines,
-                            break_=break_, sort_lists=sort_lists)
+                            break_=break_, sort_lists=sort_lists
+                        )
                     elif isinstance(desc, dict):
                         _process_dict(
                             desc, n, lines,
                             break_=break_, sort_keys=sort_keys,
-                            sort_lists=sort_lists)
+                            sort_lists=sort_lists
+                        )
                     else:
                         msg = "unexpected argument of type '{}'"
                         raise Exception(msg.format(type(desc)))
@@ -539,7 +550,8 @@ def rendered_command(
                     elif isinstance(inherits, list):
                         _inherit_list(
                             inherits, n, lines,
-                            break_=break_, sort_lists=sort_lists)
+                            break_=break_, sort_lists=sort_lists
+                        )
                     else:
                         msg = "unexpected inheritance of type '{}'"
                         raise Exception(msg.format(type(inherits)))
@@ -570,9 +582,11 @@ def simplified_syntax_variants(variants):
     def _iter_without_optional_syntax_variants(syntax):
         length = len(syntax)
         optional_syntax_indices = [
-            i for i in range(length) if syntax[i]["optional"]]
+            i for i in range(length) if syntax[i]["optional"]
+        ]
         mandatory_syntax_indices = [
-            i for i in range(length) if i not in optional_syntax_indices]
+            i for i in range(length) if i not in optional_syntax_indices
+        ]
         for combination in _iter_power_set(optional_syntax_indices):
             indices = set(combination)
             indices.update(mandatory_syntax_indices)
@@ -580,7 +594,8 @@ def simplified_syntax_variants(variants):
 
     def _iter_changing_mandatory_to_optional_syntax_variants(syntax):
         mandatory_syntax_indices = [
-            i for i in range(len(syntax)) if not syntax[i]["optional"]]
+            i for i in range(len(syntax)) if not syntax[i]["optional"]
+        ]
         copy_ = copy.deepcopy(syntax)
         for combination in _iter_power_set(mandatory_syntax_indices):
             for i in mandatory_syntax_indices:
@@ -598,7 +613,8 @@ def simplified_syntax_variants(variants):
     while not done:
         done = True
         ordered_pairs = list(itertools.permutations(
-            [(n, entry) for n, entry in enumerate(variants_copy)], 2))
+            [(n, entry) for n, entry in enumerate(variants_copy)], 2
+        ))
         for pair in ordered_pairs:
             i, master = pair[0]
             j, other = pair[1]
@@ -621,4 +637,5 @@ def simplified_syntax_variants(variants):
 def simplify_commands(commands):
     for name, command in commands.items():
         command["syntax_variants"] = simplified_syntax_variants(
-            command["syntax_variants"])
+            command["syntax_variants"]
+        )

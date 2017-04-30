@@ -1,12 +1,33 @@
 {
   "current_profile": "default",
-  "interfaces": {},
+
+  "interfaces":
+  {
+    "default":
+    {
+      "main": "~/path-to-context-installation/interface/mkiv"
+    }
+  },
+
   "profile_defaults":
   {
     "command_popups":
     {
       "on": true,
-      "show_files": true
+      "show_files": false,
+      "interface": "default",
+      "visuals":
+      {
+        "colors":
+        {
+          "background": "rgb(46, 47, 41)",
+          "primary": "rgb(36, 151, 227)",
+          "secondary": "rgb(151, 151, 148)"
+        },
+        "line_break": 60,
+        "sort_keys": true,
+        "sort_lists": true
+      }
     },
     "context_program":
     {
@@ -17,13 +38,18 @@
     },
     "references":
     {
-      "command_regex": "(at|in|[a-zA-Z]*ref)",
-      "reference_regex": "[a-zA-Z]+:[a-zA-Z\\-:_]+"
+      "command_regex": "(in|at|[a-zA-Z]*ref)",
+      "reference_regex": "[a-zA-Z]+:[a-zA-Z\\-\\.:_]+"
     }
   },
+
   "profiles":
   [
     {
+      "context_program":
+      {
+        "path": "~/path-to-context-binary"
+      },
       "name": "default"
     }
   ]

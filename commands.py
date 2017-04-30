@@ -3,17 +3,23 @@ import sublime_plugin
 import xml.etree.ElementTree as ET
 import json
 import collections
+import os
+
+
+PACKAGE = os.path.abspath(
+    # os.path.join(sublime.packages_path(), "ConTeXtTools")
+    os.path.dirname(__file__)
+)
 
 
 import sys
-import os
-sys.path.insert(1, os.path.abspath(os.path.dirname(__file__)))
+sys.path.insert(1, PACKAGE)
 from scripts import common
 from scripts import parsing
 
 
 def _collect(xml, path):
-    for f_ in os.listdir(os.path.abspath(os.path.normpath(path))):
+    for f_ in os.listdir(os.path.abspath(path)):
         with open(os.path.join(path, f_), encoding="utf-8") as f:
 
             try:
@@ -73,7 +79,8 @@ class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
     def run(self):
         self.reload_settings()
         self.window.show_quick_panel(
-            self.interface_names, self.generate_interface)
+            self.interface_names, self.generate_interface
+        )
 
     def generate_interface(self, index):
         if not (0 <= index < len(self.interface_names)):
@@ -95,8 +102,7 @@ class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
         commands = parsing.parse_context_tree(xml)
         parsing.simplify_commands(commands)
 
-        path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), "interface")
+        path = os.path.join(PACKAGE, "interface")
         os.makedirs(path, exist_ok=True)
 
         with open(
@@ -120,10 +126,7 @@ class ContexttoolsQueryInterfaceCommands(sublime_plugin.WindowCommand):
         self.reload_settings()
 
         names = []
-        for file in os.listdir(os.path.join(
-            os.path.abspath(os.path.dirname(__file__)),
-            "interface"
-        )):
+        for file in os.listdir(os.path.join(PACKAGE, "interface")):
             if file.endswith(".json") and file.startswith("commands "):
                 names.append(file[9:-5])
         names = sorted(names)
@@ -141,11 +144,7 @@ class ContexttoolsQueryInterfaceCommands(sublime_plugin.WindowCommand):
         self.choice = name
 
         with open(
-            os.path.join(
-                os.path.abspath(os.path.dirname(__file__)),
-                "interface",
-                "commands {}.json".format(name)
-            )
+            os.path.join(PACKAGE, "interface", "commands {}.json".format(name))
         ) as f:
             f_ = json.load(f, object_pairs_hook=collections.OrderedDict)
             for cmd, details in f_.items():
@@ -178,7 +177,3 @@ class ContexttoolsInterfaceCommandInsert(sublime_plugin.TextCommand):
     def run(self, edit, command=""):
         for region in self.view.sel():
             self.view.insert(edit, region.begin(), command)
-
-
-# class ContexttoolsQueryReferences(sublime_plugin.WindowCommand):
-#     ...
