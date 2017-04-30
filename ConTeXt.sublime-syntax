@@ -523,7 +523,7 @@ contexts:
         '0': support.function.general.context meta.other.control.word.context
         '1': punctuation.definition.backslash.context
       push:
-        - meta_content_scope: comment.block.context
+        - meta_content_scope: comment.block.hiding.context
         - match: '(?=\\stophiding\b)'
           pop: true
 
@@ -610,7 +610,7 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context
-        - meta_content_scope: entity.name.headings.part.context meta.other.title.context
+        - meta_content_scope: meta.other.title.context entity.name.headings.part.context
         - include: ConTeXt.group.headings.common/
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.headings.chapter*/:
@@ -618,7 +618,7 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context
-        - meta_content_scope: entity.name.headings.chapter.context meta.other.title.context
+        - meta_content_scope: meta.other.title.context entity.name.headings.chapter.context
         - include: ConTeXt.group.headings.common/
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.headings.section*/:
@@ -626,7 +626,7 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context
-        - meta_content_scope: entity.name.headings.section.context meta.other.title.context
+        - meta_content_scope: meta.other.title.context entity.name.headings.section.context
         - include: ConTeXt.group.headings.common/
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.headings.subsection*/:
@@ -634,7 +634,7 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context
-        - meta_content_scope: entity.name.headings.subsection.context meta.other.title.context
+        - meta_content_scope: meta.other.title.context entity.name.headings.subsection.context
         - include: ConTeXt.group.headings.common/
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.headings.sub2section*/:
@@ -642,7 +642,7 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context
-        - meta_content_scope: entity.name.headings.subsubsection.context meta.other.title.context
+        - meta_content_scope: meta.other.title.context entity.name.headings.subsubsection.context
         - include: ConTeXt.group.headings.common/
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.headings.sub3section*/:
@@ -650,7 +650,7 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context
-        - meta_content_scope: entity.name.headings.subsubsubsection.context meta.other.title.context
+        - meta_content_scope: meta.other.title.context entity.name.headings.subsubsubsection.context
         - include: ConTeXt.group.headings.common/
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.headings.sub4section*/:
@@ -658,7 +658,7 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context
-        - meta_content_scope: entity.name.headings.subsubsubsubsection.context meta.other.title.context
+        - meta_content_scope: meta.other.title.context entity.name.headings.subsubsubsubsection.context
         - include: ConTeXt.group.headings.common/
     - include: generic.pop-if-no-nearby-group/
 
@@ -697,7 +697,7 @@ contexts:
         - match: '\b(title)(=)'
           captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
           push:
-            - meta_content_scope: meta.other.value.context entity.name.headings.part.context meta.other.title.context
+            - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.part.context
             - include: ConTeXt.list.headings.common/
         - include: generic.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -709,7 +709,7 @@ contexts:
         - match: '\b(title)(=)'
           captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
           push:
-            - meta_content_scope: meta.other.value.context entity.name.headings.chapter.context meta.other.title.context
+            - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.chapter.context
             - include: ConTeXt.list.headings.common/
         - include: generic.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -721,7 +721,7 @@ contexts:
         - match: '\b(title)(=)'
           captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
           push:
-            - meta_content_scope: meta.other.value.context entity.name.headings.section.context meta.other.title.context
+            - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.section.context
             - include: ConTeXt.list.headings.common/
         - include: generic.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -733,7 +733,7 @@ contexts:
         - match: '\b(title)(=)'
           captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
           push:
-            - meta_content_scope: meta.other.value.context entity.name.headings.subsection.context meta.other.title.context
+            - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.subsection.context
             - include: ConTeXt.list.headings.common/
         - include: generic.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -745,7 +745,7 @@ contexts:
         - match: '\b(title)(=)'
           captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
           push:
-            - meta_content_scope: meta.other.value.context entity.name.headings.subsubsection.context meta.other.title.context
+            - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.subsubsection.context
             - include: ConTeXt.list.headings.common/
         - include: generic.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -757,7 +757,7 @@ contexts:
         - match: '\b(title)(=)'
           captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
           push:
-            - meta_content_scope: meta.other.value.context entity.name.headings.subsubsubsection.context meta.other.title.context
+            - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.subsubsubsection.context
             - include: ConTeXt.list.headings.common/
         - include: generic.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -769,7 +769,7 @@ contexts:
         - match: '\b(title)(=)'
           captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
           push:
-            - meta_content_scope: meta.other.value.context entity.name.headings.subsubsubsubsection.context meta.other.title.context
+            - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.subsubsubsubsection.context
             - include: ConTeXt.list.headings.common/
         - include: generic.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -1067,7 +1067,7 @@ contexts:
     - meta_content_scope: meta.braces.context markup.raw.block.context # markup.raw.typewriter.context
     - include: ConTeXt.group.font.main/
   ConTeXt.group.font.typewriter-bold.main/:
-    - meta_content_scope: meta.braces.context markup.raw.block.context markup.bold.boldface.context #markup.raw.typewriter.context
+    - meta_content_scope: meta.braces.context markup.bold.boldface.context markup.raw.block.context # markup.raw.typewriter.context
     - include: ConTeXt.group.font.main/
 
   ConTeXt.group.font.main/:
@@ -1219,7 +1219,7 @@ contexts:
     - match: '((\\)monobold)\b(?=\s*[^\{])'
       captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
       set:
-        - meta_content_scope: meta.other.table.cell.context markup.raw.block.context markup.bold.boldface.context #markup.raw.typewriter.context
+        - meta_content_scope: meta.other.table.cell.context markup.bold.boldface.context markup.raw.block.context # markup.raw.typewriter.context
         - include: ConTeXt.tables.cell.font.core/
 
   ConTeXt.tables.cell.font.core/:
@@ -1369,7 +1369,7 @@ contexts:
     - match: '((\\)monobold)\b(?=\s*[^\{])'
       captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
       set:
-        - meta_content_scope: meta.other.table.cell.context markup.raw.block.context markup.bold.boldface.context #markup.raw.typewriter.context
+        - meta_content_scope: meta.other.table.cell.context markup.bold.boldface.context markup.raw.block.context # markup.raw.typewriter.context
         - include: ConTeXt.alt-TABLE.cell.main/
 
   ConTeXt.alt-TABLE.cell.main/:
@@ -1494,6 +1494,11 @@ contexts:
   generic.group.pop-at-end-of-assignment/:
     - match: '(?=[\},])'
       pop: true
+  generic.assignment.common:
+    - match: ','
+      scope: punctuation.separator.comma.context
+    - match: '='
+      scope: keyword.operator.assignment.context
 
   generic.group:
     - match: '\{'
@@ -1610,19 +1615,21 @@ contexts:
         - meta_content_scope: meta.other.value.context entity.name.headings.other.context meta.other.title.context
         - include: generic.list.pop-at-end-of-assignment/
         - include: main
-    - match: '([[:alpha:][:digit:]\.\-:_]*)(=)'
+    - match: '([[:alpha:][:digit:]\.\-:_]+)(=)'
       captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context
         - include: generic.list.pop-at-end-of-assignment/
         - include: generic.dimension
         - include: main
+    - include: generic.assignment.common
 
   generic.group.assignments:
-    - match: '([[:alpha:][:digit:]\.\-:_]*)(=)'
+    - match: '([[:alpha:][:digit:]\.\-:_]+)(=)'
       captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context
         - include: generic.group.pop-at-end-of-assignment/
         - include: generic.dimension
         - include: main
+    - include: generic.assignment.common
