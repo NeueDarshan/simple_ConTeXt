@@ -112,42 +112,69 @@ def parse_log_for_error(file_bytes):
 
 
 def commands_in_view(view, begin=None, end=None):
-    blocks = view.find_by_selector("meta.other.control.word.context")
+    scope = sublime.Region(
+        0 if begin is None else begin, len(view) if end is None else end
+    )
+    blocks = [
+        region for region in view.find_by_selector(
+            "meta.other.control.word.context"
+        )
+        if scope.intersects(region)
+    ]
     starts = [
-        p for p in view.find_by_selector(
+        region for region in view.find_by_selector(
             "meta.other.control.word.context "
             "punctuation.definition.backslash.context"
         )
+        if scope.contains(region)
     ]
 
     words = []
-    for i, s in enumerate(starts):
-        a = s.begin()
-        try:
-            b = starts[i+1].begin()
-        except IndexError:
+    len_ = len(starts)
+    for i in range(0, len_):
+        a = starts[i].begin()
+        if i + 1 < len_:
+            b = starts[i+1].begin() - 1
+        else:
             b = len(view)
-        for w in blocks:
-            if w.intersects(s):
-                b = min(b, w.end())
+        for block in blocks:
+            if block.intersects(starts[i]):
+                b = min(block.end(), b)
+                break
         words.append(sublime.Region(a, b))
 
-    def _filter(w, begin=None, end=None):
-        if begin is not None and w.begin() < begin:
-            return False
-        elif end is not None and w.end() > end:
-            return False
-        else:
-            return True
-
-    return [w for w in words if _filter(w, begin=begin, end=end)]
+    return words
 
 
 def last_command_in_view(view, begin=None, end=None):
-    try:
-        return commands_in_view(view, begin=begin, end=end)[-1]
-    except IndexError:
-        return
+    # try:
+    #     return commands_in_view(view, begin=begin, end=end)[-1]
+    # except IndexError:
+    #     return
+    scope = sublime.Region(
+        0 if begin is None else begin, len(view) if end is None else end
+    )
+    starts = [
+        region for region in view.find_by_selector(
+            "meta.other.control.word.context "
+            "punctuation.definition.backslash.context"
+        )
+        if scope.contains(region)
+    ]
+
+    if len(starts) > 0:
+        a = starts[-1].begin()
+        b = len(view)
+        for block in reversed([
+            region for region in view.find_by_selector(
+                "meta.other.control.word.context"
+            )
+            if scope.intersects(region)
+        ]):
+            if block.intersects(starts[-1]):
+                b = min(block.end(), b)
+                break
+        return sublime.Region(a, b)
 
 
 def reload_settings(self):
