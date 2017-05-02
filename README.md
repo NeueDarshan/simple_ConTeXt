@@ -272,8 +272,8 @@ samples ConTeXt provides) which are analogous to the `lorem` snippet which
 comes "out of the box" in Sublime Text.
 
 `aesop`, `bryson`, `carey`, `cervantes`, `darwin`, `davis`, `dawkins`,
-`douglas`, `hawking`, `khatt`, `knuth`, `linden`, `materie`, `montgomeryan`,
-`tufte`, `waltham`, `ward`, `weisman`, `zapf`
+`douglas`, `hawking`, `khatt`, `knuth`, `linden`, `materie`, `montgomery`,
+`quevedo`, `reich`, `thuan`, `tufte`, `waltham`, `ward`, `weisman`, `zapf`
 
 # Symbols
 
