@@ -38,7 +38,7 @@
     },
     "references":
     {
-      "command_regex": "(in|at|[a-zA-Z]*ref)",
+      "command_regex": "(in|at|about|[a-zA-Z]*ref)",
       "reference_regex": "[a-zA-Z]+:[a-zA-Z\\-\\.:_]+"
     }
   },

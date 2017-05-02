@@ -18,10 +18,15 @@ This plugin aims to provide some support for working with the
 [ConTeXt][contextgarden] program. In particular, it provides:
 
   - syntax files to markup ConTeXt source files (and related files),
+
   - auto-completion for the roughly 4000 "core" ConTeXt commands,
+
   - pop-ups showing basic documentation on each of those commands,
+
   - a basic reference handling system,
+
   - a basic builder,
+
   - a "profile" system, mainly intended for managing multiple versions of
     ConTeXt on the same machine,
 
@@ -35,9 +40,12 @@ There are a couple of "sublime-syntax" files provided related to using ConTeXt.
 
   - "ConTeXt" is the main one, which handles ConTeXt source files, e.g. `.tex`
     and `.mkiv` files.
+
   - "ConTeXt Log" handles the log files that the ConTeXt program generates.
+
   - "MetaPost" is a [graphic programming language][metapost], a little rough
     around the edges currently.
+
   - "MetaFun" is a [macro-package][metafun] extension to the MetaPost language,
     and is loaded by default when using MetaPost within ConTeXt.
 
@@ -137,6 +145,7 @@ The other keys in `command_popups/visuals` are:
 
   - `line_break`, which you can set to any integer and then pop-ups will
     line-break at that many characters.
+
   - `sort_keys`, a boolean for sorting keys in case of a key-value argument or
     leaving them be in the default order. For example,
 
@@ -169,6 +178,7 @@ The other keys in `command_popups/visuals` are:
     ```
 
     when it's `false`.
+
   - `sort_lists`, similar to `sort_keys` but applies to situations where there
     is a list of options in an argument. Defaults to `true`. For example,
 
@@ -241,7 +251,7 @@ also switch to a profile using that "interface" if necessary.)
 
 # Snippets
 
-The snippets are as follows.
+The main snippets are as follows.
 
 | snippet    | expands to                                   | notes                |
 |------------|----------------------------------------------|----------------------|
@@ -250,12 +260,20 @@ The snippets are as follows.
 | `math`     | `\startformula ... \stopformula`             |                      |
 | `align`    | `\startmathalignment ... \stopmathalignment` |                      |
 | `start`    | `\start<environment> ... \stop<environment>` |                      |
-| `table`    | `\startTABLE ... \stopTABLE`                 | shows example usage  |
-| `TABLE`    | `\bTABLE ... \eTABLE`                        | shows example usage  |
+| `table`    | `\bTABLE ... \eTABLE`                        | shows example usage  |
+| `TABLE`    | `\startTABLE ... \stopTABLE`                 | shows example usage  |
 | `xtable`   | `\startxtable ... \stopxtable`               | shows example usage  |
 
 They work anywhere in a ConTeXt file, except for `align` which only works
 inside math-mode.
+
+Additionally, there are the following snippets (which are taken from the
+samples ConTeXt provides) which are analogous to the `lorem` snippet which
+comes "out of the box" in Sublime Text.
+
+`aesop`, `bryson`, `carey`, `cervantes`, `darwin`, `davis`, `dawkins`,
+`douglas`, `hawking`, `khatt`, `knuth`, `linden`, `materie`, `montgomeryan`,
+`tufte`, `waltham`, `ward`, `weisman`, `zapf`
 
 # Symbols
 
@@ -303,6 +321,7 @@ References are tricky. There are two main tasks to automate:
 
   - keeping track of the "labels" defined so far, things like
     `[eq:pythagoras]`;
+
   - automatically prompting the user to choose a label when they type certain
     commands, e.g. after typing `\eqref`.
 

@@ -76,7 +76,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             return
 
         end = view.sel()[0].end()
-        cmd = common.last_command_in_view(view, end=end)
+        cmd = common.last_command_in_view(view, begin=max(0, end-100), end=end)
         if not cmd:
             view.hide_popup()
             return
