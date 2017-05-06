@@ -86,7 +86,7 @@ class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
         self.reload_settings()
 
         end = view.sel()[0].end()
-        cmd = common.last_command_in_view(view, begin=max(0, end-100), end=end)
+        cmd = common.last_command_in_view(view, end=end)
         if not cmd:
             return
 
