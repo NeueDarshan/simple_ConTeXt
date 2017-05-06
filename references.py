@@ -86,14 +86,15 @@ class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
         self.reload_settings()
 
         end = view.sel()[0].end()
-        cmd = common.last_command_in_view(view, end=end)
+        cmd = common.last_command_with_args_in_view(view, end=end)
         if not cmd:
             return
 
         name = view.substr(cmd)[1:]
-        tail = view.substr(sublime.Region(cmd.end(), end))
         if (
-            re.match(r"\A" + self.current_cmd_regex + r"\Z", name) and
-            re.match(r"\A[^\S\n]*\[[^\S\n]*\Z", tail)
+            view.match_selector(
+                end-1, "punctuation.section.brackets.begin.context"
+            ) and
+            re.match(r"\A" + self.current_cmd_regex + r"\Z", name)
         ):
             view.window().run_command("contexttools_reference_selector")

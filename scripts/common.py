@@ -120,14 +120,42 @@ def _split(base, str_):
 
 
 def last_command_in_view(view, end=None):
-    p = len(view)-1 if end is None else end-1
+    p = len(view)-1 if end is None else end
     while view.substr(p).isspace():
         p -= 1
 
     if not view.match_selector(p, "meta.other.control.word.context"):
         return
 
-    stop = p+1
+    stop = p + 1
+    while view.match_selector(
+        p,
+        "meta.other.control.word.context "
+        "- punctuation.definition.backslash.context"
+    ):
+        p -= 1
+
+    return sublime.Region(p, stop)
+
+
+def last_command_with_args_in_view(view, end=None):
+    def _ignore(p):
+        if view.substr(p).isspace():
+            return True
+        elif view.match_selector(p, "meta.braces.context"):
+            return True
+        elif view.match_selector(p, "meta.brackets.context"):
+            return True
+        return False
+
+    p = len(view)-1 if end is None else end
+    while _ignore(p):
+        p -= 1
+
+    if not view.match_selector(p, "meta.other.control.word.context"):
+        return
+
+    stop = p + 1
     while view.match_selector(
         p,
         "meta.other.control.word.context "
