@@ -3,6 +3,7 @@
 import xml.etree.ElementTree as ET
 import collections
 import itertools
+import string
 import copy
 
 
@@ -366,9 +367,20 @@ def _split(str_, chars, max_parts=None):
 def _sorted(list_):
     def _key(obj):
         return obj.get("content") if isinstance(obj, dict) else obj
-    lower = [e for e in list_ if not _key(e).isupper()]
-    upper = [e for e in list_ if _key(e).isupper()]
-    return sorted(lower, key=_key) + sorted(upper, key=_key)
+
+    lower = []
+    mixed = []
+    upper = []
+    for e in list_:
+        if not any(c in string.ascii_uppercase for c in e):
+            lower.append(e)
+        elif not all(c in string.ascii_uppercase for c in e):
+            mixed.append(e)
+        else:
+            upper.append(e)
+
+    return sorted(lower, key=_key) + sorted(mixed, key=_key) \
+        + sorted(upper, key=_key)
 
 
 def _process_str(desc, lines, first, next_, break_=None):
