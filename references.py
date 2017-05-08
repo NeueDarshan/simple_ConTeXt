@@ -1,5 +1,6 @@
 import sublime
 import sublime_plugin
+import collections
 import re
 import os
 
@@ -29,47 +30,76 @@ class ContexttoolsReferenceInsert(sublime_plugin.TextCommand):
 class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
     def reload_settings(self):
         common.reload_settings(self)
-        current_ref_regex = self.current_profile.get(
-            "references", {}).get(
-                "reference_regex", r"[a-zA-Z]+\:[a-zA-Z]+")
+        regex = self.current_profile.get(
+            "references", {}).get("reference_regex", r"[a-zA-Z]+\:[a-zA-Z]+")
+        cmd_regex = self.current_profile.get(
+            "references", {}).get("command_regex", r"[a-zA-Z]*ref")
 
-        refs = set()
+        self.references = collections.OrderedDict()
         view = self.window.active_view()
 
-        definite_refs = view.find_by_selector("meta.other.reference.context")
-        for region in definite_refs:
-            raw_ref = view.substr(region).strip()
-            debraced_ref = re.match(r"\A{(.*?)}\Z", raw_ref)
-            if debraced_ref:
-                refs.add(debraced_ref.group(1).strip())
+        # definite references
+        for region in view.find_by_selector("meta.other.reference.context"):
+            raw = view.substr(region).strip()
+            if raw.startswith("{") and raw.endswith("}"):
+                self.references[raw[1:-1]] = region
             else:
-                refs.add(raw_ref.strip())
+                self.references[raw] = region
 
-        potential_refs = view.find_by_selector(
-            "meta.brackets.context - meta.other.value.context"
-        )
-        for region in potential_refs:
-            raw_ref = view.substr(region)
-            ref_match = re.match(
-                r"\A\s*\[(" + current_ref_regex + r")\]\s*\Z", raw_ref
+        # possible references
+        for region in view.find_by_selector(
+            "meta.brackets.context - ("
+            "meta.other.reference.context, "
+            "punctuation.section.brackets.begin.context, "
+            "punctuation.section.brackets.end.context, "
+            "variable.parameter.context, "
+            "keyword.operator.assignment.context, "
+            "meta.other.value.context)"
+        ):
+            raw = view.substr(region).strip()
+            ref_match = re.match(r"\A" + regex + r"\Z", raw)
+
+            cmd = common.last_command_in_view(
+                view, end=region.end()+1, skip=common._skip_args
             )
-            if ref_match:
-                refs.add(ref_match.group(1).strip())
+            if cmd:
+                cmd_match = bool(re.match(
+                    r"\A" + cmd_regex + r"\Z", view.substr(cmd)[1:]
+                ))
+            else:
+                cmd_match = False
 
-        self.references = sorted(refs)
+            if ref_match and not cmd_match:
+                self.references[raw] = region
 
     def run(self):
-        if common.is_context(self.window.active_view()):
+        view = self.window.active_view()
+        if common.is_context(view):
             self.reload_settings()
+            self.ref_init_point = view.sel()[0].end()
             self.window.show_quick_panel(
-                self.references, self.select_reference
+                list(self.references.keys()),
+                self.select_reference,
+                on_highlight=self.highlight_reference
             )
 
-    def select_reference(self, index):
+    def highlight_reference(self, index):
         if 0 <= index < len(self.references):
-            self.window.active_view().run_command(
-                "contexttools_reference_insert",
-                {"reference": self.references[index]}
+            view = self.window.active_view()
+            region = list(self.references.values())[index]
+            view.sel().clear()
+            view.sel().add(region)
+            view.show(region)
+
+    def select_reference(self, index):
+        view = self.window.active_view()
+        view.sel().clear()
+        view.sel().add(self.ref_init_point)
+        view.show(self.ref_init_point)
+        if 0 <= index < len(self.references):
+            ref = view.substr(list(self.references.values())[index])
+            view.run_command(
+                "contexttools_reference_insert", {"reference": ref}
             )
 
     def is_visible(self, *args):
@@ -80,13 +110,15 @@ class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
     def reload_settings(self):
         common.reload_settings(self)
         self.current_cmd_regex = self.current_profile.get(
-            "references", {}).get("command_regex", "[a-zA-Z]*ref")
+            "references", {}).get("command_regex", r"[a-zA-Z]*ref")
 
     def on_modified(self, view):
         self.reload_settings()
 
         end = view.sel()[0].end()
-        cmd = common.last_command_with_args_in_view(view, end=end)
+        cmd = common.last_command_in_view(
+            view, end=end, skip=common._skip_args
+        )
         if not cmd:
             return
 

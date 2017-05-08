@@ -1482,10 +1482,16 @@ contexts:
       scope: punctuation.section.parens.end.context
       pop: true
   generic.list.pop-at-end-of-assignment/:
-    - match: '(?=[\],])'
+    - include: generic.pop-at-comma/
+    - match: '(?=\])'
       pop: true
   generic.group.pop-at-end-of-assignment/:
-    - match: '(?=[\},])'
+    - include: generic.pop-at-comma/
+    - match: '(?=\})'
+      pop: true
+  generic.pop-at-comma/:
+    - match: ','
+      scope: punctuation.separator.comma.context
       pop: true
   generic.assignment.common:
     - match: ','

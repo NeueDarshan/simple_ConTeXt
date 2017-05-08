@@ -111,17 +111,32 @@ def parse_log_for_error(file_bytes):
     return "\n\n".join([error_summary] + log[start_of_error:end_of_error - 1])
 
 
-def _split(base, str_):
-    indices = [base + i for i, c in enumerate(str_) if c == "\\"] \
-        + [base + len(str_)]
-    return [
-        sublime.Region(*t) for t in zip([None] + indices, indices + [None])
-    ][1:-1]
+def _skip_space(v, p):
+    return v.substr(p).isspace()
 
 
-def last_command_in_view(view, end=None):
+def _skip_args(v, p):
+    if v.substr(p).isspace():
+        return True
+    elif v.match_selector(p, "meta.braces.context"):
+        return True
+    elif v.match_selector(p, "meta.brackets.context"):
+        return True
+    return False
+
+
+def last_command_in_view(view, begin=-200, end=None, skip=_skip_space):
+    if begin is None:
+        start = 0
+    elif begin < 0:
+        start = end + begin
+    else:
+        start = begin
+
     p = len(view)-1 if end is None else end
-    while view.substr(p).isspace():
+    while skip(view, p):
+        if p < start:
+            return
         p -= 1
 
     if not view.match_selector(p, "meta.other.control.word.context"):
@@ -133,34 +148,8 @@ def last_command_in_view(view, end=None):
         "meta.other.control.word.context "
         "- punctuation.definition.backslash.context"
     ):
-        p -= 1
-
-    return sublime.Region(p, stop)
-
-
-def last_command_with_args_in_view(view, end=None):
-    def _ignore(p):
-        if view.substr(p).isspace():
-            return True
-        elif view.match_selector(p, "meta.braces.context"):
-            return True
-        elif view.match_selector(p, "meta.brackets.context"):
-            return True
-        return False
-
-    p = len(view)-1 if end is None else end
-    while _ignore(p):
-        p -= 1
-
-    if not view.match_selector(p, "meta.other.control.word.context"):
-        return
-
-    stop = p + 1
-    while view.match_selector(
-        p,
-        "meta.other.control.word.context "
-        "- punctuation.definition.backslash.context"
-    ):
+        if p < start:
+            return
         p -= 1
 
     return sublime.Region(p, stop)
