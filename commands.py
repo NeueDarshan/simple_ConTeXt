@@ -18,36 +18,6 @@ from scripts import common
 from scripts import parsing
 
 
-def _collect(xml, path):
-    for f_ in os.listdir(os.path.abspath(path)):
-        with open(os.path.join(path, f_), encoding="utf-8") as f:
-
-            try:
-                if not f_.endswith(".xml"):
-                    pass
-                elif f_ in ["i-context.xml", "i-common-definitions.xml"]:
-                    pass
-                elif xml is None:
-                    xml = ET.parse(f)
-                else:
-                    root = xml.getroot()
-                    for e in ET.parse(f).getroot():
-                        if f_.startswith("i-common"):
-                            root.append(e)
-                        elif e.attrib.get("file") is not None:
-                            root.append(e)
-                        else:
-                            e.set("file", f_)
-                            root.append(e)
-
-            except ET.ParseError as err:
-                msg = "error '{}' occurred whilst processing file '{}'" \
-                    " located at '{}'"
-                print(msg.format(err, f_, path))
-
-    return xml
-
-
 class ContexttoolsProfileSelector(sublime_plugin.WindowCommand):
     def reload_settings(self):
         common.reload_settings(self)
@@ -94,9 +64,9 @@ class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
         if not main:
             return
 
-        xml = _collect(None, main)
+        xml = parsing.collect(None, main)
         if modules:
-            xml = _collect(xml, modules)
+            xml = parsing.collect(xml, modules)
 
         parsing.fix_tree(xml.getroot())
         commands = parsing.parse_context_tree(xml)

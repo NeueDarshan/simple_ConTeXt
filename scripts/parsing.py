@@ -1,10 +1,9 @@
-# this script handles XML files describing the ConTeXt interface, and can
-# output a JSON file describing all the commands
 import xml.etree.ElementTree as ET
 import collections
 import itertools
 import string
 import copy
+import os
 
 
 NAMESPACES = {
@@ -651,3 +650,33 @@ def simplify_commands(commands):
         command["syntax_variants"] = simplified_syntax_variants(
             command["syntax_variants"]
         )
+
+
+def collect(xml, path):
+    for f_ in os.listdir(os.path.abspath(path)):
+        with open(os.path.join(path, f_), encoding="utf-8") as f:
+
+            try:
+                if not f_.endswith(".xml"):
+                    pass
+                elif f_ in ["i-context.xml", "i-common-definitions.xml"]:
+                    pass
+                elif xml is None:
+                    xml = ET.parse(f)
+                else:
+                    root = xml.getroot()
+                    for e in ET.parse(f).getroot():
+                        if f_.startswith("i-common"):
+                            root.append(e)
+                        elif e.attrib.get("file") is not None:
+                            root.append(e)
+                        else:
+                            e.set("file", f_)
+                            root.append(e)
+
+            except ET.ParseError as err:
+                msg = "error '{}' occurred whilst processing file '{}'" \
+                    " located at '{}'"
+                print(msg.format(err, f_, path))
+
+    return xml

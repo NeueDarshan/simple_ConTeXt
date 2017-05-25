@@ -82,11 +82,6 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             return
 
         name = view.substr(cmd)[1:]
-        tail = view.substr(sublime.Region(cmd.end(), end))
-        if not re.match(r"\A[^\S\n]*\Z", tail):
-            view.hide_popup()
-            return
-
         if name in self.commands_cache.get(
                 self.current_interface_name, {}).get("details", {}):
             view.show_popup(

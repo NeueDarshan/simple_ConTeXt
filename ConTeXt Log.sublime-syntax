@@ -4,165 +4,111 @@ name: ConTeXt Log
 file_extensions:
   - log
 scope: text.log.context
+
 contexts:
   main:
-    - match: '^'
-      push:
-        - include: version
-        - include: system
-        - include: mark
-        - include: snippet
-        - include: boxes
-        - include: comment
-        - match: '.'
-          pop: true
+    - include: snippet
+    - include: system
+    - include: comment # purely to enable \type{SYNTAX TEST}s
 
-  version:
-    - match: '\s*(ConTeXt)\s+(ver:)\s*(.*?)\s+(fmt:)\s*(.*?)\s*(int:)\s*(.*)'
+  snippet:
+    - match: '^\s*([[:digit:]]+)\s*(>>)?'
       captures:
-        '2': support.function.version.log.context
-        '3': constant.other.version.log.context
-        '4': support.function.version.log.context
-        '5': constant.other.version.log.context
-        '6': support.function.version.log.context
-        '7': constant.other.version.log.context
+        '1': constant.numeric.log
+        '2': invalid.illegal.log
+      push: scope:text.tex.context
+      with_prototype:
+        - match: '^(?!\s*[[:digit:]])'
+          pop: true
+        - match: '^\s*([[:digit:]]+)\s*(>>)?'
+          captures:
+            '1': constant.numeric.log
+            '2': invalid.illegal.log
 
   system:
-    - include: system.files-or-options
-    - include: system.system
     - include: system.error
     - include: system.generic
 
-  system.files-or-options:
-    - match: '\s*(used\s+(file|option))\s*(>)'
-      captures:
-        '1': entity.system.log.context
-        '3': support.function.separator.log.context
-      push: system.files.core/
-  system.files.core/:
-    - match: '([[:alpha:].:-]+)\s*(=)'
-      captures:
-        '1': variable.parameter.key.log.context
-        '2': keyword.equals.log.context
-    - include: constants
-    - match: '$'
-      pop: true
-
-  system.system:
-    - match: '\s*(system)\s*(>)'
-      captures:
-        '1': entity.system.log.context
-        '2': support.function.separator.log.context
-      push: system.system.core/
-  system.system.core/:
-    - include: version
-    - include: system.generic
-    - include: constants
-    - match: '$'
-      pop: true
-
   system.error:
-    - include: system.error.tex
-    - include: system.error.generic
-
-  system.error.tex:
-    - match: '\s*(tex\s+error)\s*(>)'
+    - match: '^([[:alpha:][:digit:]\.\-:\s]+?error)\s*(>)'
       captures:
-        '1': invalid.illegal.error.log.context
-        '2': support.function.separator.log.context
-      push: system.error.tex.tail/
-  system.error.tex.tail/:
-    - include: constants
-    - match: '!'
-      set: system.error.tex.tail.end/
-    - match: '$'
-      pop: true
-
-  system.error.tex.tail.end/:
-    - include: scope:text.tex.context#control.word.generic.no-arguments
-    - include: scope:text.tex.context#control.symbol
-    - include: constants
-    - match: '$'
-      pop: true
-
-  system.error.generic:
-    - match: '((\s*[[:alpha:].:-]+)+\s+error)\s*(>)'
-      captures:
-        '1': invalid.illegal.error.log.context
-        '3': support.function.separator.log.context
-      push: system.generic.tail/
+        '1': invalid.illegal.log
+        '2': punctuation.separator.other.log support.function.other.log
+      push: system.generic.repeat*/
 
   system.generic:
-    - match: '((\s*[[:alnum:].:-]+)+)\s*(>)'
+    - match: '^([[:alpha:][:digit:]\.\-:\s]+?)\s*(>)'
       captures:
-        '1': entity.system.log.context
-        '3': support.function.separator.log.context
-      push: [
-        system.generic.tail/,
-        system.generic.repeat*/,
-      ]
+        '1': entity.name.other.log
+        '2': punctuation.separator.other.log support.function.other.log
+      push: system.generic.repeat*/
   system.generic.repeat*/:
-    - match: '\s*((\s*[[:alnum:].:-]+)+)\s*(>)'
+    - match: '([[:alpha:][:digit:]\.\-:\s]+?)\s*(>)'
       captures:
-        '1': entity.system.log.context
-        '3': support.function.separator.log.context
+        '1': entity.name.other.log
+        '2': punctuation.separator.other.log support.function.other.log
       set: system.generic.repeat*/
+    - include: generic.gobble-whitespace
     - match: ''
-      pop: true
-  system.generic.tail/:
-    - include: constants
-    - match: '$'
-      pop: true
-
-  snippet:
-    - include: snippet.line
-    - include: snippet.block
-
-  snippet.line:
-    - match: '\s*l\s*\.\s*([[:digit:]]+)'
-      captures:
-        '1': constant.numeric.log.context
-      set: scope:text.tex.context
-      with_prototype:
-        - include: mark
-        - match: '(?=^\s*$)'
-          pop: true
-
-  snippet.block:
-    - match: '\s*([[:digit:]]+)\s+(>>)?\s*'
-      captures:
-        '1': constant.numeric.log.context
-        '2': invalid.illegal.error.log.context
-      set: scope:text.tex.context
-      with_prototype:
-        - match: '\s*([[:digit:]]+)\s+(>>)?\s*'
-          captures:
-            '1': constant.numeric.log.context
-            '2': invalid.illegal.error.log.context
-        - match: '(?=^\s*$)'
-          pop: true
-
-  mark:
-    - match: '\s*(<)(.*?)(>)'
-      captures:
-        '1': variable.parameter.delimiter.log.context
-        '2': keyword.name.log.context
-        '3': variable.parameter.delimiter.log.context
-
-  boxes:
-    - match: '((?:Under|Over)full \\hbox) \((?:badness ([[:digit:]]+)|([[:digit:]]+\.?[[:digit:]]*pt) too wide)\) in paragraph at lines ([[:digit:]]+\-\-[[:digit:]]+)'
-      captures:
-        '1': invalid.illegal.error.log.context
-        '2': constant.numeric.log.context
-        '3': constant.numeric.log.context
-        '4': constant.numeric.log.context
-
-  comment:
-    - match: '%.*'
-      scope: comment.log.context
+      set:
+        - include: generic.pop-if-line-end/
+        - include: generic.assignments
+        - include: constants
 
   constants:
-    - match: '[[:digit:]]+|U\+\h+'
-      scope: constant.numeric.log.context
-    - match: (".*?"|'.*?')
-      scope: string.log.context
+    - include: constants.number
+    - include: constants.string
+
+  constants.number:
+    - match: '([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)'
+      scope: constant.numeric.log
+
+  constants.string:
+    - match: '"'
+      scope: punctuation.definition.string.begin.log
+      push:
+        - meta_scope: string.quoted.double.log
+        - match: '"'
+          scope: punctuation.definition.string.end.log
+          pop: true
+        - match: '\n'
+          # scope: invalid.illegal.unclosed-string.log
+          pop: true
+    - match: "'"
+      scope: punctuation.definition.string.begin.log
+      push:
+        - meta_scope: string.quoted.single.log
+        - match: "'"
+          scope: punctuation.definition.string.end.log
+          pop: true
+        - match: '\n'
+          # scope: invalid.illegal.unclosed-string.log
+          pop: true
+
+  generic.gobble-whitespace:
+    - match: '\s+'
+  generic.pop/:
+    - match: ''
+      pop: true
+  generic.pop-if-line-end/:
+    - match: '(?=$)'
+      pop: true
+  generic.pop-if-whitespace/:
+    - match: '(?=\s)'
+      pop: true
+
+  generic.assignments:
+    - match: '([[:alpha:][:digit:]\.\-:_]+)\s*(=)'
+      captures:
+        '1': variable.parameter.log
+        '2': keyword.operator.assignment.log
+      push:
+        - include: generic.pop-if-line-end/
+        - include: generic.pop-if-whitespace/
+        - include: constants
+
+  comment:
+    - match: '(%).*$\n?'
+      captures:
+        '0': comment.line.percentage.log
+        '1': punctuation.definition.comment.log

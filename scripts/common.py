@@ -31,8 +31,6 @@ def protect_html_whitespace(string):
     return string.replace(" ", "&nbsp;").replace("\n", "<br />")
 
 
-# we use <u> style markup to indicate default arguments in the json files,
-# so we give special attention to preserving those tags
 def protect_html_brackets(string, ignore_tags=["u"]):
     protected = string.replace("<", "&lt;").replace(">", "&gt;")
     for tag in ignore_tags:
@@ -72,47 +70,25 @@ class ModPath:
         os.environ["PATH"] = self.orig
 
 
-def parse_log_for_error(file_bytes):
-    file_str = file_bytes.decode(encoding="utf-8")
-    file_str = file_str.replace("\r\n", "\n").replace("\r", "\n")
-
-    def _is_error(line):
-        return re.match(
-            r"^.*?>\s*(.*?)\s+error\s+on\s+line\s+([0-9]+).*?!\s*(.*?)$",
-            line
-        )
-
-    def _is_code_snippet(line):
-        return re.match(r"^\s*[0-9]+", line)
-
-    def _is_blank_line(line):
-        return len(line) == 0 or re.match(r"^\s*$", line)
-
-    start_of_error = 0
-    log = file_str.split("\n")
-    for i, line in enumerate(log):
-        error = _is_error(line)
-        if error:
-            error_summary = "{} error on line {}: {}".format(*error.groups())
-            start_of_error = i + 1
-            break
-
-    while _is_blank_line(log[start_of_error]):
-        start_of_error += 1
-
-    cur_line = start_of_error
-    while not _is_code_snippet(log[cur_line]):
-        cur_line += 1
-    end_of_error = cur_line
-
-    while _is_blank_line(log[end_of_error]):
-        end_of_error -= 1
-
-    return "\n\n".join([error_summary] + log[start_of_error:end_of_error - 1])
+# def parse_log_for_error(bytes_):
+#     string = bytes_.decode(encoding="utf-8")
+#     string = string.replace("\r\n", "\n").replace("\r", "\n")
+#
+#     for line in string.split("\n"):
+#         if re.match(r"^\s*([0-9]+)\s*(>>)?"):
+#             continue  # snippet of \CONTEXT
+#         elif re.match(r"^([a-zA-Z0-9\.\-:\s]+?)\s*(>)"):
+#             continue   # system message
+#         elif
 
 
 def _skip_space(v, p):
     return v.substr(p).isspace()
+
+
+def _skip_space_nolines(v, p):
+    str_ = v.substr(p)
+    return str_.isspace() and str_ != "\n"
 
 
 def _skip_args(v, p):
@@ -122,10 +98,11 @@ def _skip_args(v, p):
         return True
     elif v.match_selector(p, "meta.brackets.context"):
         return True
-    return False
+    else:
+        return False
 
 
-def last_command_in_view(view, begin=-200, end=None, skip=_skip_space):
+def last_command_in_view(view, begin=-200, end=None, skip=_skip_space_nolines):
     if begin is None:
         start = 0
     elif begin < 0:
@@ -133,11 +110,15 @@ def last_command_in_view(view, begin=-200, end=None, skip=_skip_space):
     else:
         start = begin
 
-    p = len(view)-1 if end is None else end
+    if end is None:
+        p = len(view) - 2
+    else:
+        p = end - 1
+
     while skip(view, p):
+        p -= 1
         if p < start:
             return
-        p -= 1
 
     if not view.match_selector(p, "meta.other.control.word.context"):
         return
@@ -148,9 +129,9 @@ def last_command_in_view(view, begin=-200, end=None, skip=_skip_space):
         "meta.other.control.word.context "
         "- punctuation.definition.backslash.context"
     ):
+        p -= 1
         if p < start:
             return
-        p -= 1
 
     return sublime.Region(p, stop)
 
