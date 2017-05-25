@@ -253,27 +253,27 @@ also switch to a profile using that "interface" if necessary.)
 
 The main snippets are as follows.
 
-| snippet    | expands to                                   | notes                |
-|------------|----------------------------------------------|----------------------|
-| `lua`      | `\startluacode ... \stopluacode`             |                      |
-| `template` | `<?lua ... ?>`                               | for "mkxi" templates |
-| `math`     | `\startformula ... \stopformula`             |                      |
-| `align`    | `\startmathalignment ... \stopmathalignment` |                      |
-| `start`    | `\start<environment> ... \stop<environment>` |                      |
-| `table`    | `\bTABLE ... \eTABLE`                        | shows example usage  |
-| `TABLE`    | `\startTABLE ... \stopTABLE`                 | shows example usage  |
-| `xtable`   | `\startxtable ... \stopxtable`               | shows example usage  |
-
-They work anywhere in a ConTeXt file, except for `align` which only works
-inside math-mode.
+| snippet    | expansion                                    | notes               |
+|------------|----------------------------------------------|---------------------|
+| `lua`      | `\startluacode ... \stopluacode`             |                     |
+| `template` | `<?lua ... ?>`                               | for mkxi templates  |
+| `math`     | `\math{ ... }`                               |                     |
+| `formula`  | `\startformula ... \stopformula`             |                     |
+| `align`    | `\startalign ... \stopalign`                 | math-mode only      |
+| `em`       | `{\em ... }`                                 |                     |
+| `bf`       | `{\bf ... }`                                 |                     |
+| `start`    | `\start<environment> ... \stop<environment>` |                     |
+| `table`    | `\bTABLE ... \eTABLE`                        | shows example usage |
+| `TABLE`    | `\startTABLE ... \stopTABLE`                 | shows example usage |
+| `xtable`   | `\startxtable ... \stopxtable`               | shows example usage |
 
 Additionally, there are the following snippets (which are taken from the
-samples ConTeXt provides) which are analogous to the `lorem` snippet which
-comes "out of the box" in Sublime Text.
+ConTeXt samples) which are analogous to the `lorem` snippet that comes "out of
+the box" in Sublime Text:
 
 `aesop`, `bryson`, `carey`, `cervantes`, `darwin`, `davis`, `dawkins`,
 `douglas`, `hawking`, `khatt`, `knuth`, `linden`, `materie`, `montgomery`,
-`quevedo`, `reich`, `thuan`, `tufte`, `waltham`, `ward`, `weisman`, `zapf`
+`quevedo`, `reich`, `thuan`, `tufte`, `waltham`, `ward`, `weisman`, `zapf`.
 
 # Symbols
 

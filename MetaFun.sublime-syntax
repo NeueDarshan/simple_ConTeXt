@@ -5,6 +5,7 @@ file_extensions:
   - mp
   - mf
 scope: source.metapost.metafun
+
 contexts:
   prototype:
     - include: comment

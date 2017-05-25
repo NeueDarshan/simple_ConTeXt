@@ -6,19 +6,20 @@ scope: text.log.context.build-result
 
 contexts:
   main:
-    - include: result
-    - include: error
+    - match: 'Failure'
+  #   - include: result
+  #   - include: error
 
-  result:
-    - match: '^Failure!'
-      scope: keyword.failure.build-result
-    - match: '^Success!'
-      scope: entity.success.build-result
+  # result:
+  #   - match: '^Failure!'
+  #     scope: keyword.failure.build-result
+  #   - match: '^Success!'
+  #     scope: entity.success.build-result
 
-  error:
-    - match: '^tex error on line ([[:digit:]]+)'
-      captures:
-        '1': constant.numeric
-      push: error.tail/
-  error.tail/:
-    - include: scope:text.log.context#system.error.tex.tail.end/
+  # error:
+  #   - match: '^tex error on line ([[:digit:]]+)'
+  #     captures:
+  #       '1': constant.numeric
+  #     push: error.tail/
+  # error.tail/:
+  #   - include: scope:text.log.context#system.error.tex.tail.end/

@@ -1,0 +1,10 @@
+<snippet>
+    <content><![CDATA[
+\startformula
+  $0
+\stopformula
+]]></content>
+    <tabTrigger>formula</tabTrigger>
+    <scope>text.tex.context</scope>
+    <description>display math</description>
+</snippet>
