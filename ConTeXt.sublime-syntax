@@ -39,6 +39,10 @@ contexts:
    - include: math.inline
 
   math.display:
+    - include: math.display.dollars
+    - include: math.display.control
+
+  math.display.dollars:
     - match: '\$\$'
       scope: punctuation.section.dollars.begin.context
       push:
@@ -47,6 +51,8 @@ contexts:
           scope: punctuation.section.dollars.end.context
           pop: true
         - include: math.main
+
+  math.display.control:
     - match: '(\\)startformula\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
@@ -78,6 +84,10 @@ contexts:
         - include: math.main
 
   math.inline:
+    - include: math.inline.dollars
+    - include: math.inline.control
+
+  math.inline.dollars:
     - match: '\$'
       scope: punctuation.section.dollar.begin.context
       push:
@@ -86,6 +96,8 @@ contexts:
           scope: punctuation.section.dollar.end.context
           pop: true
         - include: math.main
+
+  math.inline.control:
     - match: '(\\)(m|math|mathematics|formula)\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
@@ -164,7 +176,7 @@ contexts:
 
   math.variable:
     - match: '[[:alpha:]]'
-      scope: variable.other.math.tex.context
+      scope: string.quoted.other.math.context # variable.other.math.tex.context
 
   math.group.inner:
     - match: '\{'
@@ -504,6 +516,8 @@ contexts:
       scope: support.function.lua
 
   ConTeXt:
+    - include: ConTeXt.protect
+    - include: ConTeXt.asciimode
     - include: ConTeXt.comments
     - include: ConTeXt.setups
     - include: ConTeXt.modules
@@ -512,6 +526,186 @@ contexts:
     - include: ConTeXt.quotes
     - include: ConTeXt.font.delimited
     - include: ConTeXt.tables
+
+  ConTeXt.protect:
+    - match: '(\\)unprotect\b'
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push:
+        - meta_content_scope: meta.other.unprotect.context
+        - match: '(?=\\protect\b)'
+          pop: true
+        - include: ConTeXt.protect.main
+
+  ConTeXt.protect.main:
+    - include: math
+    - include: Lua
+    - include: MetaFun
+    - include: templates
+    - include: ConTeXt
+    - include: TeX
+    - include: ConTeXt.protect.control
+    - include: ConTeXt.protect.group
+
+  ConTeXt.protect.control:
+    - match: '(\\)([[:alpha:]_@!?]*[_@!?]+[[:alpha:]_@!?]*)'
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push: ConTeXt.protect.lists-or-groups*/
+    - include: control.word.without-generic
+    - match: '(\\)[[:alpha:]]+'
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push: ConTeXt.protect.lists-or-groups*/
+    - include: control.symbol
+    - include: control.active-character
+
+  ConTeXt.protect.group:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: ConTeXt.protect.group.main/
+  ConTeXt.protect.group.main/:
+    - meta_scope: meta.braces.context
+    - include: generic.pop-at-group-end/
+    - include: ConTeXt.group.font.toggle
+    - include: ConTeXt.protect.main
+
+  ConTeXt.protect.list:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      push: ConTeXt.protect.list.main/
+  ConTeXt.protect.list.main/:
+    - meta_scope: meta.brackets.context
+    - include: generic.pop-at-list-end/
+    - include: ConTeXt.protect.list.assignments
+    - include: generic.dimension
+    - include: ConTeXt.protect.main
+
+  ConTeXt.protect.list.assignments:
+    - match: '\b(reference)(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      push:
+        - meta_content_scope: meta.other.value.context meta.other.reference.context
+        - include: generic.list.pop-at-end-of-assignment/
+        - include: ConTeXt.protect.main
+    - match: '\b(title)(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      push:
+        - meta_content_scope: meta.other.value.context entity.name.headings.other.context meta.other.title.context
+        - include: generic.list.pop-at-end-of-assignment/
+        - include: ConTeXt.protect.main
+    - match: '([[:alpha:][:digit:]\.\-:_]+)(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      push:
+        - meta_content_scope: meta.other.value.context
+        - include: generic.list.pop-at-end-of-assignment/
+        - include: generic.dimension
+        - include: ConTeXt.protect.main
+    - include: generic.assignment.common
+
+  ConTeXt.protect.list-or-group:
+    - include: ConTeXt.protect.list
+    - include: ConTeXt.protect.group
+  ConTeXt.protect.lists-or-groups*/:
+    - include: ConTeXt.protect.list-or-group
+    - include: generic.pop-if-no-nearby-list-or-group/
+
+  ConTeXt.asciimode:
+    - match: '(\\)start(asciimode)\b'
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push:
+        - meta_include_prototype: false
+        - meta_content_scope: meta.other.asciimode.context
+        - include: generic.pop-if-stop-match-two/
+        - include: ConTeXt.asciimode.main
+    - match: '(\\)asciimode\b'
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push:
+        - meta_include_prototype: false
+        - meta_content_scope: meta.other.asciimode.context
+        - include: ConTeXt.asciimode.main
+
+  ConTeXt.asciimode.main:
+    - include: math.display.control
+    - include: math.inline.control
+    - include: Lua
+    - include: MetaFun
+    - include: templates
+    - include: ConTeXt
+    - include: ConTeXt.asciimode.control
+    - include: ConTeXt.asciimode.group
+
+  ConTeXt.asciimode.group:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: ConTeXt.asciimode.group.main/
+  ConTeXt.asciimode.group.main/:
+    - meta_include_prototype: false
+    - meta_scope: meta.braces.context
+    - include: generic.pop-at-group-end/
+    - include: ConTeXt.group.font.toggle
+    - include: ConTeXt.asciimode.main
+
+  ConTeXt.asciimode.list:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      push: ConTeXt.asciimode.list.main/
+  ConTeXt.asciimode.list.main/:
+    - meta_include_prototype: false
+    - meta_scope: meta.brackets.context
+    - include: generic.pop-at-list-end/
+    - include: ConTeXt.asciimode.list.assignments
+    - include: generic.dimension
+    - include: ConTeXt.asciimode.main
+
+  ConTeXt.asciimode.list.assignments:
+    - match: '\b(reference)(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      push:
+        - meta_include_prototype: false
+        - meta_content_scope: meta.other.value.context meta.other.reference.context
+        - include: generic.list.pop-at-end-of-assignment/
+        - include: ConTeXt.asciimode.main
+    - match: '\b(title)(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      push:
+        - meta_include_prototype: false
+        - meta_content_scope: meta.other.value.context entity.name.headings.other.context meta.other.title.context
+        - include: generic.list.pop-at-end-of-assignment/
+        - include: ConTeXt.asciimode.main
+    - match: '([[:alpha:][:digit:]\.\-:_]+)(=)'
+      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      push:
+        - meta_include_prototype: false
+        - meta_content_scope: meta.other.value.context
+        - include: generic.list.pop-at-end-of-assignment/
+        - include: generic.dimension
+        - include: ConTeXt.asciimode.main
+    - include: generic.assignment.common
+
+  ConTeXt.asciimode.list-or-group:
+    - include: ConTeXt.asciimode.list
+    - include: ConTeXt.asciimode.group
+  ConTeXt.asciimode.lists-or-groups*/:
+    - meta_include_prototype: false
+    - include: ConTeXt.asciimode.list-or-group
+    - include: generic.pop-if-no-nearby-list-or-group/
+
+  ConTeXt.asciimode.control:
+    - include: control.word.without-generic
+    - match: '(\\)[[:alpha:]]+'
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push: ConTeXt.asciimode.lists-or-groups*/
+    - include: control.symbol
 
   ConTeXt.comments:
     - match: '(\\)start(hiding)\b'
@@ -790,32 +984,37 @@ contexts:
     - include: ConTeXt.verbatim.buffer
 
   ConTeXt.verbatim.inline:
+    # - match: '(\\)(type?|type[[:upper:]]+)\b'
     - match: '(\\)type?\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
         '1': punctuation.definition.backslash.context
       push: [
-        ConTeXt.group-or-angles.verbatim*/,
+        ConTeXt.group-or-angles-or-delim.verbatim*/,
         generic.list*/,
       ]
-    - match: '(\\)tex\b'
+    - match: '(\\)(tex|arg|mat|dis|astype)\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
         '1': punctuation.definition.backslash.context
       push: ConTeXt.group.verbatim*/
 
-  ConTeXt.group-or-angles.verbatim*/:
-    - include: ConTeXt.group.verbatim/
-    - include: ConTeXt.angles.verbatim/
-    - include: ConTeXt.pop-if-no-nearby-group-or-angles/
-
-  ConTeXt.pop-if-no-nearby-group-or-angles/:
+  ConTeXt.group-or-angles-or-delim.verbatim*/:
     - include: generic.pop-if-blank-line/
     - include: generic.gobble-whitespace
-    - include: ConTeXt.pop-if-no-group-or-angles/
-  ConTeXt.pop-if-no-group-or-angles/:
-    - match: '(?=[^\{<])'
-      pop: true
+    - include: ConTeXt.group.verbatim/
+    - include: ConTeXt.angles.verbatim/
+    - include: ConTeXt.delim.verbatim/
+
+  ConTeXt.delim.verbatim/:
+    - match: '([^\\\[%#$^_[:alpha:]])'
+      scope: punctuation.section.delim.begin.context
+      set:
+        - meta_include_prototype: false
+        - meta_content_scope: markup.raw.block.context # markup.raw.inline.context
+        - match: '\1'
+          scope: punctuation.section.delim.end.context
+          pop: true
 
   ConTeXt.group.verbatim/:
     - match: '\{'
@@ -860,7 +1059,7 @@ contexts:
         - include: ConTeXt.angles.verbatim.dummy
 
   ConTeXt.verbatim.block:
-    - match: '(\\)starttyping\b'
+    - match: '(\\)start(typing)\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
         '1': punctuation.definition.backslash.context
@@ -868,6 +1067,10 @@ contexts:
         ConTeXt.verbatim.block.main/,
         generic.list*/,
       ]
+    # - match: '(\\)start(TEX|LUA|XML|PARSEDXML|MP)\b'
+    #   ...
+    # - match: '(\\)start([[:upper:]])\b'
+    #   ...
   ConTeXt.verbatim.block.main/:
     - match: ''
       set:
@@ -889,7 +1092,7 @@ contexts:
     - match: ''
       set:
         - meta_include_prototype: false
-        - meta_content_scope: meta.other.buffer.context #markup.raw.block.context
+        - meta_content_scope: meta.other.buffer.context markup.raw.block.context
         - match: '(?=\\stopbuffer\b)'
           pop: true
 
@@ -1083,181 +1286,31 @@ contexts:
     - include: generic.group.main/
 
   ConTeXt.tables:
-    - include: ConTeXt.table
-    - include: ConTeXt.tabulate
-    - include: ConTeXt.TABLE
-    - include: ConTeXt.alt-TABLE
-    - include: ConTeXt.tables.misc
-
-  ConTeXt.table:
-    - match: '(\\)starttable\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.table.main/, generic.list*/, ConTeXt.list.template-or-name*/]
-  ConTeXt.tabulate:
-    - match: '(\\)starttabulate\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.tabulate.main/, generic.list*/, ConTeXt.list.template-or-name*/]
-  ConTeXt.TABLE:
-    - match: '(\\)startTABLE\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.TABLE.main/, generic.list*/]
-  ConTeXt.alt-TABLE:
-    - match: '(\\)bTABLE\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.alt-TABLE.main/, generic.list*/]
-  ConTeXt.tables.misc:
+    - match: '(\\)start(table|tabulate)\b'
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push: [
+        generic.list*/,
+        ConTeXt.list.template-or-name*/
+      ]
     - match: '(\\)(REF|ReFormat)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [generic.group*/, ConTeXt.list.template*/]
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push: [
+        generic.group*/,
+        ConTeXt.list.template*/
+      ]
     - match: '(\\)Use\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [generic.group*/, ConTeXt.list.template*/, generic.group.with-integers*/]
-
-  ConTeXt.table.main/:
-    - meta_content_scope: markup.other.table.context
-    - match: '(\\)([BCHNMR]C|[CV]L|CM|CR|CT)\b'
-      captures: {'0': entity.name.other.alignment.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push:
-        - meta_content_scope: meta.other.table.cell.context
-        - include: ConTeXt.tables.cell.main/
-        - include: ConTeXt.table.pop-at-end/
-    - include: ConTeXt.table.pop-at-end/
-    - include: main
-  ConTeXt.tabulate.main/:
-    - meta_content_scope: markup.other.table.context
-    - match: '(\\)([BCHNMR]C|[CV]L|CM|CR|CT)\b'
-      captures: {'0': entity.name.other.alignment.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push:
-        - meta_content_scope: meta.other.table.cell.context
-        - include: ConTeXt.tables.cell.main/
-        - include: ConTeXt.tabulate.pop-at-end/
-    - include: ConTeXt.tabulate.pop-at-end/
-    - include: main
-  ConTeXt.TABLE.main/:
-    - meta_content_scope: markup.other.table.context
-    - match: '(\\)([BCHNMR]C|[CV]L|CM|CR|CT)\b'
-      captures: {'0': entity.name.other.alignment.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push:
-        - meta_content_scope: meta.other.table.cell.context
-        - include: ConTeXt.tables.cell.main/
-        - include: ConTeXt.TABLE.pop-at-end/
-    - include: ConTeXt.TABLE.pop-at-end/
-    - include: main
-
-  ConTeXt.tables.cell.main/:
-    - include: ConTeXt.tables.cell.fonts
-    - include: ConTeXt.tables.pop-at-cell-end/
-    - include: main
-
-  ConTeXt.table.pop-at-end/:
-    - match: '(?=\\stoptable\b)'
-      pop: true
-  ConTeXt.tabulate.pop-at-end/:
-    - match: '(?=\\stoptabulate\b)'
-      pop: true
-  ConTeXt.TABLE.pop-at-end/:
-    - match: '(?=\\stopTABLE\b)'
-      pop: true
-  ConTeXt.tables.pop-at-cell-end/:
-    - match: '(?=\\(NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R|CT)\b)'
-      pop: true
-
-  ConTeXt.tables.cell.fonts:
-    - include: ConTeXt.tables.cell.emphasis
-    - include: ConTeXt.tables.cell.boldface
-    - include: ConTeXt.tables.cell.italic
-    - include: ConTeXt.tables.cell.slanted
-    - include: ConTeXt.tables.cell.bold-italic
-    - include: ConTeXt.tables.cell.bold-slanted
-    - include: ConTeXt.tables.cell.sans-bold
-    - include: ConTeXt.tables.cell.typewriter
-    - include: ConTeXt.tables.cell.typewriter-bold
-
-  ConTeXt.tables.cell.emphasis:
-    - match: '((\\)(emph|em))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.emphasis.context
-        - include: ConTeXt.tables.cell.font.core/
-  ConTeXt.tables.cell.boldface:
-    - match: '((\\)(boldface|(small)?bold|bf(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.bold.boldface.context
-        - include: ConTeXt.tables.cell.font.core/
-  ConTeXt.tables.cell.italic:
-    - match: '((\\)(italic|it(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.italic.context
-        - include: ConTeXt.tables.cell.font.core/
-  ConTeXt.tables.cell.slanted:
-    - match: '((\\)((small)?slanted|sl(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.slanted.context
-        - include: ConTeXt.tables.cell.font.core/
-  ConTeXt.tables.cell.bold-italic:
-    - match: '((\\)((small)?(bolditalic|italicbold)|bi(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.italic.context markup.bold.boldface.context
-        - include: ConTeXt.tables.cell.font.core/
-  ConTeXt.tables.cell.bold-slanted:
-    - match: '((\\)((small)?(boldslanted|slantedbold)|bs(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.slanted.context markup.bold.boldface.context
-        - include: ConTeXt.tables.cell.font.core/
-  ConTeXt.tables.cell.sans-bold:
-    - match: '((\\)sansbold)\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.bold.boldface.context
-        - include: ConTeXt.tables.cell.font.core/
-  ConTeXt.tables.cell.typewriter:
-    - match: '((\\)(mono|tt(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.raw.block.context # markup.raw.typewriter.context
-        - include: ConTeXt.tables.cell.font.core/
-  ConTeXt.tables.cell.typewriter-bold:
-    - match: '((\\)monobold)\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.bold.boldface.context markup.raw.block.context # markup.raw.typewriter.context
-        - include: ConTeXt.tables.cell.font.core/
-
-  ConTeXt.tables.cell.font.core/:
-    - include: ConTeXt.tables.pop-at-cell-end/
-    - include: ConTeXt.table.pop-at-end/
-    - include: ConTeXt.tabulate.pop-at-end/
-    - include: ConTeXt.TABLE.pop-at-end/
-    - include: ConTeXt.tables.cell.fonts
-    - include: main
-
-  ConTeXt.alt-TABLE.main/:
-    - meta_content_scope: markup.other.table.context
-    - match: '(\\)bT[CD]\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
-      push: [ConTeXt.alt-TABLE.cells/, generic.list*/]
-    - include: ConTeXt.alt-TABLE.pop-at-end/
-    - include: main
-  ConTeXt.alt-TABLE.cells/:
-    - match: ''
-      set:
-        - meta_content_scope: meta.other.table.cell.context
-        - include: ConTeXt.alt-TABLE.pop-at-cell-end/
-        - include: ConTeXt.alt-TABLE.pop-at-end/
-        - include: ConTeXt.alt-TABLE.cell.fonts
-        - include: main
-
-  ConTeXt.alt-TABLE.pop-at-end/:
-    - match: '(?=\\eTABLE\b)'
-      pop: true
-  ConTeXt.alt-TABLE.pop-at-cell-end/:
-    - match: '(?=\\eT[CD]\b)'
-      pop: true
+      captures:
+        '0': support.function.general.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push: [
+        generic.group*/,
+        ConTeXt.list.template*/,
+        generic.group.with-integers*/
+      ]
 
   ConTeXt.list.template-or-name/:
     - match: '\['
@@ -1310,78 +1363,6 @@ contexts:
     - match: '[sojk]'
       scope: support.function.table.context
       push: generic.group.with-integers*/
-    - include: main
-
-  ConTeXt.alt-TABLE.cell.fonts:
-    - include: ConTeXt.alt-TABLE.cell.emphasis
-    - include: ConTeXt.alt-TABLE.cell.boldface
-    - include: ConTeXt.alt-TABLE.cell.italic
-    - include: ConTeXt.alt-TABLE.cell.slanted
-    - include: ConTeXt.alt-TABLE.cell.bold-italic
-    - include: ConTeXt.alt-TABLE.cell.bold-slanted
-    - include: ConTeXt.alt-TABLE.cell.sans-bold
-    - include: ConTeXt.alt-TABLE.cell.typewriter
-    - include: ConTeXt.alt-TABLE.cell.typewriter-bold
-
-  ConTeXt.alt-TABLE.cell.emphasis:
-    - match: '((\\)(emph|em))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.emphasis.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-  ConTeXt.alt-TABLE.cell.boldface:
-    - match: '((\\)(boldface|(small)?bold|bf(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.bold.boldface.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-  ConTeXt.alt-TABLE.cell.italic:
-    - match: '((\\)(italic|it(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.italic.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-  ConTeXt.alt-TABLE.cell.slanted:
-    - match: '((\\)((small)?slanted|sl(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.slanted.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-  ConTeXt.alt-TABLE.cell.bold-italic:
-    - match: '((\\)((small)?(bolditalic|italicbold)|bi(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.italic.context markup.bold.boldface.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-  ConTeXt.alt-TABLE.cell.bold-slanted:
-    - match: '((\\)((small)?(boldslanted|slantedbold)|bs(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.italic.slanted.context markup.bold.boldface.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-  ConTeXt.alt-TABLE.cell.sans-bold:
-    - match: '((\\)sansbold)\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.bold.boldface.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-  ConTeXt.alt-TABLE.cell.typewriter:
-    - match: '((\\)(mono|tt(xx|[xabcd])?))\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.raw.block.context # markup.raw.typewriter.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-  ConTeXt.alt-TABLE.cell.typewriter-bold:
-    - match: '((\\)monobold)\b(?=\s*[^\{])'
-      captures: {'1': support.function.general.context meta.other.control.word.context, '2': punctuation.definition.backslash.context}
-      set:
-        - meta_content_scope: meta.other.table.cell.context markup.bold.boldface.context markup.raw.block.context # markup.raw.typewriter.context
-        - include: ConTeXt.alt-TABLE.cell.main/
-
-  ConTeXt.alt-TABLE.cell.main/:
-    - include: ConTeXt.alt-TABLE.pop-at-cell-end/
-    - include: ConTeXt.alt-TABLE.pop-at-end/
-    - include: ConTeXt.alt-TABLE.cell.fonts
     - include: main
 
   TeX:

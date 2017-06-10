@@ -1,7 +1,8 @@
 <snippet>
     <content><![CDATA[
-\starttabulate[${1:options}]
-  $0
+\starttabulate[${1:options}]$0
+  \NC a \NC b \NC\NR
+  \NC c \NC d \NC\NR
 \stoptabulate
 ]]></content>
     <tabTrigger>tabulate</tabTrigger>
