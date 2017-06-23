@@ -70,16 +70,104 @@ class ModPath:
         os.environ["PATH"] = self.orig
 
 
-# def parse_log_for_error(bytes_):
-#     string = bytes_.decode(encoding="utf-8")
-#     string = string.replace("\r\n", "\n").replace("\r", "\n")
-#
-#     for line in string.split("\n"):
-#         if re.match(r"^\s*([0-9]+)\s*(>>)?"):
-#             continue  # snippet of \CONTEXT
-#         elif re.match(r"^([a-zA-Z0-9\.\-:\s]+?)\s*(>)"):
-#             continue   # system message
-#         elif
+def parse_log(bytes_):
+    string = bytes_.decode(
+        encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
+
+    version = re.search(
+        r"ConTeXt  ver: (.*?) MKIV .*?  fmt: (.*?)  int: ([^\s]*)", string)
+    if version:
+        ver, fmt, int_ = version.groups()
+    else:
+        ver, fmt, int_ = None, None, None
+
+    tex_warning = re.findall(
+        r"^((?:Over|Under)full \\hbox) \((.*?)\) in paragraph at lines "
+        r"([0-9]+)\-\-([0-9]+)$",
+        string,
+        flags=re.MULTILINE)
+    if tex_warning:
+        war = tex_warning
+    else:
+        war = []
+
+    error_a = re.search(
+        r"^.*? error\s*> (.*?) error on line ([0-9]+)",
+        string,
+        flags=re.MULTILINE)
+    error_b = re.search(r"^(.*?)\s*> error", string, flags=re.MULTILINE)
+
+    def handle_a():
+        err = error_a.groups()
+        if err[0] == "tex":
+            details = re.search(
+                r"! (.*?)$", string[error_a.start():], flags=re.MULTILINE)
+            if details:
+                return list(err) + [details.groups()[0]]
+            else:
+                return list(err) + [None]
+        elif err[0] in ["mp", "metapost"]:
+            details = re.search(
+                r"! (.*?)$", string[error_a.start():], flags=re.MULTILINE)
+            if details:
+                return ["metapost", err[1], details.groups()[0]]
+            else:
+                return ["metapost", err[1], None]
+        elif err[0] == "lua":
+            details = re.search(
+                r"\[ctxlua\]:[0-9]+: (.*?)$",
+                string[error_a.start():],
+                flags=re.MULTILINE)
+            if details:
+                return list(err) + [details.groups()[0]]
+            else:
+                return list(err) + [None]
+        else:
+            return list(err) + [None]
+
+    def handle_b():
+        err = error_b.groups()
+        if err[0] in ["mp", "metapost"]:
+            details = re.search(
+                r"! (.*?)$", string[error_b.start():], flags=re.MULTILINE)
+            if details:
+                return ["metapost", None, details.groups()[0]]
+            else:
+                return ["metapost", None, None]
+        else:
+            return err[0], None, None
+
+    if error_a and error_b:
+        if error_a.start() < error_b.start():
+            err, line, det = handle_a()
+        else:
+            err, line, det = handle_b()
+    elif error_a:
+        err, line, det = handle_a()
+    elif error_b:
+        err, line, det = handle_b()
+    else:
+        err, line, det = None, None, None
+
+    return {
+        "system": {
+            "version": ver,
+            "format": fmt,
+            "interface": int_,
+        },
+        "warning": [
+            {
+                "name": l[0],
+                "details": l[1],
+                "start": l[2],
+                "stop": l[3]
+            }
+            for l in war
+        ],
+        "error": err,
+        "details": det,
+        "line": line,
+    }
 
 
 def _skip_space(v, p):

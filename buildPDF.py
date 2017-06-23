@@ -41,7 +41,7 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
             input_,
             base
         )
-        chars = "running command: '{}'\n\n".format(" ".join(command))
+        chars = 'starting > running command "{}"\n'.format(" ".join(command))
         self.output_view.run_command("append", {"characters": chars})
 
         with common.ModPath(general.get("path")):
@@ -52,16 +52,43 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
                 stderr=subprocess.PIPE
             )
 
-            process.communicate()
+            result = process.communicate()
             elapsed = time.time() - start_time
+            log = common.parse_log(result[0])
 
-            if process.returncode != 0:
-                self.output_view.run_command("append", {"characters": "error"})
-            else:
-                chars = "\n\n".join(
-                    ["Success!", "[Finished in {:.1f}s]".format(elapsed)]
+            chars = ""
+            if log.get("warning"):
+                for l in log["warning"]:
+                    chars += (
+                        (
+                            '\nwarning  > tex > "{name}" in paragraph at '
+                            'lines {start}--{stop} ("{details}")'
+                        )
+                        .format(**l)
+                    )
+
+            if log.get("error") and log.get("line") and log.get("details"):
+                chars += (
+                    '\nerror    > {error} > on line {line}: "{details}"'
+                    .format(**log)
                 )
-                self.output_view.run_command("append", {"characters": chars})
+            elif log.get("error") and log.get("line"):
+                chars += (
+                    '\nerror    > {error} > on line {line}'.format(**log)
+                )
+            elif log.get("error") and log.get("details"):
+                chars += (
+                    '\nerror    > {error} > "{details}"'.format(**log)
+                )
+            elif log.get("error"):
+                chars += '\nerror    > {error} >'.format(**log)
+
+            if process.returncode == 0:
+                chars += "\n\nsuccess  > finished in {:.1f}s".format(elapsed)
+            else:
+                chars += "\n\nfailure  > finished in {:.1f}s".format(elapsed)
+
+            self.output_view.run_command("append", {"characters": chars})
 
     def setup_output_view(self):
         if not hasattr(self, "output_view"):
@@ -69,6 +96,7 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
 
         self.output_view.settings().set("line_numbers", False)
         self.output_view.settings().set("gutter", False)
+        self.output_view.settings().set("spell_check", False)
         self.output_view.settings().set("scroll_past_end", False)
         self.output_view.assign_syntax(
             "Packages/ConTeXtTools/build results.sublime-syntax"
