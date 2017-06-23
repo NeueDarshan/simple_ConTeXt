@@ -1,6 +1,5 @@
 import sublime
 import sublime_plugin
-import xml.etree.ElementTree as ET
 import json
 import collections
 import os

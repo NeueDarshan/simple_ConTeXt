@@ -481,7 +481,7 @@ contexts:
     - include: MetaFun.control.sequence
 
   MetaFun.control.sequence:
-    # - include: Lua
+    - include: Lua
     - include: control.symbol
     - include: control.word.generic
 
@@ -717,7 +717,12 @@ contexts:
         - include: generic.pop-if-stop-match-two/
 
   ConTeXt.modules:
-    - match: '(\\)usemodule\b'
+    - match: '(\\)useluamodule\b'
+      captures:
+        '0': keyword.control.import.context meta.other.control.word.context
+        '1': punctuation.definition.backslash.context
+      push: generic.list*/
+    - match: '(\\)use(tex)?module\b'
       captures:
         '0': keyword.control.import.context meta.other.control.word.context
         '1': punctuation.definition.backslash.context
@@ -984,7 +989,6 @@ contexts:
     - include: ConTeXt.verbatim.buffer
 
   ConTeXt.verbatim.inline:
-    # - match: '(\\)(type?|type[[:upper:]]+)\b'
     - match: '(\\)type?\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
@@ -993,6 +997,8 @@ contexts:
         ConTeXt.group-or-angles-or-delim.verbatim*/,
         generic.list*/,
       ]
+    # - match: '(\\)(type[[:upper:]]+)\b'
+    #   ...
     - match: '(\\)(tex|arg|mat|dis|astype)\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
@@ -1320,8 +1326,7 @@ contexts:
     - include: ConTeXt.list.template-or-name/
     - include: generic.pop-if-no-nearby-list/
   ConTeXt.list.template-or-name.main/:
-    - include: generic.gobble-whitespace
-    - match: '(?=[^\]]*\|)'
+    - match: '(?=\s*[^\]]*\|)'
       set: ConTeXt.list.template.main/
     - match: ''
       set: generic.list.main/
