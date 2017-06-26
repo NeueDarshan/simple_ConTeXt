@@ -19,9 +19,18 @@ contexts:
         '0': string.quoted.double.build-result
         '1': punctuation.definition.string.begin.build-result
         '2': punctuation.definition.string.end.build-result
-    - match: '[[:digit:]]*\.[[:digit:]]+'
-      scope: constant.numeric.build-result
-    - match: '[[:digit:]]+'
-      scope: constant.numeric.build-result
+    - match: (')(.*?)(')
+      captures:
+        '0': string.quoted.single.build-result
+        '1': punctuation.definition.string.begin.build-result
+        '2': punctuation.definition.string.end.build-result
+    - match: '([[:digit:]]*\.[[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)?'
+      captures:
+        '1': constant.numeric.build-result
+        '2': keyword.other.unit.build-result
+    - match: '([[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)?'
+      captures:
+        '1': constant.numeric.build-result
+        '2': keyword.other.unit.build-result
     - match: '>'
       scope: punctuation.separator.other.build-result support.function.other.build-result

@@ -1,4 +1,4 @@
-import sublime
+# import sublime
 import sublime_plugin
 import subprocess
 import time
@@ -57,36 +57,36 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
             log = common.parse_log(result[0])
 
             chars = ""
-            if log.get("warning"):
-                for l in log["warning"]:
+            for d in log["warnings"]:
+                chars += '\nwarning  > {type} > {message}'.format(**d)
+
+            for e in log["errors"]:
+                if e["line"] and e["details"]:
                     chars += (
-                        (
-                            '\nwarning  > tex > "{name}" in paragraph at '
-                            'lines {start}--{stop} ("{details}")'
-                        )
-                        .format(**l)
+                        "\nerror    > {error} > line {line}: {details}"
+                        .format(**e)
                     )
+                elif e["details"]:
+                    chars += "\nerror    > {error} > {details}".format(**e)
+                elif e["line"]:
+                    chars += (
+                        "\nerror    > {error} > line {line}".format(**e)
+                    )
+                else:
+                    chars += "\nerror    > {error} >".format(**e)
 
-            if log.get("error") and log.get("line") and log.get("details"):
-                chars += (
-                    '\nerror    > {error} > on line {line}: "{details}"'
-                    .format(**log)
-                )
-            elif log.get("error") and log.get("line"):
-                chars += (
-                    '\nerror    > {error} > on line {line}'.format(**log)
-                )
-            elif log.get("error") and log.get("details"):
-                chars += (
-                    '\nerror    > {error} > "{details}"'.format(**log)
-                )
-            elif log.get("error"):
-                chars += '\nerror    > {error} >'.format(**log)
-
+            if len(chars) > 0:
+                chars += "\n"
             if process.returncode == 0:
-                chars += "\n\nsuccess  > finished in {:.1f}s".format(elapsed)
+                if log.get("pages"):
+                    chars += (
+                        "\nsuccess  > shipped {} page{}".format(
+                            log["pages"], "" if log["pages"] == 1 else "s"
+                        )
+                    )
+                chars += "\nsuccess  > finished in {:.1f}s".format(elapsed)
             else:
-                chars += "\n\nfailure  > finished in {:.1f}s".format(elapsed)
+                chars += "\nfailure  > finished in {:.1f}s".format(elapsed)
 
             self.output_view.run_command("append", {"characters": chars})
 
