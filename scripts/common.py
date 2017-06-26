@@ -70,84 +70,173 @@ class ModPath:
         os.environ["PATH"] = self.orig
 
 
+def _iter_merge_sorted(sorted_iters, key=lambda x: x):
+    tops = [next(iter_, None) for iter_ in sorted_iters]
+    while any(tops):
+        i, next_ = min(
+            [(i, top) for i, top in enumerate(tops) if top],
+            key=lambda t: key(t[1])
+        )
+        yield i, next_
+        tops[i] = next(sorted_iters[i], None)
+
+
 def parse_log(bytes_):
     string = bytes_.decode(
         encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
 
     version = re.search(
-        r"ConTeXt  ver: (.*?) MKIV .*?  fmt: (.*?)  int: ([^\s]*)", string)
+        r"ConTeXt  ver: (.*?) MKIV .*?  fmt: (.*?)  int: ([^\s]*)", string
+    )
     if version:
         ver, fmt, int_ = version.groups()
     else:
         ver, fmt, int_ = None, None, None
 
-    tex_warning = re.findall(
+    pages = re.search(
+        r"mkiv lua stats\s*>.*?([0-9]+) shipped pages", string
+    )
+
+    warning_0 = re.finditer(
         r"^((?:Over|Under)full \\hbox) \((.*?)\) in paragraph at lines "
         r"([0-9]+)\-\-([0-9]+)$",
         string,
-        flags=re.MULTILINE)
-    if tex_warning:
-        war = tex_warning
-    else:
-        war = []
-
-    error_a = re.search(
-        r"^.*? error\s*> (.*?) error on line ([0-9]+)",
+        flags=re.MULTILINE
+    )
+    warning_1 = re.finditer(
+        r"^((?:Over|Under)full \\vbox) \((.*?)\) (?:detected at line "
+        r"([0-9]+))",
         string,
-        flags=re.MULTILINE)
-    error_b = re.search(r"^(.*?)\s*> error", string, flags=re.MULTILINE)
+        flags=re.MULTILINE
+    )
+    warning_2 = re.finditer(
+        r"^(system)\s*> command '(.*?)' is already defined",
+        string,
+        flags=re.MULTILINE
+    )
+    warning_3 = re.finditer(
+        r"^(fonts)\s*> defining > unable to define (.*?)$",
+        string,
+        flags=re.MULTILINE
+    )
+    warning_4 = re.finditer(
+        r"^(.*?) warning\s*> (.*?)$", string, flags=re.MULTILINE
+    )
+    warning_5 = re.finditer(
+        r"^(.*?)\s*> beware:? (.*?)$", string, flags=re.MULTILINE
+    )
 
-    def handle_a():
-        err = error_a.groups()
-        if err[0] == "tex":
-            details = re.search(
-                r"! (.*?)$", string[error_a.start():], flags=re.MULTILINE)
-            if details:
-                return list(err) + [details.groups()[0]]
-            else:
-                return list(err) + [None]
-        elif err[0] in ["mp", "metapost"]:
-            details = re.search(
-                r"! (.*?)$", string[error_a.start():], flags=re.MULTILINE)
-            if details:
-                return ["metapost", err[1], details.groups()[0]]
-            else:
-                return ["metapost", err[1], None]
-        elif err[0] == "lua":
-            details = re.search(
-                r"\[ctxlua\]:[0-9]+: (.*?)$",
-                string[error_a.start():],
-                flags=re.MULTILINE)
-            if details:
-                return list(err) + [details.groups()[0]]
-            else:
-                return list(err) + [None]
-        else:
-            return list(err) + [None]
+    wars = []
 
-    def handle_b():
-        err = error_b.groups()
-        if err[0] in ["mp", "metapost"]:
-            details = re.search(
-                r"! (.*?)$", string[error_b.start():], flags=re.MULTILINE)
-            if details:
-                return ["metapost", None, details.groups()[0]]
-            else:
-                return ["metapost", None, None]
-        else:
-            return err[0], None, None
+    def make_handler(t, s):
+        def f(g):
+            wars.append({
+                "type": t if isinstance(t, str) else g[t],
+                "message": s.format(g=g)
+            })
+        return f
 
-    if error_a and error_b:
-        if error_a.start() < error_b.start():
-            err, line, det = handle_a()
+    def handle_warning_1(g):
+        if g[2]:
+            mess = (
+                '"{name}" has occurred at line {line} ({details})'
+                .format(name=g[0], line=g[2], details=g[1])
+            )
         else:
-            err, line, det = handle_b()
-    elif error_a:
-        err, line, det = handle_a()
-    elif error_b:
-        err, line, det = handle_b()
-    else:
-        err, line, det = None, None, None
+            mess = (
+                '"{name}" has occurred ({details})'
+                .format(name=g[0], details=g[1])
+            )
+        wars.append({"type": "tex", "message": mess})
+
+    handle_warning_0 = make_handler(
+        "tex", '"{g[0]}" in paragraph at lines {g[2]}--{g[3]} ({g[1]})'
+    )
+    handle_warning_2 = make_handler(0, 'command "{g[1]}" is already defined')
+    handle_warning_3 = make_handler(0, 'unable to define "{g[1]}"')
+    handle_warning_4 = make_handler(0, '{g[1]}')
+    handle_warning_5 = make_handler(0, '{g[1]}')
+
+    warning_handler = [
+        handle_warning_0, handle_warning_1, handle_warning_2,
+        handle_warning_3, handle_warning_4, handle_warning_5
+    ]
+
+    for i, warning_match in _iter_merge_sorted(
+        [warning_0, warning_1, warning_2, warning_3, warning_4, warning_5],
+        key=lambda g: g.start()
+    ):
+        warning_handler[i](warning_match.groups())
+
+    error_0 = re.finditer(
+        r".*? error\s*> (.*?) error on line ([0-9]+)",
+        string,
+        flags=re.MULTILINE
+    )
+    error_1 = re.finditer(
+        r"(.*?)\s*> error:?",
+        string,
+        flags=re.MULTILINE
+    )
+
+    errs = []
+
+    def handle_error_0(g, tail):
+        details = None
+        err = g[0]
+
+        if err == "tex":
+            search = re.search(
+                r" in file .*?: ! Undefined control sequence\n+l\.[0-9]+ "
+                r"(\\[a-zA-Z]+)",
+                tail,
+                flags=re.MULTILINE
+            )
+            if search:
+                details = (
+                    'Undefined control sequence "{}"'.format(search.group(1))
+                )
+            else:
+                search = re.search(r"! (.*?)$", tail, flags=re.MULTILINE)
+                details = search.group(1) if search else None
+        elif err in ["mp", "metapost"]:
+            err = "metapost"
+            search = re.search(r"! (.*?)$", tail, flags=re.MULTILINE)
+            details = search.group(1) if search else None
+        elif err == "lua":
+            search = re.search(
+                r"\[ctxlua\]:[0-9]+: (.*?)$", tail, flags=re.MULTILINE
+            )
+            details = search.group(1) if search else None
+
+        errs.append({
+            "error": err,
+            "line": g[1],
+            "details": details
+        })
+
+    def handle_error_1(g, tail):
+        details = None
+        err = g[0]
+
+        if err in ["mp", "metapost"]:
+            err = "metapost"
+            details = re.search(r"! (.*?)$", tail, flags=re.MULTILINE)
+        else:
+            details = re.search(r"error:? (.*?)$", tail, flags=re.MULTILINE)
+
+        errs.append({
+            "error": err,
+            "line": None,
+            "details": details.group(1) if details else None
+        })
+
+    error_handler = [handle_error_0, handle_error_1]
+
+    for i, error_match in _iter_merge_sorted(
+        [error_0, error_1], key=lambda g: g.start()
+    ):
+        error_handler[i](error_match.groups(), string[error_match.start():])
 
     return {
         "system": {
@@ -155,18 +244,9 @@ def parse_log(bytes_):
             "format": fmt,
             "interface": int_,
         },
-        "warning": [
-            {
-                "name": l[0],
-                "details": l[1],
-                "start": l[2],
-                "stop": l[3]
-            }
-            for l in war
-        ],
-        "error": err,
-        "details": det,
-        "line": line,
+        "warnings": wars,
+        "errors": errs,
+        "pages": int(pages.group(1)) if pages else None
     }
 
 
