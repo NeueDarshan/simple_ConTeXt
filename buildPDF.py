@@ -1,6 +1,7 @@
-# import sublime
+import sublime
 import sublime_plugin
 import subprocess
+import threading
 import time
 import os
 
@@ -16,17 +17,59 @@ sys.path.insert(1, PACKAGE)
 from scripts import common
 
 
+CREATE_NO_WINDOW = 0x08000000
+
+
 class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lock = threading.Lock()
+        self.state = 0
+        self.cancel = False
+        self.process = None
+
     def reload_settings(self):
         common.reload_settings(self)
 
     def run(self):
-        start_time = time.time()
+        if self.state == 0:
+            self.start_run()
+        else:
+            self.stop_run()
+
+    def stop_run(self):
+        stop = "\nstopping > got request to stop complication\n"
+        self.output_view.run_command("append", {"characters": stop})
+
+        if self.state == 1:
+            self.cancel = True
+        elif self.state == 2:
+            try:
+                if sublime.platform() == "windows":
+                    kill = [
+                        "taskkill", "/t", "/f", "/pid", str(self.process.pid)
+                    ]
+                    subprocess.call(kill, creationflags=CREATE_NO_WINDOW)
+                else:
+                    self.process.kill()
+            except Exception as e:
+                chars = (
+                    'stopping > encountered error "{}" while attempting to '
+                    'stop compilation\n'
+                ).format(e)
+                self.output_view.run_command("append", {"characters": chars})
+
+    def start_run(self):
+        self.state = 1
+        self.start_time = time.time()
 
         self.reload_settings()
         view = self.window.active_view()
         if not common.is_context(view):
             return
+
+        if view.is_dirty():
+            view.run_command("save")
 
         self.setup_output_view()
 
@@ -35,60 +78,74 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         os.chdir(dir_)
 
         general = self.current_profile.get("context_program", {})
-        command = common.process_options(
+        self.command = common.process_options(
             general.get("name", "context"),
             general.get("options", {}),
             input_,
             base
         )
-        chars = 'starting > running command "{}"\n'.format(" ".join(command))
+        chars = 'starting > running command "{}"\n'.format(
+            " ".join(self.command)
+        )
         self.output_view.run_command("append", {"characters": chars})
 
         with common.ModPath(general.get("path")):
-            process = subprocess.Popen(
-                command,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
+            thread = threading.Thread(target=self._run)
+            thread.start()
 
-            result = process.communicate()
-            elapsed = time.time() - start_time
-            log = common.parse_log(result[0])
+    def _run(self):
+        self.lock.acquire()
+        if self.cancel:
+            self.state = 0
+            self.cancel = False
+            return
 
-            chars = ""
-            for d in log["warnings"]:
-                chars += '\nwarning  > {type} > {message}'.format(**d)
+        self.state = 2
+        flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
-            for e in log["errors"]:
-                if e["line"] and e["details"]:
-                    chars += (
-                        "\nerror    > {error} > line {line}: {details}"
-                        .format(**e)
-                    )
-                elif e["details"]:
-                    chars += "\nerror    > {error} > {details}".format(**e)
-                elif e["line"]:
-                    chars += (
-                        "\nerror    > {error} > line {line}".format(**e)
-                    )
-                else:
-                    chars += "\nerror    > {error} >".format(**e)
+        self.process = subprocess.Popen(
+            self.command,
+            creationflags=flags,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        self.lock.release()
 
-            if len(chars) > 0:
-                chars += "\n"
-            if process.returncode == 0:
-                if log.get("pages"):
-                    chars += (
-                        "\nsuccess  > shipped {} page{}".format(
-                            log["pages"], "" if log["pages"] == 1 else "s"
-                        )
-                    )
-                chars += "\nsuccess  > finished in {:.1f}s".format(elapsed)
+        result = self.process.communicate()
+        elapsed = time.time() - self.start_time
+        log = common.parse_log(result[0])
+
+        chars = ""
+        for d in log["warnings"]:
+            chars += "\nwarning  > {type} > {message}".format(**d)
+
+        for e in log["errors"]:
+            if e["line"] and e["details"]:
+                chars += \
+                    "\nerror    > {error} > line {line}: {details}".format(**e)
+            elif e["details"]:
+                chars += "\nerror    > {error} > {details}".format(**e)
+            elif e["line"]:
+                chars += "\nerror    > {error} > line {line}".format(**e)
             else:
-                chars += "\nfailure  > finished in {:.1f}s".format(elapsed)
+                chars += "\nerror    > {error} >".format(**e)
 
-            self.output_view.run_command("append", {"characters": chars})
+        if len(chars) > 0:
+            chars += "\n"
+        if self.process.returncode == 0:
+            if log.get("pages"):
+                chars += \
+                    "\nsuccess  > shipped {} page{}".format(
+                        log["pages"], "" if log["pages"] == 1 else "s"
+                    )
+            chars += "\nsuccess  > finished in {:.1f}s".format(elapsed)
+        else:
+            chars += "\nfailure  > finished in {:.1f}s".format(elapsed)
+
+        self.output_view.run_command("append", {"characters": chars})
+        self.process = None
+        self.state = 0
 
     def setup_output_view(self):
         if not hasattr(self, "output_view"):

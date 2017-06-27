@@ -88,13 +88,16 @@ def parse_log(bytes_):
     version = re.search(
         r"ConTeXt  ver: (.*?) MKIV .*?  fmt: (.*?)  int: ([^\s]*)", string
     )
-    if version:
-        ver, fmt, int_ = version.groups()
-    else:
-        ver, fmt, int_ = None, None, None
+    system = {
+        "version": version.group(1) if version else None,
+        "format": version.group(2) if version else None,
+        "interface": version.group(3) if version else None,
+    }
 
     pages = re.search(
-        r"mkiv lua stats\s*>.*?([0-9]+) shipped pages", string
+        r"^mkiv lua stats\s*> .*? ([0-9]+) shipped pages",
+        string,
+        flags=re.MULTILINE
     )
 
     warning_0 = re.finditer(
@@ -239,11 +242,7 @@ def parse_log(bytes_):
         error_handler[i](error_match.groups(), string[error_match.start():])
 
     return {
-        "system": {
-            "version": ver,
-            "format": fmt,
-            "interface": int_,
-        },
+        "system": system,
         "warnings": wars,
         "errors": errs,
         "pages": int(pages.group(1)) if pages else None
