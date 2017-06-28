@@ -18,51 +18,43 @@ This plugin aims to provide some support for working with the
 [ConTeXt][contextgarden] program. In particular, it provides:
 
   - syntax files to markup ConTeXt source files (and related files),
-
   - auto-completion for the roughly 4000 "core" ConTeXt commands,
-
   - pop-ups showing basic documentation on each of those commands,
-
-  - a basic reference handling system,
-
-  - a basic builder,
-
+  - a builder,
+  - a reference system,
   - a "profile" system, mainly intended for managing multiple versions of
     ConTeXt on the same machine,
 
 and other bits and pieces. More details on these features in their respective
-sections. Note that ConTeXt MKIV is supported, and not older versions (i.e.
+sections. Note that ConTeXt MKIV is supported, but not older versions (i.e.
 MKII): in this README "ConTeXt" means the MKIV version.
 
 # Syntax
 
-There are a couple of "sublime-syntax" files provided related to using ConTeXt.
+There are a couple of `sublime-syntax` files provided related to using ConTeXt.
 
-  - "ConTeXt" is the main one, which handles ConTeXt source files, e.g. `.tex`
-    and `.mkiv` files.
-
+  - "ConTeXt" is the main one, which handles ConTeXt source files (typically
+    `.tex` or `.mkiv`)
   - "ConTeXt Log" handles the log files that the ConTeXt program generates.
-
-  - "MetaPost" is a [graphic programming language][metapost], a little rough
-    around the edges currently.
-
-  - "MetaFun" is a [macro-package][metafun] extension to the MetaPost language,
-    and is loaded by default when using MetaPost within ConTeXt.
+  - "MetaPost" is for the [graphic programming language][metapost].
+  - "MetaFun" is for the [macro-package][metafun] extension to the MetaPost
+    language, which is loaded by default when using MetaPost within ConTeXt.
 
 # Commands
 
-"Commands" means TeX/ConTeXt macros, such as `\starttext`. "Core" commands
-means those commands defined in the XML interface files ConTeXt generates.
-There are three features so far for core commands: "browsing", "completions"
-and "pop-ups".
+By "commands" we mean TeX/ConTeXt macros, such as `\starttext`. By "core"
+commands we mean those commands defined in the XML interface files ConTeXt
+comes with. There are three features so far for core commands: "browsing",
+"completions" and "pop-ups".
 
 ## Browsing
 
 This is just a quick example feature making use of the interface JSON files. In
-the command palette (`Ctrl+Shift+P`) there is a command called "ConTeXtTools:
-Browse interface commands"; you can choose an interface (provided one has
-already been created, see the [interface](#generating-an-interface) section)
-and then peruse the library of core commands at your leisure.
+the command palette (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) there is a
+command called "ConTeXtTools: Browse interface commands"; you can choose an
+interface (provided one has already been created, see the
+[interface](#generating-an-interface) section) and then peruse the library of
+core commands at your leisure.
 
 You can do the same kind of thing with completions, but this provides a nicer
 interface for it.
@@ -145,69 +137,10 @@ The other keys in `command_popups/visuals` are:
 
   - `line_break`, which you can set to any integer and then pop-ups will
     line-break at that many characters.
-
   - `sort_keys`, a boolean for sorting keys in case of a key-value argument or
-    leaving them be in the default order. For example,
-
-    ```TeX
-                           1           2
-    \setupsectionblock [...,...] [..,..=..,..]
-                          OPT
-
-    1   NAME
-
-    2   after  = COMMAND
-        before = COMMAND
-        number = yes no
-        page   = inherits: \page
-    ```
-
-    is when `sort_keys` is `true` (the default), instead of
-
-    ```TeX
-                           1           2
-    \setupsectionblock [...,...] [..,..=..,..]
-                          OPT
-
-    1   NAME
-
-    2   page   = inherits: \page
-        after  = COMMAND
-        number = yes no
-        before = COMMAND
-    ```
-
-    when it's `false`.
-
+    leaving them be in the default order.
   - `sort_lists`, similar to `sort_keys` but applies to situations where there
-    is a list of options in an argument. Defaults to `true`. For example,
-
-    ```TeX
-
-                       1
-    \setupbodyfont [...,...]
-                      OPT
-
-    1   big calligraphic cg global handwritten hw mono regular reset rm roman
-        sans sansserif script scriptscript serif small ss support teletype tt
-        type x xx DIMENSION NAME
-    ```
-
-    when it's on versus
-
-    ```TeX
-
-                       1
-    \setupbodyfont [...,...]
-                      OPT
-
-    1   DIMENSION NAME global reset x xx small big script scriptscript rm ss tt
-        hw cg roman serif regular sans sansserif support type teletype mono
-        handwritten calligraphic
-    ```
-
-    when it's not.
-
+    is a list of options in an argument. Defaults to `true`.
 
 Pop-ups can be turned on or off completely with the `command_popups/on` key,
 and `command_popups/version` can be used to specify which version of the
@@ -217,7 +150,7 @@ different interfaces).
 ## Generating an Interface
 
 All the [command](#commands) features rely on so-called "interface" files.
-These are simply json files, created automatically from the XML files that a
+These are simply JSON files, created automatically from the XML files that a
 ConTeXt installation provides. Different installations of ConTeXt will define
 different commands, and thus the XML files for each will differ. So there is an
 `interfaces` key at top-level in the settings, which should contain key-value
@@ -241,31 +174,34 @@ pairs like so:
 right next the the main ones if they are anywhere (e.g. at
 `C:\texlive\2016\texmf-dist\tex\context\interface\third`), and then
 ConTeXtTools will also understand the commands defined in the ConTeXt modules.
-(Well, some of them, not all of them have associated XML files.)
+(Well, some of them, not all of them have associated XML files. And some of the
+XML files are malformed.)
 
-Then you should bring up the command palette (`Ctrl+Shift+P`) and select
-"ConTeXtTools: Generate profile interface", and select the interface you just
-configured in the settings file. Any errors will be reported in the console.
-Assuming it was successful, the other features should now work. (Remember to
-also switch to a profile using that "interface" if necessary.)
+Then you should bring up the command palette
+(<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) and select "ConTeXtTools:
+Generate profile interface", and select the interface you just configured in
+the settings file. Any errors will be reported in the console. Assuming it was
+successful, the other features should now work. (Remember to also switch to a
+profile using that "interface" if necessary.)
 
 # Snippets
 
 The main snippets are as follows.
 
-| snippet    | expansion                                    | notes               |
-|------------|----------------------------------------------|---------------------|
-| `lua`      | `\startluacode ... \stopluacode`             |                     |
-| `template` | `<?lua ... ?>`                               | for mkxi templates  |
-| `math`     | `\math{ ... }`                               |                     |
-| `formula`  | `\startformula ... \stopformula`             |                     |
-| `align`    | `\startalign ... \stopalign`                 | math-mode only      |
-| `em`       | `{\em ... }`                                 |                     |
-| `bf`       | `{\bf ... }`                                 |                     |
-| `start`    | `\start<environment> ... \stop<environment>` |                     |
-| `table`    | `\bTABLE ... \eTABLE`                        | shows example usage |
-| `TABLE`    | `\startTABLE ... \stopTABLE`                 | shows example usage |
-| `xtable`   | `\startxtable ... \stopxtable`               | shows example usage |
+| snippet  | expansion                                    | notes               |
+|----------|----------------------------------------------|---------------------|
+| lua      | `\ctxlua{...}`                               |                     |
+| luacode  | `\startluacode ... \stopluacode`             |                     |
+| template | `<?lua ... ?>`                               | for mkxi templates  |
+| math     | `\math{ ... }`                               | text-mode only      |
+| formula  | `\startformula ... \stopformula`             | text-mode only      |
+| align    | `\startalign ... \stopalign`                 | math-mode only      |
+| em       | `{\em ... }`                                 | text-mode only      |
+| bf       | `{\bf ... }`                                 | text-mode only      |
+| start    | `\start<environment> ... \stop<environment>` |                     |
+| table    | `\bTABLE ... \eTABLE`                        | shows example usage |
+| TABLE    | `\startTABLE ... \stopTABLE`                 | shows example usage |
+| xtable   | `\startxtable ... \stopxtable`               | shows example usage |
 
 Additionally, there are the following snippets (which are taken from the
 ConTeXt samples) which are analogous to the `lorem` snippet that comes "out of
@@ -277,13 +213,13 @@ the box" in Sublime Text:
 
 # Symbols
 
-Using "Goto Symbol" (`Ctrl+R`) in Sublime Text will bring up a list of
-"headings" you can navigate, i.e. chapters/sections/subsections etc. See this
-[context garden article][titles] for details on ConTeXt headings. Both the
-older style `\section{<name>}` and the newer style
+Using "Goto Symbol" (<kbd>Ctrl</kbd>+<kbd>R</kbd>) in Sublime Text will bring
+up a list of "headings" you can navigate, i.e. chapters/sections/subsections
+etc. See this [context garden article][titles] for details on ConTeXt headings.
+Both the older style `\section{<name>}` and the newer style
 `\startsection[title=<name>] ... \stopsection` are supported.
 
-For example, in the file
+For example, in the document
 
 ```TeX
 \starttext
@@ -304,7 +240,7 @@ For example, in the file
 \stoptext
 ```
 
-the list of symbols looks like
+the list of symbols is
 
 ```
 One
@@ -321,7 +257,6 @@ References are tricky. There are two main tasks to automate:
 
   - keeping track of the "labels" defined so far, things like
     `[eq:pythagoras]`;
-
   - automatically prompting the user to choose a label when they type certain
     commands, e.g. after typing `\eqref`.
 
@@ -353,10 +288,12 @@ certain characters e.g. a "-" character in a character class `[...]`.
 
 # Builder
 
-Currently the builder is pretty basic. It uses the `context_program/path` key
-(if given) to locate the main program, and calls it (by default "context", can
-be set via `context_program/name`) (passing the options in
-`context_program/options`, if any) on the current ConTeXt file.
+The builder uses the `context_program/path` key (if given) to locate the main
+program, and calls it (by default "context", can be set via
+`context_program/name`) (passing the options in `context_program/options`, if
+any) on the current ConTeXt file. It is invoked in the standard way
+(<kbd>Ctrl</kbd>+<kbd>B</kbd>) and can be cancelled part-way through by running
+it again.
 
 The value of `context_program/options` offers quite some, well, options. You
 can assign a string to it such as `--once --synctex` and this will get passed

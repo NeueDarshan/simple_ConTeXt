@@ -190,8 +190,8 @@ def parse_log(bytes_):
 
         if err == "tex":
             search = re.search(
-                r" in file .*?: ! Undefined control sequence\n+l\.[0-9]+ "
-                r"(\\[a-zA-Z]+)",
+                r" in file .*?: ! Undefined control sequence\n+l\.[0-9]+ .*?"
+                r"(\\[a-zA-Z]+)$",
                 tail,
                 flags=re.MULTILINE
             )

@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+tertiarydef ${1:arg1} ${2:name} ${3:arg2} =
+  ${0:% ...}
+enddef;
+]]></content>
+  <tabTrigger>terdef</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>macro tertiarydef</description>
+</snippet>
