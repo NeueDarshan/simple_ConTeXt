@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+\startalign[${1:options}]
+  $0
+\stopalign
+]]></content>
+  <tabTrigger>align</tabTrigger>
+  <scope>text.tex.context meta.environment.math</scope>
+  <description>alignment</description>
+</snippet>

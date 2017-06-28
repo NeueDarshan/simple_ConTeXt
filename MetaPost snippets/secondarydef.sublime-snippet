@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+secondarydef ${1:arg1} ${2:name} ${3:arg2} =
+  ${0:% ...}
+enddef;
+]]></content>
+  <tabTrigger>secdef</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>macro secondarydef</description>
+</snippet>

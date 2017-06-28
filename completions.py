@@ -63,8 +63,13 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
             return
 
         self.reload_settings()
-        return self.commands_cache.get(
-            self.current_interface_name, {}).get("commands", [])
+
+        for l in locations:
+            if view.match_selector(
+                l, "text.tex.context - (meta.environment.math, source)"
+            ):
+                return self.commands_cache.get(
+                    self.current_interface_name, {}).get("commands", [])
 
     def on_modified(self, view):
         if not common.is_context(view):
@@ -72,6 +77,12 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         self.reload_settings()
         if not self.current_profile.get("command_popups", {}).get("on"):
+            return
+
+        if not view.match_selector(
+            view.sel()[0].end(),
+            "text.tex.context - (meta.environment.math, source)"
+        ):
             return
 
         end = view.sel()[0].end()

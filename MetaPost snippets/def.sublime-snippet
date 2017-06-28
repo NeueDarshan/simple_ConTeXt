@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+def ${1:name}(${2:expr arg1, arg2, ...}) =
+  ${0:% ...}
+enddef;
+]]></content>
+  <tabTrigger>def</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>macro def</description>
+</snippet>

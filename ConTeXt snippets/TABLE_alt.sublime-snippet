@@ -1,0 +1,17 @@
+<snippet>
+  <content><![CDATA[
+\bTABLE[${1:options}]
+  \bTR$0
+    \bTC a \eTC
+    \bTC b \eTC
+  \eTR
+  \bTR
+    \bTC c \eTC
+    \bTC d \eTC
+  \eTR
+\eTABLE
+]]></content>
+  <tabTrigger>table</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>TABLE</description>
+</snippet>

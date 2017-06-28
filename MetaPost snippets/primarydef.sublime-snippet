@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+primarydef ${1:arg1} ${2:name} ${3:arg2} =
+  ${0:% ...}
+enddef;
+]]></content>
+  <tabTrigger>primdef</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>macro primarydef</description>
+</snippet>
