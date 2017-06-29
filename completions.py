@@ -44,24 +44,22 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
     def reload_settings(self):
         common.reload_settings(self)
-        name = self.current_interface_name
-        if name not in self.commands_cache:
+        name = self.settings.get("interface")
+        if name and name not in self.commands_cache:
             try:
                 path = os.path.join(PACKAGE, "interface")
-                self.commands_cache[name] = {
-                    "details": common.load_commands(path, name)
-                }
+                self.commands_cache[name] = \
+                    {"details": common.load_commands(path, name)}
                 self.commands_cache[name]["commands"] = sorted([
                     ["\\" + command, ""]
                     for command in self.commands_cache[name]["details"]
                 ])
             except FileNotFoundError as e:
-                pass
+                print(e)
 
     def on_query_completions(self, view, prefix, locations):
         if not common.is_context(view):
             return
-
         self.reload_settings()
 
         for l in locations:
@@ -69,14 +67,14 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 l, "text.tex.context - (meta.environment.math, source)"
             ):
                 return self.commands_cache.get(
-                    self.current_interface_name, {}).get("commands", [])
+                    self.settings.get("interface"), {}).get("commands", [])
 
     def on_modified(self, view):
         if not common.is_context(view):
             return
 
         self.reload_settings()
-        if not self.current_profile.get("command_popups", {}).get("on"):
+        if not self.settings.get("pop_ups", {}).get("on"):
             return
 
         if not view.match_selector(
@@ -93,28 +91,26 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         name = view.substr(cmd)[1:]
         if name in self.commands_cache.get(
-                self.current_interface_name, {}).get("details", {}):
+                self.settings.get("interface"), {}).get("details", {}):
             view.show_popup(
                 self.get_popup_text(name),
-                location=-1,
-                max_width=600,
                 flags=sublime.COOPERATE_WITH_AUTO_COMPLETE
             )
 
     def get_popup_text(self, name):
-        visuals = self.current_profile.get(
-            "command_popups", {}).get("visuals", {})
-        colors = visuals.get("colors", {})
+        pop_ups = self.settings.get("pop_ups", {})
+        visuals = pop_ups.get("visuals", {})
+        colours = self.colour_schemes.get(visuals.get("colour_scheme"), {})
         style = STYLE_SHEET.format(
-            background=colors.get("background", "rgb(46, 47, 41)"),
-            syntax=colors.get("primary", "rgb(36, 151, 227)"),
-            doc_string=colors.get("secondary", "rgb(151, 151, 148)"),
-            file=colors.get("primary", "rgb(36, 151, 227)")
+            background=colours.get("background"),
+            syntax=colours.get("primary"),
+            doc_string=colours.get("secondary"),
+            file=colours.get("primary")
         )
 
         signatures = []
         command = self.commands_cache.get(
-            self.current_interface_name, {}).get("details", {}).get(name)
+            self.settings.get("interface"), {}).get("details", {}).get(name)
         variations, files = parsing.rendered_command(
             name,
             command,
@@ -143,9 +139,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         full_signature = "<style>{}</style>".format(style) + \
             "<br />".join(signatures)
 
-        show_files = files and \
-            self.current_profile.get("command_popups", {}).get("show_files")
-        if show_files:
+        if files and pop_ups.get("show_files"):
             full_signature += """
                 <br />
                 <div class='files'>

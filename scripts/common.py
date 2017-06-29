@@ -304,47 +304,13 @@ def last_command_in_view(view, begin=-200, end=None, skip=_skip_space_nolines):
 
 
 def reload_settings(self):
-    self.settings = sublime.load_settings("ConTeXtTools.sublime-settings")
-    self.profile_defaults = self.settings.get("profile_defaults", {})
-    self.profiles = self.settings.get("profiles", {})
-    self.current_profile_name = self.settings.get("current_profile")
-    self.interfaces = self.settings.get("interfaces", {})
-
-    self.profile_names = []
-    self.current_profile_index = 0
-    for i, profile in enumerate(self.profiles):
-        name = profile.get("name")
-        self.profile_names.append(name)
-        if name == self.current_profile_name:
-            self.current_profile_index = i
-
-    inherits = self.profiles[self.current_profile_index].get("inherits")
-    if inherits:
-        if isinstance(inherits, str):
-            inherits = [inherits]
-    else:
-        inherits = ["profile_defaults"]
-
-    self.current_profile = {}
-    for profile_name in inherits:
-        if profile_name == "profile_defaults":
-            new_settings = self.profile_defaults
-        else:
-            new_settings = {}
-            for profile in self.profiles:
-                if profile.get("name") == profile_name:
-                    new_settings = profile
-                    break
-        deep_update(self.current_profile, new_settings)
-    deep_update(
-        self.current_profile, self.profiles[self.current_profile_index]
-    )
-
-    self.current_interface_name = self.current_profile.get(
-        "command_popups", {}).get("interface")
-    self.current_interface = self.interfaces.get(
-        self.current_interface_name, {}
-    )
+    self.sublime_settings = \
+        sublime.load_settings("ConTeXtTools.sublime-settings")
+    self.settings = self.sublime_settings.get("settings", {})
+    self.setting_schemes = self.sublime_settings.get("setting_schemes", {})
+    self.program_paths = self.sublime_settings.get("program_paths", {})
+    self.interfaces = self.sublime_settings.get("interfaces", {})
+    self.colour_schemes = self.sublime_settings.get("colour_schemes", {})
 
 
 def process_options(name, options, input_, input_base):

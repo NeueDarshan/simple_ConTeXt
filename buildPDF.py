@@ -46,9 +46,8 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         elif self.state == 2:
             try:
                 if sublime.platform() == "windows":
-                    kill = [
-                        "taskkill", "/t", "/f", "/pid", str(self.process.pid)
-                    ]
+                    kill = \
+                        ["taskkill", "/t", "/f", "/pid", str(self.process.pid)]
                     subprocess.call(kill, creationflags=CREATE_NO_WINDOW)
                 else:
                     self.process.kill()
@@ -77,19 +76,21 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         base = common.file_with_ext(input_, "")
         os.chdir(dir_)
 
-        general = self.current_profile.get("context_program", {})
+        program = self.settings.get("program", {})
         self.command = common.process_options(
-            general.get("name", "context"),
-            general.get("options", {}),
+            program.get("name", "context"),
+            program.get("options", {}),
             input_,
             base
         )
-        chars = 'starting > running command "{}"\n'.format(
-            " ".join(self.command)
-        )
+        chars = \
+            'starting > running command "{}"\n'.format(" ".join(self.command))
         self.output_view.run_command("append", {"characters": chars})
 
-        with common.ModPath(general.get("path")):
+        path = program.get("path")
+        if path in self.program_paths:
+            path = self.program_paths[path]
+        with common.ModPath(path):
             thread = threading.Thread(target=self._run)
             thread.start()
 
@@ -115,30 +116,35 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         result = self.process.communicate()
         elapsed = time.time() - self.start_time
         log = common.parse_log(result[0])
-
+        builder = self.settings.get("builder", {})
         chars = ""
-        for d in log["warnings"]:
-            chars += "\nwarning  > {type} > {message}".format(**d)
 
-        for e in log["errors"]:
-            if e["line"] and e["details"]:
-                chars += \
-                    "\nerror    > {error} > line {line}: {details}".format(**e)
-            elif e["details"]:
-                chars += "\nerror    > {error} > {details}".format(**e)
-            elif e["line"]:
-                chars += "\nerror    > {error} > line {line}".format(**e)
-            else:
-                chars += "\nerror    > {error} >".format(**e)
+        if builder.get("show_warnings"):
+            for d in log["warnings"]:
+                chars += "\nwarning  > {type} > {message}".format(**d)
+
+        if builder.get("show_errors"):
+            for e in log["errors"]:
+                if e["line"] and e["details"]:
+                    chars += (
+                        "\nerror    > {error} > line {line}: {details}"
+                        .format(**e)
+                    )
+                elif e["details"]:
+                    chars += "\nerror    > {error} > {details}".format(**e)
+                elif e["line"]:
+                    chars += "\nerror    > {error} > line {line}".format(**e)
+                else:
+                    chars += "\nerror    > {error} >".format(**e)
 
         if len(chars) > 0:
             chars += "\n"
         if self.process.returncode == 0:
-            if log.get("pages"):
-                chars += \
-                    "\nsuccess  > shipped {} page{}".format(
-                        log["pages"], "" if log["pages"] == 1 else "s"
-                    )
+            if builder.get("show_pages") and log.get("pages"):
+                chars += (
+                    "\nsuccess  > shipped {} page{}"
+                    .format(log["pages"], "" if log["pages"] == 1 else "s")
+                )
             chars += "\nsuccess  > finished in {:.1f}s".format(elapsed)
         else:
             chars += "\nfailure  > finished in {:.1f}s".format(elapsed)

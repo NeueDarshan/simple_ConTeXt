@@ -16,6 +16,16 @@ sys.path.insert(1, PACKAGE)
 from scripts import common
 
 
+DEFINITE_REF_SELECTOR = "meta.other.reference.context"
+
+POSSIBLE_REF_SELECTOR = (
+    "meta.brackets.context - (meta.other.reference.context, "
+    "punctuation.section.brackets.begin.context, "
+    "punctuation.section.brackets.end.context, variable.parameter.context, "
+    "keyword.operator.assignment.context, meta.other.value.context)"
+)
+
+
 class ContexttoolsReferenceInsert(sublime_plugin.TextCommand):
     def run(self, edit, reference="ref"):
         to_add = []
@@ -30,32 +40,23 @@ class ContexttoolsReferenceInsert(sublime_plugin.TextCommand):
 class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
     def reload_settings(self):
         common.reload_settings(self)
-        regex = self.current_profile.get(
-            "references", {}).get("reference_regex", r"[a-zA-Z]+\:[a-zA-Z]+")
-        cmd_regex = self.current_profile.get(
-            "references", {}).get("command_regex", r"[a-zA-Z]*ref")
+
+        regex = self.settings.get("references", {}).get(
+            "reference_regex", r"[a-zA-Z_\.\-\:]+")
+        cmd_regex = self.settings.get("references", {}).get(
+            "command_regex", r"(in|at|about|[a-zA-Z]*ref)")
 
         self.references = collections.OrderedDict()
         view = self.window.active_view()
 
-        # definite references
-        for region in view.find_by_selector("meta.other.reference.context"):
+        for region in view.find_by_selector(DEFINITE_REF_SELECTOR):
             raw = view.substr(region).strip()
             if raw.startswith("{") and raw.endswith("}"):
                 self.references[raw[1:-1]] = region
             else:
                 self.references[raw] = region
 
-        # possible references
-        for region in view.find_by_selector(
-            "meta.brackets.context - ("
-            "meta.other.reference.context, "
-            "punctuation.section.brackets.begin.context, "
-            "punctuation.section.brackets.end.context, "
-            "variable.parameter.context, "
-            "keyword.operator.assignment.context, "
-            "meta.other.value.context)"
-        ):
+        for region in view.find_by_selector(POSSIBLE_REF_SELECTOR):
             raw = view.substr(region).strip()
             ref_match = re.match(r"\A" + regex + r"\Z", raw)
 
@@ -63,9 +64,8 @@ class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
                 view, end=region.end()+1, skip=common._skip_args
             )
             if cmd:
-                cmd_match = bool(re.match(
-                    r"\A" + cmd_regex + r"\Z", view.substr(cmd)[1:]
-                ))
+                cmd_match = \
+                    re.match(r"\A" + cmd_regex + r"\Z", view.substr(cmd)[1:])
             else:
                 cmd_match = False
 
@@ -109,16 +109,17 @@ class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
 class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
     def reload_settings(self):
         common.reload_settings(self)
-        self.current_cmd_regex = self.current_profile.get(
+        self.current_cmd_regex = self.settings.get(
             "references", {}).get("command_regex", r"[a-zA-Z]*ref")
 
     def on_modified(self, view):
         self.reload_settings()
+        if not self.settings.get("references", {}).get("on"):
+            return
 
         end = view.sel()[0].end()
-        cmd = common.last_command_in_view(
-            view, end=end, skip=common._skip_args
-        )
+        cmd = \
+            common.last_command_in_view(view, end=end, skip=common._skip_args)
         if not cmd:
             return
 
