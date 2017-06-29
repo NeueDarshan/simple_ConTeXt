@@ -60,30 +60,22 @@ contexts:
     - include: constants.string
 
   constants.number:
-    - match: '([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)'
+    - match: '[[:digit:]]*\.[[:digit:]]+'
+      scope: constant.numeric.log
+    - match: '[[:digit:]]+'
       scope: constant.numeric.log
 
   constants.string:
-    - match: '"'
-      scope: punctuation.definition.string.begin.log
-      push:
-        - meta_scope: string.quoted.double.log
-        - match: '"'
-          scope: punctuation.definition.string.end.log
-          pop: true
-        - match: '\n'
-          # scope: invalid.illegal.unclosed-string.log
-          pop: true
-    - match: "'"
-      scope: punctuation.definition.string.begin.log
-      push:
-        - meta_scope: string.quoted.single.log
-        - match: "'"
-          scope: punctuation.definition.string.end.log
-          pop: true
-        - match: '\n'
-          # scope: invalid.illegal.unclosed-string.log
-          pop: true
+    - match: '(").*?(")'
+      captures:
+        '0': string.quoted.double.log
+        '1': punctuation.definition.string.begin.log
+        '2': punctuation.definition.string.end.log
+    - match: (').*?(')
+      captures:
+        '0': string.quoted.single.log
+        '1': punctuation.definition.string.begin.log
+        '2': punctuation.definition.string.end.log
 
   generic.gobble-whitespace:
     - match: '\s+'

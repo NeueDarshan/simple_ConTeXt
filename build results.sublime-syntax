@@ -14,12 +14,12 @@ contexts:
       captures:
         '1': entity.name.other.success.build-result
         '2': punctuation.separator.other.build-result support.function.other.build-result
-    - match: '(")(.*?)(")'
+    - match: '(").*?(")'
       captures:
         '0': string.quoted.double.build-result
         '1': punctuation.definition.string.begin.build-result
         '2': punctuation.definition.string.end.build-result
-    - match: (')(.*?)(')
+    - match: (').*?(')
       captures:
         '0': string.quoted.single.build-result
         '1': punctuation.definition.string.begin.build-result
