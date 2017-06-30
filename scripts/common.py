@@ -430,14 +430,19 @@ def process_options(name, options, input_, input_base):
             del options["result"]
 
         for option, value in options.items():
-            if isinstance(value, bool):
-                if value:
-                    command.append("--{}".format(option))
+            if option == "mode":
+                if any(v for k, v in value.items()):
+                    normalized_value = \
+                        ",".join(k for k, v in value.items() if v)
+                    command.append("--{}={}".format(option, normalized_value))
             elif isinstance(value, dict):
                 normalized_value = " ".join(
                     "{}={}".format(k, v) for k, v in value.items()
                 )
                 command.append("--{}={}".format(option, normalized_value))
+            elif isinstance(value, bool):
+                if value:
+                    command.append("--{}".format(option))
             else:
                 if option == "script":
                     command.insert(1, "--{}".format(option))
