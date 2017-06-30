@@ -77,6 +77,10 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         os.chdir(dir_)
 
         program = self.settings.get("program", {})
+        path = program.get("path")
+        if path in self.program_paths:
+            path = self.program_paths[path]
+
         self.command = common.process_options(
             program.get("name", "context"),
             program.get("options", {}),
@@ -87,14 +91,10 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
             'starting > running command "{}"\n'.format(" ".join(self.command))
         self.output_view.run_command("append", {"characters": chars})
 
-        path = program.get("path")
-        if path in self.program_paths:
-            path = self.program_paths[path]
-        with common.ModPath(path):
-            thread = threading.Thread(target=self._run)
-            thread.start()
+        thread = threading.Thread(target=lambda: self._run(path))
+        thread.start()
 
-    def _run(self):
+    def _run(self, path):
         self.lock.acquire()
         if self.cancel:
             self.state = 0
@@ -104,14 +104,15 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         self.state = 2
         flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
-        self.process = subprocess.Popen(
-            self.command,
-            creationflags=flags,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        self.lock.release()
+        with common.ModPath(path):
+            self.process = subprocess.Popen(
+                self.command,
+                creationflags=flags,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            self.lock.release()
 
         result = self.process.communicate()
         elapsed = time.time() - self.start_time
