@@ -36,11 +36,29 @@ def get_deep(dict_, keys):
         return get_deep(dict_[keys[0]], keys[1:])
 
 
+def get_deep_safe(dict_, keys):
+    if len(keys) == 0:
+        return dict_
+    elif len(keys) == 1:
+        return dict_.get(keys[0])
+    else:
+        dict_.setdefault(keys[0], {})
+        return get_deep_safe(dict_[keys[0]], keys[1:])
+
+
 def set_deep(dict_, keys, value):
     if len(keys) <= 1:
         dict_[keys[0]] = value
     else:
         set_deep(dict_[keys[0]], keys[1:], value)
+
+
+def set_deep_safe(dict_, keys, value):
+    if len(keys) <= 1:
+        dict_[keys[0]] = value
+    else:
+        dict_.setdefault(keys[0], {})
+        set_deep_safe(dict_[keys[0]], keys[1:], value)
 
 
 def in_deep(dict_, keys):
@@ -55,6 +73,17 @@ def del_deep(dict_, keys):
         del dict_[keys[0]]
     else:
         del_deep(dict_[keys[0]], keys[1:])
+
+
+def del_deep_safe(dict_, keys):
+    if len(keys) <= 1:
+        try:
+            del dict_[keys[0]]
+        except KeyError:
+            pass
+    else:
+        dict_.setdefault(keys[0], {})
+        del_deep_safe(dict_[keys[0]], keys[1:])
 
 
 def is_context(view):

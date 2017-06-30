@@ -42,6 +42,7 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
         self.reload_settings()
         self.encode_settings()
         self._location = []
+        self._last_scheme = None
         self._history = {}
         self._run_panel()
 
@@ -63,12 +64,15 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
         if key == "..":
             self._location.pop()
             self._run_panel()
+        elif key == "setting_schemes":
+            self._location.append(key)
+            self._run_panel_scheme()
         else:
             value = here[key]
             self._location.append(key)
 
             if isinstance(value, bool):
-                common.set_deep(
+                common.set_deep_safe(
                     self._encoded_settings, self._location, not value
                 )
                 self._location.pop()
@@ -94,19 +98,19 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
                 )
 
             elif isinstance(value, list):
-                self._run_panel_special()
+                self._run_panel_choice()
 
             else:
                 self._run_panel()
 
-    def _run_panel_special(self):
+    def _run_panel_scheme(self):
         self.window.show_quick_panel(
             self._flatten_current_level(),
-            self._run_handle_special,
+            self._run_handle_scheme,
             selected_index=self._history.get(len(self._location), 0)
         )
 
-    def _run_handle_special(self, index, selected_index=None):
+    def _run_handle_scheme(self, index):
         if index < 0:
             return
 
@@ -118,16 +122,43 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
             self._location.pop()
             self._run_panel()
         else:
-            common.set_deep(
+            value = here[key]
+            self._last_scheme = key
+            self.decode_settings()
+            for location, val in common.iter_deep(value):
+                common.set_deep_safe(self.settings, location, val)
+            self._save(decode=False)
+            self._run_panel_scheme()
+
+    def _run_panel_choice(self):
+        self.window.show_quick_panel(
+            self._flatten_current_level(),
+            self._run_handle_choice,
+            selected_index=self._history.get(len(self._location), 0)
+        )
+
+    def _run_handle_choice(self, index, selected_index=None):
+        if index < 0:
+            return
+
+        self._history[len(self._location)] = index
+        here = self._current_level()
+        key = self._flatten_current_level()[index][0]
+
+        if key == "..":
+            self._location.pop()
+            self._run_panel()
+        else:
+            common.set_deep_safe(
                 self._encoded_settings,
                 self._location,
                 sorted((tup[0], tup[0] == key) for tup in here)
             )
             self._save()
-            self._run_panel_special()
+            self._run_panel_choice()
 
     def _on_done(self, string):
-        common.set_deep(
+        common.set_deep_safe(
             self._encoded_settings, self._location, string
         )
         self._location.pop()
@@ -142,10 +173,15 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
         self._run_panel()
 
     def _current_level(self):
-        return common.get_deep(self._encoded_settings, self._location)
+        return common.get_deep_safe(self._encoded_settings, self._location)
 
     def _flatten_current_level(self):
-        if isinstance(self._current_level(), list):
+        if len(self._location) > 0 and self._location[-1] == "setting_schemes":
+            main = sorted(
+                [k, "done" if k == self._last_scheme else "..."]
+                for k in self._current_level()
+            )
+        elif isinstance(self._current_level(), list):
             main = sorted(
                 [tup[0], str(tup[1])] for tup in self._current_level()
             )
@@ -159,8 +195,9 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
         else:
             return main
 
-    def _save(self):
-        self.decode_settings()
+    def _save(self, decode=True):
+        if decode:
+            self.decode_settings()
         self.sublime_settings.set("settings", self.settings)
         sublime.save_settings("ConTeXtTools.sublime-settings")
         self.reload_settings()
@@ -195,6 +232,7 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
             self._encoded_settings.get(
                 "pop_ups", {}).get("visuals", {}).get("colour_scheme")
         )
+        del self.settings["setting_schemes"]
 
 class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
