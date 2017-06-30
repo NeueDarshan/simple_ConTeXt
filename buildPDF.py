@@ -87,7 +87,14 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
             input_,
             base
         )
-        chars = \
+
+        chars = ""
+        if self.settings.get("builder", {}).get("show_path"):
+            chars += 'starting > using $PATH "{}"'.format(program.get("path"))
+            if path != program.get("path"):
+                chars += ' (i.e. "{}")'.format(path)
+            chars += "\n"
+        chars += \
             'starting > running command "{}"\n'.format(" ".join(self.command))
         self.output_view.run_command("append", {"characters": chars})
 
