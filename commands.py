@@ -28,10 +28,32 @@ def simplify(obj):
         return str(obj)
 
 
-def _true_entry(list_):
-    for tup in list_:
-        if tup[1]:
-            return tup[0]
+class Choice:
+    def __init__(self, options, choice=0):
+        self.options = sorted(options)
+        self.set(choice)
+
+    def set(self, choice):
+        if isinstance(choice, int):
+            self.choice = choice
+        else:
+            try:
+                self.choice = self.options.index(choice)
+            except ValueError:
+                self.choice = 0
+
+    def get(self):
+        return self.options[self.choice]
+
+    def list(self, string=False):
+        choice = self.get()
+        if string:
+            return [[k, str(k == choice)] for k in self.options]
+        else:
+            return [[k, k == choice] for k in self.options]
+
+    def __str__(self):
+        return ", ".join(self.options)
 
 
 class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
@@ -64,9 +86,11 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
         if key == "..":
             self._location.pop()
             self._run_panel()
+
         elif key == "setting_schemes":
             self._location.append(key)
             self._run_panel_scheme()
+
         else:
             value = here[key]
             self._location.append(key)
@@ -79,25 +103,16 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
                 self._save()
                 self._run_panel()
 
-            elif isinstance(value, int):
+            elif isinstance(value, (int, float, str)):
                 self.window.show_input_panel(
-                    "new integer",
+                    "new " + common.type_as_str(value),
                     str(value),
                     self._on_done,
                     self._on_change,
                     self._on_cancel,
                 )
 
-            elif isinstance(value, str):
-                self.window.show_input_panel(
-                    "new str",
-                    str(value),
-                    self._on_done,
-                    self._on_change,
-                    self._on_cancel,
-                )
-
-            elif isinstance(value, list):
+            elif isinstance(value, Choice):
                 self._run_panel_choice()
 
             else:
@@ -149,17 +164,14 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
             self._location.pop()
             self._run_panel()
         else:
-            common.set_deep_safe(
-                self._encoded_settings,
-                self._location,
-                sorted((tup[0], tup[0] == key) for tup in here)
-            )
+            here.set(key)
+            common.set_deep_safe(self._encoded_settings, self._location, here)
             self._save()
             self._run_panel_choice()
 
-    def _on_done(self, string):
+    def _on_done(self, string, type_="str"):
         common.set_deep_safe(
-            self._encoded_settings, self._location, string
+            self._encoded_settings, self._location, common.guess_type(string)
         )
         self._location.pop()
         self._save()
@@ -181,10 +193,8 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
                 [k, "done" if k == self._last_scheme else "..."]
                 for k in self._current_level()
             )
-        elif isinstance(self._current_level(), list):
-            main = sorted(
-                [tup[0], str(tup[1])] for tup in self._current_level()
-            )
+        elif isinstance(self._current_level(), Choice):
+            main = self._current_level().list(string=True)
         else:
             main = sorted(
                 [k, simplify(self._current_level()[k])]
@@ -206,33 +216,33 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
     def encode_settings(self):
         self._encoded_settings = self.settings
 
-        interface = self.settings.get("interface")
-        self._encoded_settings["interface"] = \
-            [(k, k == interface) for k in self.interfaces]
+        interface = self.settings.get("pop_ups", {}).get("interface")
+        self._encoded_settings.setdefault("pop_ups", {})["interface"] = \
+            Choice(self.interfaces, choice=interface)
 
         path = self.settings.get("program", {}).get("path")
         self._encoded_settings.setdefault("program", {})["path"] = \
-            [(k, k == path) for k in self.program_paths]
+            Choice(self.program_paths, choice=path)
 
         colour_scheme = self.settings.get(
             "pop_ups", {}).get("visuals", {}).get("colour_scheme")
         self._encoded_settings.setdefault(
             "pop_ups", {}).setdefault(
                 "visuals", {})["colour_scheme"] = \
-            [(k, k == colour_scheme) for k in self.colour_schemes]
+            Choice(self.colour_schemes, choice=colour_scheme)
 
         self._encoded_settings["setting_schemes"] = self.setting_schemes
 
     def decode_settings(self):
-        self.settings["interface"] = \
-            _true_entry(self._encoded_settings.get("interface"))
+        self.settings["pop_ups"]["interface"] = \
+            self._encoded_settings.get("pop_ups", {}).get("interface").get()
         self.settings["program"]["path"] = \
-            _true_entry(self._encoded_settings.get("program", {}).get("path"))
-        self.settings["pop_ups"]["visuals"]["colour_scheme"] = _true_entry(
+            self._encoded_settings.get("program", {}).get("path").get()
+        self.settings["pop_ups"]["visuals"]["colour_scheme"] = \
             self._encoded_settings.get(
-                "pop_ups", {}).get("visuals", {}).get("colour_scheme")
-        )
+                "pop_ups", {}).get("visuals", {}).get("colour_scheme").get()
         del self.settings["setting_schemes"]
+
 
 class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
