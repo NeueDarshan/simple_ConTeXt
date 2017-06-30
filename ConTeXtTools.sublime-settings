@@ -1,56 +1,116 @@
 {
-  "current_profile": "default",
-
+  "colour_schemes":
+  {
+    "default":
+    {
+      "background": "rgb(54, 55, 49)",
+      "primary": "rgb(102, 217, 239)",
+      "secondary": "rgb(253, 151, 31)"
+    }
+  },
   "interfaces":
   {
     "default":
     {
-      "main": "~/path-to-context-installation/interface/mkiv"
+      "main": "/path/to/context/interface/mkiv",
+      "modules": "/path/to/context/interface/third"
     }
   },
-
-  "profile_defaults":
+  "program_paths":
   {
-    "command_popups":
+    "default": "/path/to/context/binaries",
+  },
+  "setting_schemes":
+  {
+    "run_to_completion":
     {
-      "on": true,
-      "show_files": false,
+      "program":
+      {
+        "options":
+        {
+          "runs": 9
+        }
+      }
+    },
+    "run_once":
+    {
+      "program":
+      {
+        "options":
+        {
+          "runs": 1
+        }
+      }
+    },
+    "verbose_off":
+    {
+      "builder":
+      {
+        "show_errors": false,
+        "show_pages": false,
+        "show_path": false,
+        "show_warnings": false
+      }
+    },
+    "verbose_on":
+    {
+      "builder":
+      {
+        "show_errors": true,
+        "show_pages": true,
+        "show_path": true,
+        "show_warnings": true
+      }
+    }
+  },
+  "settings":
+  {
+    "builder":
+    {
+      "show_errors": true,
+      "show_pages": true,
+      "show_path": true,
+      "show_warnings": true
+    },
+    "pop_ups":
+    {
       "interface": "default",
+      "on": true,
+      "show_files": true,
       "visuals":
       {
-        "colors":
-        {
-          "background": "rgb(46, 47, 41)",
-          "primary": "rgb(36, 151, 227)",
-          "secondary": "rgb(151, 151, 148)"
-        },
-        "line_break": 60,
+        "colour_scheme": "default",
+        "line_break": 80,
         "sort_keys": true,
         "sort_lists": true
       }
     },
-    "context_program":
+    "program":
     {
+      "name": "context",
       "options":
       {
-        "autogenerate": true
-      }
+        "arrange": false,
+        "auto_pdf": false,
+        "autogenerate": true,
+        "interface": "en",
+        "jit": false,
+        "mode":
+        {
+          "draft": false,
+          "final": false
+        },
+        "paranoid": false,
+        "runs": 9,
+        "synctex": "zipped"
+      },
+      "path": "default"
     },
     "references":
     {
       "command_regex": "(in|at|about|[a-zA-Z]*ref)",
-      "reference_regex": "[a-zA-Z]+:[a-zA-Z\\-\\.:_]+"
+      "on": true,
+      "reference_regex": "[a-zA-Z_\\.\\-\\:]+"
     }
-  },
-
-  "profiles":
-  [
-    {
-      "context_program":
-      {
-        "path": "~/path-to-context-binary"
-      },
-      "name": "default"
-    }
-  ]
+  }
 }
