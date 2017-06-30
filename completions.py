@@ -44,7 +44,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
     def reload_settings(self):
         common.reload_settings(self)
-        name = self.settings.get("interface")
+        name = self.settings.get("pop_ups", {}).get("interface")
         if name and name not in self.commands_cache:
             try:
                 path = os.path.join(PACKAGE, "interface")
@@ -67,7 +67,8 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 l, "text.tex.context - (meta.environment.math, source)"
             ):
                 return self.commands_cache.get(
-                    self.settings.get("interface"), {}).get("commands", [])
+                    self.settings.get("pop_ups", {}).get(
+                        "interface"), {}).get("commands", [])
 
     def on_modified(self, view):
         if not common.is_context(view):
@@ -91,9 +92,11 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         name = view.substr(cmd)[1:]
         if name in self.commands_cache.get(
-                self.settings.get("interface"), {}).get("details", {}):
+            self.settings.get("pop_ups", {}).get(
+                "interface"), {}).get("details", {}):
             view.show_popup(
                 self.get_popup_text(name),
+                max_width=600,
                 flags=sublime.COOPERATE_WITH_AUTO_COMPLETE
             )
 
@@ -110,7 +113,8 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
         signatures = []
         command = self.commands_cache.get(
-            self.settings.get("interface"), {}).get("details", {}).get(name)
+            self.settings.get("pop_ups", {}).get("interface"), {}).get(
+                "details", {}).get(name)
         variations, files = parsing.rendered_command(
             name,
             command,

@@ -86,6 +86,36 @@ def del_deep_safe(dict_, keys):
         del_deep_safe(dict_[keys[0]], keys[1:])
 
 
+def type_as_str(obj):
+    if isinstance(obj, int):
+        return "integer"
+    elif isinstance(obj, float):
+        return "float"
+    elif isinstance(obj, str):
+        return "string"
+    else:
+        return str(type(obj))
+
+
+def guess_type(string):
+    try:
+        return int(string)
+    except ValueError:
+        try:
+            return float(string)
+        except ValueError:
+            pass
+
+    if str(string).lower() == "true":
+        return True
+    elif str(string).lower() == "false":
+        return False
+    elif str(string).lower() in ["none", "null"]:
+        return None
+    else:
+        return string
+
+
 def is_context(view):
     return view.match_selector(view.sel()[0].begin(), "text.tex.context")
 
