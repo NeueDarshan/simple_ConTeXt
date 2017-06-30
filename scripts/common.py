@@ -18,6 +18,45 @@ def deep_update(main, new):
             main[k] = v
 
 
+def iter_deep(dict_):
+    for k, v in dict_.items():
+        if isinstance(v, dict):
+            for key, val in iter_deep(v):
+                yield [k] + key, val
+        else:
+            yield [k], v
+
+
+def get_deep(dict_, keys):
+    if len(keys) == 0:
+        return dict_
+    elif len(keys) == 1:
+        return dict_[keys[0]]
+    else:
+        return get_deep(dict_[keys[0]], keys[1:])
+
+
+def set_deep(dict_, keys, value):
+    if len(keys) <= 1:
+        dict_[keys[0]] = value
+    else:
+        set_deep(dict_[keys[0]], keys[1:], value)
+
+
+def in_deep(dict_, keys):
+    if len(keys) <= 1:
+        return (keys[0] in dict_)
+    else:
+        return in_deep(dict_[keys[0]], keys[1:])
+
+
+def del_deep(dict_, keys):
+    if len(keys) <= 1:
+        del dict_[keys[0]]
+    else:
+        del_deep(dict_[keys[0]], keys[1:])
+
+
 def is_context(view):
     return view.match_selector(view.sel()[0].begin(), "text.tex.context")
 

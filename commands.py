@@ -17,19 +17,21 @@ from scripts import common
 from scripts import parsing
 
 
-def _flatten(s, k, v):
-    if k == "interface":
-        return [k, ", ".join(sorted(s.get("interfaces", {})))]
-    elif k == "path":
-        return [k, ", ".join(sorted(s.get("program_paths", {})))]
-    elif k == "colour_schemes":
-        return [k, ", ".join(sorted(s.get("colour_schemes", {})))]
-    elif isinstance(v, str):
-        return [k, v]
-    elif hasattr(v, "__iter__"):
-        return [k, ", ".join(sorted(v))]
+def simplify(obj):
+    if isinstance(obj, str):
+        return obj
+    elif isinstance(obj, dict):
+        return ", ".join(obj)
+    elif isinstance(obj, list):
+        return ", ".join(tup[0] for tup in obj)
     else:
-        return [k, str(v)]
+        return str(obj)
+
+
+def _true_entry(list_):
+    for tup in list_:
+        if tup[1]:
+            return tup[0]
 
 
 class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
@@ -38,214 +40,161 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
 
     def run(self):
         self.reload_settings()
-        self.choices = {}
-        self._run_zero()
+        self.encode_settings()
+        self._location = []
+        self._history = {}
+        self._run_panel()
 
-    def _run_zero(self, selected_index=0):
+    def _run_panel(self):
         self.window.show_quick_panel(
-            sorted(
-                _flatten(self.sublime_settings, k, v)
-                for k, v in self.settings.items()
-            ),
-            self._run_one,
-            selected_index=selected_index,
+            self._flatten_current_level(),
+            self._run_handle,
+            selected_index=self._history.get(len(self._location), 0)
         )
 
-    def _run_one(self, index, selected_index=0):
-        dict_ = self.settings
-        if not 0 <= index < len(dict_):
+    def _run_handle(self, index, selected_index=None):
+        if index < 0:
             return
 
-        key = sorted(dict_)[index]
-        val = dict_[key]
-        self.choices[0] = [index, key]
+        self._history[len(self._location)] = index
+        here = self._current_level()
+        key = self._flatten_current_level()[index][0]
 
-        if key == "interface":
-            return self.window.show_quick_panel(
-                [["..", "↑ go back"]] +
-                sorted(
-                    [k, str(k == self.settings.get("interface"))]
-                    for k in self.interfaces
-                ),
-                self._run_two_interface,
-                selected_index=selected_index
-            )
+        if key == "..":
+            self._location.pop()
+            self._run_panel()
+        else:
+            value = here[key]
+            self._location.append(key)
 
-        self.window.show_quick_panel(
-            [["..", "↑ go back"]] +
-            sorted(
-                _flatten(self.sublime_settings, k, v) for k, v in val.items()
-            ),
-            self._run_two,
-            selected_index=selected_index
-        )
-
-    def _run_two_interface(self, index, selected_index=0):
-        if index == 0:
-            return self._run_zero(selected_index=self.choices[0][0])
-
-        index -= 1
-        dict_ = self.interfaces
-        if not 0 <= index < len(dict_):
-            return
-
-        key = sorted(dict_)[index]
-        self.choices[1] = [index, key]
-
-        self.settings["interface"] = key
-        self.sublime_settings.set("settings", self.settings)
-        sublime.save_settings("ConTeXtTools.sublime-settings")
-        self.reload_settings()
-        return self._run_one(self.choices[0][0], selected_index=index+1)
-
-    def _run_two(self, index, selected_index=0):
-        if index == 0:
-            return self._run_zero(selected_index=self.choices[0][0])
-
-        index -= 1
-        dict_ = self.settings[self.choices[0][1]]
-        if not 0 <= index < len(dict_):
-            return
-
-        key = sorted(dict_)[index]
-        val = dict_[key]
-        self.choices[1] = [index, key]
-
-        if isinstance(val, bool):
-            self.settings[self.choices[0][1]][key] = not val
-            self.sublime_settings.set("settings", self.settings)
-            sublime.save_settings("ConTeXtTools.sublime-settings")
-            self.reload_settings()
-            return self._run_one(self.choices[0][0], selected_index=index+1)
-
-        elif isinstance(val, str):
-            if key == "path":
-                path = self.settings.get("program", {}).get("path")
-                return self.window.show_quick_panel(
-                    [["..", "↑ go back"]] +
-                    sorted([k, str(k == path)] for k in self.program_paths),
-                    self._run_three_path,
-                    selected_index=selected_index
+            if isinstance(value, bool):
+                common.set_deep(
+                    self._encoded_settings, self._location, not value
                 )
+                self._location.pop()
+                self._save()
+                self._run_panel()
+
+            elif isinstance(value, int):
+                self.window.show_input_panel(
+                    "new integer",
+                    str(value),
+                    self._on_done,
+                    self._on_change,
+                    self._on_cancel,
+                )
+
+            elif isinstance(value, str):
+                self.window.show_input_panel(
+                    "new str",
+                    str(value),
+                    self._on_done,
+                    self._on_change,
+                    self._on_cancel,
+                )
+
+            elif isinstance(value, list):
+                self._run_panel_special()
+
             else:
-                captions = {
-                    "name": "new program name",
-                    "command_regex": "new regex",
-                    "reference_regex": "new regex",
-                    "default": "new string"
-                }
-                return self.window.show_input_panel(
-                    captions.get(key, "default"),
-                    val,
-                    lambda string: self._run_three_str_done(
-                        string, selected_index=index+1
-                    ),
-                    self._run_three_str_change,
-                    lambda: self._run_three_str_cancel(selected_index=index+1),
-                )
+                self._run_panel()
 
+    def _run_panel_special(self):
         self.window.show_quick_panel(
-            [["..", "↑ go back"]] +
-            sorted(
-                _flatten(self.sublime_settings, k, v) for k, v in val.items()
-            ),
-            self._run_three,
-            selected_index=selected_index
+            self._flatten_current_level(),
+            self._run_handle_special,
+            selected_index=self._history.get(len(self._location), 0)
         )
 
-    def _run_three_path(self, index, selected_index=0):
-        if index == 0:
-            return self._run_one(
-                1 + self.choices[1][0], selected_index=1+self.choices[1][0]
-            )
-
-        index -= 1
-        dict_ = self.program_paths
-        if not 0 <= index < len(dict_):
+    def _run_handle_special(self, index, selected_index=None):
+        if index < 0:
             return
 
-        key = sorted(dict_)[index]
-        self.choices[2] = [index, key]
+        self._history[len(self._location)] = index
+        here = self._current_level()
+        key = self._flatten_current_level()[index][0]
 
-        self.settings["program"]["path"] = key
-        self.sublime_settings.set("settings", self.settings)
-        sublime.save_settings("ConTeXtTools.sublime-settings")
-        self.reload_settings()
-        return self._run_two(1 + self.choices[1][0], selected_index=index+1)
+        if key == "..":
+            self._location.pop()
+            self._run_panel()
+        else:
+            common.set_deep(
+                self._encoded_settings,
+                self._location,
+                sorted((tup[0], tup[0] == key) for tup in here)
+            )
+            self._save()
+            self._run_panel_special()
 
-    def _run_three_str_change(self, string):
+    def _on_done(self, string):
+        common.set_deep(
+            self._encoded_settings, self._location, string
+        )
+        self._location.pop()
+        self._save()
+        self._run_panel()
+
+    def _on_change(self, string):
         pass
 
-    def _run_three_str_cancel(self, selected_index=0):
-        return self._run_one(self.choices[0][0], selected_index=selected_index)
+    def _on_cancel(self):
+        self._location.pop()
+        self._run_panel()
 
-    def _run_three_str_done(self, string, selected_index=0):
-        self.settings[self.choices[0][1]][self.choices[1][1]] = string
+    def _current_level(self):
+        return common.get_deep(self._encoded_settings, self._location)
+
+    def _flatten_current_level(self):
+        if isinstance(self._current_level(), list):
+            main = sorted(
+                [tup[0], str(tup[1])] for tup in self._current_level()
+            )
+        else:
+            main = sorted(
+                [k, simplify(self._current_level()[k])]
+                for k in self._current_level()
+            )
+        if len(self._location) > 0:
+            return [["..", "↑ go back"]] + main
+        else:
+            return main
+
+    def _save(self):
+        self.decode_settings()
         self.sublime_settings.set("settings", self.settings)
         sublime.save_settings("ConTeXtTools.sublime-settings")
         self.reload_settings()
-        return self._run_one(
-            self.choices[0][0], selected_index=selected_index
+        self.encode_settings()
+
+    def encode_settings(self):
+        self._encoded_settings = self.settings
+
+        interface = self.settings.get("interface")
+        self._encoded_settings["interface"] = \
+            [(k, k == interface) for k in self.interfaces]
+
+        path = self.settings.get("program", {}).get("path")
+        self._encoded_settings.setdefault("program", {})["path"] = \
+            [(k, k == path) for k in self.program_paths]
+
+        colour_scheme = self.settings.get(
+            "pop_ups", {}).get("visuals", {}).get("colour_scheme")
+        self._encoded_settings.setdefault(
+            "pop_ups", {}).setdefault(
+                "visuals", {})["colour_scheme"] = \
+            [(k, k == colour_scheme) for k in self.colour_schemes]
+
+        self._encoded_settings["setting_schemes"] = self.setting_schemes
+
+    def decode_settings(self):
+        self.settings["interface"] = \
+            _true_entry(self._encoded_settings.get("interface"))
+        self.settings["program"]["path"] = \
+            _true_entry(self._encoded_settings.get("program", {}).get("path"))
+        self.settings["pop_ups"]["visuals"]["colour_scheme"] = _true_entry(
+            self._encoded_settings.get(
+                "pop_ups", {}).get("visuals", {}).get("colour_scheme")
         )
-
-    def _run_three(self, index, selected_index=0):
-        if index == 0:
-            return self._run_one(1 + self.choices[1][0])
-
-        index -= 1
-        dict_ = self.settings[self.choices[0][1]][self.choices[1][1]]
-        if not 0 <= index < len(dict_):
-            return
-
-        key = sorted(dict_)[index]
-        val = dict_[key]
-        self.choices[2] = [index, key]
-
-        if isinstance(val, bool):
-            self.settings[self.choices[0][1]][self.choices[1][1]][key] = \
-                not val
-            self.sublime_settings.set("settings", self.settings)
-            sublime.save_settings("ConTeXtTools.sublime-settings")
-            self.reload_settings()
-            return self._run_two(
-                1 + self.choices[1][0], selected_index=index+1
-            )
-
-        # elif isinstance(val, str):
-        #     if key == "path":
-        #         path = self.settings.get("program", {}).get("path")
-        #         return self.window.show_quick_panel(
-        #             [["..", "↑ go back"]] +
-        #             sorted([k, str(k == path)] for k in self.program_paths),
-        #             self._run_three_path,
-        #             selected_index=selected_index
-        #         )
-        #     else:
-        #         captions = {
-        #             "name": "new program name",
-        #             "command_regex": "new regex",
-        #             "reference_regex": "new regex",
-        #             "default": "new string"
-        #         }
-        #         return self.window.show_input_panel(
-        #             captions.get(key, "default"),
-        #             val,
-        #             lambda string: self._run_three_str_done(
-        #                 string, selected_index=index+1
-        #             ),
-        #             self._run_three_str_change,
-        #             lambda: self._run_three_str_cancel(selected_index=index+1),
-        #         )
-
-        # self.window.show_quick_panel(
-        #     [["..", "↑ go back"]] +
-        #     sorted(
-        #         _flatten(self.sublime_settings, k, v) for k, v in val.items()
-        #     ),
-        #     self._run_three,
-        #     selected_index=selected_index
-        # )
-
 
 class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
