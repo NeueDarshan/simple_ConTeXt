@@ -102,8 +102,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
     def get_popup_text(self, name):
         pop_ups = self.settings.get("pop_ups", {})
-        visuals = pop_ups.get("visuals", {})
-        colours = self.colour_schemes.get(visuals.get("colour_scheme"), {})
+        colours = self.colour_schemes.get(pop_ups.get("colour_scheme"), {})
         style = STYLE_SHEET.format(
             background=colours.get("background"),
             syntax=colours.get("primary"),
@@ -118,9 +117,9 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         variations, files = parsing.rendered_command(
             name,
             command,
-            break_=visuals.get("line_break", None),
-            sort_keys=visuals.get("sort_keys", True),
-            sort_lists=visuals.get("sort_lists", True)
+            break_=pop_ups.get("line_break", None),
+            sort_keys=pop_ups.get("sort_keys", True),
+            sort_lists=pop_ups.get("sort_lists", True)
         )
 
         for variation in variations:
