@@ -258,7 +258,7 @@ class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
         )
 
     def generate_interface(self, index):
-        if not (0 <= index < len(self.interface_names)):
+        if not (0 <= index < len(self.interfaces)):
             return
 
         name = sorted(s for s in self.interfaces)[index]
