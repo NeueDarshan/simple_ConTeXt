@@ -224,11 +224,8 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
         self._encoded_settings.setdefault("program", {})["path"] = \
             Choice(self.program_paths, choice=path)
 
-        colour_scheme = self.settings.get(
-            "pop_ups", {}).get("visuals", {}).get("colour_scheme")
-        self._encoded_settings.setdefault(
-            "pop_ups", {}).setdefault(
-                "visuals", {})["colour_scheme"] = \
+        colour_scheme = self.settings.get("pop_ups", {}).get("colour_scheme")
+        self._encoded_settings.setdefault("pop_ups", {})["colour_scheme"] = \
             Choice(self.colour_schemes, choice=colour_scheme)
 
         self._encoded_settings["setting_schemes"] = self.setting_schemes
@@ -238,9 +235,9 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
             self._encoded_settings.get("pop_ups", {}).get("interface").get()
         self.settings["program"]["path"] = \
             self._encoded_settings.get("program", {}).get("path").get()
-        self.settings["pop_ups"]["visuals"]["colour_scheme"] = \
+        self.settings["pop_ups"]["colour_scheme"] = \
             self._encoded_settings.get(
-                "pop_ups", {}).get("visuals", {}).get("colour_scheme").get()
+                "pop_ups", {}).get("colour_scheme").get()
         del self.settings["setting_schemes"]
 
 

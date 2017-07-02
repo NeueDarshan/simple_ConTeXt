@@ -10,20 +10,19 @@
   - [Symbols](#symbols)
   - [References](#references)
   - [Builder](#builder)
-  - [Settings and Profiles](#settings-and-profiles)
+  - [Settings](#settings)
 
 # Introduction
 
 This plugin aims to provide some support for working with the
 [ConTeXt][contextgarden] program. In particular, it provides:
 
-  - syntax files to markup ConTeXt source files (and related files),
-  - auto-completion for the roughly 4000 "core" ConTeXt commands,
-  - pop-ups showing basic documentation on each of those commands,
+  - syntax files to markup ConTeXt source (and related) files,
+  - auto-completion for the user-facing ConTeXt commands,
+  - pop-ups showing some documentation on each of those commands,
   - a builder,
   - a reference system,
-  - a "profile" system, mainly intended for managing multiple versions of
-    ConTeXt on the same machine,
+  - a GUI for managing the settings,
 
 and other bits and pieces. More details on these features in their respective
 sections. Note that ConTeXt MKIV is supported, but not older versions (i.e.
@@ -44,7 +43,7 @@ There are a couple of `sublime-syntax` files provided related to using ConTeXt.
 
 By "commands" we mean TeX/ConTeXt macros, such as `\starttext`. By "core"
 commands we mean those commands defined in the XML interface files ConTeXt
-comes with. There are three features so far for core commands: "browsing",
+comes with. There are three features implemented for core commands: "browsing",
 "completions" and "pop-ups".
 
 ## Browsing
@@ -57,7 +56,7 @@ interface (provided one has already been created, see the
 core commands at your leisure.
 
 You can do the same kind of thing with completions, but this provides a nicer
-interface for it.
+interface for it. It is pretty basic currently.
 
 ## Completions
 
@@ -108,81 +107,74 @@ of key-value assignments (so for example, something like
 those of the `\setupTABLE` command. Furthermore, it shows that `\startTABLE`
 should be terminated with a matching `\stopTABLE`. The line `tabl-ntb.mkiv`
 indicates the source file where this command is defined, if you're curious, and
-can be turned on or off with the `command_popups/show_files` key.
+can be turned on or off with the `settings/pop_ups/show_files` key.
 
-The colouring of the pop-ups is determined by the
-`command_popups/visuals/colors` key. (The values are used for CSS styling of
-the HTML-based pop-ups, so any valid way of specifying a colour in CSS works.
-Thus `red`, `rgb(255, 0, 0)` and `#ff0000` are all valid.) For example, the
-options
+The colouring of the pop-ups is determined by the name in the
+`settings/pop_ups/colour_scheme` key. (The values in the colour schemes are
+used for CSS styling of the HTML-based pop-ups, so any valid way of specifying
+a colour in CSS works. Thus `red`, `rgb(255, 0, 0)` and `#ff0000` are all
+valid.) For example, the options
 
 ```JSON
-"command_popups":
-{
-  "visuals":
-  {
-    "colors":
-    {
-      "background": "rgb(225, 225, 225)",
-      "primary": "rgb(36, 151, 227)",
-      "secondary": "rgb(86, 86, 86)"
-    }
+"settings": {
+  "pop_ups": {
+    "colour_scheme": "test"
   }
 }
 ```
 
-complement the "Light" version of [Monokai Extended][monokai].
+and
 
-The other keys in `command_popups/visuals` are:
+```JSON
+"colour_schemes": {
+  "test": {
+    "background": "rgb(222, 217, 200)",
+    "primary": "rgb(39, 139, 210)",
+    "secondary": "rgb(101, 123, 131)"
+  }
+}
+```
 
-  - `line_break`, which you can set to any integer and then pop-ups will
-    line-break at that many characters.
-  - `sort_keys`, a boolean for sorting keys in case of a key-value argument or
-    leaving them be in the default order.
-  - `sort_lists`, similar to `sort_keys` but applies to situations where there
-    is a list of options in an argument. Defaults to `true`.
+complement "Boxy Solarized Light" version of [Boxy][boxy-sol].
 
-Pop-ups can be turned on or off completely with the `command_popups/on` key,
-and `command_popups/version` can be used to specify which version of the
+Pop-ups can be turned on or off completely with the `settings/pop_ups/on` key,
+and `settings/pop_ups/interface` can be used to specify which version of the
 ConTeXt interface files to use (as different versions of ConTeXt can have
 different interfaces).
+
+The other keys in `settings/pop_ups` are `line_break`, `sort_keys` and
+`sort_lists`.
 
 ## Generating an Interface
 
 All the [command](#commands) features rely on so-called "interface" files.
 These are simply JSON files, created automatically from the XML files that a
 ConTeXt installation provides. Different installations of ConTeXt will define
-different commands, and thus the XML files for each will differ. So there is an
-`interfaces` key at top-level in the settings, which should contain key-value
-pairs like so:
+different commands, and thus the XML files for each will differ. So there is
+the `interfaces` key, which should contain key-value pairs something like the
+following:
 
 ```JSON
-"interfaces":
-{
-  "one":
-  {
-    "main": "/path/to/main/interface",
-    "modules": "/path/to/module/interface"
+"interfaces": {
+  "example": {
+    "main": "/path-to-tex-tree/texmf-context/tex/context/interface/mkiv",
+    "modules": "/path-to-tex-tree/texmf-modules/tex/context/interface/third"
   }
 }
 ```
 
 "Main" should point to the main XML files (they are named in the scheme
-`i-<name>.xml`), e.g. something like
-`C:/texlive/2016/texmf-dist/tex/context/interface/mkiv` for a windows TeXLive
-2016 installation. Optionally you can locate the module XML files, probably
-right next the the main ones if they are anywhere (e.g. at
-`C:\texlive\2016\texmf-dist\tex\context\interface\third`), and then
-ConTeXtTools will also understand the commands defined in the ConTeXt modules.
-(Well, some of them, not all of them have associated XML files. And some of the
-XML files are malformed.)
+`i-<name>.xml`). Optionally you can locate the module XML files, and then
+ConTeXtTools will be able to understand the commands defined in the ConTeXt
+modules. (Well, some of them, not all of them have associated XML files. And
+some of the XML files might be malformed.)
 
 Then you should bring up the command palette
 (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) and select "ConTeXtTools:
 Generate profile interface", and select the interface you just configured in
 the settings file. Any errors will be reported in the console. Assuming it was
-successful, the other features should now work. (Remember to also switch to a
-profile using that "interface" if necessary.)
+successful, the other features should now work. (Remember to also choose that
+"interface" if necessary.)
 
 # Snippets
 
@@ -253,7 +245,7 @@ One
 
 # References
 
-References are tricky. There are two main tasks to automate:
+References are tricky. There are two main tasks to handle:
 
   - keeping track of the "labels" defined so far, things like
     `[eq:pythagoras]`;
@@ -261,19 +253,20 @@ References are tricky. There are two main tasks to automate:
     commands, e.g. after typing `\eqref`.
 
 The current approach is to allow users to define a regex describing what their
-references look like (this can be set using the `references/reference_regex`
-key), and a regex to describe after which commands they want to choose a
-reference (corresponding to the `references/command_regex` key). In this way,
-for example, extra "reference handlers" defined via `\definereferenceformat`
-can be dealt with.
+references look like (this can be set using the
+`settings/references/reference_regex` key), and a regex to describe after which
+commands they want to choose a reference (corresponding to the
+`settings/references/command_regex` key). In this way, for example, extra
+"reference handlers" defined via `\definereferenceformat` can be dealt with.
 
 To illustrate, the settings
 
 ```JSON
-"references":
-{
-  "reference_regex": "[a-zA-Z]+:[a-zA-Z]+",
-  "command_regex": "(in|at|[a-zA-Z]*ref)"
+"settings": {
+  "references": {
+    "reference_regex": "[a-zA-Z]+:[a-zA-Z]+",
+    "command_regex": "(in|at|[a-zA-Z]*ref)"
+  }
 }
 ```
 
@@ -281,158 +274,172 @@ mean that references such as `[part:introduction]` and `[figure:main]` will be
 tracked correctly, and that typing something like `\partref` will bring up the
 list of references.
 
-Note that these strings (the values in `references/reference_regex` and
-`references/command_regex`) are loaded in Python 3 via the `re` module. So
-Python-style regular expressions are in order, and you may need to escape
-certain characters e.g. a "-" character in a character class `[...]`.
+Note that these strings (the values in `settings/references/reference_regex`
+and `settings/references/command_regex`) are loaded in Python 3 via the `re`
+module. So Python-style regular expressions are in order, and you may need to
+escape certain characters e.g. a "-" character in a character class `[...]`.
 
 # Builder
 
-The builder uses the `context_program/path` key (if given) to locate the main
+The builder uses the `settings/program/path` key (if given) to locate the main
 program, and calls it (by default "context", can be set via
-`context_program/name`) (passing the options in `context_program/options`, if
+`settings/program/name`) (passing the options in `settings/program/options`, if
 any) on the current ConTeXt file. It is invoked in the standard way
 (<kbd>Ctrl</kbd>+<kbd>B</kbd>) and can be cancelled part-way through by running
 it again.
 
-The value of `context_program/options` offers quite some, well, options. You
-can assign a string to it such as `--once --synctex` and this will get passed
-along to the program as if on the command line. Alternatively, you can use
-key-value pairs as in
+Note: the `path` option can be used either as an explicit path, or instead the
+name of a path in `program_paths`. The second alternative could look like:
 
 ```JSON
-"options":
-{
-  "autogenerate": true,
-  "jit": true,
-  "randomseed": 0.7,
-  "runs": 1
+"program_paths": {
+  "default": "/path/to/context/binaries",
+},
+"settings": {
+  "program": {
+    "path": "default"
+  }
+}
+```
+
+The value of `settings/program/options` offers quite some, well, options. You
+can simply assign a string to it such as `--once --synctex` and this will get
+passed along to the program as if on the command line. Better is to use
+key-value pairs as in (for example)
+
+```JSON
+"settings": {
+  "program": {
+    "options": {
+      "autogenerate": true,
+      "runs": 3,
+      "mode": {
+        "draft": true
+      },
+      "synctex": "zipped"
+    }
+  }
 }
 ```
 
 In this example, the ConTeXt program will receive the options
-`--autogenerate --jit --randomseed=0.7 --runs=1`. A key with boolean value will
-pass (or not) the option `--<key>` depending on if the value is `true` or
-`false`. A number or string as value will get passed as `--<key>=<value>`, and
-similarly for lists.
+`--autogenerate --runs=3 --mode=draft --synctex=zipped`. A key with boolean
+value will pass (or not) the option `--<key>` depending on if the value is
+`true` or `false`. A number or string as value will get passed as
+`--<key>=<value>`. The "mode" option gets special treatment, and is passed as
+`mode=<comma-separated-list>` including the "modes" that are set as `true`.
 
 Bear in mind that some options *might* cannibalize each other, for example
-passing `--directives=<some list>` and `--synctex` to ConTeXt can result in the
-`directives` being ignored. This is due to the "synctex" flag being interpreted
-as `--directives="system.synctex=1"` and therefore overwriting the previous
+passing `--directives=<some list>` and `--synctex` to ConTeXt can, in the
+authors experience, result in the `directives` being ignored. Speculation: this
+is due to the "synctex" flag being interpreted as
+`--directives="system.synctex=1"` and therefore overwriting the previous
 directives.
 
-# Settings and Profiles
+The builder takes a couple of options (in `settings/builder`) for what
+information to report or not, namely the booleans `show_errors`, `show_pages`,
+`show_path`, `show_full_command`, and `show_warnings`.
 
-The settings are intended to be flexible. A simple setup could be something
-like this.
+# Settings
+
+In the command palette there is a command "ConTeXtTools: View/change the
+settings", which manages a little GUI for handling the settings. It has some
+limitations, but it is pretty flexible and is usually quicker to change one
+setting than editing the actual settings file.
+
+Of course the settings are in fact just a JSON file (well, technically a
+`sublime-settings` file which is slightly different). An example of such a
+settings file could be:
 
 ```JSON
 {
-  "profiles":
-  [
-    {
-      "name": "main",
-      "command_popups":
-      {
-        "on": true,
-        "show_files": false,
-        "interface": "context"
-      },
-      "context_program":
-      {
-        "path": "C:/path/to/context/program/",
-        "options":
-        {
-          "autogenerate": true
-        }
+  "colour_schemes": {},
+  "interfaces": {
+    "default": {
+      "main": "...",
+      "modules": "..."
+    }
+  },
+  "program_paths": {
+    "default": "...",
+  },
+  "setting_schemes": {
+    "verbose_off": {
+      "builder": {
+        "show_errors": false,
+        "show_pages": false,
+        "show_path": false,
+        "show_full_command": false,
+        "show_warnings": false
       }
-    }
-  ],
-  "interfaces":
-  {
-    "context":
-    {
-      "main": "C:/path/to/interface/mkiv",
-      "modules": "C:/path/to/interface/third"
-    }
-  }
-}
-```
-
-Alternatively, you can use the `profile_defaults` key to assign settings common
-to *all* profiles, and then overwrite these settings on a profile-by-profile
-basis. For example (this time calling `mtxrun --script context ...` instead of
-`context ...`):
-
-```JSON
-{
-  "profile_defaults":
-  {
-    "command_popups":
-    {
-      "on": true,
-      "show_files": false
     },
-    "context_program":
-    {
-      "path": "~/path/to/context/program/",
-      "name": "mtxrun",
-      "options":
-      {
-        "script": "context"
+    "verbose_on": {
+      "builder": {
+        "show_errors": true,
+        "show_pages": true,
+        "show_path": true,
+        "show_full_command": true,
+        "show_warnings": true
       }
     }
   },
-  "profiles":
-  [
-    {
-      "name": "main"
+  "settings": {
+    "builder": {},
+    "pop_ups": {
+      "on": true,
+      "interface": "default",
+      "colour_scheme": "default",
+      "line_break": 70,
     },
-    {
-      "name": "main (but only run once)",
-      "context_program":
-      {
-        "options":
-        {
-          "runs": 1
-        }
-      }
+    "program": {
+      "options": {
+        "autogenerate": true,
+        "synctex": "zipped"
+      },
+      "path": "default"
     },
-  ]
-}
-```
-
-Finally there is an alternative inheritance model, via the `inherits` key. With
-this, you can fine-tune the hierarchy of profiles and cut down on repetition.
-Setting it to a string will try to inherit the profile settings going by that
-name (the name `profile_defaults` is taken to mean, use the settings in
-`profile_defaults`). More generally, setting it to a list will inherit the
-settings one by one, going from left-to-right in the list. Thus
-
-```JSON
-{
-  "name": "test",
-  "inherits":
-  [
-    "profile_defaults",
-    "main",
-    "other"
-  ],
-  "context_program":
-  {
-    "path": "C:/path/to/context/program/"
+    "references":
+    {
+      "on": true,
+      "command_regex": "(in|at|about|[a-zA-Z]*ref)",
+      "reference_regex": "[a-zA-Z_\\.\\-\\:]+"
+    }
   }
 }
 ```
 
-will inherit the default options, overwrite them with the `main` options,
-overwrite them again with the `other` options, and finally overwrite these by
-the options explicitly given in this profile (i.e. set the
-`context_program/path` key to `"C:/path/to/context/program/"`).
+There is `setting_schemes` option in the settings which can be used to group
+together settings. For example, `verbose_off` and `verbose_on` in the above
+example. These do nothing in and of themselves, but the GUI is aware of them:
+in it you can select one of them, and this applies all the settings contained
+within. Another use case might be switching between installations of ConTeXt:
 
-[contextgarden]: http://wiki.contextgarden.net/What_is_ConTeXt
-[titles]: http://wiki.contextgarden.net/Titles
-[metapost]: http://www.tug.org/metapost.html
-[metafun]: http://wiki.contextgarden.net/MetaFun
-[monokai]: http://github.com/jonschlinkert/sublime-monokai-extended
+```JSON
+"setting_schemes": {
+  "set_alpha": {
+    "pop_ups": {
+      "interface": "alpha"
+    },
+    "program": {
+      "path": "alpha"
+    }
+  },
+  "set_beta": {
+    "pop_ups": {
+      "interface": "beta"
+    },
+    "program": {
+      "path": "beta"
+    }
+  }
+}
+```
+
+with the relevant information put into `interfaces` and `program_paths` for
+each.
+
+[contextgarden]: https://wiki.contextgarden.net/What_is_ConTeXt
+[titles]: https://wiki.contextgarden.net/Titles
+[metapost]: https://www.tug.org/metapost.html
+[metafun]: https://wiki.contextgarden.net/MetaFun
+[boxy-sol]: https://github.com/ihodev/sublime-boxy#boxy-solarized-light--iowa
