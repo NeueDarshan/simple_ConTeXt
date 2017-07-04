@@ -117,12 +117,20 @@ def guess_type(string):
 
 
 def is_context(view):
-    return view.match_selector(view.sel()[0].begin(), "text.tex.context")
+    try:
+        return view.match_selector(view.sel()[0].begin(), "text.tex.context")
+    except:
+        return False
 
 
 def load_commands(path_, version):
-    with open(os.path.join(path_, "commands {}.json".format(version))) as f:
-        return json.load(f)
+    try:
+        with open(
+            os.path.join(path_, "commands_{}.json".format(version))
+        ) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
 
 
 def protect_html_whitespace(string):

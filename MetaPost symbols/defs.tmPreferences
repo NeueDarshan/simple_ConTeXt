@@ -4,7 +4,7 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>source.metapost entity.name.function.general</string>
+  <string>source.metapost meta.other.function.def</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>

@@ -73,7 +73,8 @@
       "show_pages": true,
       "show_path": true,
       "show_full_command": true,
-      "show_warnings": true
+      "show_warnings": true,
+      "open_PDF": true
     },
     "pop_ups":
     {

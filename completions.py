@@ -47,21 +47,23 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
         name = self.settings.get("pop_ups", {}).get("interface")
         if name and name not in self.commands_cache:
             try:
-                path = os.path.join(PACKAGE, "interface")
-                self.commands_cache[name] = \
-                    {"details": common.load_commands(path, name)}
-                self.commands_cache[name]["commands"] = sorted([
-                    ["\\" + command, ""]
-                    for command in self.commands_cache[name]["details"]
-                ])
+                details = common.load_commands(
+                    os.path.join(PACKAGE, "interface"), name
+                )
+                if details:
+                    self.commands_cache[name] = {"details": details}
+                    self.commands_cache[name]["commands"] = sorted(
+                        ["\\" + command, ""]
+                        for command in self.commands_cache[name]["details"]
+                    )
             except FileNotFoundError as e:
                 print(e)
 
     def on_query_completions(self, view, prefix, locations):
         if not common.is_context(view):
             return
-        self.reload_settings()
 
+        self.reload_settings()
         for l in locations:
             if view.match_selector(
                 l, "text.tex.context - (meta.environment.math, source)"
@@ -70,7 +72,7 @@ class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
                     self.settings.get("pop_ups", {}).get(
                         "interface"), {}).get("commands", [])
 
-    def on_modified(self, view):
+    def on_modified_async(self, view):
         if not common.is_context(view):
             return
 

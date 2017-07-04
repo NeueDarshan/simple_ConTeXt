@@ -27,6 +27,7 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         self.state = 0
         self.cancel = False
         self.process = None
+        self.base = ""
 
     def reload_settings(self):
         common.reload_settings(self)
@@ -73,7 +74,7 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         self.setup_output_view()
 
         dir_, input_ = os.path.split(view.file_name())
-        base = common.file_with_ext(input_, "")
+        self.base = common.file_with_ext(input_, "")
         os.chdir(dir_)
 
         program = self.settings.get("program", {})
@@ -81,11 +82,12 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
         if path in self.program_paths:
             path = self.program_paths[path]
 
+        name = program.get("name", "context")
         self.command = common.process_options(
-            program.get("name", "context"),
+            name,
             program.get("options", {}),
             input_,
-            base
+            self.base
         )
 
         chars = ""
@@ -94,7 +96,7 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
             if path != program.get("path"):
                 chars += ' (i.e. "{}")'.format(path)
             chars += "\n"
-        chars += 'starting > running "context"'
+        chars += 'starting > running "{}"'.format(name)
         if self.settings.get("builder", {}).get("show_full_command"):
             chars += ' (full command "{}")'.format(" ".join(self.command))
         chars += "\n"
@@ -147,6 +149,9 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
                 else:
                     chars += "\nerror    > {error} >".format(**e)
 
+        self.output_view.run_command("append", {"characters": chars})
+        chars = ""
+
         if len(chars) > 0:
             chars += "\n"
         if self.process.returncode == 0:
@@ -154,6 +159,12 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
                 chars += (
                     "\nsuccess  > shipped {} page{}"
                     .format(log["pages"], "" if log["pages"] == 1 else "s")
+                )
+            viewer = builder.get("viewer")
+            if viewer and builder.get("open_PDF"):
+                chars += "\nsuccess  > opening PDF with {}".format(viewer)
+                subprocess.Popen(
+                    [viewer, "{}.pdf".format(self.base)], creationflags=flags
                 )
             chars += "\nsuccess  > finished in {:.1f}s".format(elapsed)
         else:
