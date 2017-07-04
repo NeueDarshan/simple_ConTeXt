@@ -1,6 +1,7 @@
 import sublime
 import sublime_plugin
 import collections
+import threading
 import json
 import os
 
@@ -258,27 +259,29 @@ class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
         if not (0 <= index < len(self.interfaces)):
             return
 
-        name = sorted(s for s in self.interfaces)[index]
-        interface = self.interfaces[name]
+        self.name = sorted(self.interfaces)[index]
+        interface = self.interfaces[self.name]
         main = interface.get("main")
         modules = interface.get("modules")
-
         if not main:
             return
 
-        xml = parsing.collect(None, main)
+        self.xml = parsing.collect(None, main)
         if modules:
-            xml = parsing.collect(xml, modules)
+            self.xml = parsing.collect(self.xml, modules)
 
-        parsing.fix_tree(xml.getroot())
-        commands = parsing.parse_context_tree(xml)
+        thread = threading.Thread(target=self._run)
+        thread.start()
+
+    def _run(self):
+        parsing.fix_tree(self.xml.getroot())
+        commands = parsing.parse_context_tree(self.xml)
         parsing.simplify_commands(commands)
-
         path = os.path.join(PACKAGE, "interface")
         os.makedirs(path, exist_ok=True)
 
         with open(
-            os.path.join(path, "commands {}.json".format(name)),
+            os.path.join(path, "commands_{}.json".format(self.name)),
             mode="w",
             encoding="utf-8"
         ) as f:
@@ -296,7 +299,6 @@ class ContexttoolsQueryInterfaceCommands(sublime_plugin.WindowCommand):
 
     def run(self):
         self.reload_settings()
-
         names = []
         for file in os.listdir(os.path.join(PACKAGE, "interface")):
             if file.startswith("commands ") and file.endswith(".json"):

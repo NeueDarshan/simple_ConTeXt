@@ -4,15 +4,11 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>source.metapost meta.other.function.let</string>
+  <string>source.metapost - (meta.other.function.def, meta.other.numeric.fig, meta.other.function.let)</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>
-    <integer>1</integer>
-    <key>symbolTransformation</key>
-    <string>
-      s/\A(.*)\Z/$1 \[let\]/g;
-    </string>
+    <integer>0</integer>
   </dict>
 </dict>
 </plist>

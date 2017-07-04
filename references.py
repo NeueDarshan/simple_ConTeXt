@@ -112,7 +112,7 @@ class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
         self.current_cmd_regex = self.settings.get(
             "references", {}).get("command_regex", r"[a-zA-Z]*ref")
 
-    def on_modified(self, view):
+    def on_modified_async(self, view):
         self.reload_settings()
         if not self.settings.get("references", {}).get("on"):
             return

@@ -300,7 +300,7 @@ contexts:
         - include: Lua.main
 
   Lua.inline:
-    - match: '(\\)(ctx(lua|command)|directlua|cldcontext)\b'
+    - match: '(\\)(luacode|(late|direct)lua(code)?|cld(command|context|loadfile|processfile)|ctx(command|directcommand|directlua|latecommand|latelua|lua|report|sprint|write))\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
         '1': punctuation.definition.backslash.context
