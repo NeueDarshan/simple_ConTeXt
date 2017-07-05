@@ -228,24 +228,17 @@ contexts:
     - include: generic.pop/
 
   definitions.args*/:
+    - match: '(?==)'
+      pop: true
     - match: '\('
       scope: punctuation.section.parens.begin.metapost
-      set:
-        - meta_scope: meta.parens.metapost
-        - match: '\b(expr|suffix|of|text|primary)\b'
-          scope: storage.type.metapost
-          set:
-            - include: generic.pop-at-parens-end/
-            - include: definitions.args.var
-            - include: main
-        - include: generic.pop-at-parens-end/
-        - include: definitions.args.var
-        - include: main
-    - include: generic.pop-if-no-parens/
-
-  definitions.args.var:
+    - match: '\)'
+      scope: punctuation.section.parens.end.metapost
+    - match: '\b(expr|suffix|of|text|primary)\b'
+      scope: storage.type.metapost
     - match: '{{tokens}}'
       scope: variable.parameter.metapost
+    - include: main
 
   environments:
     - include: environments.fig

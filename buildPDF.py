@@ -149,11 +149,12 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
                 else:
                     chars += "\nerror    > {error} >".format(**e)
 
-        self.output_view.run_command("append", {"characters": chars})
-        chars = ""
-
         if len(chars) > 0:
-            chars += "\n"
+            self.output_view.run_command("append", {"characters": chars})
+            chars = "\n"
+        else:
+            chars = ""
+
         if self.process.returncode == 0:
             if builder.get("show_pages") and log.get("pages"):
                 chars += (
