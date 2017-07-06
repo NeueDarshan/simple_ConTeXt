@@ -7,7 +7,7 @@ import os
 
 
 PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "simpleConTeXt")
+    # os.path.join(sublime.packages_path(), "simple_ConTeXt")
     os.path.dirname(__file__)
 )
 
@@ -177,16 +177,16 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
 
     def setup_output_view(self):
         if not hasattr(self, "output_view"):
-            self.output_view = self.window.get_output_panel("simpleConTeXt")
+            self.output_view = self.window.get_output_panel("simple_ConTeXt")
 
         self.output_view.settings().set("line_numbers", False)
         self.output_view.settings().set("gutter", False)
         self.output_view.settings().set("spell_check", False)
         self.output_view.settings().set("scroll_past_end", False)
         self.output_view.assign_syntax(
-            "Packages/simpleConTeXt/build results.sublime-syntax"
+            "Packages/simple_ConTeXt/build results.sublime-syntax"
         )
-        self.output_view = self.window.get_output_panel("simpleConTeXt")
+        self.output_view = self.window.get_output_panel("simple_ConTeXt")
         self.window.run_command(
-            "show_panel", {"panel": "output.simpleConTeXt"}
+            "show_panel", {"panel": "output.simple_ConTeXt"}
         )

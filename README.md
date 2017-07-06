@@ -50,7 +50,7 @@ comes with. There are three features implemented for core commands: "browsing",
 
 This is just a quick example feature making use of the interface JSON files. In
 the command palette (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) there is a
-command called "simpleConTeXt: Browse interface commands"; you can choose an
+command called "simple_ConTeXt: Browse interface commands"; you can choose an
 interface (provided one has already been created, see the
 [interface](#generating-an-interface) section) and then peruse the library of
 core commands at your leisure.
@@ -165,12 +165,12 @@ following:
 
 "Main" should point to the main XML files (they are named in the scheme
 `i-<name>.xml`). Optionally you can locate the module XML files, and then
-simpleConTeXt will be able to understand the commands defined in the ConTeXt
+simple_ConTeXt will be able to understand the commands defined in the ConTeXt
 modules. (Well, some of them, not all of them have associated XML files. And
 some of the XML files might be malformed.)
 
 Then you should bring up the command palette
-(<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) and select "simpleConTeXt:
+(<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) and select "simple_ConTeXt:
 Generate profile interface", and select the interface you just configured in
 the settings file. Any errors will be reported in the console. Assuming it was
 successful, the other features should now work. (Remember to also choose that
@@ -342,7 +342,7 @@ information to report or not, namely the booleans `show_errors`, `show_pages`,
 
 # Settings
 
-In the command palette there is a command "simpleConTeXt: View/change the
+In the command palette there is a command "simple_ConTeXt: View/change the
 settings", which manages a little GUI for handling the settings. It has some
 limitations, but it is pretty flexible and is usually quicker to change one
 setting than editing the actual settings file.

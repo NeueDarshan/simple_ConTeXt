@@ -7,7 +7,7 @@ import os
 
 
 PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "simpleConTeXt")
+    # os.path.join(sublime.packages_path(), "simple_ConTeXt")
     os.path.dirname(__file__)
 )
 
@@ -210,7 +210,7 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
         if decode:
             self.decode_settings()
         self.sublime_settings.set("settings", self.settings)
-        sublime.save_settings("simpleConTeXt.sublime-settings")
+        sublime.save_settings("simple_ConTeXt.sublime-settings")
         self.reload_settings()
         self.encode_settings()
 
