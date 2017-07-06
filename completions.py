@@ -4,7 +4,7 @@ import os
 
 
 PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "ConTeXtTools")
+    # os.path.join(sublime.packages_path(), "simpleConTeXt")
     os.path.dirname(__file__)
 )
 
@@ -37,7 +37,7 @@ code {{
 """
 
 
-class ContextMacroSignatureEventListener(sublime_plugin.EventListener):
+class SimpleContextMacroSignatureEventListener(sublime_plugin.EventListener):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.commands_cache = {}

@@ -7,7 +7,7 @@ import os
 
 
 PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "ConTeXtTools")
+    # os.path.join(sublime.packages_path(), "simpleConTeXt")
     os.path.dirname(__file__)
 )
 
@@ -20,7 +20,7 @@ from scripts import common
 CREATE_NO_WINDOW = 0x08000000
 
 
-class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
+class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.lock = threading.Lock()
@@ -177,14 +177,16 @@ class ContextBuildPdfCommand(sublime_plugin.WindowCommand):
 
     def setup_output_view(self):
         if not hasattr(self, "output_view"):
-            self.output_view = self.window.get_output_panel("ConTeXtTools")
+            self.output_view = self.window.get_output_panel("simpleConTeXt")
 
         self.output_view.settings().set("line_numbers", False)
         self.output_view.settings().set("gutter", False)
         self.output_view.settings().set("spell_check", False)
         self.output_view.settings().set("scroll_past_end", False)
         self.output_view.assign_syntax(
-            "Packages/ConTeXtTools/build results.sublime-syntax"
+            "Packages/simpleConTeXt/build results.sublime-syntax"
         )
-        self.output_view = self.window.get_output_panel("ConTeXtTools")
-        self.window.run_command("show_panel", {"panel": "output.ConTeXtTools"})
+        self.output_view = self.window.get_output_panel("simpleConTeXt")
+        self.window.run_command(
+            "show_panel", {"panel": "output.simpleConTeXt"}
+        )

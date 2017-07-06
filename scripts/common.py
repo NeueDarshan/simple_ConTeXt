@@ -411,7 +411,7 @@ def last_command_in_view(view, begin=-200, end=None, skip=_skip_space_nolines):
 
 def reload_settings(self):
     self.sublime_settings = \
-        sublime.load_settings("ConTeXtTools.sublime-settings")
+        sublime.load_settings("simpleConTeXt.sublime-settings")
     self.settings = self.sublime_settings.get("settings", {})
     self.setting_schemes = self.sublime_settings.get("setting_schemes", {})
     self.program_paths = self.sublime_settings.get("program_paths", {})

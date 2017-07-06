@@ -1,0 +1,14 @@
+[
+  {
+    "caption": "simpleConTeXt: View/change the settings",
+    "command": "simple_context_settings_controller"
+  },
+  {
+    "caption": "simpleConTeXt: Generate interface file",
+    "command": "simple_context_generate_interface"
+  },
+  {
+    "caption": "simpleConTeXt: Browse interface commands",
+    "command": "simple_context_query_interface_commands"
+  }
+]

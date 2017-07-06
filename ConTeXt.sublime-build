@@ -1,4 +1,4 @@
 {
-  "target": "context_build_pdf",
+  "target": "simple_context_build_pdf",
   "selector": "text.tex.context",
 }
