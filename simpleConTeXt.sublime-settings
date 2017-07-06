@@ -12,13 +12,13 @@
   {
     "default":
     {
-      "main": "/path/to/context/interface/mkiv",
-      "modules": "/path/to/context/interface/third"
+      "main": "/path-to-context-interface/mkiv",
+      "modules": "/path-to-context-interface/third"
     }
   },
   "program_paths":
   {
-    "default": "/path/to/context/binaries",
+    "default": "/path-to-context-binaries",
   },
   "setting_schemes":
   {
