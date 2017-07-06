@@ -14,7 +14,7 @@
 
 # Introduction
 
-This plugin aims to provide some support for working with the
+This package aims to provide some support for working with the
 [ConTeXt][contextgarden] program. In particular, it provides:
 
   - syntax files to markup ConTeXt source (and related) files,
