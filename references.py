@@ -6,7 +6,7 @@ import os
 
 
 PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "simpleConTeXt")
+    # os.path.join(sublime.packages_path(), "simple_ConTeXt")
     os.path.dirname(__file__)
 )
 

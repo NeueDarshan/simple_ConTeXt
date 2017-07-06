@@ -12,7 +12,7 @@
         "children":
         [
           {
-            "caption": "simpleConTeXt",
+            "caption": "simple_ConTeXt",
             "children":
             [
               {
@@ -20,7 +20,7 @@
                 "command": "open_file",
                 "args":
                 {
-                  "file": "${packages}/simpleConTeXt/README.md"
+                  "file": "${packages}/simple_ConTeXt/README.md"
                 },
               },
               {"caption": "-"},
@@ -28,7 +28,7 @@
                 "command": "edit_settings",
                 "args":
                 {
-                  "base_file": "${packages}/simpleConTeXt/simpleConTeXt.sublime-settings",
+                  "base_file": "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings",
                   "default": "{\n\t$0\n}\n"
                 },
                 "caption": "Settings"

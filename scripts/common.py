@@ -188,8 +188,8 @@ def _iter_merge_sorted(sorted_iters, key=lambda x: x):
 
 
 def parse_log(bytes_):
-    string = bytes_.decode(
-        encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
+    string = bytes_.decode(encoding="utf-8", errors="replace").replace(
+        "\r\n", "\n").replace("\r", "\n")
 
     version = re.search(
         r"ConTeXt  ver: (.*?) MKIV .*?  fmt: (.*?)  int: ([^\s]*)", string
