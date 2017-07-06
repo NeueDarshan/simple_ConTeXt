@@ -74,7 +74,8 @@
       "show_path": true,
       "show_full_command": true,
       "show_warnings": true,
-      "open_PDF": true
+      "open_PDF": true,
+      "viewer": "evince"
     },
     "pop_ups":
     {
