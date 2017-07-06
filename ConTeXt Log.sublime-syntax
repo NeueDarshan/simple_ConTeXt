@@ -4,6 +4,7 @@ name: ConTeXt Log
 file_extensions:
   - log
 scope: text.log.context
+first_line_match: '^open source\s*>\s*level [0-9]+, order [0-9]+, name .*?$'
 
 contexts:
   main:
