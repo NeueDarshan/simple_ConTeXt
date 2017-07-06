@@ -293,7 +293,7 @@ name of a path in `program_paths`. The second alternative could look like:
 
 ```JSON
 "program_paths": {
-  "default": "/path/to/context/binaries",
+  "default": "/path-to-context-binaries",
 },
 "settings": {
   "program": {
