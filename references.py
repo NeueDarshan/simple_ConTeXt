@@ -6,7 +6,7 @@ import os
 
 
 PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "ConTeXtTools")
+    # os.path.join(sublime.packages_path(), "simpleConTeXt")
     os.path.dirname(__file__)
 )
 
@@ -26,7 +26,7 @@ POSSIBLE_REF_SELECTOR = (
 )
 
 
-class ContexttoolsReferenceInsert(sublime_plugin.TextCommand):
+class SimpleContextReferenceInsert(sublime_plugin.TextCommand):
     def run(self, edit, reference="ref"):
         to_add = []
         for region in self.view.sel():
@@ -37,7 +37,7 @@ class ContexttoolsReferenceInsert(sublime_plugin.TextCommand):
         self.view.sel().add_all(to_add)
 
 
-class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
+class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
     def reload_settings(self):
         common.reload_settings(self)
 
@@ -99,14 +99,14 @@ class ContexttoolsReferenceSelector(sublime_plugin.WindowCommand):
         if 0 <= index < len(self.references):
             ref = view.substr(list(self.references.values())[index])
             view.run_command(
-                "contexttools_reference_insert", {"reference": ref}
+                "simple_context_reference_insert", {"reference": ref}
             )
 
     def is_visible(self, *args):
         return common.is_context(self.window.active_view())
 
 
-class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
+class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
     def reload_settings(self):
         common.reload_settings(self)
         self.current_cmd_regex = self.settings.get(
@@ -130,4 +130,4 @@ class ContexttoolsReferenceMacroEventListener(sublime_plugin.EventListener):
             ) and
             re.match(r"\A" + self.current_cmd_regex + r"\Z", name)
         ):
-            view.window().run_command("contexttools_reference_selector")
+            view.window().run_command("simple_context_reference_selector")

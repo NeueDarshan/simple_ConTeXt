@@ -1,4 +1,4 @@
-% SYNTAX TEST "Packages/ConTeXtTools/MetaPost.sublime-syntax"
+% SYNTAX TEST "Packages/simpleConTeXt/MetaPost.sublime-syntax"
 
 % <- source.metapost
 

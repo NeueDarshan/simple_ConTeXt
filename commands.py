@@ -7,7 +7,7 @@ import os
 
 
 PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "ConTeXtTools")
+    # os.path.join(sublime.packages_path(), "simpleConTeXt")
     os.path.dirname(__file__)
 )
 
@@ -57,7 +57,7 @@ class Choice:
         return ", ".join(self.options)
 
 
-class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
+class SimpleContextSettingsController(sublime_plugin.WindowCommand):
     def reload_settings(self):
         common.reload_settings(self)
 
@@ -210,7 +210,7 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
         if decode:
             self.decode_settings()
         self.sublime_settings.set("settings", self.settings)
-        sublime.save_settings("ConTeXtTools.sublime-settings")
+        sublime.save_settings("simpleConTeXt.sublime-settings")
         self.reload_settings()
         self.encode_settings()
 
@@ -242,7 +242,7 @@ class ContexttoolsSettingsController(sublime_plugin.WindowCommand):
         del self.settings["setting_schemes"]
 
 
-class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
+class SimpleContextGenerateInterface(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -288,7 +288,7 @@ class ContexttoolsGenerateInterface(sublime_plugin.WindowCommand):
             json.dump(commands, f, sort_keys=True)
 
 
-class ContexttoolsQueryInterfaceCommands(sublime_plugin.WindowCommand):
+class SimpleContextQueryInterfaceCommands(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.json_files = collections.OrderedDict()
@@ -341,7 +341,7 @@ class ContexttoolsQueryInterfaceCommands(sublime_plugin.WindowCommand):
         if (0 <= index < len(self.json_files[self.choice])):
             var = self.json_files[self.choice][index]
             self.window.run_command(
-                "contexttools_interface_command_insert",
+                "simple_context_interface_command_insert",
                 {
                     "command": "\\{} {}".format(
                         var["name"],
@@ -351,7 +351,7 @@ class ContexttoolsQueryInterfaceCommands(sublime_plugin.WindowCommand):
             )
 
 
-class ContexttoolsInterfaceCommandInsert(sublime_plugin.TextCommand):
+class SimpleContextInterfaceCommandInsert(sublime_plugin.TextCommand):
     def run(self, edit, command=""):
         for region in self.view.sel():
             self.view.insert(edit, region.begin(), command)
