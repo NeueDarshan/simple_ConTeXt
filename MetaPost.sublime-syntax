@@ -3,6 +3,7 @@
 name: MetaPost
 file_extensions:
   - mp
+  - mf
 scope: source.metapost
 
 variables:
