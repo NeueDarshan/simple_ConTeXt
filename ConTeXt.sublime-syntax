@@ -352,7 +352,7 @@ contexts:
     - include: MetaFun.use
 
   MetaFun.use:
-    - match: '(\\)(re)?useMPgraphic\b'
+    - match: '(\\)(MPposition|reusableMP|(re)?useMP|uniqueMP(page)?)graphic\b'
       captures:
         '0': support.function.general.context meta.other.control.word.context
         '1': punctuation.definition.backslash.context
