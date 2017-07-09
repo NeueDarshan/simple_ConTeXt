@@ -155,25 +155,17 @@ def protect_html(string, ignore_tags=["u"]):
     )
 
 
-class ModPath:
-    def __init__(self, path):
-        self.new = path
-        self.orig = os.environ["PATH"]
-
-    def __enter__(self):
-        if isinstance(self.new, str) and self.new:
-            new = os.path.abspath(self.new)
-            if os.path.exists(new):
-                PATH = self.orig.split(os.pathsep)
-                if new not in PATH:
-                    PATH.insert(0, new)
-                else:
-                    PATH.remove(new)
-                    PATH.insert(0, new)
-                os.environ["PATH"] = os.pathsep.join(PATH)
-
-    def __exit__(self, *args):
-        os.environ["PATH"] = self.orig
+def add_path(orig, new):
+    if isinstance(new, str) and new:
+        new = os.path.abspath(new)
+        if os.path.exists(new):
+            PATH = orig.split(os.pathsep)
+            if new not in PATH:
+                PATH.insert(0, new)
+            else:
+                PATH.remove(new)
+                PATH.insert(0, new)
+            return os.pathsep.join(PATH)
 
 
 def _iter_merge_sorted(sorted_iters, key=lambda x: x):
@@ -411,7 +403,7 @@ def last_command_in_view(view, begin=-200, end=None, skip=_skip_space_nolines):
 
 def reload_settings(self):
     self.sublime_settings = \
-        sublime.load_settings("simpleConTeXt.sublime-settings")
+        sublime.load_settings("simple_ConTeXt.sublime-settings")
     self.settings = self.sublime_settings.get("settings", {})
     self.setting_schemes = self.sublime_settings.get("setting_schemes", {})
     self.program_paths = self.sublime_settings.get("program_paths", {})
