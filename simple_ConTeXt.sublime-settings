@@ -1,13 +1,4 @@
 {
-  "colour_schemes":
-  {
-    "default":
-    {
-      "background": "rgb(54, 55, 49)",
-      "primary": "rgb(102, 217, 239)",
-      "secondary": "rgb(253, 151, 31)"
-    }
-  },
   "interfaces":
   {
     "default":

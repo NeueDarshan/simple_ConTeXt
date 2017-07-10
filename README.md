@@ -109,38 +109,11 @@ should be terminated with a matching `\stopTABLE`. The line `tabl-ntb.mkiv`
 indicates the source file where this command is defined, if you're curious, and
 can be turned on or off with the `settings/pop_ups/show_files` key.
 
-The colouring of the pop-ups is determined by the name in the
-`settings/pop_ups/colour_scheme` key. (The values in the colour schemes are
-used for CSS styling of the HTML-based pop-ups, so any valid way of specifying
-a colour in CSS works. Thus `red`, `rgb(255, 0, 0)` and `#ff0000` are all
-valid.) For example, the options
-
-```JSON
-"settings": {
-  "pop_ups": {
-    "colour_scheme": "test"
-  }
-}
-```
-
-and
-
-```JSON
-"colour_schemes": {
-  "test": {
-    "background": "rgb(222, 217, 200)",
-    "primary": "rgb(39, 139, 210)",
-    "secondary": "rgb(101, 123, 131)"
-  }
-}
-```
-
-complement "Boxy Solarized Light" version of [Boxy][boxy-sol].
-
-Pop-ups can be turned on or off completely with the `settings/pop_ups/on` key,
-and `settings/pop_ups/interface` can be used to specify which version of the
-ConTeXt interface files to use (as different versions of ConTeXt can have
-different interfaces).
+The colouring of the pop-ups is determined automatically based on the current
+colour scheme. Pop-ups can be turned on or off completely with the
+`settings/pop_ups/on` key, and `settings/pop_ups/interface` can be used to
+specify which version of the ConTeXt interface files to use (as different
+versions of ConTeXt can have different interfaces).
 
 The other keys in `settings/pop_ups` are `line_break`, `sort_keys` and
 `sort_lists`.
