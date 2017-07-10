@@ -20,6 +20,34 @@ from scripts import common
 
 CREATE_NO_WINDOW = 0x08000000
 
+TEMPLATE = """
+<!DOCTYPE html>
+<html>
+    <style>
+        div.error {{
+            padding: 0.5rem;
+        }}
+        div.error message {{
+            color: var(--redish);
+        }}
+        div.error a {{
+            font-weight: bold;
+            text-decoration: none;
+            background-color: var(--background);
+            padding: 0.2rem;
+            padding-left: 0.4rem;
+            padding-right: 0.4rem;
+        }}
+    </style>
+    <body id="simple-ConTeXt-phantom-error">
+        <div class="error">
+            <span class="message">{message}</span>
+            <a href="hide">×</a>
+        </div>
+    </body>
+</html>
+"""
+
 
 class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
@@ -150,10 +178,10 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
             self.phantom_set.update([
                 sublime.Phantom(
                     sublime.Region(self.view.text_point(int(e["line"]) - 1, 0)),
-                    (
-                        html.escape(
+                    TEMPLATE.format(
+                        message=html.escape(
                             self.parse_error(e, verbose=False), quote=False
-                        ) + ' <a href="hide">[×]</a>'
+                        )
                     ),
                     sublime.LAYOUT_BLOCK,
                     on_navigate=self.hide_phantoms
@@ -161,7 +189,7 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
                 for e in self.log["errors"]
             ])
 
-    def hide_phantoms(self, href="hide"):
+    def hide_phantoms(self, *args, **kwargs):
         if hasattr(self, "view"):
             self.view.erase_phantoms("simple_context")
 

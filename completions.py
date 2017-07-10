@@ -1,5 +1,6 @@
 import sublime
 import sublime_plugin
+import html
 import os
 
 
@@ -15,26 +16,35 @@ from scripts import common
 from scripts import parsing
 
 
-STYLE_SHEET = """
-html {{
-    background-color: {background};
-}}
-.syntax {{
-    color: {syntax};
-    font-size: 1.1em;
-}}
-.doc_string {{
-    color: {doc_string};
-    font-size: 1em;
-}}
-.files {{
-    color: {file};
-    font-size: 1em;
-}}
-code {{
-    font-family: monospace;
-}}
+TEMPLATE = """
+<!DOCTYPE html>
+<html>
+    <style>
+        div.popup {{
+            padding: 0.5rem;
+        }}
+        div.popup div.syntax {{
+            color: var(--bluish);
+        }}
+        div.popup div.docstring {{
+            color: var(--foreground);
+        }}
+        div.popup div.files {{
+            color: var(--bluish);
+        }}
+    </style>
+    <body id="simple-ConTeXt-pop-up">
+        <div class="popup">
+            {body}
+        </div>
+    </body>
+</html>
 """
+
+
+def codeify(s):
+    return s.replace(" ", "&nbsp;").replace("\n", "<br />").replace(
+        "&lt;u&gt;", "<u>").replace("&lt;/u&gt;", "</u>")
 
 
 class SimpleContextMacroSignatureEventListener(sublime_plugin.EventListener):
@@ -104,19 +114,12 @@ class SimpleContextMacroSignatureEventListener(sublime_plugin.EventListener):
 
     def get_popup_text(self, name):
         pop_ups = self.settings.get("pop_ups", {})
-        colours = self.colour_schemes.get(pop_ups.get("colour_scheme"), {})
-        style = STYLE_SHEET.format(
-            background=colours.get("background"),
-            syntax=colours.get("primary"),
-            doc_string=colours.get("secondary"),
-            file=colours.get("primary")
-        )
 
-        signatures = []
+        sigs = []
         command = self.commands_cache.get(
             self.settings.get("pop_ups", {}).get("interface"), {}).get(
                 "details", {}).get(name)
-        variations, files = parsing.rendered_command(
+        vars_, files = parsing.rendered_command(
             name,
             command,
             break_=pop_ups.get("line_break", None),
@@ -124,32 +127,18 @@ class SimpleContextMacroSignatureEventListener(sublime_plugin.EventListener):
             sort_lists=pop_ups.get("sort_lists", True)
         )
 
-        for variation in variations:
-            new_signature = """
-                <div class='syntax'>
-                    <code>{syntax}</code>
-                </div>
-            """
-            parts = {"syntax": common.protect_html(variation[0])}
-            if len(variation[1]) > 0:
-                new_signature += """
-                    <br />
-                    <div class='doc_string'>
-                        <code>{doc_string}</code>
-                    </div>
-                """
-                parts["doc_string"] = common.protect_html(variation[1])
-            signatures.append(new_signature.format(**parts))
-
-        full_signature = "<style>{}</style>".format(style) + \
-            "<br />".join(signatures)
-
+        for var in vars_:
+            sigs.append('<div class="syntax">{}</div>'.format(
+                codeify(html.escape(var[0], quote=False))
+            ))
+            if var[1]:
+                sigs.append('<div class="docstring">{}</div>'.format(
+                    codeify(html.escape(var[1], quote=False))
+                ))
         if files and pop_ups.get("show_files"):
-            full_signature += """
-                <br />
-                <div class='files'>
-                    <code>{}</code>
-                </div>
-            """.format(common.protect_html(" ".join(files)))
+            sigs.append('<div class="files">{}</div>'.format(
+                codeify(html.escape(" ".join(files), quote=False))
+            ))
 
-        return full_signature
+        full_sig = "<br />".join(sigs)
+        return TEMPLATE.format(body=full_sig)
