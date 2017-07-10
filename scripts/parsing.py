@@ -34,7 +34,7 @@ def _translate_name(s):
         if s[3:] == "sign":
             return "[+-]"
         else:
-            return s[3:].upper()
+            return "<i>" + s[3:].upper() + "</i>"
     else:
         return s
 
@@ -296,7 +296,11 @@ def _translate_keyword(obj):
 
 
 def _len(s):
-    return len(s.replace("<u>", "").replace("</u>", ""))
+    return len(
+        s.replace("<u>", "").replace("</u>", "").replace("<i>", "").replace(
+            "</i>", "").replace("<b>", "").replace("</b>", "").replace(
+                "<s>", "").replace("</s>", "")
+    )
 
 
 def _split(s, limit, max_parts=None):
@@ -372,7 +376,7 @@ def _process_list(desc, n, lines, break_=None, sort_lists=False):
         _process_str(
             " ".join(_translate_keyword(item) for item in iter_),
             lines,
-            "{:<2}  ".format(n),
+            "<b>{:<2}</b>  ".format(n),
             "    ",
             break_=(break_ - 4) if isinstance(break_, int) else break_
         )
@@ -384,7 +388,7 @@ def _process_dict(
     if len(desc) == 0:
         return
     max_ = max(len(cmd) for cmd in desc)
-    template = "{:<%s} = " % max_
+    template = "{:<%s} <s>=</s> " % max_
     rest = " " * (max_ + 7)
     line_break = (break_ - max_ - 7) if isinstance(break_, int) else break_
 
@@ -392,7 +396,7 @@ def _process_dict(
         if i > 0:
             return "    " + template.format(k)
         else:
-            return ("{:<2}  " + template).format(n, k)
+            return ("<b>{:<2}</b>  " + template).format(n, k)
 
     i = 0
     iter_ = sorted(desc.items()) if sort_keys else desc.items()
@@ -431,7 +435,7 @@ def _inherit_str(inherits, n, lines, break_=None):
         _process_str(
             "inherits: \\" + inherits,
             lines,
-            "{:<2}  ".format(n),
+            "<b>{:<2}</b>  ".format(n),
             "    ",
             break_=break_
         )
@@ -448,7 +452,7 @@ def _inherit_list(inherits, n, lines, break_=None, sort_lists=False):
             _process_str(
                 "inherits: \\" + in_,
                 lines,
-                "{:<2}  ".format(n),
+                "<b>{:<2}</b>  ".format(n),
                 "    ",
                 break_=break_
             )
@@ -490,7 +494,7 @@ def rendered_command(
                         _process_str(
                             desc,
                             lines,
-                            "{:<2}  ".format(n),
+                            "<b>{:<2}</b>  ".format(n),
                             "    ",
                             break_=break_
                         )

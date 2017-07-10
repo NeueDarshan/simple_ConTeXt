@@ -21,13 +21,26 @@ TEMPLATE = """
 <html>
     <style>
         div.popup {{
-            padding: 0.5rem;
+            padding: 0.1rem;
         }}
         div.popup div.syntax {{
             color: var(--bluish);
         }}
         div.popup div.docstring {{
             color: var(--foreground);
+        }}
+        div.popup div.docstring u {{
+            color: var(--bluish);
+            text-decoration: none;
+        }}
+        div.popup div.docstring i {{
+            color: var(--bluish);
+        }}
+        div.popup div.docstring b {{
+            font-weight: normal;
+        }}
+        div.popup div.docstring s {{
+            text-decoration: none;
         }}
         div.popup div.files {{
             color: var(--bluish);
@@ -43,8 +56,11 @@ TEMPLATE = """
 
 
 def codeify(s):
-    return s.replace(" ", "&nbsp;").replace("\n", "<br />").replace(
-        "&lt;u&gt;", "<u>").replace("&lt;/u&gt;", "</u>")
+    return s.replace(" ", "&nbsp;").replace("\n", "<br>").replace(
+        "&lt;u&gt;", "<u>").replace("&lt;/u&gt;", "</u>").replace(
+            "&lt;i&gt;", "<i>").replace("&lt;/i&gt;", "</i>").replace(
+                "&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>").replace(
+                    "&lt;s&gt;", "<s>").replace("&lt;/s&gt;", "</s>")
 
 
 class SimpleContextMacroSignatureEventListener(sublime_plugin.EventListener):
@@ -140,5 +156,4 @@ class SimpleContextMacroSignatureEventListener(sublime_plugin.EventListener):
                 codeify(html.escape(" ".join(files), quote=False))
             ))
 
-        full_sig = "<br />".join(sigs)
-        return TEMPLATE.format(body=full_sig)
+        return TEMPLATE.format(body="<br>".join(sigs))
