@@ -74,7 +74,6 @@
       "interface": "default",
       "on": true,
       "show_files": true,
-      "colour_scheme": "default",
       "line_break": 80,
       "sort_keys": true,
       "sort_lists": true
