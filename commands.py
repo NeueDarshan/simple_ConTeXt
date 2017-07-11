@@ -225,10 +225,6 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
         self._encoded_settings.setdefault("program", {})["path"] = \
             Choice(self.program_paths, choice=path)
 
-        colour_scheme = self.settings.get("pop_ups", {}).get("colour_scheme")
-        self._encoded_settings.setdefault("pop_ups", {})["colour_scheme"] = \
-            Choice(self.colour_schemes, choice=colour_scheme)
-
         self._encoded_settings["setting_schemes"] = self.setting_schemes
 
     def decode_settings(self):
@@ -236,9 +232,6 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             self._encoded_settings.get("pop_ups", {}).get("interface").get()
         self.settings["program"]["path"] = \
             self._encoded_settings.get("program", {}).get("path").get()
-        self.settings["pop_ups"]["colour_scheme"] = \
-            self._encoded_settings.get(
-                "pop_ups", {}).get("colour_scheme").get()
         del self.settings["setting_schemes"]
 
 
