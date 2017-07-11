@@ -632,7 +632,14 @@ contexts:
         - meta_content_scope: meta.other.asciimode.context
         - include: ConTeXt.asciimode.main
 
+  ConTeXt.asciimode.comment:
+    - match: '(%%).*$\n?'
+      captures:
+        '0': comment.line.double-percentage.context
+        '1': punctuation.definition.comment.context
+
   ConTeXt.asciimode.main:
+    - include: ConTeXt.asciimode.comment
     - include: math.display.control
     - include: math.inline.control
     - include: Lua
