@@ -17,7 +17,6 @@ from scripts import parsing
 
 
 TEMPLATE = """
-<!DOCTYPE html>
 <html>
     <style>
         div.popup {{
@@ -56,11 +55,7 @@ TEMPLATE = """
 
 
 def codeify(s):
-    return s.replace(" ", "&nbsp;").replace("\n", "<br>").replace(
-        "&lt;u&gt;", "<u>").replace("&lt;/u&gt;", "</u>").replace(
-            "&lt;i&gt;", "<i>").replace("&lt;/i&gt;", "</i>").replace(
-                "&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>").replace(
-                    "&lt;s&gt;", "<s>").replace("&lt;/s&gt;", "</s>")
+    return common.protect_html(s, ignore_tags=["u", "i", "b", "s"], init=False)
 
 
 class SimpleContextMacroSignatureEventListener(sublime_plugin.EventListener):
