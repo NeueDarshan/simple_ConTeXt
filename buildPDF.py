@@ -21,7 +21,6 @@ from scripts import common
 CREATE_NO_WINDOW = 0x08000000
 
 TEMPLATE = """
-<!DOCTYPE html>
 <html>
     <style>
         div.error {{
@@ -177,7 +176,9 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
         if self.builder.get("show_phantom_errors"):
             self.phantom_set.update([
                 sublime.Phantom(
-                    sublime.Region(self.view.text_point(int(e["line"]) - 1, 0)),
+                    sublime.Region(
+                        self.view.text_point(int(e["line"]) - 1, 0)
+                    ),
                     TEMPLATE.format(
                         message=html.escape(
                             self.parse_error(e, verbose=False), quote=False
@@ -196,7 +197,8 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
     def parse_error(self, e, verbose=True):
         if verbose:
             if e["line"] and e["details"]:
-                return "error    > {error} > line {line}: {details}".format(**e)
+                return \
+                    "error    > {error} > line {line}: {details}".format(**e)
             elif e["details"]:
                 return "error    > {error} > {details}".format(**e)
             elif e["line"]:

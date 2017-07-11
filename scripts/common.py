@@ -1,5 +1,6 @@
 import sublime
 import json
+import html
 import os
 import re
 
@@ -134,24 +135,23 @@ def load_commands(path_, version):
 
 
 def protect_html_whitespace(string):
-    return string.replace(" ", "&nbsp;").replace("\n", "<br />")
+    return string.replace(" ", "&nbsp;").replace("\n", "<br>")
 
 
-def protect_html_brackets(string, ignore_tags=["u"]):
-    protected = string.replace("<", "&lt;").replace(">", "&gt;")
+def protect_html_brackets(string, ignore_tags=["u"], init=True):
+    s = html.escape(string, quote=False) if init else string
     for tag in ignore_tags:
-        protected = protected.replace(
+        s = s.replace(
             "&lt;{}&gt;".format(tag), "<{}>".format(tag)
-        )
-        protected = protected.replace(
+        ).replace(
             "&lt;/{}&gt;".format(tag), "</{}>".format(tag)
         )
-    return protected
+    return s
 
 
-def protect_html(string, ignore_tags=["u"]):
+def protect_html(string, ignore_tags=["u"], init=True):
     return protect_html_whitespace(
-        protect_html_brackets(string, ignore_tags=ignore_tags)
+        protect_html_brackets(string, ignore_tags=ignore_tags, init=init)
     )
 
 

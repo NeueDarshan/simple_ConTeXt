@@ -387,7 +387,7 @@ def _process_dict(
 ):
     if len(desc) == 0:
         return
-    max_ = max(len(cmd) for cmd in desc)
+    max_ = max(_len(cmd) for cmd in desc)
     template = "{:<%s} <s>=</s> " % max_
     rest = " " * (max_ + 7)
     line_break = (break_ - max_ - 7) if isinstance(break_, int) else break_
