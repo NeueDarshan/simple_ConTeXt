@@ -8,6 +8,9 @@ from .scripts import common
 from .scripts import parsing
 
 
+PACKAGE = os.path.abspath(os.path.dirname(__file__))
+
+
 def simplify(obj):
     if isinstance(obj, str):
         return obj

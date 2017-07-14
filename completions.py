@@ -6,6 +6,8 @@ from .scripts import common
 from .scripts import parsing
 
 
+PACKAGE = os.path.abspath(os.path.dirname(__file__))
+
 TEMPLATE = """
 <html>
     <style>
