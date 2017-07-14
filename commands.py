@@ -4,18 +4,8 @@ import collections
 import threading
 import json
 import os
-
-
-PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "simple_ConTeXt")
-    os.path.dirname(__file__)
-)
-
-
-import sys
-sys.path.insert(1, PACKAGE)
-from scripts import common
-from scripts import parsing
+from .scripts import common
+from .scripts import parsing
 
 
 def simplify(obj):
