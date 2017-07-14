@@ -5,17 +5,7 @@ import threading
 import time
 import html
 import os
-
-
-PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "simple_ConTeXt")
-    os.path.dirname(__file__)
-)
-
-
-import sys
-sys.path.insert(1, PACKAGE)
-from scripts import common
+from .scripts import common
 
 
 CREATE_NO_WINDOW = 0x08000000

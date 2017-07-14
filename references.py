@@ -3,17 +3,7 @@ import sublime_plugin
 import collections
 import re
 import os
-
-
-PACKAGE = os.path.abspath(
-    # os.path.join(sublime.packages_path(), "simple_ConTeXt")
-    os.path.dirname(__file__)
-)
-
-
-import sys
-sys.path.insert(1, PACKAGE)
-from scripts import common
+from .scripts import common
 
 
 DEFINITE_REF_SELECTOR = "meta.other.reference.context"
