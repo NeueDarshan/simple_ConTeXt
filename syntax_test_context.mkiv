@@ -113,16 +113,16 @@
 
 
 % ===== METAPOST/METAFUN =====
-\startMPcode{name}
-%           ^^^^^^ meta.braces.context - source.metapost.metafun.embedded.context
+\startMPcode {name}
+%            ^^^^^^ meta.braces.context - source.metapost.metafun.embedded.context
   draw unitdiamond scaled 5pt withcolor blue;
   % <- source.metapost.metafun.embedded.context
 \stopMPcode
 
-\startuniqueMPgraphic{foo}{x, y}
-%                    ^^^^^       meta.braces.context
-%                         ^^^^^^ meta.braces.context
-%                    ^^^^^^^^^^^ - source.metapost.metafun.embedded.context
+\startuniqueMPgraphic {foo} {x, y}
+%                     ^^^^^        meta.braces.context
+%                           ^^^^^^ meta.braces.context
+%                     ^^^^^^^^^^^^ - source.metapost.metafun.embedded.context
   draw unitcircle scaled 1cm withcolor red;
   % <- source.metapost.metafun.embedded.context
 \stopuniqueMPgraphic

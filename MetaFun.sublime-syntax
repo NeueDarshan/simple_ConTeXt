@@ -19,7 +19,7 @@ contexts:
     - include: operators
     - include: functions
     - include: scope:source.metapost#definitions
-    - include: scope:source.metapost#environments
+    - include: environments
     - include: scope:source.metapost#TeX
 
   comment:
@@ -48,7 +48,7 @@ contexts:
     - include: scope:source.metapost#functions.parameter
 
   functions.labels:
-    - match: '\b((the)?textext|(thefree|free(dot)?)label)(\.(top|[ul]?(lft|rt)|bot|origin|raw))?\b'
+    - match: '\b((the)?textext|(thefree|free(dot)?)label|anchored)(\.(top|[ul]?(lft|rt)|bot|origin|raw))?\b'
       scope: support.function.general.metapost.metafun
     - match: '\b(thelabel|(dot)?labels?)\.(origin|raw)\b'
       scope: support.function.general.metapost.metafun
@@ -58,3 +58,9 @@ contexts:
     - match: '\b(addbackground|(cos|sin|cot|tan)|a(cos|sin|tan)|a?(cos|sin)h|(cot|tan)d|inv(cos|sin)|anglebetween|bb(width|height)|(bottom|top)boundary|boundingbox|cmyk|condition|(circular|linear)_shade|d{2,3}ecimal|defineshade|externalfigure|exp|graphictext|grayed|(inner|outer)boundingbox|inv(erted)?|(left|right|center|point)arrow|(left|right)boundary|loadfigure|ln|log|paired|re((map(ped)?)?color|setcolormap|draw|fill)|register|roundedsquare|simplified|sqr|tensecircle|transparent|tripled|unspiked)\b'
       scope: support.function.general.metapost.metafun
     - include: scope:source.metapost#functions.generic
+
+  environments:
+    - match: '\b(Start|Stop)Page\b'
+      scope: entity.name.other.page.metapost.metafun
+    - include: scope:source.metapost#environments
+

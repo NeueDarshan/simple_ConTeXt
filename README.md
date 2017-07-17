@@ -14,8 +14,8 @@
 
 # Introduction
 
-This package aims to provide some support for working with the
-[ConTeXt][contextgarden] program. In particular, it provides:
+This [Sublime Text][sublimetext] package aims to provide some support for
+working with the [ConTeXt][contextgarden] program. In particular, it provides:
 
   - syntax files to markup ConTeXt source (and related) files,
   - auto-completion for the user-facing ConTeXt commands,
@@ -128,10 +128,12 @@ the `interfaces` key, which should contain key-value pairs something like the
 following:
 
 ```JSON
-"interfaces": {
-  "example": {
-    "main": "/path-to-tex-tree/texmf-context/tex/context/interface/mkiv",
-    "modules": "/path-to-tex-tree/texmf-modules/tex/context/interface/third"
+{
+  "interfaces": {
+    "example": {
+      "main": "/path-to-tex-tree/texmf-context/tex/context/interface/mkiv",
+      "modules": "/path-to-tex-tree/texmf-modules/tex/context/interface/third"
+    }
   }
 }
 ```
@@ -235,10 +237,12 @@ commands they want to choose a reference (corresponding to the
 To illustrate, the settings
 
 ```JSON
-"settings": {
-  "references": {
-    "reference_regex": "[a-zA-Z]+:[a-zA-Z]+",
-    "command_regex": "(in|at|[a-zA-Z]*ref)"
+{
+  "settings": {
+    "references": {
+      "reference_regex": "[a-zA-Z]+:[a-zA-Z]+",
+      "command_regex": "(in|at|[a-zA-Z]*ref)"
+    }
   }
 }
 ```
@@ -265,12 +269,14 @@ Note: the `path` option can be used either as an explicit path, or instead the
 name of a path in `program_paths`. The second alternative could look like:
 
 ```JSON
-"program_paths": {
-  "default": "/path-to-context-binaries",
-},
-"settings": {
-  "program": {
-    "path": "default"
+{
+  "program_paths": {
+    "default": "/path-to-context-binaries",
+  },
+  "settings": {
+    "program": {
+      "path": "default"
+    }
   }
 }
 ```
@@ -281,15 +287,17 @@ passed along to the program as if on the command line. Better is to use
 key-value pairs as in (for example)
 
 ```JSON
-"settings": {
-  "program": {
-    "options": {
-      "autogenerate": true,
-      "runs": 3,
-      "mode": {
-        "draft": true
-      },
-      "synctex": "zipped"
+{
+  "settings": {
+    "program": {
+      "options": {
+        "autogenerate": true,
+        "runs": 3,
+        "mode": {
+          "draft": true
+        },
+        "synctex": "zipped"
+      }
     }
   }
 }
@@ -388,21 +396,23 @@ in it you can select one of them, and this applies all the settings contained
 within. Another use case might be switching between installations of ConTeXt:
 
 ```JSON
-"setting_schemes": {
-  "set_alpha": {
-    "pop_ups": {
-      "interface": "alpha"
+{
+  "setting_schemes": {
+    "set_alpha": {
+      "pop_ups": {
+        "interface": "alpha"
+      },
+      "program": {
+        "path": "alpha"
+      }
     },
-    "program": {
-      "path": "alpha"
-    }
-  },
-  "set_beta": {
-    "pop_ups": {
-      "interface": "beta"
-    },
-    "program": {
-      "path": "beta"
+    "set_beta": {
+      "pop_ups": {
+        "interface": "beta"
+      },
+      "program": {
+        "path": "beta"
+      }
     }
   }
 }
@@ -411,8 +421,8 @@ within. Another use case might be switching between installations of ConTeXt:
 with the relevant information put into `interfaces` and `program_paths` for
 each.
 
-[contextgarden]: https://wiki.contextgarden.net/What_is_ConTeXt
-[titles]: https://wiki.contextgarden.net/Titles
-[metapost]: https://www.tug.org/metapost.html
-[metafun]: https://wiki.contextgarden.net/MetaFun
-[boxy-sol]: https://github.com/ihodev/sublime-boxy#boxy-solarized-light--iowa
+[sublimetext]: https://www.sublimetext.com
+[contextgarden]: http://wiki.contextgarden.net/What_is_ConTeXt
+[titles]: http://wiki.contextgarden.net/Titles
+[metapost]: http://wiki.contextgarden.net/MetaPost
+[metafun]: http://wiki.contextgarden.net/MetaFun
