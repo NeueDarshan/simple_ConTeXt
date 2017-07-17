@@ -2,8 +2,7 @@ import sublime
 import sublime_plugin
 import collections
 import re
-import os
-from .scripts import common
+from .scripts import utilities
 
 
 DEFINITE_REF_SELECTOR = "meta.other.reference.context"
@@ -29,7 +28,7 @@ class SimpleContextReferenceInsert(sublime_plugin.TextCommand):
 
 class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
     def reload_settings(self):
-        common.reload_settings(self)
+        utilities.reload_settings(self)
 
         regex = self.settings.get("references", {}).get(
             "reference_regex", r"[a-zA-Z_\.\-\:]+")
@@ -50,8 +49,8 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
             raw = view.substr(region).strip()
             ref_match = re.match(r"\A" + regex + r"\Z", raw)
 
-            cmd = common.last_command_in_view(
-                view, end=region.end()+1, skip=common._skip_args
+            cmd = utilities.last_command_in_view(
+                view, end=region.end()+1, skip=utilities._skip_args
             )
             if cmd:
                 cmd_match = \
@@ -64,7 +63,7 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
 
     def run(self):
         view = self.window.active_view()
-        if common.is_context(view):
+        if utilities.is_context(view):
             self.reload_settings()
             self.ref_init_point = view.sel()[0].end()
             self.window.show_quick_panel(
@@ -92,13 +91,13 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
                 "simple_context_reference_insert", {"reference": ref}
             )
 
-    def is_visible(self, *args):
-        return common.is_context(self.window.active_view())
+    def is_visible(self, *args, **kwargs):
+        return utilities.is_context(self.window.active_view())
 
 
 class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
     def reload_settings(self):
-        common.reload_settings(self)
+        utilities.reload_settings(self)
         self.current_cmd_regex = self.settings.get(
             "references", {}).get("command_regex", r"[a-zA-Z]*ref")
 
@@ -108,8 +107,9 @@ class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
             return
 
         end = view.sel()[0].end()
-        cmd = \
-            common.last_command_in_view(view, end=end, skip=common._skip_args)
+        cmd = utilities.last_command_in_view(
+            view, end=end, skip=utilities._skip_args
+        )
         if not cmd:
             return
 

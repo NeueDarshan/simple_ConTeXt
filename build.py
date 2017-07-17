@@ -5,7 +5,7 @@ import threading
 import time
 import html
 import os
-from .scripts import common
+from .scripts import utilities
 
 
 CREATE_NO_WINDOW = 0x08000000
@@ -48,7 +48,7 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
         self.base = ""
 
     def reload_settings(self):
-        common.reload_settings(self)
+        utilities.reload_settings(self)
 
     def run(self):
         self.hide_phantoms()
@@ -84,40 +84,38 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
 
         self.reload_settings()
         self.view = self.window.active_view()
-        if not common.is_context(self.view):
+        if not utilities.is_context(self.view):
             return
 
         if self.view.is_dirty():
             self.view.run_command("save")
-
         self.setup_output_view()
         self.phantom_set = sublime.PhantomSet(self.view, "simple_context")
-
         dir_, input_ = os.path.split(self.view.file_name())
-        self.base = common.file_with_ext(input_, "")
+        self.base = utilities.base_file(input_)
         os.chdir(dir_)
 
-        program = self.settings.get("program", {})
-        path = program.get("path")
-        if path in self.program_paths:
-            path = self.program_paths[path]
-
+        program = self.settings.get("builder", {}).get("program", {})
+        path = self.settings.get("path")
+        if path in self.paths:
+            path = self.paths[path]
         name = program.get("name", "context")
-        self.command = common.process_options(
-            name,
-            program.get("options", {}),
-            input_,
-            self.base
+        self.command = utilities.process_options(
+            name, program.get("options", {}), input_, self.base
         )
 
         chars = ""
-        if self.settings.get("builder", {}).get("show_path"):
-            chars += 'starting > using $PATH "{}"'.format(program.get("path"))
+        if self.settings.get("builder", {}).get(
+                "show_program_path_in_builder"):
+            chars += 'starting > using PATH "{}"'.format(
+                self.settings.get("path")
+            )
             if path != program.get("path"):
                 chars += ' (i.e. "{}")'.format(path)
             chars += "\n"
         chars += 'starting > running "{}"'.format(name)
-        if self.settings.get("builder", {}).get("show_full_command"):
+        if self.settings.get("builder", {}).get(
+                "show_full_command_in_builder"):
             chars += ' (full command "{}")'.format(" ".join(self.command))
         chars += "\n"
         self.output_view.run_command("append", {"characters": chars})
@@ -137,33 +135,29 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
             "creationflags": flags,
             "stdin": subprocess.PIPE,
             "stdout": subprocess.PIPE,
-            "stderr": subprocess.PIPE,
+            "stderr": subprocess.PIPE
         }
         if path:
             orig_path = os.environ["PATH"]
-            os.environ["PATH"] = common.add_path(orig_path, path)
+            os.environ["PATH"] = utilities.add_path(orig_path, path)
             opts["env"] = os.environ.copy()
+            os.environ["PATH"] = orig_path
 
         self.state = 2
         self.process = subprocess.Popen(self.command, **opts)
         self.lock.release()
 
-        if path:
-            os.environ["PATH"] = orig_path
-
         result = self.process.communicate()
         self.elapsed = time.time() - self.start_time
-        self.log = common.parse_log(result[0])
+        self.log = utilities.parse_log(result[0])
         self.builder = self.settings.get("builder", {})
-
         self.process_errors(flags)
         self.do_phantoms()
-
         self.process = None
         self.state = 0
 
     def do_phantoms(self):
-        if self.builder.get("show_phantom_errors"):
+        if self.builder.get("show_errors_in_main_view"):
             self.phantom_set.update([
                 sublime.Phantom(
                     sublime.Region(
@@ -204,30 +198,30 @@ class SimpleContextBuildPdfCommand(sublime_plugin.WindowCommand):
     def process_errors(self, flags):
         chars = ""
 
-        if self.builder.get("show_warnings"):
+        if self.builder.get("show_warnings_in_builder"):
             for d in self.log["warnings"]:
                 chars += "\nwarning  > {type} > {message}".format(**d)
 
-        if self.builder.get("show_errors"):
+        if self.builder.get("show_errors_in_builder"):
             for e in self.log["errors"]:
                 chars += "\n" + self.parse_error(e)
 
         if len(chars) > 0:
             self.output_view.run_command("append", {"characters": chars})
             chars = "\n"
-        else:
-            chars = ""
 
         if self.process.returncode == 0:
-            if self.builder.get("show_pages") and self.log.get("pages"):
+            if self.builder.get(
+                "show_pages_shipped_in_builder"
+            ) and self.log.get("pages"):
                 chars += (
                     "\nsuccess  > shipped {} page{}".format(
                         self.log["pages"],
                         "" if self.log["pages"] == 1 else "s"
                     )
                 )
-            viewer = self.builder.get("viewer")
-            if viewer and self.builder.get("open_PDF"):
+            viewer = self.builder.get("PDF", {}).get("PDF_viewer")
+            if viewer and self.builder.get("PDF", {}).get("auto_open_PDF"):
                 chars += "\nsuccess  > opening PDF with {}".format(viewer)
                 subprocess.Popen(
                     [viewer, "{}.pdf".format(self.base)], creationflags=flags

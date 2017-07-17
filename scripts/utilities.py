@@ -1,12 +1,62 @@
 import sublime
-import json
-import html
+import subprocess
+import string
 import os
 import re
 
 
+def html_unescape(s):
+    return s.replace("&gt;", ">").replace("&lt;", "<").replace(
+        "&nbsp;", " ").replace("<br>", "\n")
+
+
+def html_strip_tags(s):
+    return re.sub("<[^<]+>", "", s)
+
+
+def html_pre_code(s):
+    res = ""
+    in_tag = False
+    for c in s:
+        if c == "<":
+            res += c
+            in_tag = True
+        elif c == ">":
+            res += c
+            in_tag = False
+        elif in_tag:
+            res += c
+        else:
+            res += c.replace(" ", "&nbsp;")
+    return res.replace("\n", "<br>")
+
+
+def html_pretty_print(s):
+    return s.replace("&nbsp;", " ")
+
+
+def html_raw_print(s):
+    return html_unescape(
+        html_strip_tags(s.replace("<br>", "\n")).replace("&nbsp;", " ")
+    )
+
+
 def file_with_ext(file, ext):
     return os.path.splitext(os.path.basename(file))[0] + ext
+
+
+def base_file(file):
+    return file_with_ext(file, "")
+
+
+def file_as_slug(s):
+    slug = ""
+    for c in s:
+        if c in string.ascii_letters + string.digits:
+            slug += c.lower()
+        else:
+            slug += "_"
+    return slug
 
 
 def deep_update(main, new):
@@ -118,41 +168,7 @@ def guess_type(string):
 
 
 def is_context(view):
-    try:
-        return view.match_selector(view.sel()[0].begin(), "text.tex.context")
-    except:
-        return False
-
-
-def load_commands(path_, version):
-    try:
-        with open(
-            os.path.join(path_, "commands_{}.json".format(version))
-        ) as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return None
-
-
-def protect_html_whitespace(string):
-    return string.replace(" ", "&nbsp;").replace("\n", "<br>")
-
-
-def protect_html_brackets(string, ignore_tags=["u"], init=True):
-    s = html.escape(string, quote=False) if init else string
-    for tag in ignore_tags:
-        s = s.replace(
-            "&lt;{}&gt;".format(tag), "<{}>".format(tag)
-        ).replace(
-            "&lt;/{}&gt;".format(tag), "</{}>".format(tag)
-        )
-    return s
-
-
-def protect_html(string, ignore_tags=["u"], init=True):
-    return protect_html_whitespace(
-        protect_html_brackets(string, ignore_tags=ignore_tags, init=init)
-    )
+    return view.match_selector(view.sel()[0].begin(), "text.tex.context")
 
 
 def add_path(orig, new):
@@ -168,7 +184,24 @@ def add_path(orig, new):
             return os.pathsep.join(PATH)
 
 
-def _iter_merge_sorted(sorted_iters, key=lambda x: x):
+def locate(path, file):
+    orig_path = os.environ["PATH"]
+    os.environ["PATH"] = add_path(orig_path, path)
+    env = os.environ.copy()
+    os.environ["PATH"] = orig_path
+    proc = subprocess.Popen(
+        ["mtxrun", "--locate", file],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=env
+    )
+    result = proc.communicate()
+    return result[0].decode(encoding="utf-8", errors="replace").replace(
+        "\r\n", "\n").replace("\r", "\n").strip()
+
+
+def iter_i_merge_sorted(sorted_iters, key=lambda x: x):
     tops = [next(iter_, None) for iter_ in sorted_iters]
     while any(tops):
         i, next_ = min(
@@ -263,7 +296,7 @@ def parse_log(bytes_):
         handle_warning_3, handle_warning_4, handle_warning_5
     ]
 
-    for i, warning_match in _iter_merge_sorted(
+    for i, warning_match in iter_i_merge_sorted(
         [warning_0, warning_1, warning_2, warning_3, warning_4, warning_5],
         key=lambda g: g.start()
     ):
@@ -334,7 +367,7 @@ def parse_log(bytes_):
 
     error_handler = [handle_error_0, handle_error_1]
 
-    for i, error_match in _iter_merge_sorted(
+    for i, error_match in iter_i_merge_sorted(
         [error_0, error_1], key=lambda g: g.start()
     ):
         error_handler[i](error_match.groups(), string[error_match.start():])
@@ -405,10 +438,8 @@ def reload_settings(self):
     self.sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
     self.settings = self.sublime_settings.get("settings", {})
-    self.setting_schemes = self.sublime_settings.get("setting_schemes", {})
-    self.program_paths = self.sublime_settings.get("program_paths", {})
-    self.interfaces = self.sublime_settings.get("interfaces", {})
-    self.colour_schemes = self.sublime_settings.get("colour_schemes", {})
+    self.setting_groups = self.sublime_settings.get("setting_groups", {})
+    self.paths = self.sublime_settings.get("paths", {})
 
 
 def process_options(name, options, input_, input_base):

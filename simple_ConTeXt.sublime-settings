@@ -1,58 +1,56 @@
 {
-  "interfaces":
-  {
-    "default":
-    {
-      "main": "/path-to-context-interface/mkiv",
-      "modules": "/path-to-context-interface/third"
-    }
-  },
-  "program_paths":
+  "paths":
   {
     "default": "/path-to-context-binaries",
   },
-  "setting_schemes":
+  "setting_groups":
   {
     "run_to_completion":
     {
-      "program":
+      "builder":
       {
-        "options":
+        "program":
         {
-          "runs": 9
+          "options":
+          {
+            "runs": 9
+          }
         }
       }
     },
     "run_once":
     {
-      "program":
+      "builder":
       {
-        "options":
+        "program":
         {
-          "runs": 1
+          "options":
+          {
+            "runs": 1
+          }
         }
       }
     },
-    "verbose_off":
+    "verbose_builder_off":
     {
       "builder":
       {
-        "show_errors": false,
-        "show_pages": false,
-        "show_path": false,
-        "show_full_command": false,
-        "show_warnings": false
+        "show_errors_in_builder": false,
+        "show_full_command_in_builder": false,
+        "show_pages_shipped_in_builder": false,
+        "show_program_path_in_builder": false,
+        "show_warnings_in_builder": false
       }
     },
-    "verbose_on":
+    "verbose_builder_on":
     {
       "builder":
       {
-        "show_errors": true,
-        "show_pages": true,
-        "show_path": true,
-        "show_full_command": true,
-        "show_warnings": true
+        "show_errors_in_builder": true,
+        "show_full_command_in_builder": true,
+        "show_pages_shipped_in_builder": true,
+        "show_program_path_in_builder": true,
+        "show_warnings_in_builder": true
       }
     }
   },
@@ -60,44 +58,47 @@
   {
     "builder":
     {
-      "show_errors": true,
-      "show_pages": true,
-      "show_path": true,
-      "show_full_command": true,
-      "show_warnings": true,
-      "open_PDF": true,
-      "show_phantom_errors": true,
-      "viewer": "evince"
+      "program":
+      {
+        "name": "context",
+        "options":
+        {
+          "arrange": false,
+          "auto_pdf": false,
+          "autogenerate": true,
+          "interface": "en",
+          "jit": false,
+          "jiton": false,
+          "timing": false,
+          "mode":
+          {
+            "draft": false,
+            "final": false
+          },
+          "paranoid": false,
+          "runs": 9,
+          "synctex": "zipped"
+        }
+      },
+      "PDF":
+      {
+        "PDF_viewer": "evince",
+        "auto_open_PDF": true
+      },
+      "show_errors_in_builder": true,
+      "show_errors_in_main_view": true,
+      "show_full_command_in_builder": true,
+      "show_pages_shipped_in_builder": true,
+      "show_program_path_in_builder": true,
+      "show_warnings_in_builder": true
     },
+    "path": "default",
     "pop_ups":
     {
-      "interface": "default",
+      "line_break": 60,
       "on": true,
-      "show_files": true,
-      "line_break": 80,
-      "sort_keys": true,
-      "sort_lists": true
-    },
-    "program":
-    {
-      "name": "context",
-      "options":
-      {
-        "arrange": false,
-        "auto_pdf": false,
-        "autogenerate": true,
-        "interface": "en",
-        "jit": false,
-        "mode":
-        {
-          "draft": false,
-          "final": false
-        },
-        "paranoid": false,
-        "runs": 9,
-        "synctex": "zipped"
-      },
-      "path": "default"
+      "show_copy_pop_up": false,
+      "show_source_files": false
     },
     "references":
     {
