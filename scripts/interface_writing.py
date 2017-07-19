@@ -1,6 +1,4 @@
-# from . import interface_reading as reading
 from . import utilities
-# import html
 
 
 class InterfaceWriter:
@@ -214,8 +212,8 @@ class InterfaceWriter:
         lines = []
         for i, k in enumerate(sorted(self._content)):
             v = self._content[k]
-            lines.append(self.assignments_guide(len_, key=k, num=not i))
-            lines[-1] += " " + " ".join(v) if isinstance(v, list) else v
+            lines.append(self.assignments_guide(len_, key=k, num=not i) + " ")
+            lines[-1] += " ".join(v) if isinstance(v, list) else v
         return "\n".join(lines)
 
     def template(self, t):
@@ -230,6 +228,7 @@ class InterfaceWriter:
     def assignments_guide(self, len_, key=None, num=True):
         start = self.guide(num=num)
         if key:
+            len_ += len(key) - len(utilities.html_strip_tags(key))
             return start + ("{:<%s} <e>=</e>" % len_).format(key)
         else:
             return start + (" " * (len_ + 2))
