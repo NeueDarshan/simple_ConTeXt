@@ -32,7 +32,7 @@ def html_pre_code(s):
 
 
 def html_pretty_print(s):
-    return s.replace("&nbsp;", " ")
+    return s.replace("&nbsp;", " ").replace("<br>", "\n")
 
 
 def html_raw_print(s):
@@ -190,7 +190,7 @@ def locate(path, file):
     env = os.environ.copy()
     os.environ["PATH"] = orig_path
     proc = subprocess.Popen(
-        ["mtxrun", "--locate", file],
+        ["mtxrun", "--locate", str(file)],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,

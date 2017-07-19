@@ -75,7 +75,7 @@ class SimpleContextMacroSignatureEventListener(
             sublime.packages_path(),
             "simple_ConTeXt",
             "interface",
-            "commands-{}.json".format(self._name)
+            "commands_{}.json".format(self._name)
         )
         try:
             with open(file, encoding="utf-8") as f:
