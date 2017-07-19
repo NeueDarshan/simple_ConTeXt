@@ -5,7 +5,6 @@
   - [Commands](#commands)
     - [Completions](#completions)
     - [Pop-Ups](#pop-ups)
-    - [Generating an Interface](#generating-an-interface)
   - [Snippets](#snippets)
   - [Symbols](#symbols)
   - [References](#references)
@@ -200,7 +199,7 @@ To illustrate, the settings
 {
   "settings": {
     "references": {
-      "reference_regex": "[a-zA-Z_\.\-\:]*[_\.\-\:]+[a-zA-Z_\.\-\:]*",
+      "reference_regex": "[a-zA-Z_\\.\\-\\:]*[_\\.\\-\\:]+[a-zA-Z_\\.\\-\\:]*",
       "command_regex": "(in|at|[a-zA-Z]*ref)"
     }
   }
