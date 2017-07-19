@@ -306,10 +306,8 @@ settings file could be:
     "default": "...",
   },
   "setting_schemes": {
-    "verbose_builder_off":
-    {
-      "builder":
-      {
+    "verbose_builder_off": {
+      "builder": {
         "show_errors_in_builder": false,
         "show_full_command_in_builder": false,
         "show_pages_shipped_in_builder": false,
@@ -317,10 +315,8 @@ settings file could be:
         "show_warnings_in_builder": false
       }
     },
-    "verbose_builder_on":
-    {
-      "builder":
-      {
+    "verbose_builder_on": {
+      "builder": {
         "show_errors_in_builder": true,
         "show_full_command_in_builder": true,
         "show_pages_shipped_in_builder": true,
@@ -343,8 +339,7 @@ settings file could be:
       "on": true,
       "line_break": 65,
     },
-    "references":
-    {
+    "references": {
       "on": true,
       "command_regex": "(in|at|about|[a-zA-Z]*ref)",
       "reference_regex": "[a-zA-Z_\\.\\-\\:]+"

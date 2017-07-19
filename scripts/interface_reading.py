@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 import collections
 import html
+import copy
 from . import utilities
 
 
@@ -168,9 +169,15 @@ class InterfaceLoader:
 
     def do_command_aux(self, name, node):
         attrib = node.attrib
+        file = attrib.get("file")
         if attrib.get("type") == "environment":
-            self.do_command_aux_i(attrib.get("begin", "start") + name, node)
-            self.do_command_aux_i(attrib.get("end", "stop") + name, node)
+            begin = attrib.get("begin", "start") + name
+            end = attrib.get("end", "stop") + name
+            node_copy = copy.deepcopy(node)
+            self.find(node_copy, "arguments").append(self.dots_node())
+            self.find(node_copy, "arguments").append(self.delim_node(end))
+            self.do_command_aux_i(begin, node_copy)
+            self.do_command_aux_i(end, self.empty_node(file))
         else:
             self.do_command_aux_i(name, node)
 
@@ -183,6 +190,7 @@ class InterfaceLoader:
             "csname": self.do_csname,
             "content": self.do_content,
             "delimiter": self.do_delimiter,
+            "emptydelimiter": self.do_empty_delimiter,
             "triplet": self.do_triplet,
             "position": self.do_position,
             "index": self.do_index,
@@ -294,6 +302,9 @@ class InterfaceLoader:
             "ren": self.render("delimiter", node.attrib),
         }
 
+    def do_empty_delimiter(self, node):
+        return {"con": None, "inh": None, "opt": False, "ren": "..."}
+
     def do_angles(self, node):
         return self.do_generic("ANGLES", "angles", node.attrib)
 
@@ -387,7 +398,21 @@ class InterfaceLoader:
         elif len(obj) == 1:
             return obj[0]
         else:
-            return obj
+            if all(
+                isinstance(e, str) or (
+                    isinstance(e, list) and all(isinstance(s, str) for s in e)
+                )
+                for e in obj
+            ):
+                res = []
+                for e in obj:
+                    if isinstance(e, str):
+                        res.append(e)
+                    else:
+                        res += e
+                return res
+            else:
+                return obj
 
     def transform(self, s, escape=True):
         f = self.escape if escape else self.identity
@@ -403,6 +428,24 @@ class InterfaceLoader:
 
     def identity(self, s):
         return s
+
+    def empty_node(self, file):
+        return ET.fromstring(
+            '<cd:command xmlns:cd="http://www.pragma-ade.com/commands" ' +
+            'file="{}" />'.format(file)
+        )
+
+    def dots_node(self):
+        return ET.fromstring(
+            '<cd:emptydelimiter xmlns:cd="http://www.pragma-ade.com' +
+            '/commands" />'
+        )
+
+    def delim_node(self, name):
+        return ET.fromstring(
+            '<cd:delimiter xmlns:cd="http://www.pragma-ade.com/commands" ' +
+            'name="{}" />'.format(name)
+        )
 
     def find(self, node, query):
         result = node.find(self.get_tag(query))

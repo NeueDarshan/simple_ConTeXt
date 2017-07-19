@@ -109,7 +109,7 @@ class InterfaceWriter:
             "<n>{}</n>".format(self._n)
         )
         self._syntax[1] += self._rendering
-        self._syntax[2] += self.template(self._len).format(
+        self._syntax[2] += self.template(self._len, min=3).format(
             "OPT" if self._optional else ""
         )
         if self._optional:
@@ -125,17 +125,17 @@ class InterfaceWriter:
             self._docstring.append(self.docstring_dict())
 
         if self._inherits:
-            if self._content:
-                self._docstring[-1] += (
-                    "\n" +
-                    self.guide(num=False) +
-                    "<i>inherits:</i> <c>\\{}</c>".format(self._inherits)
+            if isinstance(self._inherits, list):
+                inherits = "<i>inherits:</i> " + ", ".join(
+                    "<c>\\{}</c>".format(i) for i in self._inherits
                 )
             else:
-                self._docstring.append(
-                    self.guide() +
-                    "<i>inherits:</i> <c>\\{}</c>".format(self._inherits)
-                )
+                inherits = \
+                    "<i>inherits:</i> " + "<c>\\{}</c>".format(self._inherits)
+            if self._content:
+                self._docstring[-1] += "\n" + self.guide(num=False) + inherits
+            else:
+                self._docstring.append(self.guide() + inherits)
 
     def docstring_str(self):
         return self.guide() + self._content
@@ -216,8 +216,11 @@ class InterfaceWriter:
             lines[-1] += " ".join(v) if isinstance(v, list) else v
         return "\n".join(lines)
 
-    def template(self, t):
-        return " {:^%s}" % (t - 1)
+    def template(self, t, min=None):
+        if not min or t > min:
+            return " {:^%s}" % (t - 1)
+        else:
+            return "{:^%s}" % t
 
     def guide(self, num=True):
         if num:
