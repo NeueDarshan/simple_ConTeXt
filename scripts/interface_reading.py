@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 import collections
+import itertools
 import html
 import copy
 from . import utilities
@@ -35,6 +36,7 @@ class InterfaceLoader:
             self.second_pass(modules=modules)
         if passes >= 3:
             self.third_pass(modules=modules)
+        self.simplify()
 
     def first_pass(self, modules=True):
         self.do_define = self._do_define
@@ -471,6 +473,81 @@ class InterfaceLoader:
             self.cmds[name] = [obj]
         else:
             self.cmds[name].append(obj)
+
+    def simplify(self):
+        for name in self.cmds:
+            self.cmds[name] = self.simplify_aux(self.cmds[name])
+
+    def simplify_aux(self, vars_):
+        new = []
+        for v in vars_:
+            if not any(d == v for d in new):
+                new.append(v)
+        return self.simplify_aux_i(new)
+
+    def simplify_aux_i(self, vars_):
+        len_ = len(vars_)
+        if len_ <= 1:
+            return vars_
+        var_copy = copy.deepcopy(vars_)
+
+        done = False
+        while not done:
+            done = True
+            for pair in itertools.permutations(
+                [(n, entry) for n, entry in enumerate(var_copy)], 2
+            ):
+                i, master = pair[0]
+                j, other = pair[1]
+                redundant = False
+                for master_var in self._iter_mand_to_opt(master):
+                    if self._is_copy_without_opt(other, master_var):
+                        redundant = True
+                        var_copy[i] = master_var
+                        del var_copy[j]
+                        break
+                if redundant:
+                    done = False
+                    break
+
+        return var_copy
+
+    def _iter_mand_to_opt(self, syntax):
+        if syntax["con"] is None:
+            yield syntax
+            return
+        if not isinstance(syntax["con"], list):
+            syntax["con"] = [syntax["con"]]
+        mand_ind = [
+            i for i in range(len(syntax["con"])) if not syntax["con"][i]["opt"]
+        ]
+        copy_ = copy.deepcopy(syntax)
+        for comb in utilities.iter_power_set(mand_ind):
+            for i in mand_ind:
+                copy_["con"][i]["opt"] = bool(i in comb)
+            yield copy_
+
+    def _is_copy_without_opt(self, other, master):
+        return any(
+            reduced == other for reduced in self._iter_without_opt(master)
+        )
+
+    def _iter_without_opt(self, syntax):
+        if syntax["con"] is None:
+            yield syntax
+            return
+        if not isinstance(syntax["con"], list):
+            syntax["con"] = [syntax["con"]]
+        len_ = len(syntax["con"])
+        opt_ind = [
+            i for i in range(len_) if syntax["con"][i]["opt"]
+        ]
+        mand_ind = [i for i in range(len_) if i not in opt_ind]
+
+        for comb in utilities.iter_power_set(opt_ind):
+            ind = set(comb)
+            ind.update(mand_ind)
+            yield [syntax["con"][i] for i in sorted(ind)]
 
     def encode(self):
         files = {}

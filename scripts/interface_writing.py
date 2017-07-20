@@ -148,7 +148,9 @@ class InterfaceWriter:
             return self.docstring_list_nobreak()
 
     def docstring_list_break(self, line_break):
-        content = sorted(self._content.copy(), reverse=True)
+        content = sorted(
+            self._content.copy(), key=utilities.html_strip_tags, reverse=True
+        )
         lines = []
         init = True
 
@@ -184,7 +186,9 @@ class InterfaceWriter:
             return self.docstring_dict_nobreak(len_)
 
     def docstring_dict_break(self, len_, line_break):
-        keys = sorted(self._content, reverse=True)
+        keys = sorted(
+            self._content, key=utilities.html_strip_tags, reverse=True
+        )
         lines = []
         init = True
 
@@ -210,7 +214,9 @@ class InterfaceWriter:
 
     def docstring_dict_nobreak(self, len_):
         lines = []
-        for i, k in enumerate(sorted(self._content)):
+        for i, k in enumerate(
+            sorted(self._content, key=utilities.html_strip_tags)
+        ):
             v = self._content[k]
             lines.append(self.assignments_guide(len_, key=k, num=not i) + " ")
             lines[-1] += " ".join(v) if isinstance(v, list) else v
