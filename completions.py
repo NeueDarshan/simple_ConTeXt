@@ -76,13 +76,11 @@ class SimpleContextMacroSignatureEventListener(
             "simple_ConTeXt",
             "interface",
         )
+        file = os.path.join(path, "commands_{}.json".format(self._name))
         if not os.path.exists(path):
             os.makedirs(path)
         try:
-            with open(
-                os.path.join(path, "commands_{}.json".format(self._name)),
-                encoding="utf-8"
-            ) as f:
+            with open(file, encoding="utf-8") as f:
                 j = json.load(f)
                 self.commands_cache[self._name] = {
                     "details": j["details"],
