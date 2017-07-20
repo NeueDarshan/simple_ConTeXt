@@ -71,14 +71,18 @@ class SimpleContextMacroSignatureEventListener(
 
     def run_loader(self):
         self.state = 1
-        file = os.path.join(
+        path = os.path.join(
             sublime.packages_path(),
             "simple_ConTeXt",
             "interface",
-            "commands_{}.json".format(self._name)
         )
+        if not os.path.exists(path):
+            os.makedirs(path)
         try:
-            with open(file, encoding="utf-8") as f:
+            with open(
+                os.path.join(file, "commands_{}.json".format(self._name)),
+                encoding="utf-8"
+            ) as f:
                 j = json.load(f)
                 self.commands_cache[self._name] = {
                     "details": j["details"],
