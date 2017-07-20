@@ -225,11 +225,11 @@ current ConTeXt file. It is invoked in the standard way
 "running" it again.
 
 Note: the `path` option can be used either as an explicit path, or instead the
-name of a path in `program_paths`. The second alternative could look like:
+name of a path in `paths`. The second alternative could look like:
 
 ```JSON
 {
-  "program_paths": {
+  "paths": {
     "default": "/path-to-context-binaries",
   },
   "settings": {
@@ -302,7 +302,7 @@ settings file could be:
 
 ```JSON
 {
-  "program_paths": {
+  "paths": {
     "default": "...",
   },
   "setting_schemes": {
@@ -364,11 +364,19 @@ installations of ConTeXt:
     "set_beta": {
       "path": "beta"
     }
+  },
+  "paths": {
+    "alpha": "/path-to-alpha-binaries",
+    "beta": "/path-to-beta-binaries"
   }
 }
 ```
 
-with the relevant information put into `program_paths`.
+This has become simpler in more recent versions of this package to the point
+where it's hardly worth doing it this way, if the only thing you change is the
+`path`. Instead you can just open up the command palette, choose
+"simple_ConTeXt: View/change the settings", and select "path" there to choose
+between, say, "alpha" and "beta".
 
 [sublimetext]: https://www.sublimetext.com
 [contextgarden]: http://wiki.contextgarden.net/What_is_ConTeXt

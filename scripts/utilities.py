@@ -1,5 +1,6 @@
 import sublime
 import subprocess
+import itertools
 import string
 import os
 import re
@@ -199,6 +200,13 @@ def locate(path, file):
     result = proc.communicate()
     return result[0].decode(encoding="utf-8", errors="replace").replace(
         "\r\n", "\n").replace("\r", "\n").strip()
+
+
+def iter_power_set(iterable):
+    list_ = list(iterable)
+    return itertools.chain.from_iterable(
+        itertools.combinations(list_, n) for n in range(len(list_) + 1)
+    )
 
 
 def iter_i_merge_sorted(sorted_iters, key=lambda x: x):
