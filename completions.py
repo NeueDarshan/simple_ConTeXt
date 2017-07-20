@@ -80,7 +80,7 @@ class SimpleContextMacroSignatureEventListener(
             os.makedirs(path)
         try:
             with open(
-                os.path.join(file, "commands_{}.json".format(self._name)),
+                os.path.join(path, "commands_{}.json".format(self._name)),
                 encoding="utf-8"
             ) as f:
                 j = json.load(f)
