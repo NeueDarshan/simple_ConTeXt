@@ -1,4 +1,11 @@
 {
-  "target": "simple_context_build_pdf",
+  "target": "simple_context_build",
   "selector": "text.tex.context",
+  "variants":
+  [
+    {
+      "name": "Syntax check",
+      "target": "simple_context_check"
+    }
+  ]
 }

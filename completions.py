@@ -113,9 +113,10 @@ class SimpleContextMacroSignatureEventListener(
                 thread = threading.Thread(target=self.run_loader)
                 thread.start()
 
+    def is_visible(self):
+        return utilities.is_context(self.view)
+
     def on_query_completions(self, prefix, locations):
-        if not utilities.is_context(self.view):
-            return
         self.reload_settings()
         for l in locations:
             if self.view.match_selector(
@@ -125,8 +126,6 @@ class SimpleContextMacroSignatureEventListener(
                     self._name, {}).get("commands", [])
 
     def on_modified_async(self):
-        if not utilities.is_context(self.view):
-            return
         self.reload_settings()
         if not self.settings.get("pop_ups", {}).get("on"):
             return

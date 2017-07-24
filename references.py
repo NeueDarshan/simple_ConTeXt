@@ -61,16 +61,17 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
             if ref_match and not cmd_match:
                 self.references[raw] = region
 
+    def is_visible(self):
+        return utilities.is_context(self.window.active_view())
+
     def run(self):
-        view = self.window.active_view()
-        if utilities.is_context(view):
-            self.reload_settings()
-            self.ref_init_point = view.sel()[0].end()
-            self.window.show_quick_panel(
-                list(self.references.keys()),
-                self.select_reference,
-                on_highlight=self.highlight_reference
-            )
+        self.reload_settings()
+        self.ref_init_point = self.window.active_view().sel()[0].end()
+        self.window.show_quick_panel(
+            list(self.references.keys()),
+            self.select_reference,
+            on_highlight=self.highlight_reference
+        )
 
     def highlight_reference(self, index):
         if 0 <= index < len(self.references):
@@ -90,9 +91,6 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
             view.run_command(
                 "simple_context_reference_insert", {"reference": ref}
             )
-
-    def is_visible(self, *args, **kwargs):
-        return utilities.is_context(self.window.active_view())
 
 
 class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
