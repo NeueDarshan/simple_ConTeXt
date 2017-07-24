@@ -3,6 +3,7 @@ import collections
 import itertools
 import html
 import copy
+import os
 from . import utilities
 
 
@@ -32,11 +33,11 @@ class InterfaceLoader:
         self.namespace = namespace
         if passes >= 1:
             self.first_pass(modules=modules)
-        if passes >= 2:
-            self.second_pass(modules=modules)
-        if passes >= 3:
-            self.third_pass(modules=modules)
-        self.simplify()
+            if passes >= 2:
+                self.second_pass(modules=modules)
+            if passes >= 3:
+                self.third_pass(modules=modules)
+            self.simplify()
 
     def first_pass(self, modules=True):
         self.do_define = self._do_define
@@ -59,7 +60,14 @@ class InterfaceLoader:
     def pre_load(self, modules=True):
         self.to_load.clear()
         if modules:
-            self.to_load.append("i-context-modules.xml")
+            if utilities.locate(self.path, "i-context-modules.xml"):
+                self.to_load.append("i-context-modules.xml")
+            else:
+                s = utilities.locate(self.path, "t-rst.xml")
+                if os.path.exists(s):
+                    for f in os.listdir(os.path.split(s)[0]):
+                        if f.endswith(".xml"):
+                            self.to_load.append(f)
         self.to_load.append("i-context.xml")
 
     def _null(self, *args, **kwargs):
@@ -94,10 +102,14 @@ class InterfaceLoader:
                             .format(child.tag)
                         )
             except FileNotFoundError as e:
-                print('load > error > IO/OS Error "{}"'.format(e))
+                print(
+                    'load > error > in file "{}", IO/OS Error "{}"'
+                    .format(f, e)
+                )
             except ET.ParseError as e:
                 print(
-                    'load > error > ET Parse Error "{}"'.format(e)
+                    'load > error > in file "{}", ET Parse Error "{}"'
+                    .format(f, e)
                 )
 
     def _do_define(self, node):
@@ -121,7 +133,7 @@ class InterfaceLoader:
                     'define > error > unexpected tag\ndefine > details >'
                     'attrib: "{}", tag: "{}"'
                 )
-                print(message.format(child.attrib, child.tag))
+                raise Exception(message.format(child.attrib, child.tag))
         self.add_def(name, self.flatten(obj))
 
     def _do_command(self, node):
@@ -138,7 +150,7 @@ class InterfaceLoader:
                 template += "{}"
                 keys.append(child.attrib["value"])
             else:
-                print(
+                raise Exception(
                     'do_command > error > sequence: unexpected tag "{}"'
                     .format(child.tag)
                 )
@@ -156,7 +168,7 @@ class InterfaceLoader:
                 else:
                     keys.append(def_)
             else:
-                print(
+                raise Exception(
                     'do_command > error > sequence: unexpected tag "{}"'
                     .format(instance.tag)
                 )
@@ -164,10 +176,11 @@ class InterfaceLoader:
             keys.append(name)
 
         for key in set(keys):
-            text = template.format(key)
-            if text == key * 2:
-                text = key
-            self.do_command_aux(text, node)
+            if key:
+                text = template.format(key)
+                if text == key * 2:
+                    text = key
+                self.do_command_aux(text, node)
 
     def do_command_aux(self, name, node):
         attrib = node.attrib
@@ -210,7 +223,7 @@ class InterfaceLoader:
                     'do_command > error > unexpected tag\ndo_command >'
                     'details > name: "{}", attrib: "{}", tag: "{}"'
                 )
-                print(message.format(name, child.attrib, child.tag))
+                raise Exception(message.format(name, child.attrib, child.tag))
         self.add_cmd(
             name,
             {"con": self.flatten(content), "fil": node.attrib.get("file")}
@@ -242,12 +255,14 @@ class InterfaceLoader:
                 content.append(self.do_resolve(child))
             elif self.tag_is(child, "inherit"):
                 inherits.append(self.do_inherit(child))
+            elif self.tag_is(child, "content"):
+                inherits.append(self.do_content(child))
             else:
                 message = (
                     'do_keywords > error > unexpected tag\ndo_keywords > '
                     'details > attrib: "{}", tag: "{}"'
                 )
-                print(message.format(child.attrib, child.tag))
+                raise Exception(message.format(child.attrib, child.tag))
         return {
             "con": self.flatten(content),
             "ren": self.render("keywords", node.attrib),
@@ -269,7 +284,7 @@ class InterfaceLoader:
                     'do_assignments > error > unexpected tag\ndo_assignments '
                     '> details > attrib: "{}", tag: "{}"'
                 )
-                print(message.format(child.attrib, child.tag))
+                raise Exception(message.format(child.attrib, child.tag))
         return {
             "con": content if len(content) > 0 else None,
             "ren": self.render("assignments", node.attrib),
@@ -293,7 +308,7 @@ class InterfaceLoader:
                     'do_parameter > error > unexpected tag\ndo_parameter > '
                     'details > attrib: "{}", tag: "{}"'
                 )
-                print(message.format(child.attrib, child.tag))
+                raise Exception(message.format(child.attrib, child.tag))
         return self.flatten(content)
 
     def do_delimiter(self, node):
@@ -389,7 +404,7 @@ class InterfaceLoader:
                 'render > error > unexpected mode\nrender > '
                 'details > mode: "{}", attrib: "{}"'
             )
-            print(message.format(mode, attrib))
+            raise Exception(message.format(mode, attrib))
 
     def is_true(self, val):
         return val == "yes"
