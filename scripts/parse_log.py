@@ -1,3 +1,4 @@
+import json
 import re
 from . import utilities
 
@@ -33,12 +34,22 @@ def append_deep_safe(dict_, keys, value):
         dict_[k].append(value)
 
 
+def preprocess_lines(s):
+    return re.sub(
+        r"^((?:Over|Under)full)",
+        r"tex warning     > tex warning: bad box\n\1",
+        s,
+        flags=re.MULTILINE
+    )
+
+
 def parse_lines(bytes_, decode=True):
     if decode:
         string = bytes_.decode(encoding="utf-8", errors="replace").replace(
             "\r\n", "\n").replace("\r", "\n")
     else:
         string = bytes_
+    string = preprocess_lines(string)
     log = {}
     prev = None
     for line in string.split("\n"):
@@ -70,8 +81,9 @@ def parse_lines_aux(log):
 
 
 def parse_log(bytes_, decode=True):
-    tex, lua, mp, other = [], [], [], []
-    war, info = {}, {}
+    tex_err, lua_err, mp_err, other_err = [], [], [], []
+    tex_war, other_war = [], []
+    info = {}
     d = parse_lines(bytes_, decode=decode)
 
     for k, v in d.items():
@@ -81,13 +93,13 @@ def parse_log(bytes_, decode=True):
                 if head:
                     if head.group(1) == "tex":
                         dets = re.search(r"! (.*?)\n", s[head.end():])
-                        tex.append({
+                        tex_err.append({
                             "details": dets.group(1) if dets else None,
                             "line": int(head.group(2))
                         })
                     elif head.group(1) == "mp":
                         dets = re.search(r"! (.*?)\n", s[head.end():])
-                        mp.append({
+                        mp_err.append({
                             "details": dets.group(1) if dets else None,
                             "line": int(head.group(2))
                         })
@@ -98,7 +110,7 @@ def parse_log(bytes_, decode=True):
                     dets = re.search(
                         r"\[ctxlua\]:([0-9]+): (.*?)\n", s[head.end():]
                     )
-                    lua.append({
+                    lua_err.append({
                         "details": dets.group(2) if dets else None,
                         "line": int(head.group(1))
                     })
@@ -113,14 +125,69 @@ def parse_log(bytes_, decode=True):
                     info["runtime"] = float(head.group(1))
                     info["pages"] = int(head.group(3))
                     info["pages/second"] = float(head.group(4))
+        if k == "tex warning":
+            for s in v:
+                head = re.search(r"tex warning: bad box", s)
+                if head:
+                    hbox_dets = re.search(
+                        r"(Over|Under)full \\hbox \((.*?)\) in paragraph at "
+                        r"lines ([0-9]+)\-\-([0-9]+)",
+                        s[head.end():]
+                    )
+                    vbox_dets = re.search(
+                        r"(Over|Under)full \\vbox \((.*?)\) detected at line "
+                        r"([0-9]+)",
+                        s[head.end():]
+                    )
+                    if hbox_dets:
+                        if (
+                            int(hbox_dets.group(3)) ==
+                            int(hbox_dets.group(4)) - 1
+                        ):
+                            dets = "{}full \\hbox in paragraph at line {} ({})"
+                            tex_war.append({
+                                "details": dets.format(
+                                    hbox_dets.group(1).lower(),
+                                    hbox_dets.group(3),
+                                    hbox_dets.group(2)
+                                ),
+                                "line": int(hbox_dets.group(3))
+                            })
+                        else:
+                            dets = (
+                                "{}full \\hbox in paragraph at lines {}--{} "
+                                "({})"
+                            )
+                            tex_war.append({
+                                "details": dets.format(
+                                    hbox_dets.group(1).lower(),
+                                    hbox_dets.group(3),
+                                    int(hbox_dets.group(4)) - 1,
+                                    hbox_dets.group(2)
+                                ),
+                                "line": int(hbox_dets.group(3))
+                            })
+                    elif vbox_dets:
+                        dets = "{}full \\vbox at line {} ({})"
+                        tex_war.append({
+                            "details": dets.format(
+                                vbox_dets.group(1).lower(),
+                                vbox_dets.group(3),
+                                vbox_dets.group(2)
+                            ),
+                            "line": int(vbox_dets.group(3))
+                        })
 
     return {
         "errors": {
-            "TeX": utilities.deduplicate(tex),
-            "Lua": utilities.deduplicate(lua),
-            "MetaPost": utilities.deduplicate(mp),
-            "Other": utilities.deduplicate(other)
+            "TeX": utilities.deduplicate(tex_err),
+            "Lua": utilities.deduplicate(lua_err),
+            "MetaPost": utilities.deduplicate(mp_err),
+            "Other": utilities.deduplicate(other_err)
         },
-        "warnings": war,
+        "warnings": {
+            "TeX": utilities.deduplicate(tex_war),
+            "Other": utilities.deduplicate(other_war)
+        },
         "info": info
     }
