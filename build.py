@@ -306,7 +306,7 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
                     "success  > opening PDF with {}".format(viewer)
                 )
                 subprocess.Popen(
-                    [viewer, "{}.pdf".format(self.base)],
+                    [viewer, "{}.pdf".format(self._base)],
                     creationflags=self._flags
                 )
             self.add_to_output(
