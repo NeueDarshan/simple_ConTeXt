@@ -6,6 +6,7 @@ import time
 import html
 import os
 from .scripts import utilities
+from .scripts import parse_log
 
 
 CREATE_NO_WINDOW = 0x08000000
@@ -13,22 +14,40 @@ CREATE_NO_WINDOW = 0x08000000
 TEMPLATE = """
 <html>
     <style>
-        div.error {{
-            padding: 0.5rem;
+        div.hook {{
+            border-left: 0.5rem solid
+                color(var(--redish) blend(var(--background) 30%));
+            border-top: 0.4rem solid transparent;
+            height: 0;
+            width: 0;
         }}
-        div.error message {{
-            color: var(--redish);
+        div.error {{
+            background-color:
+                color(var(--redish) blend(var(--background) 30%));
+            border-radius: 0 0.2rem 0.2rem 0.2rem;
+            margin: 0 0 0.2rem;
+            padding: 0.4rem 0 0.4rem 0.7rem;
+        }}
+        div.error span.message {{
+            padding-right: 0.7rem;
         }}
         div.error a {{
+            text-decoration: inherit;
+            border-radius: 0 0.2rem 0.2rem 0;
+            bottom: 0.05rem;
             font-weight: bold;
-            text-decoration: none;
-            background-color: var(--background);
-            padding: 0.2rem;
-            padding-left: 0.4rem;
-            padding-right: 0.4rem;
+            padding: 0.35rem 0.7rem 0.45rem 0.8rem;
+            position: relative;
+        }}
+        html.light div.error a {{
+            background-color: #ffffff18;
+        }}
+        html.dark div.error a {{
+            background-color: #00000018;
         }}
     </style>
     <body id="simple-ConTeXt-phantom-error">
+        <div class="hook"></div>
         <div class="error">
             <span class="message">{message}</span>
             <a href="hide">×</a>
@@ -91,7 +110,7 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             self.view.run_command("save")
         self.setup_output_view()
         self.phantom_set = sublime.PhantomSet(self.view, "simple_context")
-        input_ = os.path.split(self.view.file_name())[1]
+        self.dir_, input_ = os.path.split(self.view.file_name())
         self.base = utilities.base_file(input_)
 
         program = self.settings.get("builder", {}).get("program", {})
@@ -142,13 +161,14 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             opts["env"] = os.environ.copy()
             os.environ["PATH"] = orig_path
 
+        os.chdir(self.dir_)
         self.state = 2
         self.process = subprocess.Popen(self.command, **opts)
         self.lock.release()
 
         result = self.process.communicate()
         self.elapsed = time.time() - self.start_time
-        self.log = utilities.parse_log(result[0])
+        self.log = parse_log.parse_log(result[0])
         self.builder = self.settings.get("builder", {})
         self.process_errors(flags)
         self.do_phantoms()
@@ -160,64 +180,65 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             self.phantom_set.update([
                 sublime.Phantom(
                     sublime.Region(
-                        self.view.text_point(int(e["line"]) - 1, 0)
+                        self.view.text_point(e.get("line", 1) - 1, 0)
                     ),
                     TEMPLATE.format(
                         message=html.escape(
-                            self.parse_error(e, verbose=False), quote=False
+                            self.parse_error(type_, e, verbose=False),
+                            quote=False
                         )
                     ),
                     sublime.LAYOUT_BLOCK,
                     on_navigate=self.hide_phantoms
                 )
-                for e in self.log["errors"]
+                for type_, list_ in self.log.get("errors", {}).items()
+                for e in list_
             ])
 
     def hide_phantoms(self, *args, **kwargs):
         if hasattr(self, "view"):
             self.view.erase_phantoms("simple_context")
 
-    def parse_error(self, e, verbose=True):
+    def parse_error(self, type_, e, verbose=True):
         if verbose:
-            if e["line"] and e["details"]:
+            if e.get("line") and e.get("details"):
+                return "error    > {type} > line {line}: {details}".format(
+                    type=type_, **e
+                )
+            elif e.get("details"):
+                return "error    > {type} > {details}".format(type=type_, **e)
+            elif e.get("line"):
                 return \
-                    "error    > {error} > line {line}: {details}".format(**e)
-            elif e["details"]:
-                return "error    > {error} > {details}".format(**e)
-            elif e["line"]:
-                return "error    > {error} > line {line}".format(**e)
+                    "error    > {type} > line {line}".format(type=type_, **e)
             else:
-                return "error    > {error} >".format(**e)
+                return "error    > {type} >".format(type=type_, **e)
         else:
-            if e["details"]:
-                return "{error}: {details}".format(**e)
+            if e.get("details"):
+                return "{type}: {details}".format(type=type_, **e)
             else:
-                return e["error"]
+                return type_
 
     def process_errors(self, flags):
         chars = ""
 
-        if self.builder.get("show_warnings_in_builder"):
-            for d in self.log["warnings"]:
-                chars += "\nwarning  > {type} > {message}".format(**d)
+        # if self.builder.get("show_warnings_in_builder"):
+        #     for d in self.log.get("warnings", []):
+        #         chars += "\nwarning  > {type} > {message}".format(**d)
 
         if self.builder.get("show_errors_in_builder"):
-            for e in self.log["errors"]:
-                chars += "\n" + self.parse_error(e)
+            for type_, items in self.log.get("errors", []).items():
+                for e in items:
+                    chars += "\n" + self.parse_error(type_, e)
 
         if len(chars) > 0:
             self.output_view.run_command("append", {"characters": chars})
             chars = "\n"
 
         if self.process.returncode == 0:
-            if self.builder.get(
-                "show_pages_shipped_in_builder"
-            ) and self.log.get("pages"):
-                chars += (
-                    "\nsuccess  > shipped {} page{}".format(
-                        self.log["pages"],
-                        "" if self.log["pages"] == 1 else "s"
-                    )
+            pages = self.log.get("info", {}).get("pages")
+            if self.builder.get("show_pages_shipped_in_builder") and pages:
+                chars += "\nsuccess  > shipped {} page{}".format(
+                    pages, "" if pages == 1 else "s"
                 )
             viewer = self.builder.get("PDF", {}).get("PDF_viewer")
             if viewer and self.builder.get("PDF", {}).get("auto_open_PDF"):
@@ -299,7 +320,7 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
         if self.view.is_dirty():
             self.view.run_command("save")
         self.setup_output_view()
-        dir_, input_ = os.path.split(self.view.file_name())
+        self.dir_, input_ = os.path.split(self.view.file_name())
 
         path = self.settings.get("path")
         if path in self.paths:
@@ -332,6 +353,7 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
             opts["env"] = os.environ.copy()
             os.environ["PATH"] = orig_path
 
+        os.chdir(self.dir_)
         self.state = 2
         self.process = subprocess.Popen(self.command, **opts)
         self.lock.release()

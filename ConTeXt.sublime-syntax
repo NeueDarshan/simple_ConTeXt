@@ -528,7 +528,7 @@ contexts:
     - include: ConTeXt.headings
     - include: ConTeXt.verbatim
     - include: ConTeXt.quotes
-    - include: ConTeXt.font.delimited
+    # - include: ConTeXt.font.delimited
     - include: ConTeXt.tables
 
   ConTeXt.protect:
@@ -574,7 +574,7 @@ contexts:
   ConTeXt.protect.group.main/:
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
-    - include: ConTeXt.group.font.toggle
+    # - include: ConTeXt.group.font.toggle
     - include: ConTeXt.protect.main
 
   ConTeXt.protect.list:
@@ -651,7 +651,7 @@ contexts:
     - meta_include_prototype: false
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
-    - include: ConTeXt.group.font.toggle
+    # - include: ConTeXt.group.font.toggle
     - include: ConTeXt.asciimode.main
 
   ConTeXt.asciimode.list:
@@ -1278,7 +1278,7 @@ contexts:
     - include: TeX.parameter
 
   TeX.parameter:
-    - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})([[:digit:]]|[[:alpha:]]+|\{.*?\})'
+    - match: '(\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})([[:digit:]]|[[:alpha:]]+|\{[[:alpha:][:digit:]]+\})'
       scope: variable.parameter.context
 
   control:
@@ -1422,7 +1422,7 @@ contexts:
   generic.group.main/:
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
-    - include: ConTeXt.group.font.toggle
+    # - include: ConTeXt.group.font.toggle
     - include: main
 
   generic.group.with-integers/:
