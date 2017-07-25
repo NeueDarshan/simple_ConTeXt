@@ -40,17 +40,11 @@ TEMPLATE = """
         o {{
             font-style: italic;
         }}
-        n {{
-            color: var(--purplish);
-        }}
         t {{
-            color: var(--greenish);
+            font-style: italic;
         }}
         d {{
-            color: var(--greenish);
-        }}
-        e {{
-            color: var(--redish);
+            text-decoration: underline;
         }}
     </style>
     <body id="simple-ConTeXt-pop-up">
