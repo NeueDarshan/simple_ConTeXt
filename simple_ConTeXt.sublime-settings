@@ -38,7 +38,7 @@
         "show_errors_in_builder": false,
         "show_full_command_in_builder": false,
         "show_pages_shipped_in_builder": false,
-        "show_program_path_in_builder": false,
+        "show_path_in_builder": false,
         "show_warnings_in_builder": false
       }
     },
@@ -49,7 +49,7 @@
         "show_errors_in_builder": true,
         "show_full_command_in_builder": true,
         "show_pages_shipped_in_builder": true,
-        "show_program_path_in_builder": true,
+        "show_path_in_builder": true,
         "show_warnings_in_builder": true
       }
     }
@@ -77,7 +77,7 @@
           },
           "paranoid": false,
           "runs": 9,
-          "synctex": "zipped"
+          "synctex": 1
         }
       },
       "PDF":
@@ -89,8 +89,13 @@
       "show_errors_in_main_view": true,
       "show_full_command_in_builder": true,
       "show_pages_shipped_in_builder": true,
-      "show_program_path_in_builder": true,
-      "show_warnings_in_builder": true
+      "show_path_in_builder": true,
+      "show_warnings_in_builder": true,
+      "check":
+      {
+        "check_syntax_before_build": true,
+        "stop_build_if_check_fails": true
+      }
     },
     "path": "default",
     "pop_ups":
@@ -104,7 +109,7 @@
     {
       "command_regex": "(in|at|about|[a-zA-Z]*ref)",
       "on": true,
-      "reference_regex": "[a-zA-Z_\\.\\-\\:]+"
+      "reference_regex": "[a-zA-Z_\\.\\-\\:]*[_\\.\\-\\:]+[a-zA-Z_\\.\\-\\:]*"
     }
   }
 }
