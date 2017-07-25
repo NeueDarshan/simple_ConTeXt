@@ -4,6 +4,7 @@ import subprocess
 import threading
 import time
 import html
+import json
 import os
 from .scripts import utilities
 from .scripts import parse_log
@@ -221,9 +222,12 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
     def process_errors(self, flags):
         chars = ""
 
-        # if self.builder.get("show_warnings_in_builder"):
-        #     for d in self.log.get("warnings", []):
-        #         chars += "\nwarning  > {type} > {message}".format(**d)
+        if self.builder.get("show_warnings_in_builder"):
+            for type_, items in self.log.get("warnings", []).items():
+                for e in items:
+                    chars += "\nwarning  > {type} > {details}".format(
+                        type=type_, **e
+                    )
 
         if self.builder.get("show_errors_in_builder"):
             for type_, items in self.log.get("errors", []).items():
