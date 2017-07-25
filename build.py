@@ -4,11 +4,15 @@ import subprocess
 import threading
 import time
 import html
-import json
 import os
 from .scripts import utilities
 from .scripts import parse_log
 
+
+IDLE = 0
+CHK_INITIALISING = 1
+CHK_STARTED = 2
+BLD_STARTED = 3
 
 CREATE_NO_WINDOW = 0x08000000
 
@@ -62,7 +66,7 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.lock = threading.Lock()
-        self.state = 0
+        self.state = IDLE
         self.cancel = False
         self.process = None
         self.base = ""
@@ -72,21 +76,40 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
 
     def reload_settings(self):
         utilities.reload_settings(self)
+        self.view = self.window.active_view()
+        self._phantom_set = sublime.PhantomSet(self.view, "simple_context")
+        self._dir, self._input = os.path.split(self.view.file_name())
+        self._base = utilities.base_file(self._input)
+        self._builder = self.settings.get("builder", {})
+        self._program = self._builder.get("program", {})
+        self._check = self._builder.get("check", {})
+        self._flags = \
+            CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+        self._name = self._program.get("name", "context")
+        self._command = utilities.process_options(
+            self._name,
+            self._program.get("options", {}),
+            self._input,
+            self._base
+        )
+
+        self._path = self.settings.get("path")
+        if self._path in self.paths:
+            self._path = self.paths[self._path]
 
     def run(self):
         self.hide_phantoms()
-        if self.state == 0:
+        if self.state == IDLE:
             self.start_run()
         else:
             self.stop_run()
 
     def stop_run(self):
-        stop = "\nstopping > got request to stop complication\n"
-        self.output_view.run_command("append", {"characters": stop})
+        self.add_to_output("\nstopping > got request to stop builder\n")
 
-        if self.state == 1:
+        if self.state == CHK_INITIALISING:
             self.cancel = True
-        elif self.state == 2:
+        elif self.state in [CHK_STARTED, BLD_STARTED]:
             try:
                 if sublime.platform() == "windows":
                     kill = \
@@ -97,61 +120,94 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             except Exception as e:
                 chars = (
                     'stopping > encountered error "{}" while attempting to '
-                    'stop compilation\n'
+                    'stop builder\n'
                 ).format(e)
-                self.output_view.run_command("append", {"characters": chars})
+                self.add_to_output(chars)
 
     def start_run(self):
-        self.state = 1
+        self.state = CHK_INITIALISING
         self.start_time = time.time()
 
         self.reload_settings()
-        self.view = self.window.active_view()
         if self.view.is_dirty():
             self.view.run_command("save")
         self.setup_output_view()
-        self.phantom_set = sublime.PhantomSet(self.view, "simple_context")
-        self.dir_, input_ = os.path.split(self.view.file_name())
-        self.base = utilities.base_file(input_)
 
-        program = self.settings.get("builder", {}).get("program", {})
-        path = self.settings.get("path")
-        if path in self.paths:
-            path = self.paths[path]
-        name = program.get("name", "context")
-        self.command = utilities.process_options(
-            name, program.get("options", {}), input_, self.base
+        thread = threading.Thread(
+            target=lambda: self.start_run_aux(self._path)
         )
-
-        chars = ""
-        if self.settings.get("builder", {}).get(
-                "show_program_path_in_builder"):
-            chars += 'starting > using PATH "{}"'.format(
-                self.settings.get("path")
-            )
-            if path != program.get("path"):
-                chars += ' (i.e. "{}")'.format(path)
-            chars += "\n"
-        chars += 'starting > running "{}"'.format(name)
-        if self.settings.get("builder", {}).get(
-                "show_full_command_in_builder"):
-            chars += ' (full command "{}")'.format(" ".join(self.command))
-        chars += "\n"
-        self.output_view.run_command("append", {"characters": chars})
-
-        thread = threading.Thread(target=lambda: self.start_run_aux(path))
         thread.start()
 
     def start_run_aux(self, path):
         self.lock.acquire()
         if self.cancel:
-            self.state = 0
+            self.state = IDLE
             self.cancel = False
+            self.lock.release()
             return
 
-        flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+        self.state = CHK_STARTED
+        if self._builder.get("show_path_in_builder"):
+            chars = 'details  > using PATH "{}"'.format(
+                self.settings.get("path")
+            )
+            if path != self._program.get("path"):
+                chars += ' (i.e. "{}")'.format(path)
+            self.add_to_output(chars)
+
+        os.chdir(self._dir)
+
+        if self._check.get("check_syntax_before_build"):
+            self.add_to_output("\nchecking > doing ConTeXt syntax check")
+
+            opts = {
+                "creationflags": self._flags,
+                "stdin": subprocess.PIPE,
+                "stdout": subprocess.PIPE,
+                "stderr": subprocess.PIPE
+            }
+            if path:
+                orig_path = os.environ["PATH"]
+                os.environ["PATH"] = utilities.add_path(orig_path, path)
+                opts["env"] = os.environ.copy()
+                os.environ["PATH"] = orig_path
+            self.process = subprocess.Popen(
+                ["mtxrun", "--script", "check", self._input], **opts
+            )
+            self.lock.release()
+
+            self.result = self.process.communicate()
+            elapsed = time.time()
+            if self.process.returncode == 0:
+                done = self.add_result_to_output()
+                if not done and self._check.get("stop_build_if_check_fails"):
+                    self.add_to_output("\nfailure  > stopping builder")
+                    self.add_to_output("failure  > finished in {:.1f}s".format(
+                        elapsed - self.start_time
+                    ))
+                    self.state = IDLE
+                    return
+
+        else:
+            self.lock.release()
+
+        self.start_run_aux_i(path)
+
+    def start_run_aux_i(self, path):
+        self.lock.acquire()
+        if self.cancel:
+            self.state = IDLE
+            self.cancel = False
+            self.lock.release()
+            return
+
+        chars = '\nstarting > running "{}"'.format(self._name)
+        if self._builder.get("show_full_command_in_builder"):
+            chars += ' (full command "{}")'.format(" ".join(self._command))
+        self.add_to_output(chars)
+
         opts = {
-            "creationflags": flags,
+            "creationflags": self._flags,
             "stdin": subprocess.PIPE,
             "stdout": subprocess.PIPE,
             "stderr": subprocess.PIPE
@@ -162,23 +218,21 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             opts["env"] = os.environ.copy()
             os.environ["PATH"] = orig_path
 
-        os.chdir(self.dir_)
-        self.state = 2
-        self.process = subprocess.Popen(self.command, **opts)
+        self.state = BLD_STARTED
+        self.process = subprocess.Popen(self._command, **opts)
         self.lock.release()
 
         result = self.process.communicate()
         self.elapsed = time.time() - self.start_time
         self.log = parse_log.parse_log(result[0])
-        self.builder = self.settings.get("builder", {})
-        self.process_errors(flags)
+        self.process_errors()
         self.do_phantoms()
         self.process = None
-        self.state = 0
+        self.state = IDLE
 
     def do_phantoms(self):
-        if self.builder.get("show_errors_in_main_view"):
-            self.phantom_set.update([
+        if self._builder.get("show_errors_in_main_view"):
+            self._phantom_set.update([
                 sublime.Phantom(
                     sublime.Region(
                         self.view.text_point(e.get("line", 1) - 1, 0)
@@ -219,42 +273,66 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             else:
                 return type_
 
-    def process_errors(self, flags):
-        chars = ""
+    def process_errors(self):
+        self.add_to_output("")
+        extra = False
 
-        if self.builder.get("show_warnings_in_builder"):
+        if self._builder.get("show_warnings_in_builder"):
             for type_, items in self.log.get("warnings", []).items():
                 for e in items:
-                    chars += "\nwarning  > {type} > {details}".format(
+                    extra = True
+                    self.add_to_output("warning  > {type} > {details}".format(
                         type=type_, **e
-                    )
-
-        if self.builder.get("show_errors_in_builder"):
+                    ))
+        if self._builder.get("show_errors_in_builder"):
             for type_, items in self.log.get("errors", []).items():
                 for e in items:
-                    chars += "\n" + self.parse_error(type_, e)
-
-        if len(chars) > 0:
-            self.output_view.run_command("append", {"characters": chars})
-            chars = "\n"
+                    extra = True
+                    self.add_to_output(self.parse_error(type_, e))
+        if extra:
+            self.add_to_output("")
 
         if self.process.returncode == 0:
             pages = self.log.get("info", {}).get("pages")
-            if self.builder.get("show_pages_shipped_in_builder") and pages:
-                chars += "\nsuccess  > shipped {} page{}".format(
+            if self._builder.get("show_pages_shipped_in_builder") and pages:
+                chars = "success  > shipped {} page{}".format(
                     pages, "" if pages == 1 else "s"
                 )
-            viewer = self.builder.get("PDF", {}).get("PDF_viewer")
-            if viewer and self.builder.get("PDF", {}).get("auto_open_PDF"):
-                chars += "\nsuccess  > opening PDF with {}".format(viewer)
-                subprocess.Popen(
-                    [viewer, "{}.pdf".format(self.base)], creationflags=flags
-                )
-            chars += "\nsuccess  > finished in {:.1f}s".format(self.elapsed)
-        else:
-            chars += "\nfailure  > finished in {:.1f}s".format(self.elapsed)
+                self.add_to_output(chars)
 
-        self.output_view.run_command("append", {"characters": chars})
+            viewer = self._builder.get("PDF", {}).get("PDF_viewer")
+            if viewer and self._builder.get("PDF", {}).get("auto_open_PDF"):
+                self.add_to_output(
+                    "success  > opening PDF with {}".format(viewer)
+                )
+                subprocess.Popen(
+                    [viewer, "{}.pdf".format(self.base)],
+                    creationflags=self._flags
+                )
+            self.add_to_output(
+                "success  > finished in {:.1f}s".format(self.elapsed)
+            )
+        else:
+            self.add_to_output(
+                "failure  > finished in {:.1f}s".format(self.elapsed)
+            )
+
+    def add_result_to_output(self):
+        s = self.result[0].decode(encoding="utf-8", errors="replace").replace(
+            "\r\n", "\n").replace("\r", "\n").strip()
+        if s == "no error":
+            self.add_to_output("checking > success")
+            return True
+        else:
+            parts = s.split("  ", maxsplit=2)
+            self.add_to_output("checking > failure > line {} > {}".format(
+                1 + int(parts[0]), parts[1]
+            ))
+            self.add_to_output("checking > failure > {}".format(parts[2]))
+            return False
+
+    def add_to_output(self, s):
+        self.output_view.run_command("append", {"characters": s + "\n"})
 
     def setup_output_view(self):
         if not hasattr(self, "output_view"):
@@ -278,29 +356,35 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.lock = threading.Lock()
-        self.state = 0
+        self.state = IDLE
         self.cancel = False
         self.process = None
 
     def reload_settings(self):
         utilities.reload_settings(self)
+        self.flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+        self.view = self.window.active_view()
+        self.dir_, self.input_ = os.path.split(self.view.file_name())
+        self.command = ["mtxrun", "--script", "check", self.input_]
+        self.path_ = self.settings.get("path")
+        if self.path_ in self.paths:
+            self.path_ = self.paths[self.path_]
 
     def is_visible(self):
         return utilities.is_context(self.view)
 
     def run(self):
-        if self.state == 0:
+        if self.state == IDLE:
             self.start_run()
         else:
             self.stop_run()
 
     def stop_run(self):
-        stop = "\nstopping > got request to stop complication\n"
-        self.output_view.run_command("append", {"characters": stop})
+        self.add_to_output("stopping > got request to stop builder")
 
-        if self.state == 1:
+        if self.state == CHK_INITIALISING:
             self.cancel = True
-        elif self.state == 2:
+        elif self.state == CHK_STARTED:
             try:
                 if sublime.platform() == "windows":
                     kill = \
@@ -311,42 +395,33 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
             except Exception as e:
                 chars = (
                     'stopping > encountered error "{}" while attempting to '
-                    'stop compilation\n'
+                    'stop builder'
                 ).format(e)
-                self.output_view.run_command("append", {"characters": chars})
+                self.add_to_output(chars)
 
     def start_run(self):
-        self.state = 1
+        self.state = CHK_INITIALISING
         self.start_time = time.time()
 
         self.reload_settings()
-        self.view = self.window.active_view()
         if self.view.is_dirty():
             self.view.run_command("save")
         self.setup_output_view()
-        self.dir_, input_ = os.path.split(self.view.file_name())
 
-        path = self.settings.get("path")
-        if path in self.paths:
-            path = self.paths[path]
-        self.command = ["mtxrun", "--script", "check", input_]
-
-        message = "starting > running ConTeXt syntax check"
-        self.output_view.run_command("append", {"characters": message})
-
-        thread = threading.Thread(target=lambda: self.run_aux(path))
+        self.add_to_output("starting > running ConTeXt syntax check")
+        thread = threading.Thread(target=lambda: self.run_aux(self.path_))
         thread.start()
 
     def run_aux(self, path):
         self.lock.acquire()
         if self.cancel:
-            self.state = 0
+            self.state = IDLE
             self.cancel = False
+            self.lock.release()
             return
 
-        flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         opts = {
-            "creationflags": flags,
+            "creationflags": self.flags,
             "stdin": subprocess.PIPE,
             "stdout": subprocess.PIPE,
             "stderr": subprocess.PIPE
@@ -358,23 +433,36 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
             os.environ["PATH"] = orig_path
 
         os.chdir(self.dir_)
-        self.state = 2
+        self.state = CHK_STARTED
         self.process = subprocess.Popen(self.command, **opts)
         self.lock.release()
 
-        result = self.process.communicate()
-        self.output_view.run_command(
-            "append", {"characters": self.process_result(result)}
-        )
+        self.result = self.process.communicate()
         self.elapsed = time.time() - self.start_time
-        self.builder = self.settings.get("builder", {})
+        self.add_result_to_output()
         self.process = None
-        self.state = 0
+        self.state = IDLE
 
-    def process_result(self, result):
-        s = result[0].decode(encoding="utf-8", errors="replace").replace(
+    def add_result_to_output(self):
+        s = self.result[0].decode(encoding="utf-8", errors="replace").replace(
             "\r\n", "\n").replace("\r", "\n").strip()
-        return "\n\nresult   > {}".format(s)
+        if s == "no error":
+            self.add_to_output("\nsuccess  > no error")
+            self.add_to_output(
+                "success  > finished in {:.1f}s".format(self.elapsed)
+            )
+        else:
+            parts = s.split("  ", maxsplit=2)
+            self.add_to_output("\nfailure  > line {} > {}".format(
+                1 + int(parts[0]), parts[1]
+            ))
+            self.add_to_output("failure  > {}".format(parts[2]))
+            self.add_to_output(
+                "\nfailure  > finished in {:.1f}s".format(self.elapsed)
+            )
+
+    def add_to_output(self, s):
+        self.output_view.run_command("append", {"characters": s + "\n"})
 
     def setup_output_view(self):
         if not hasattr(self, "output_view"):
