@@ -144,35 +144,34 @@ def parse_log(bytes_, decode=True):
                             int(hbox_dets.group(3)) ==
                             int(hbox_dets.group(4)) - 1
                         ):
-                            dets = "{}full \\hbox in paragraph at line {} ({})"
+                            dets = "line {} > {}full \\hbox ({})"
                             tex_war.append({
                                 "details": dets.format(
-                                    hbox_dets.group(1).lower(),
                                     hbox_dets.group(3),
+                                    hbox_dets.group(1).lower(),
                                     hbox_dets.group(2)
                                 ),
                                 "line": int(hbox_dets.group(3))
                             })
                         else:
                             dets = (
-                                "{}full \\hbox in paragraph at lines {}--{} "
-                                "({})"
+                                "lines {}--{} > {}full \\hbox ({})"
                             )
                             tex_war.append({
                                 "details": dets.format(
-                                    hbox_dets.group(1).lower(),
                                     hbox_dets.group(3),
                                     int(hbox_dets.group(4)) - 1,
-                                    hbox_dets.group(2)
+                                    hbox_dets.group(1).lower(),
+                                    hbox_dets.group(2),
                                 ),
                                 "line": int(hbox_dets.group(3))
                             })
                     elif vbox_dets:
-                        dets = "{}full \\vbox at line {} ({})"
+                        dets = "line {} > {}full \\vbox ({})"
                         tex_war.append({
                             "details": dets.format(
-                                vbox_dets.group(1).lower(),
                                 vbox_dets.group(3),
+                                vbox_dets.group(1).lower(),
                                 vbox_dets.group(2)
                             ),
                             "line": int(vbox_dets.group(3))

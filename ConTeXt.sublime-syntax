@@ -498,7 +498,7 @@ contexts:
         '2': entity.name.tag.lua.context
       push:
         - meta_include_prototype: false
-        # - meta_scope: meta.preprocessor.lua.context meta.tag.lua.context
+      # - meta_scope: meta.preprocessor.lua.context meta.tag.lua.context
         - meta_content_scope: source.lua.embedded.context
         - match: '\?>'
           scope: punctuation.definition.tag.end.context
@@ -521,7 +521,7 @@ contexts:
     - include: ConTeXt.headings
     - include: ConTeXt.verbatim
     - include: ConTeXt.quotes
-    # - include: ConTeXt.font.delimited
+    - include: ConTeXt.font
     - include: ConTeXt.tables
 
   ConTeXt.protect:
@@ -567,7 +567,6 @@ contexts:
   ConTeXt.protect.group.main/:
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
-    # - include: ConTeXt.group.font.toggle
     - include: ConTeXt.protect.main
 
   ConTeXt.protect.list:
@@ -644,7 +643,6 @@ contexts:
     - meta_include_prototype: false
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
-    # - include: ConTeXt.group.font.toggle
     - include: ConTeXt.asciimode.main
 
   ConTeXt.asciimode.list:
@@ -1186,7 +1184,191 @@ contexts:
           pop: true
         - include: main
 
-  # ConTeXt.font:
+  ConTeXt.font:
+    - include: ConTeXt.font.command
+    - include: ConTeXt.font.toggle
+
+  ConTeXt.font.command:
+    - include: ConTeXt.font.command.emphasis
+    - include: ConTeXt.font.command.boldface
+    - include: ConTeXt.font.command.italic
+    - include: ConTeXt.font.command.slanted
+    - include: ConTeXt.font.command.bold-italic
+    - include: ConTeXt.font.command.bold-slanted
+    - include: ConTeXt.font.command.sans-bold
+    - include: ConTeXt.font.command.typewriter
+    - include: ConTeXt.font.command.typewriter-bold
+
+  ConTeXt.font.toggle:
+    - include: ConTeXt.group.toggle.emphasis
+    - include: ConTeXt.group.toggle.boldface
+    - include: ConTeXt.group.toggle.italic
+    - include: ConTeXt.group.toggle.slanted
+    - include: ConTeXt.group.toggle.bold-italic
+    - include: ConTeXt.group.toggle.bold-slanted
+    - include: ConTeXt.group.toggle.sans-bold
+    - include: ConTeXt.group.toggle.typewriter
+    - include: ConTeXt.group.toggle.typewriter-bold
+
+  ConTeXt.group.toggle.emphasis:
+    - match: '(\{)\s*((\\)(emph|em))\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.emphasis.main/
+  ConTeXt.group.toggle.boldface:
+    - match: '(\{)\s*((\\)(boldface|(small)?bold|bf(xx|[xabcd])?))\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.boldface.main/
+  ConTeXt.group.toggle.italic:
+    - match: '(\{)\s*((\\)(italic|it(xx|[xabcd])?))\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.italic.main/
+  ConTeXt.group.toggle.slanted:
+    - match: '(\{)\s*((\\)((small)?slanted|sl(xx|[xabcd])?))\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.slanted.main/
+  ConTeXt.group.toggle.bold-italic:
+    - match: '(\{)\s*((\\)((small)?(bolditalic|italicbold)|bi(xx|[xabcd])?))\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.bold-italic.main/
+  ConTeXt.group.toggle.bold-slanted:
+    - match: '(\{)\s*((\\)((small)?(boldslanted|slantedbold)|bs(xx|[xabcd])?))\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.bold-slanted.main/
+  ConTeXt.group.toggle.sans-bold:
+    - match: '(\{)\s*((\\)sansbold)\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.sans-bold.main/
+  ConTeXt.group.toggle.typewriter:
+    - match: '(\{)\s*((\\)(mono|tt(xx|[xabcd])?))\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.typewriter.main/
+  ConTeXt.group.toggle.typewriter-bold:
+    - match: '(\{)\s*((\\)monobold)\b'
+      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.typewriter-bold.main/
+
+  ConTeXt.font.command.emphasis:
+    - match: '(\\)emph\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.emphasis*/
+  ConTeXt.font.command.boldface:
+    - match: '(\\)(small)?bold\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.boldface*/
+  ConTeXt.font.command.italic:
+    - match: '(\\)italic\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.italic*/
+  ConTeXt.font.command.slanted:
+    - match: '(\\)(small)?slanted\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.slanted*/
+  ConTeXt.font.command.bold-italic:
+    - match: '(\\)(small)?(bolditalic|italicbold)\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.bold-italic*/
+  ConTeXt.font.command.bold-slanted:
+    - match: '(\\)(small)?(boldslanted|slantedbold)\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.bold-slanted*/
+  ConTeXt.font.command.sans-bold:
+    - match: '(\\)sansbold\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.sans-bold*/
+  ConTeXt.font.command.typewriter:
+    - match: '(\\)mono\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.typewriter*/
+  ConTeXt.font.command.typewriter-bold:
+    - match: '(\\)monobold\b'
+      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      push: ConTeXt.group.font.typewriter-bold*/
+
+  ConTeXt.group.font.emphasis*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.emphasis.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.emphasis.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.emphasis.context
+    - include: ConTeXt.group.font.common
+  ConTeXt.group.font.boldface*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.boldface.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.boldface.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context
+    - include: ConTeXt.group.font.common
+  ConTeXt.group.font.italic*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.italic.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.italic.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.italic.context
+    - include: ConTeXt.group.font.common
+  ConTeXt.group.font.slanted*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.slanted.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.slanted.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.slanted.context
+    - include: ConTeXt.group.font.common
+  ConTeXt.group.font.bold-italic*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.bold-italic.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.bold-italic.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.italic.context markup.bold.boldface.context
+    - include: ConTeXt.group.font.common
+  ConTeXt.group.font.bold-slanted*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.bold-slanted.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.bold-slanted.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.slanted.context markup.bold.boldface.context
+    - include: ConTeXt.group.font.common
+  ConTeXt.group.font.sans-bold*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.sans-bold.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.sans-bold.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context
+    - include: ConTeXt.group.font.common
+  ConTeXt.group.font.typewriter*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.typewriter.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.typewriter.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.raw.block.context # markup.raw.typewriter.context
+    - include: ConTeXt.group.font.common
+  ConTeXt.group.font.typewriter-bold*/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.font.typewriter-bold.main/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.font.typewriter-bold.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context markup.raw.block.context # markup.raw.typewriter.context
+    - include: ConTeXt.group.font.common
+
+  ConTeXt.group.font.common:
+    - include: generic.pop-at-group-end/
+    - include: main
 
   ConTeXt.tables:
     - match: '(\\)start(table|tabulate)\b'
@@ -1415,7 +1597,6 @@ contexts:
   generic.group.main/:
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
-    # - include: ConTeXt.group.font.toggle
     - include: main
 
   generic.group.with-integers/:
