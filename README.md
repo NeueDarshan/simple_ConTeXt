@@ -217,12 +217,16 @@ escape certain characters e.g. a "-" character in a character class `[...]`.
 
 # Builder
 
-The builder uses the `path` key (if given) to locate the main program, and
+The main builder uses the `path` key (if given) to locate the main program, and
 calls it (by default "context", can be set via `settings/builder/program/name`)
 (passing the options in `settings/builder/program/options`, if any) on the
 current ConTeXt file. It is invoked in the standard way
 (<kbd>Ctrl</kbd>+<kbd>B</kbd>) and can be cancelled part-way through by
 "running" it again.
+
+There is also a variant of this builder (you can see both by pressing
+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>), which calls
+`mtxrun --script check ...`, i.e. does a (basic) syntax check instead.
 
 Note: the `path` option can be used either as an explicit path, or instead the
 name of a path in `paths`. The second alternative could look like:
@@ -283,11 +287,21 @@ information to report or not, namely the booleans:
   - `show_errors_in_main_view`
   - `show_full_command_in_builder`
   - `show_pages_shipped_in_builder`
-  - `show_program_path_in_builder`
+  - `show_path_in_builder`
   - `show_warnings_in_builder`
 
-Also there is `settings/builder/PDF/PDF_viewer` and
-`settings/builder/PDF/auto_open_PDF`.
+Also there is `settings/builder/PDF` which contains the settings `PDF_viewer`
+(a string for the name of a PDF viewer that is on your `PATH`) and
+`auto_open_PDF`, a boolean.
+
+Finally, there are the settings
+
+  - `check_syntax_before_build`
+  - `stop_build_if_check_fails`
+
+in `settings/builder/check`. They control whether to do a syntax check before
+running ConTeXt, and if so, whether to stop on a negative result of the
+checker.
 
 # Settings
 
@@ -311,7 +325,7 @@ settings file could be:
         "show_errors_in_builder": false,
         "show_full_command_in_builder": false,
         "show_pages_shipped_in_builder": false,
-        "show_program_path_in_builder": false,
+        "show_path_in_builder": false,
         "show_warnings_in_builder": false
       }
     },
@@ -320,7 +334,7 @@ settings file could be:
         "show_errors_in_builder": true,
         "show_full_command_in_builder": true,
         "show_pages_shipped_in_builder": true,
-        "show_program_path_in_builder": true,
+        "show_path_in_builder": true,
         "show_warnings_in_builder": true
       }
     }
