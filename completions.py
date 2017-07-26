@@ -40,11 +40,8 @@ TEMPLATE = """
         o {{
             font-style: italic;
         }}
-        t {{
-            font-style: italic;
-        }}
         d {{
-            text-decoration: underline;
+            color: var(--bluish);
         }}
     </style>
     <body id="simple-ConTeXt-pop-up">

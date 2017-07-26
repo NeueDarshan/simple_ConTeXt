@@ -10,7 +10,7 @@ from .scripts import parse_log
 
 
 IDLE = 0
-CHK_INITIALISING = 1
+INITIALISING = 1
 CHK_STARTED = 2
 BLD_STARTED = 3
 
@@ -92,7 +92,8 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             self._input,
             self._base
         )
-
+        self._has_output = False
+        self._output_cache = ""
         self._path = self.settings.get("path")
         if self._path in self.paths:
             self._path = self.paths[self._path]
@@ -105,9 +106,9 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             self.stop_run()
 
     def stop_run(self):
-        self.add_to_output("\nstopping > got request to stop builder\n")
+        self.add_to_output("stopping > got request to stop builder", gap=True)
 
-        if self.state == CHK_INITIALISING:
+        if self.state == INITIALISING:
             self.cancel = True
         elif self.state in [CHK_STARTED, BLD_STARTED]:
             try:
@@ -120,12 +121,12 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             except Exception as e:
                 chars = (
                     'stopping > encountered error "{}" while attempting to '
-                    'stop builder\n'
+                    'stop builder'
                 ).format(e)
                 self.add_to_output(chars)
 
     def start_run(self):
-        self.state = CHK_INITIALISING
+        self.state = INITIALISING
         self.start_time = time.time()
 
         self.reload_settings()
@@ -158,7 +159,9 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
         os.chdir(self._dir)
 
         if self._check.get("check_syntax_before_build"):
-            self.add_to_output("\nchecking > doing ConTeXt syntax check")
+            self.add_to_output(
+                "checking > doing ConTeXt syntax check", gap=True
+            )
 
             opts = {
                 "creationflags": self._flags,
@@ -181,7 +184,7 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             if self.process.returncode == 0:
                 done = self.add_result_to_output()
                 if not done and self._check.get("stop_build_if_check_fails"):
-                    self.add_to_output("\nfailure  > stopping builder")
+                    self.add_to_output("failure  > stopping builder", gap=True)
                     self.add_to_output("failure  > finished in {:.1f}s".format(
                         elapsed - self.start_time
                     ))
@@ -201,10 +204,10 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             self.lock.release()
             return
 
-        chars = '\nstarting > running "{}"'.format(self._name)
+        chars = 'starting > running "{}"'.format(self._name)
         if self._builder.get("show_full_command_in_builder"):
             chars += ' (full command "{}")'.format(" ".join(self._command))
-        self.add_to_output(chars)
+        self.add_to_output(chars, gap=True)
 
         opts = {
             "creationflags": self._flags,
@@ -257,7 +260,7 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
     def parse_error(self, type_, e, verbose=True):
         if verbose:
             if e.get("line") and e.get("details"):
-                return "error    > {type} > line {line}: {details}".format(
+                return "error    > {type} > line {line} > {details}".format(
                     type=type_, **e
                 )
             elif e.get("details"):
@@ -274,47 +277,51 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
                 return type_
 
     def process_errors(self):
-        self.add_to_output("")
-        extra = False
+        first = True
 
         if self._builder.get("show_warnings_in_builder"):
             for type_, items in self.log.get("warnings", []).items():
                 for e in items:
-                    extra = True
-                    self.add_to_output("warning  > {type} > {details}".format(
-                        type=type_, **e
-                    ))
+                    self.add_to_output(
+                        "warning  > {type} > {details}"
+                        .format(type=type_, **e),
+                        gap=first
+                    )
+                    first = False
         if self._builder.get("show_errors_in_builder"):
             for type_, items in self.log.get("errors", []).items():
                 for e in items:
-                    extra = True
-                    self.add_to_output(self.parse_error(type_, e))
-        if extra:
-            self.add_to_output("")
+                    self.add_to_output(self.parse_error(type_, e), gap=first)
+                    first = False
 
         if self.process.returncode == 0:
+            first = True
             pages = self.log.get("info", {}).get("pages")
             if self._builder.get("show_pages_shipped_in_builder") and pages:
                 chars = "success  > shipped {} page{}".format(
                     pages, "" if pages == 1 else "s"
                 )
-                self.add_to_output(chars)
+                self.add_to_output(chars, gap=first)
+                first = False
 
             viewer = self._builder.get("PDF", {}).get("PDF_viewer")
             if viewer and self._builder.get("PDF", {}).get("auto_open_PDF"):
                 self.add_to_output(
-                    "success  > opening PDF with {}".format(viewer)
+                    "success  > opening PDF with {}".format(viewer), gap=first
                 )
+                first = False
                 subprocess.Popen(
                     [viewer, "{}.pdf".format(self._base)],
                     creationflags=self._flags
                 )
             self.add_to_output(
-                "success  > finished in {:.1f}s".format(self.elapsed)
+                "success  > finished in {:.1f}s".format(self.elapsed),
+                gap=first
             )
         else:
             self.add_to_output(
-                "failure  > finished in {:.1f}s".format(self.elapsed)
+                "failure  > finished in {:.1f}s".format(self.elapsed),
+                gap=first
             )
 
     def add_result_to_output(self):
@@ -328,11 +335,15 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
             self.add_to_output("checking > failure > line {} > {}".format(
                 1 + int(parts[0]), parts[1]
             ))
-            self.add_to_output("checking > failure > {}".format(parts[2]))
+            # self.add_to_output("checking > failure > {}".format(parts[2]))
             return False
 
-    def add_to_output(self, s):
-        self.output_view.run_command("append", {"characters": s + "\n"})
+    def add_to_output(self, s, gap=False):
+        chars = \
+            self._output_cache + ("\n" if self._has_output and gap else "") + s
+        self.output_view.run_command("append", {"characters": chars})
+        self._output_cache = "\n"
+        self._has_output = True
 
     def setup_output_view(self):
         if not hasattr(self, "output_view"):
@@ -342,6 +353,7 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
         self.output_view.settings().set("line_numbers", False)
         self.output_view.settings().set("gutter", False)
         self.output_view.settings().set("spell_check", False)
+        self.output_view.settings().set("word_wrap", False)
         self.output_view.settings().set("scroll_past_end", False)
         self.output_view.assign_syntax(
             "Packages/simple_ConTeXt/build results.sublime-syntax"
@@ -369,6 +381,8 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
         self.path_ = self.settings.get("path")
         if self.path_ in self.paths:
             self.path_ = self.paths[self.path_]
+        self._has_output = False
+        self._output_cache = ""
 
     def is_visible(self):
         return utilities.is_context(self.view)
@@ -380,9 +394,9 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
             self.stop_run()
 
     def stop_run(self):
-        self.add_to_output("stopping > got request to stop builder")
+        self.add_to_output("stopping > got request to stop builder", gap=True)
 
-        if self.state == CHK_INITIALISING:
+        if self.state == INITIALISING:
             self.cancel = True
         elif self.state == CHK_STARTED:
             try:
@@ -400,7 +414,7 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
                 self.add_to_output(chars)
 
     def start_run(self):
-        self.state = CHK_INITIALISING
+        self.state = INITIALISING
         self.start_time = time.time()
 
         self.reload_settings()
@@ -447,22 +461,27 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
         s = self.result[0].decode(encoding="utf-8", errors="replace").replace(
             "\r\n", "\n").replace("\r", "\n").strip()
         if s == "no error":
-            self.add_to_output("\nsuccess  > no error")
+            self.add_to_output("success  > no error", gap=True)
             self.add_to_output(
                 "success  > finished in {:.1f}s".format(self.elapsed)
             )
         else:
             parts = s.split("  ", maxsplit=2)
-            self.add_to_output("\nfailure  > line {} > {}".format(
-                1 + int(parts[0]), parts[1]
-            ))
+            self.add_to_output(
+                "failure  > line {} > {}".format(1 + int(parts[0]), parts[1]),
+                gap=True
+            )
             self.add_to_output("failure  > {}".format(parts[2]))
             self.add_to_output(
-                "\nfailure  > finished in {:.1f}s".format(self.elapsed)
+                "failure  > finished in {:.1f}s".format(self.elapsed), gap=True
             )
 
-    def add_to_output(self, s):
-        self.output_view.run_command("append", {"characters": s + "\n"})
+    def add_to_output(self, s, gap=False):
+        chars = \
+            self._output_cache + ("\n" if self._has_output and gap else "") + s
+        self.output_view.run_command("append", {"characters": chars})
+        self._output_cache = "\n"
+        self._has_output = True
 
     def setup_output_view(self):
         if not hasattr(self, "output_view"):
@@ -473,6 +492,7 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
         self.output_view.settings().set("gutter", False)
         self.output_view.settings().set("spell_check", False)
         self.output_view.settings().set("scroll_past_end", False)
+        self.output_view.settings().set("word_wrap", False)
         self.output_view.assign_syntax(
             "Packages/simple_ConTeXt/build results.sublime-syntax"
         )
