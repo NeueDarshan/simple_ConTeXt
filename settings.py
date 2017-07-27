@@ -49,150 +49,150 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
     def run(self):
         self.reload_settings()
         self.encode_settings()
-        self._last_scheme = None
-        self._location = []
-        self._history = {}
-        self._run_panel()
+        self.last_scheme = None
+        self.location = []
+        self.history = {}
+        self.run_panel()
 
-    def _run_panel(self):
+    def run_panel(self):
         self.window.show_quick_panel(
-            self._flatten_current_level(),
-            self._run_handle,
+            self.flatten_current_level(),
+            self.run_handle,
             selected_index=self.get_history()
         )
 
-    def _run_handle(self, index, selected_index=None):
+    def run_handle(self, index):
         if index < 0:
             return
 
         self.set_history(index)
-        here = self._current_level()
-        key = self._flatten_current_level()[index][0]
+        here = self.current_level()
+        key = self.flatten_current_level()[index][0]
 
         if key == "..":
-            self._location.pop()
-            self._run_panel()
+            self.location.pop()
+            self.run_panel()
 
         elif key == "setting_groups":
-            self._location.append(key)
-            self._run_panel_scheme()
+            self.location.append(key)
+            self.run_panel_scheme()
 
         else:
             value = here[key]
-            self._location.append(key)
+            self.location.append(key)
 
             if isinstance(value, bool):
                 utilities.set_deep_safe(
-                    self._encoded_settings, self._location, not value
+                    self.encoded_settings, self.location, not value
                 )
-                self._location.pop()
-                self._save()
-                self._run_panel()
+                self.location.pop()
+                self.save()
+                self.run_panel()
 
             elif isinstance(value, (int, float, str)) or value is None:
                 self.window.show_input_panel(
                     "new value",
                     str(value),
-                    self._on_done,
-                    self._on_change,
-                    self._on_cancel,
+                    self.on_done,
+                    self.on_change,
+                    self.on_cancel,
                 )
 
             elif isinstance(value, Choice):
-                self._run_panel_choice()
+                self.run_panel_choice()
 
             else:
-                self._run_panel()
+                self.run_panel()
 
-    def _run_panel_scheme(self):
+    def run_panel_scheme(self):
         self.window.show_quick_panel(
-            self._flatten_current_level(),
-            self._run_handle_scheme,
+            self.flatten_current_level(),
+            self.run_handle_scheme,
             selected_index=self.get_history()
         )
 
-    def _run_handle_scheme(self, index):
+    def run_handle_scheme(self, index):
         if index < 0:
             return
 
         self.set_history(index)
-        here = self._current_level()
-        key = self._flatten_current_level()[index][0]
+        here = self.current_level()
+        key = self.flatten_current_level()[index][0]
 
         if key == "..":
-            self._location.pop()
-            self._run_panel()
+            self.location.pop()
+            self.run_panel()
         else:
             value = here[key]
-            self._last_scheme = key
+            self.last_scheme = key
             self.decode_settings()
             for location, val in utilities.iter_deep(value):
-                utilities.set_deep_safe(self.settings, location, val)
-            self._save(decode=False)
-            self._run_panel_scheme()
+                utilities.set_deep_safe(self._settings, location, val)
+            self.save(decode=False)
+            self.run_panel_scheme()
 
-    def _run_panel_choice(self):
+    def run_panel_choice(self):
         self.window.show_quick_panel(
-            self._flatten_current_level(),
-            self._run_handle_choice,
+            self.flatten_current_level(),
+            self.run_handle_choice,
             selected_index=self.get_history()
         )
 
-    def _run_handle_choice(self, index, selected_index=None):
+    def run_handle_choice(self, index):
         if index < 0:
             return
 
         self.set_history(index)
-        here = self._current_level()
-        key = self._flatten_current_level()[index][0]
+        here = self.current_level()
+        key = self.flatten_current_level()[index][0]
 
         if key == "..":
-            self._location.pop()
-            self._run_panel()
+            self.location.pop()
+            self.run_panel()
         else:
             here.set(key)
             utilities.set_deep_safe(
-                self._encoded_settings, self._location, here
+                self.encoded_settings, self.location, here
             )
-            self._save()
-            self._run_panel_choice()
+            self.save()
+            self.run_panel_choice()
 
-    def _on_done(self, string):
+    def on_done(self, string):
         utilities.set_deep_safe(
-            self._encoded_settings,
-            self._location,
+            self.encoded_settings,
+            self.location,
             utilities.guess_type(string)
         )
-        self._location.pop()
-        self._save()
-        self._run_panel()
+        self.location.pop()
+        self.save()
+        self.run_panel()
 
-    def _on_change(self, string):
+    def on_change(self, string):
         pass
 
-    def _on_cancel(self):
-        self._location.pop()
-        self._run_panel()
+    def on_cancel(self):
+        self.location.pop()
+        self.run_panel()
 
-    def _current_level(self):
-        return utilities.get_deep_safe(self._encoded_settings, self._location)
+    def current_level(self):
+        return utilities.get_deep_safe(self.encoded_settings, self.location)
 
-    def _flatten_current_level(self):
-        if len(self._location) > 0 and self._location[-1] == "setting_groups":
+    def flatten_current_level(self):
+        if len(self.location) > 0 and self.location[-1] == "setting_groups":
             main = [
-                [k, "[✓]" if k == self._last_scheme else "[ ]"]
-                for k in sorted(self._current_level())
+                [k, "[✓]" if k == self.last_scheme else "[ ]"]
+                for k in sorted(self.current_level())
             ]
-        elif isinstance(self._current_level(), Choice):
-            main = self._current_level().to_list(string=True)
+        elif isinstance(self.current_level(), Choice):
+            main = self.current_level().to_list(string=True)
         else:
             main = [
-                [k, simplify(self._current_level()[k])]
-                for k in sorted(self._current_level())
+                [k, simplify(self.current_level()[k])]
+                for k in sorted(self.current_level())
             ]
-        if len(self._location) > 0:
-            if len(self._location) > 1:
-                prev = "/" + "/".join(self._location[:-1])
+        if len(self.location) > 0:
+            if len(self.location) > 1:
+                prev = "/" + "/".join(self.location[:-1])
             else:
                 prev = "root"
             return [["..", '↑ go back to "{}"'.format(prev)]] + main
@@ -200,26 +200,26 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             return main
 
     def get_history(self):
-        return self._history.get(len(self._location), 0)
+        return self.history.get(len(self.location), 0)
 
     def set_history(self, index):
-        self._history[len(self._location)] = index
+        self.history[len(self.location)] = index
 
-    def _save(self, decode=True):
+    def save(self, decode=True):
         if decode:
             self.decode_settings()
-        self.sublime_settings.set("settings", self.settings)
+        self._sublime_settings.set("settings", self._settings)
         sublime.save_settings("simple_ConTeXt.sublime-settings")
         self.reload_settings()
         self.encode_settings()
 
     def encode_settings(self):
-        self._encoded_settings = self.settings
-        self._encoded_settings["path"] = Choice(
-            self.paths, choice=self.settings.get("path")
+        self.encoded_settings = self._settings
+        self.encoded_settings["path"] = Choice(
+            self._paths, choice=self._settings.get("path")
         )
-        self._encoded_settings["setting_groups"] = self.setting_groups
+        self.encoded_settings["setting_groups"] = self._setting_groups
 
     def decode_settings(self):
-        self.settings["path"] = self._encoded_settings["path"].get()
-        del self.settings["setting_groups"]
+        self._settings["path"] = self.encoded_settings["path"].get()
+        del self._settings["setting_groups"]

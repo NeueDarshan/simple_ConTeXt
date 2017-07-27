@@ -1,40 +1,28 @@
 {
-  "paths":
-  {
-    "default": "/path-to-context-binaries",
+  "paths": {
+    "default": "/path-to-context-binaries"
   },
-  "setting_groups":
-  {
-    "run_to_completion":
-    {
-      "builder":
-      {
-        "program":
-        {
-          "options":
-          {
-            "runs": 9
-          }
-        }
-      }
-    },
-    "run_once":
-    {
-      "builder":
-      {
-        "program":
-        {
-          "options":
-          {
+  "setting_groups": {
+    "run_once": {
+      "builder": {
+        "program": {
+          "options": {
             "runs": 1
           }
         }
       }
     },
-    "verbose_builder_off":
-    {
-      "builder":
-      {
+    "run_to_completion": {
+      "builder": {
+        "program": {
+          "options": {
+            "runs": 9
+          }
+        }
+      }
+    },
+    "verbose_builder_off": {
+      "builder": {
         "show_errors_in_builder": false,
         "show_full_command_in_builder": false,
         "show_pages_shipped_in_builder": false,
@@ -42,10 +30,8 @@
         "show_warnings_in_builder": false
       }
     },
-    "verbose_builder_on":
-    {
-      "builder":
-      {
+    "verbose_builder_on": {
+      "builder": {
         "show_errors_in_builder": true,
         "show_full_command_in_builder": true,
         "show_pages_shipped_in_builder": true,
@@ -54,59 +40,50 @@
       }
     }
   },
-  "settings":
-  {
-    "builder":
-    {
-      "program":
-      {
+  "settings": {
+    "PDF": {
+      "viewer": "evince"
+    },
+    "builder": {
+      "open_PDF_after_build": true,
+      "check": {
+        "check_syntax_before_build": true,
+        "stop_build_if_check_fails": true
+      },
+      "program": {
         "name": "context",
-        "options":
-        {
+        "options": {
           "arrange": false,
           "auto_pdf": false,
           "autogenerate": true,
           "interface": "en",
           "jit": false,
           "jiton": false,
-          "timing": false,
-          "mode":
-          {
+          "mode": {
             "draft": false,
             "final": false
           },
           "paranoid": false,
           "runs": 9,
-          "synctex": 1
+          "synctex": 1,
+          "timing": false
         }
-      },
-      "PDF":
-      {
-        "PDF_viewer": "evince",
-        "auto_open_PDF": true
       },
       "show_errors_in_builder": true,
       "show_errors_in_main_view": true,
       "show_full_command_in_builder": true,
       "show_pages_shipped_in_builder": true,
       "show_path_in_builder": true,
-      "show_warnings_in_builder": true,
-      "check":
-      {
-        "check_syntax_before_build": true,
-        "stop_build_if_check_fails": true
-      }
+      "show_warnings_in_builder": true
     },
     "path": "default",
-    "pop_ups":
-    {
+    "pop_ups": {
       "line_break": 60,
       "on": true,
       "show_copy_pop_up": false,
       "show_source_files": false
     },
-    "references":
-    {
+    "references": {
       "command_regex": "(in|at|about|[a-zA-Z]*ref)",
       "on": true,
       "reference_regex": "[a-zA-Z_\\.\\-\\:]*[_\\.\\-\\:]+[a-zA-Z_\\.\\-\\:]*"
