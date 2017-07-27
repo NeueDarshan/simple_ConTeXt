@@ -50,6 +50,9 @@ TEMPLATE = """
 </html>
 """
 
+IDLE = 0
+RUNNING = 1
+
 
 class SimpleContextMacroSignatureEventListener(
     sublime_plugin.ViewEventListener
@@ -58,22 +61,22 @@ class SimpleContextMacroSignatureEventListener(
         super().__init__(*args, **kwargs)
         self.commands_cache = {}
         self.lock = threading.Lock()
-        self.state = 0
+        self.state = IDLE
 
     def run_loader(self):
-        self.state = 1
+        self.state = RUNNING
         path = os.path.join(
             sublime.packages_path(),
             "simple_ConTeXt",
             "interface",
         )
-        file = os.path.join(path, "commands_{}.json".format(self._name))
+        file = os.path.join(path, "commands_{}.json".format(self.name))
         if not os.path.exists(path):
             os.makedirs(path)
         try:
             with open(file, encoding="utf-8") as f:
                 j = json.load(f)
-                self.commands_cache[self._name] = {
+                self.commands_cache[self.name] = {
                     "details": j["details"],
                     "commands": sorted(
                         ["\\" + command, ""] for command in j["details"]
@@ -91,16 +94,13 @@ class SimpleContextMacroSignatureEventListener(
                 "simple_ConTeXt: done building interface, took {:.1f}s"
                 .format(time.time() - start_time)
             )
-        self.state = 0
+        self.state = IDLE
 
     def reload_settings(self):
         utilities.reload_settings(self)
-        self._path = self.settings.get("path")
-        if self._path in self.paths:
-            self._path = self.paths[self._path]
-        self._name = utilities.file_as_slug(self._path)
-        if self._name not in self.commands_cache:
-            if self.state == 0:
+        self.name = utilities.file_as_slug(self._path)
+        if self.name not in self.commands_cache:
+            if self.state == IDLE:
                 thread = threading.Thread(target=self.run_loader)
                 thread.start()
 
@@ -114,11 +114,11 @@ class SimpleContextMacroSignatureEventListener(
                 l, "text.tex.context - (meta.environment.math, source)"
             ):
                 return self.commands_cache.get(
-                    self._name, {}).get("commands", [])
+                    self.name, {}).get("commands", [])
 
     def on_modified_async(self):
         self.reload_settings()
-        if not self.settings.get("pop_ups", {}).get("on"):
+        if not self._pop_ups.get("on"):
             return
         if not self.view.match_selector(
             self.view.sel()[0].end(),
@@ -133,7 +133,7 @@ class SimpleContextMacroSignatureEventListener(
             return
 
         name = self.view.substr(cmd)[1:]
-        if name in self.commands_cache.get(self._name, {}).get("details", {}):
+        if name in self.commands_cache.get(self.name, {}).get("details", {}):
             self.view.show_popup(
                 self.get_popup_text(name),
                 max_width=600,
@@ -142,12 +142,11 @@ class SimpleContextMacroSignatureEventListener(
             )
 
     def get_popup_text(self, name):
-        cmd = self.commands_cache[self._name]["details"][name]
-        files = self.commands_cache[self._name]["files"]
-        pop_ups = self.settings.get("pop_ups", {})
+        cmd = self.commands_cache[self.name]["details"][name]
+        files = self.commands_cache[self.name]["files"]
         write = writing.InterfaceWriter()
         self.pop_up, extra = write.render(
-            name, cmd, files, pre_code=True, **pop_ups
+            name, cmd, files, pre_code=True, **self._pop_ups
         )
         if extra:
             return TEMPLATE.format(body=self.pop_up + "<br><br>" + extra)

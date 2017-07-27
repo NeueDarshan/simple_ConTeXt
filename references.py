@@ -29,10 +29,11 @@ class SimpleContextReferenceInsert(sublime_plugin.TextCommand):
 class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
     def reload_settings(self):
         utilities.reload_settings(self)
-
-        regex = self.settings.get("references", {}).get(
-            "reference_regex", r"[a-zA-Z_\.\-\:]+")
-        cmd_regex = self.settings.get("references", {}).get(
+        regex = self._references.get(
+            "reference_regex",
+            r"[a-zA-Z_\\.\\-\\:]*[_\\.\\-\\:]+[a-zA-Z_\\.\\-\\:]*"
+        )
+        cmd_regex = self._references.get(
             "command_regex", r"(in|at|about|[a-zA-Z]*ref)")
 
         self.references = collections.OrderedDict()
@@ -96,12 +97,13 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
 class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
     def reload_settings(self):
         utilities.reload_settings(self)
-        self.current_cmd_regex = self.settings.get(
-            "references", {}).get("command_regex", r"[a-zA-Z]*ref")
+        self.current_cmd_regex = self._references.get(
+            "command_regex", r"(in|at|about|[a-zA-Z]*ref)"
+        )
 
     def on_modified_async(self, view):
         self.reload_settings()
-        if not self.settings.get("references", {}).get("on"):
+        if not self._references.get("on"):
             return
 
         end = view.sel()[0].end()

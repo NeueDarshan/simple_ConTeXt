@@ -283,11 +283,23 @@ def last_command_in_view(view, begin=-200, end=None, skip=_skip_space_nolines):
 
 
 def reload_settings(self):
-    self.sublime_settings = \
+    self._sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
-    self.settings = self.sublime_settings.get("settings", {})
-    self.setting_groups = self.sublime_settings.get("setting_groups", {})
-    self.paths = self.sublime_settings.get("paths", {})
+    self._paths = self._sublime_settings.get("paths", {})
+    self._settings = self._sublime_settings.get("settings", {})
+    self._setting_groups = self._sublime_settings.get("setting_groups", {})
+
+    self._path = self._settings.get("path")
+    if self._path in self._paths:
+        self._path = self._paths[self._path]
+
+    self._PDF = self._settings.get("PDF", {})
+    self._pop_ups = self._settings.get("pop_ups", {})
+    self._references = self._settings.get("references", {})
+
+    self._builder = self._settings.get("builder", {})
+    self._program = self._builder.get("program", {})
+    self._check = self._builder.get("check", {})
 
 
 def process_options(name, options, input_, input_base):

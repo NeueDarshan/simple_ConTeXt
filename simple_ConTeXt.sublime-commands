@@ -4,6 +4,10 @@
     "command": "simple_context_settings_controller"
   },
   {
+    "caption": "simple_ConTeXt: View ConTeXt documentation",
+    "command": "simple_context_find_docs"
+  },
+  {
     "caption": "simple_ConTeXt: Debug: Force building of the interface",
     "command": "simple_context_force_build_interface"
   },
