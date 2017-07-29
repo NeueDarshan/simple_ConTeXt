@@ -55,6 +55,8 @@ tracking down the `i-context.xml` file in your ConTeXt installation.
 Completions suggest possible commands from the ConTeXt core whenever you start
 typing a command.
 
+![completions][completiongif]
+
 For example, on typing `\TABLE` a drop-down list appears, showing those
 commands that match the string "TABLE" (according to the fuzzy search in
 Sublime Text). It should look something like this (in this case there are a lot
@@ -397,3 +399,5 @@ between, say, "alpha" and "beta".
 [titles]: http://wiki.contextgarden.net/Titles
 [metapost]: http://wiki.contextgarden.net/MetaPost
 [metafun]: http://wiki.contextgarden.net/MetaFun
+
+[completiongif]: https://raw.githubusercontent.com/equiva1ence/simple_ConTeXt/master/refs/completion.gif
