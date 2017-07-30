@@ -8,11 +8,7 @@
     "command": "simple_context_find_docs"
   },
   // {
-  //   "caption": "simple_ConTeXt: Debug: Force building of the interface",
-  //   "command": "simple_context_force_build_interface"
-  // },
-  // {
-  //   "caption": "simple_ConTeXt: Debug: Test the pop-ups",
-  //   "command": "simple_context_test_pop_ups"
+  //   "caption": "simple_ConTeXt: Test the interface loader",
+  //   "command": "simple_context_test_interface_loader"
   // }
 ]

@@ -266,7 +266,11 @@ def last_command_in_view(view, begin=-200, end=None, skip=_skip_space_nolines):
         if p < start:
             return
 
-    if not view.match_selector(p, "meta.other.control.word.context"):
+    if not view.match_selector(
+        p,
+        "meta.other.control.word.context, "
+        "punctuation.definition.backslash.context"
+    ):
         return
 
     stop = p + 1
@@ -286,6 +290,7 @@ def reload_settings(self):
     self._sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
     self._paths = self._sublime_settings.get("paths", {})
+    self._PDF_viewers = self._sublime_settings.get("PDF_viewers", {})
     self._settings = self._sublime_settings.get("settings", {})
     self._setting_groups = self._sublime_settings.get("setting_groups", {})
 

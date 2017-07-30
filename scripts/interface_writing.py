@@ -5,7 +5,7 @@ class InterfaceWriter:
     def __init__(self):
         self.SYNTAX = '<syntax>{syntax}</syntax>'
         self.DOCSTRING = '<docstring>{docstring}</docstring>'
-        self.FILE = '<file><a href="file:{file_dir}">{file}</a></file>'
+        self.FILE = '<file><a href="file:{file}">{file}</a></file>'
 
     def render(self, *args, **kwargs):
         raw_text, raw_extra = self.render_aux(*args, **kwargs)
@@ -14,17 +14,15 @@ class InterfaceWriter:
         else:
             return raw_text, raw_extra
 
-    def render_aux(self, name, list_, files_cache, **kwargs):
+    def render_aux(self, name, list_, **kwargs):
         self.kwargs = kwargs
         self.name = name
         parts = []
-        files = {}
+        files = set()
 
         for alt in list_:
             content = alt.get("con")
-            file = alt.get("fil")
-            file_dir = files_cache.get(file)
-            files[file] = file_dir
+            files.add(alt.get("fil"))
             sig = []
 
             if not content:
@@ -44,10 +42,7 @@ class InterfaceWriter:
             parts.append("\n\n".join(sig))
 
         if self.kwargs.get("show_source_files", False) and files:
-            list_ = []
-            for k in sorted(files):
-                list_.append(self.FILE.format(file=k, file_dir=files[k]))
-            extra = [" ".join(list_)]
+            extra = [" ".join(self.FILE.format(file=k) for k in sorted(files))]
         else:
             extra = []
         if self.kwargs.get("show_copy_pop_up", False):

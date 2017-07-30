@@ -14,17 +14,17 @@ from .scripts import interface_writing as writing
 # are their meanings:
 #
 # \starttabulate[|rT|l|]
-#   \NC c \NC control sequence \type{\...} \NC\NR
-#   \NC o \NC optional argument \NC\NR
-#   \NC n \NC number \NC\NR
-#   \NC k \NC key, as in \type{key=value} \NC\NR
-#   \NC e \NC equals, as in \type{key=value} \NC\NR
-#   \NC v \NC value, as in \type{key=value} \NC\NR
-#   \NC t \NC type name, e.g.\ \type{CSNAME} means a control sequence
-#             name \NC\NR
-#   \NC d \NC default value \NC\NR
-#   \NC i \NC inherits, styles the bit of text \quote{inherits:} in
-#             \type{inherits: \...} \NC\NR
+#   \NC <c> \NC control sequence \type{\...} \NC\NR
+#   \NC <o> \NC optional argument \NC\NR
+#   \NC <n> \NC number \NC\NR
+#   \NC <k> \NC key, as in \type{key=value} \NC\NR
+#   \NC <e> \NC equals, as in \type{key=value} \NC\NR
+#   \NC <v> \NC value, as in \type{key=value} \NC\NR
+#   \NC <t> \NC type name, e.g.\ \type{CSNAME} means a control sequence
+#               name \NC\NR
+#   \NC <d> \NC default value \NC\NR
+#   \NC <i> \NC inherits, styles the bit of text \quote{inherits:} in
+#               \type{inherits: \...} \NC\NR
 # \stoptabulate
 #
 # I believe that, of these tags, only \type{<i>} is recognized by miniHTML. So,
@@ -66,9 +66,7 @@ class SimpleContextMacroSignatureEventListener(
     def run_loader(self):
         self.state = RUNNING
         path = os.path.join(
-            sublime.packages_path(),
-            "simple_ConTeXt",
-            "interface",
+            sublime.packages_path(), "simple_ConTeXt", "interface"
         )
         file = os.path.join(path, "commands_{}.json".format(self.name))
         if not os.path.exists(path):
@@ -77,17 +75,16 @@ class SimpleContextMacroSignatureEventListener(
             with open(file, encoding="utf-8") as f:
                 j = json.load(f)
                 self.commands_cache[self.name] = {
-                    "details": j["details"],
+                    "details": j,
                     "commands": sorted(
-                        ["\\" + command, ""] for command in j["details"]
+                        ["\\" + command, ""] for command in j
                     ),
-                    "files": j["files"]
                 }
         except FileNotFoundError:
-            print("simple_ConTeXt: building interface (warning: is slow) ...")
+            print("simple_ConTeXt: building interface...")
             start_time = time.time()
             self.loader = reading.InterfaceLoader()
-            self.loader.load(self._path, passes=3, modules=True)
+            self.loader.load(self._path, modules=True, tolerant=True)
             with open(file, encoding="utf-8", mode="w") as f:
                 json.dump(self.loader.encode(), f)
             print(
@@ -99,10 +96,11 @@ class SimpleContextMacroSignatureEventListener(
     def reload_settings(self):
         utilities.reload_settings(self)
         self.name = utilities.file_as_slug(self._path)
-        if self.name not in self.commands_cache:
-            if self.state == IDLE:
-                thread = threading.Thread(target=self.run_loader)
-                thread.start()
+        if utilities.is_context(self.view):
+            if self.name not in self.commands_cache:
+                if self.state == IDLE:
+                    thread = threading.Thread(target=self.run_loader)
+                    thread.start()
 
     def is_visible(self):
         return utilities.is_context(self.view)
@@ -110,8 +108,11 @@ class SimpleContextMacroSignatureEventListener(
     def on_query_completions(self, prefix, locations):
         self.reload_settings()
         for l in locations:
-            if self.view.match_selector(
-                l, "text.tex.context - (meta.environment.math, source)"
+            if (
+                self.view.match_selector(
+                    l, "text.tex.context - (meta.environment.math, source)"
+                ) and
+                utilities.last_command_in_view(self.view, end=l)
             ):
                 return self.commands_cache.get(
                     self.name, {}).get("commands", [])
@@ -133,7 +134,7 @@ class SimpleContextMacroSignatureEventListener(
             return
 
         name = self.view.substr(cmd)[1:]
-        if name in self.commands_cache.get(self.name, {}).get("details", {}):
+        if name in self.commands_cache.get(self.name, {}).get("details"):
             self.view.show_popup(
                 self.get_popup_text(name),
                 max_width=600,
@@ -143,10 +144,9 @@ class SimpleContextMacroSignatureEventListener(
 
     def get_popup_text(self, name):
         cmd = self.commands_cache[self.name]["details"][name]
-        files = self.commands_cache[self.name]["files"]
         write = writing.InterfaceWriter()
         self.pop_up, extra = write.render(
-            name, cmd, files, pre_code=True, **self._pop_ups
+            name, cmd, pre_code=True, **self._pop_ups
         )
         if extra:
             return TEMPLATE.format(body=self.pop_up + "<br><br>" + extra)
@@ -156,8 +156,15 @@ class SimpleContextMacroSignatureEventListener(
     def on_navigate(self, href):
         type_, content = href[:4], href[5:]
         if type_ == "file":
-            if os.path.exists(content):
-                self.view.window().open_file(content)
+            file = utilities.locate(self._path, content)
+            if os.path.exists(file):
+                self.view.window().open_file(file)
+            else:
+                msg = (
+                    'Unable to locate file "{}".\n\nSearched in the TeX tree '
+                    'containing "{}".'
+                )
+                sublime.error_message(msg.format(content, self._path))
         elif type_ == "copy":
             if content == "html":
                 self.copy(utilities.html_pretty_print(self.pop_up))
