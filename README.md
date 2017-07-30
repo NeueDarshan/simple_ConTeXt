@@ -400,4 +400,4 @@ between, say, "alpha" and "beta".
 [metapost]: http://wiki.contextgarden.net/MetaPost
 [metafun]: http://wiki.contextgarden.net/MetaFun
 
-[completiongif]: https://raw.githubusercontent.com/equiva1ence/simple_ConTeXt/master/refs/completion.gif
+[completiongif]: https://raw.githubusercontent.com/equiva1ence/simple_ConTeXt/master/resources/completion.gif

@@ -1,28 +1,45 @@
 {
-  "paths": {
+  "PDF_viewers":
+  [
+    "evince",
+    "okular"
+  ],
+  "paths":
+  {
     "default": "/path-to-context-binaries"
   },
-  "setting_groups": {
-    "run_once": {
-      "builder": {
-        "program": {
-          "options": {
+  "setting_groups":
+  {
+    "run_once":
+    {
+      "builder":
+      {
+        "program":
+        {
+          "options":
+          {
             "runs": 1
           }
         }
       }
     },
-    "run_to_completion": {
-      "builder": {
-        "program": {
-          "options": {
+    "run_to_completion":
+    {
+      "builder":
+      {
+        "program":
+        {
+          "options":
+          {
             "runs": 9
           }
         }
       }
     },
-    "verbose_builder_off": {
-      "builder": {
+    "verbose_builder_off":
+    {
+      "builder":
+      {
         "show_errors_in_builder": false,
         "show_full_command_in_builder": false,
         "show_pages_shipped_in_builder": false,
@@ -30,8 +47,10 @@
         "show_warnings_in_builder": false
       }
     },
-    "verbose_builder_on": {
-      "builder": {
+    "verbose_builder_on":
+    {
+      "builder":
+      {
         "show_errors_in_builder": true,
         "show_full_command_in_builder": true,
         "show_pages_shipped_in_builder": true,
@@ -40,26 +59,33 @@
       }
     }
   },
-  "settings": {
-    "PDF": {
+  "settings":
+  {
+    "PDF":
+    {
       "viewer": "evince"
     },
-    "builder": {
-      "open_PDF_after_build": true,
-      "check": {
+    "builder":
+    {
+      "check":
+      {
         "check_syntax_before_build": true,
         "stop_build_if_check_fails": true
       },
-      "program": {
+      "open_PDF_after_build": true,
+      "program":
+      {
         "name": "context",
-        "options": {
+        "options":
+        {
           "arrange": false,
           "auto_pdf": false,
           "autogenerate": true,
           "interface": "en",
           "jit": false,
           "jiton": false,
-          "mode": {
+          "mode":
+          {
             "draft": false,
             "final": false
           },
@@ -77,13 +103,15 @@
       "show_warnings_in_builder": true
     },
     "path": "default",
-    "pop_ups": {
+    "pop_ups":
+    {
       "line_break": 60,
       "on": true,
       "show_copy_pop_up": false,
       "show_source_files": false
     },
-    "references": {
+    "references":
+    {
       "command_regex": "(in|at|about|[a-zA-Z]*ref)",
       "on": true,
       "reference_regex": "[a-zA-Z_\\.\\-\\:]*[_\\.\\-\\:]+[a-zA-Z_\\.\\-\\:]*"

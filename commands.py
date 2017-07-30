@@ -2,17 +2,18 @@ import sublime
 import sublime_plugin
 import subprocess
 import threading
-import time
-import json
-import os
+# import time
+# import json
+# import os
 from .scripts import utilities
-from .scripts import interface_reading as reading
-from .scripts import interface_writing as writing
+# from .scripts import interface_reading as reading
+# from .scripts import interface_writing as writing
 
 
 CREATE_NO_WINDOW = 0x08000000
 
 DOCS = [
+    ["bibTeX: The ConTeXt Way", "mkiv-publications"],
     ["Coloring ConTeXt", "colors-mkiv"],
     ["Columns", "columnsets"],
     ["ConTeXt MkIV: An Excursion", "ma-cb-en"],
@@ -47,81 +48,15 @@ DOCS = [
 ]
 
 
-class SimpleContextForceBuildInterface(sublime_plugin.WindowCommand):
-    def reload_settings(self):
-        utilities.reload_settings(self)
-        self.name = utilities.file_as_slug(self._path)
-
-    def run(self):
-        self.reload_settings()
-        thread = threading.Thread(target=self.build_interface)
-        thread.start()
-
-    def build_interface(self):
-        print(
-            "simple_ConTeXt: force building interface (warning: is slow) ..."
-        )
-        start_time = time.time()
-        loader = reading.InterfaceLoader()
-        loader.load(self._path, passes=3, modules=True)
-        file = os.path.join(
-            sublime.packages_path(),
-            "simple_ConTeXt",
-            "interface",
-            "commands_{}.json".format(self.name)
-        )
-        with open(file, encoding="utf-8", mode="w") as f:
-            json.dump(loader.encode(), f)
-        print(
-            "simple_ConTeXt: done building interface, took {:.1f}s"
-            .format(time.time() - start_time)
-        )
-
-
-class SimpleContextTestPopUps(sublime_plugin.WindowCommand):
-    def reload_settings(self):
-        utilities.reload_settings(self)
-        self.name = utilities.file_as_slug(self._path)
-
-    def run(self):
-        self.reload_settings()
-        thread = threading.Thread(target=self.test_pop_ups)
-        thread.start()
-
-    def test_pop_ups(self):
-        print("simple_ConTeXt: testing pop-ups ...")
-        start_time = time.time()
-        pop_ups = self.settings.get("pop_ups", {})
-        file = os.path.join(
-            sublime.packages_path(),
-            "simple_ConTeXt",
-            "interface",
-            "commands_{}.json".format(self.name)
-        )
-        with open(file, encoding="utf-8") as f:
-            j = json.load(f)
-            details = j["details"]
-            files = j["files"]
-        write = writing.InterfaceWriter()
-        n = 0
-        for name, cmd in details.items():
-            n += 1
-            write.render(name, cmd, files, **pop_ups)
-        print(
-            "simple_ConTeXt: done testing {} pop-ups, took {:.1f}s"
-            .format(n, time.time() - start_time)
-        )
-
-
 class SimpleContextFindDocs(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.docs = DOCS
 
     def reload_settings(self):
         utilities.reload_settings(self)
         self.viewer = self._PDF.get("viewer")
         self.flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+        self.docs = DOCS
 
     def run(self):
         self.reload_settings()
@@ -156,3 +91,9 @@ class SimpleContextFindDocs(sublime_plugin.WindowCommand):
         file = utilities.locate(self._path, "{}.pdf".format(name))
         if self.viewer and file:
             subprocess.Popen([self.viewer, file], creationflags=self.flags)
+        else:
+            msg = (
+                'Unable to locate file "{}.pdf".\n\nSearched in the TeX '
+                'tree containing "{}".'
+            )
+            sublime.error_message(msg.format(name, self._path))

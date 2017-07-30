@@ -218,8 +218,14 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
         self.encoded_settings["path"] = Choice(
             self._paths, choice=self._settings.get("path")
         )
+        self.encoded_settings.setdefault("PDF", {})["viewer"] = Choice(
+            self._PDF_viewers,
+            choice=self._settings.get("PDF", {}).get("viewer")
+        )
         self.encoded_settings["setting_groups"] = self._setting_groups
 
     def decode_settings(self):
         self._settings["path"] = self.encoded_settings["path"].get()
+        self._settings.get("PDF", {})["viewer"] = \
+            self.encoded_settings["PDF"]["viewer"].get()
         del self._settings["setting_groups"]
