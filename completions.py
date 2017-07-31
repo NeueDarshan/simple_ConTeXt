@@ -4,54 +4,26 @@ import threading
 import json
 import time
 import os
+import re
 from .scripts import utilities
 from .scripts import interface_reading as reading
 from .scripts import interface_writing as writing
 
 
-# We use a couple of HTML tags. We chose short tags because it makes the
-# files/strings significantly shorter than using long descriptive names. Here
-# are their meanings:
-#
-# \starttabulate[|rT|l|]
-#   \NC <c> \NC control sequence \type{\...} \NC\NR
-#   \NC <o> \NC optional argument \NC\NR
-#   \NC <n> \NC number \NC\NR
-#   \NC <k> \NC key, as in \type{key=value} \NC\NR
-#   \NC <e> \NC equals, as in \type{key=value} \NC\NR
-#   \NC <v> \NC value, as in \type{key=value} \NC\NR
-#   \NC <t> \NC type name, e.g.\ \type{CSNAME} means a control sequence
-#               name \NC\NR
-#   \NC <d> \NC default value \NC\NR
-#   \NC <i> \NC inherits, styles the bit of text \quote{inherits:} in
-#               \type{inherits: \...} \NC\NR
-# \stoptabulate
-#
-# I believe that, of these tags, only \type{<i>} is recognized by miniHTML. So,
-# for \type{<i>}, bear in mind that it will have the default behaviour of
-# italicizing things. Better would be to use another letter, but I actually
-# like this style for \quote{inherits} so it's staying for now.
+IDLE = 0
+
+RUNNING = 1
+
 TEMPLATE = """
 <html>
     <style>
-        c {{
-            color: var(--bluish);
-        }}
-        o {{
-            font-style: italic;
-        }}
-        d {{
-            color: var(--bluish);
-        }}
+        {style}
     </style>
     <body id="simple-ConTeXt-pop-up">
-        <popup>{body}</popup>
+        <div class="popup">{body}</div>
     </body>
 </html>
 """
-
-IDLE = 0
-RUNNING = 1
 
 
 class SimpleContextMacroSignatureEventListener(
@@ -62,6 +34,7 @@ class SimpleContextMacroSignatureEventListener(
         self.commands_cache = {}
         self.lock = threading.Lock()
         self.state = IDLE
+        self.style = None
 
     def run_loader(self):
         self.state = RUNNING
@@ -95,12 +68,21 @@ class SimpleContextMacroSignatureEventListener(
 
     def reload_settings(self):
         utilities.reload_settings(self)
+        self.load_css()
         self.name = utilities.file_as_slug(self._path)
         if utilities.is_context(self.view):
             if self.name not in self.commands_cache:
                 if self.state == IDLE:
                     thread = threading.Thread(target=self.run_loader)
                     thread.start()
+
+    def load_css(self):
+        if not self.style:
+            with open(os.path.join(
+                sublime.packages_path(), "simple_ConTeXt", "css", "pop_up.css"
+            )) as f:
+                self.style = \
+                    re.sub(r"/\*.*?\*/", "", f.read(), flags=re.DOTALL)
 
     def is_visible(self):
         return utilities.is_context(self.view)
@@ -150,9 +132,11 @@ class SimpleContextMacroSignatureEventListener(
             name, cmd, pre_code=True, **self._pop_ups
         )
         if extra:
-            return TEMPLATE.format(body=self.pop_up + "<br><br>" + extra)
+            return TEMPLATE.format(
+                body=self.pop_up + "<br><br>" + extra, style=self.style
+            )
         else:
-            return TEMPLATE.format(body=self.pop_up)
+            return TEMPLATE.format(body=self.pop_up, style=self.style)
 
     def on_navigate(self, href):
         type_, content = href[:4], href[5:]
