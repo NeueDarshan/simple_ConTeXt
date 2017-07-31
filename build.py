@@ -5,13 +5,17 @@ import threading
 import time
 import html
 import os
+import re
 from .scripts import utilities
 from .scripts import parse_log
 
 
 IDLE = 0
+
 INITIALISING = 1
+
 CHK_STARTED = 2
+
 BLD_STARTED = 3
 
 CREATE_NO_WINDOW = 0x08000000
@@ -19,37 +23,7 @@ CREATE_NO_WINDOW = 0x08000000
 TEMPLATE = """
 <html>
     <style>
-        div.hook {{
-            border-left: 0.5rem solid
-                color(var(--redish) blend(var(--background) 30%));
-            border-top: 0.4rem solid transparent;
-            height: 0;
-            width: 0;
-        }}
-        div.error {{
-            background-color:
-                color(var(--redish) blend(var(--background) 30%));
-            border-radius: 0 0.2rem 0.2rem 0.2rem;
-            margin: 0 0 0.2rem;
-            padding: 0.4rem 0 0.4rem 0.7rem;
-        }}
-        div.error span.message {{
-            padding-right: 0.7rem;
-        }}
-        div.error a {{
-            text-decoration: inherit;
-            border-radius: 0 0.2rem 0.2rem 0;
-            bottom: 0.05rem;
-            font-weight: bold;
-            padding: 0.35rem 0.7rem 0.45rem 0.8rem;
-            position: relative;
-        }}
-        html.light div.error a {{
-            background-color: #ffffff18;
-        }}
-        html.dark div.error a {{
-            background-color: #00000018;
-        }}
+        {style}
     </style>
     <body id="simple-ConTeXt-phantom-error">
         <div class="hook"></div>
@@ -70,6 +44,7 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
         self.cancel = False
         self.process = None
         self.base = ""
+        self.style = None
 
     def is_visible(self):
         return utilities.is_context(self.view)
@@ -90,6 +65,18 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
         )
         self.has_output = False
         self.output_cache = ""
+        self.load_css()
+
+    def load_css(self):
+        if not self.style:
+            with open(os.path.join(
+                sublime.packages_path(),
+                "simple_ConTeXt",
+                "css",
+                "phantom_error.css"
+            )) as f:
+                self.style = \
+                    re.sub(r"/\*.*?\*/", "", f.read(), flags=re.DOTALL)
 
     def run(self):
         self.hide_phantoms()
@@ -238,7 +225,8 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
                         message=html.escape(
                             self.parse_error(type_, e, verbose=False),
                             quote=False
-                        )
+                        ),
+                        style=self.style
                     ),
                     sublime.LAYOUT_BLOCK,
                     on_navigate=self.hide_phantoms
