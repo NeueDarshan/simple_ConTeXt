@@ -13,7 +13,7 @@ from .scripts import utilities
 CREATE_NO_WINDOW = 0x08000000
 
 DOCS = [
-    ["bibTeX: The ConTeXt Way", "mkiv-publications"],
+    # ["bibTeX: The ConTeXt Way", "mkiv-publications"],
     ["Coloring ConTeXt", "colors-mkiv"],
     ["Columns", "columnsets"],
     ["ConTeXt MkIV: An Excursion", "ma-cb-en"],
@@ -97,3 +97,16 @@ class SimpleContextFindDocs(sublime_plugin.WindowCommand):
                 'tree containing "{}".'
             )
             sublime.error_message(msg.format(name, self._path))
+
+
+class SimpleContextEditSettings(sublime_plugin.WindowCommand):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.args = {
+            "base_file":
+                "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings",
+            "default": "{\n\t$0\n}\n"
+        }
+
+    def run(self, *args, **kwargs):
+        sublime.run_command("edit_settings", self.args)

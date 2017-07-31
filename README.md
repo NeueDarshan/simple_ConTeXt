@@ -1,118 +1,51 @@
-# Contents
-
-  - [Introduction](#introduction)
-  - [Syntax](#syntax)
-  - [Commands](#commands)
-    - [Completions](#completions)
-    - [Pop-Ups](#pop-ups)
-  - [Snippets](#snippets)
-  - [Symbols](#symbols)
-  - [References](#references)
-  - [Builder](#builder)
-  - [Settings](#settings)
-
 # Introduction
 
 This [Sublime Text][sublimetext] package aims to provide some support for
-working with the [ConTeXt][contextgarden] program. In particular, it provides:
+working with the [ConTeXt][contextgarden] program.
 
-  - syntax files to markup ConTeXt source (and related) files,
-  - auto-completion for the user-facing ConTeXt commands,
-  - pop-ups showing some documentation on each of those commands,
-  - a builder,
-  - a reference system,
-  - a GUI for managing the settings,
+# Completions
 
-and other bits and pieces. More details on these features in their respective
-sections. Note that ConTeXt MKIV is supported, but not older versions (i.e.
-MKII): in this README "ConTeXt" means the MKIV version.
+Completions suggest possible commands whenever you start typing a command. For
+example the `\setuphead` command accepts many options, which are displayed as
+follows.
 
-# Syntax
+![example completions][completion]
 
-There are a couple of `sublime-syntax` files provided related to using ConTeXt.
-
-  - "ConTeXt" is the main one, which handles ConTeXt source files (typically
-    `.tex` or `.mkiv`)
-  - "ConTeXt Log" handles the log files that the ConTeXt program generates.
-  - "MetaPost" is for the [graphic programming language][metapost].
-  - "MetaFun" is for the [macro-package][metafun] extension to the MetaPost
-    language, which is loaded by default when using MetaPost within ConTeXt.
-
-# Commands
-
-By "commands" we mean TeX/ConTeXt macros, such as `\starttext`. By "core"
-commands we mean exactly those commands documented in the XML interface files
-ConTeXt comes with.
-
-To work with these XML files, we create our own JSON interface files
-automatically from the XML files that a ConTeXt installation provides.
-Different installations of ConTeXt may define slightly different commands, and
-thus the XML files for each may differ. These are created automatically, by
-tracking down the `i-context.xml` file in your ConTeXt installation.
-
-## Completions
-
-Completions suggest possible commands from the ConTeXt core whenever you start
-typing a command.
-
-![completions][completiongif]
-
-For example, on typing `\TABLE` a drop-down list appears, showing those
-commands that match the string "TABLE" (according to the fuzzy search in
-Sublime Text). It should look something like this (in this case there are a lot
-of commands matching "TABLE", so only the first few entries are shown):
-
-```TeX
-\TaBlE
-\TABLE
-\bTABLE
-\eTABLE
-\bTABLEbody
-\bTABLEfoot
-...
-```
+They are unique to each `path`, i.e. to each ConTeXt installation set up in the
+settings. As such, they take a little while to set themselves up in the
+background the first time.
 
 ## Pop-Ups
 
-Pop-ups go hand-in-hand with completions. On typing in the full name of a core
-command, a pop-up will appear showing the documentation for that command. (In
-some cases a command can be used in a couple of different ways; in such cases
-the pop-up will show a list of all the different options.)
+On typing in the full name of a command, a pop-up will appear showing the
+documentation for that command. For the same reason as the
+[completions](#completions), there is some first-time set-up work to be done.
 
-These are created automatically using the XML interface files that ConTeXt
-generates, and only provide basic information about each command; they do *not*
-describe in plain English what the command is for or how to use it.
-Nevertheless they can be tremendously useful. For example, `\startTABLE` has
-the pop-up
+Assuming all has gone well with the set-up, the pop-ups should look something
+like this:
 
-```TeX
-                  1
-\startTABLE [..,..=..,..] ... \stopTABLE
-                 OPT
+![example pop-up][popup]
 
-1   inherits: \setupTABLE
-
-tabl-ntb.mkiv
-```
-
-This indicates that `\startTABLE` takes one optional argument, which is a list
-of key-value assignments (so for example, something like `[color=red,
-style=bold]`), and that the recognized options are the same as those of the
-`\setupTABLE` command. Furthermore, it shows that `\startTABLE` should be
-terminated with a matching `\stopTABLE`. The line `tabl-ntb.mkiv` indicates the
-source file where this command is defined, if you're curious, and can be turned
-on or off with the `settings/pop_ups/show_source_files` key. You can click on
-it and it will open that file.
+This particular pop-up indicates that `\setupbackground` takes two arguments,
+the first of which is an optional list `[...,...]` and the second is a
+key-value list `[..,..=..,..]`. Moreover we can see that the first argument
+expects an object of type `NAME` (i.e. a name of some `background`), and that
+the second argument accepts a variety of keys: `after`, `before`, etc. Also,
+the second argument inherits all those options that `\setupframed` accepts.
+Finally, it is defined in the file `pack-bck.mkvi`, and that bit of text is a
+click-able link to that file.
 
 The colouring of the pop-ups is determined automatically based on the current
-colour scheme. Pop-ups can be turned on or off completely with the
-`settings/pop_ups/on` key.
+colour scheme. The options in `settings/pop_ups` are
 
-The other keys in `settings/pop_ups` are `line_break` and `show_copy_pop_up`.
+  - `on`: set to a boolean.
+  - `line_break`: set to an integer, or `null`/`false` to never line break.
+  - `show_copy_pop_up`: set to a boolean.
+  - `show_source_files`: set to a boolean.
 
 # Snippets
 
-The main snippets are as follows.
+The main snippets provided are as follows.
 
 | snippet  | expansion                                    | notes               |
 |----------|----------------------------------------------|---------------------|
@@ -130,137 +63,109 @@ The main snippets are as follows.
 | xtable   | `\startxtable ... \stopxtable`               | shows example usage |
 
 Additionally, there are the following snippets (which are taken from the
-ConTeXt samples) which are analogous to the `lorem` snippet that comes "out of
-the box" in Sublime Text:
+ConTeXt samples) which are analogous to the `lorem` snippet that comes
+out-of-the-box in Sublime Text.
 
 `aesop`, `bryson`, `carey`, `cervantes`, `darwin`, `davis`, `dawkins`,
 `douglas`, `hawking`, `khatt`, `knuth`, `linden`, `materie`, `montgomery`,
 `quevedo`, `reich`, `thuan`, `tufte`, `waltham`, `ward`, `weisman`, `zapf`.
 
-# Symbols
+# Manuals
 
-Using "Goto Symbol" (<kbd>Ctrl</kbd>+<kbd>R</kbd>) in Sublime Text will bring
-up a list of "headings" you can navigate, i.e. chapters/sections/subsections
-etc. See this [context garden article][titles] for details on ConTeXt headings.
-Both the older style `\section{<name>}` and the newer style
-`\startsection[title=<name>] ... \stopsection` are supported.
+In the command palette there is a command
+`simple_ConTeXt: Open ConTeXt documentation`. It brings up a list of the
+manuals that normally ship with a ConTeXt installation, and at the bottom of
+the list is an option to search for a manual not listed. Assuming the file can
+be located successfully in the TeX tree, it will be opened with the PDF viewer
+given in `settings/PDF/viewer`.
 
-For example, in the document
+# Settings
 
-```TeX
-\starttext
-
-\startpart[title=One]
-
-\chapter{A}
-
-\section{i}
-\section{ii}
-
-\chapter{B}
-
-\chapter{C}
-
-\stoppart
-
-\stoptext
-```
-
-the list of symbols is
-
-```
-One
-  A
-    i
-    ii
-  B
-  C
-```
-
-# References
-
-References are tricky. There are two main tasks to handle:
-
-  - keeping track of the "labels" defined so far, things like
-    `[eq:pythagoras]`;
-  - automatically prompting the user to choose a label when they type certain
-    commands, e.g. after typing `\eqref`.
-
-The current approach is a mix: on the one hand, when we can easily say for
-definite that something is a reference then it is handled just fine. For the
-other cases, there is a possibility to define a regex describing what the
-references look like (this can be set using the
-`settings/references/reference_regex` key), and a regex to describe after which
-commands they want to choose a reference (corresponding to the
-`settings/references/command_regex` key). In this way, for example, extra
-"reference handlers" defined via `\definereferenceformat` can be dealt with.
-
-To illustrate, the settings
+The `.sublime-settings` file for simple_ConTeXt is structured in this way:
 
 ```JSON
 {
+  "PDF_viewers": ["..."],
+  "paths": {"...": "..."},
+  "setting_groups": {"...": "..."},
   "settings": {
-    "references": {
-      "reference_regex": "[a-zA-Z_\\.\\-\\:]*[_\\.\\-\\:]+[a-zA-Z_\\.\\-\\:]*",
-      "command_regex": "(in|at|[a-zA-Z]*ref)"
-    }
-  }
-}
-```
-
-mean that references such as `[part:introduction]` and `[figure:main]` will be
-tracked correctly, and that typing something like `\partref` will bring up the
-list of references.
-
-Note that these strings (the values in `settings/references/reference_regex`
-and `settings/references/command_regex`) are loaded in Python 3 via the `re`
-module. So Python-style regular expressions are in order, and you may need to
-escape certain characters e.g. a "-" character in a character class `[...]`.
-
-# Builder
-
-The main builder uses the `path` key (if given) to locate the main program, and
-calls it (by default "context", can be set via `settings/builder/program/name`)
-(passing the options in `settings/builder/program/options`, if any) on the
-current ConTeXt file. It is invoked in the standard way
-(<kbd>Ctrl</kbd>+<kbd>B</kbd>) and can be cancelled part-way through by
-"running" it again.
-
-There is also a variant of this builder (you can see both by pressing
-<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>), which calls
-`mtxrun --script check ...`, i.e. does a (basic) syntax check instead.
-
-Note: the `path` option can be used either as an explicit path, or instead the
-name of a path in `paths`. The second alternative could look like:
-
-```JSON
-{
-  "paths": {
-    "default": "/path-to-context-binaries",
-  },
-  "settings": {
-    "path": "default"
-  }
-}
-```
-
-The value of `settings/builder/program/options` offers quite some, well,
-options. You can simply assign a string to it such as `--once --synctex` and
-this will get passed along to the program as if on the command line. Better is
-to use key-value pairs as in (for example)
-
-```JSON
-{
-  "settings": {
+    "PDF": {"...": "..."},
     "builder": {
+      "check": {"...": "..."},
       "program": {
-        "options": {
-          "autogenerate": true,
-          "runs": 3,
-          "mode": {
-            "draft": true
-          },
-          "synctex": "zipped"
+        "name": "...",
+        "options": {"...": "..."}
+      },
+      "...": "..."
+    },
+    "path": "...",
+    "pop_ups": {"...": "..."},
+    "references": {"...": "..."}
+  }
+}
+```
+
+The main part is everything under `settings`. The `setting_groups` are
+described some in the [GUI](#via-gui) section. The names in `PDF_viewers`
+should be findable on `$PATH`, or else an absolute path.
+
+In `paths` the keys can be any name, and the values should point to the
+location of the context binaries (`mtxrun` and such) in a given ConTeXt
+installation.
+
+## General
+
+Suggested is to add the following to the general Sublime Text settings.
+
+```JSON
+{
+  "auto_complete_triggers": [
+    {
+      "characters": "\\",
+      "selector": "text.tex.context"
+    }
+  ]
+}
+```
+
+That is, add an entry to the `auto_complete_triggers` key like this, for
+ConTeXt. Then simply typing a backslash <kbd>\\</kbd> in a ConTeXt file will
+automatically bring up a list of suggested commands, like so:
+
+![autocomplete example][autocomplete]
+
+## Via GUI
+
+The usual way to edit Sublime Text settings is of course to
+[manually edit](#via-json) the JSON file they live in. For convenience's sake
+simple_ConTeXt provides another option. In the command palette
+(<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) there is command
+`simple_ConTeXt: View/change the settings`. Selecting this brings up a menu for
+perusing the currently active settings and changing them. Most settings can be
+changed quickly and easily in this fashion. For more control, defer to manually
+editing the JSON.
+
+There is one special provision made for this approach, called `setting_groups`.
+They can only be edited manually, in the JSON. Here is an example setup:
+
+```JSON
+{
+  "setting_groups": {
+    "run_once": {
+      "builder": {
+        "program": {
+          "options": {
+            "runs": 1
+          }
+        }
+      }
+    },
+    "run_to_completion": {
+      "builder": {
+        "program": {
+          "options": {
+            "runs": 9
+          }
         }
       }
     }
@@ -268,131 +173,21 @@ to use key-value pairs as in (for example)
 }
 ```
 
-In this example, the ConTeXt program will receive the options
-`--autogenerate --runs=3 --mode=draft --synctex=zipped`. A key with boolean
-value will pass (or not) the option `--<key>` depending on if the value is
-`true` or `false`. A number or string as value will get passed as
-`--<key>=<value>`. The "mode" option gets special treatment, and is passed as
-`mode=<comma-separated-list>` including the "modes" that are set as `true`.
+This says that there should be two groups, `run_once` and `run_to_completion`.
+On applying the first (which is done by opening the GUI, navigating to
+`setting_groups/run_once`, and selecting it), the option
+`settings/builder/program/options/runs` should be set to `1`. This setting will
+eventually get passed as a command-line option `--runs=1` to the `context`
+program on running the ConTeXt builder, which sets the maximum number of runs
+to 1.
 
-Bear in mind that some options *might* cannibalize each other, for example
-passing `--directives=<some list>` and `--synctex` to ConTeXt can, in the
-authors experience, result in the `directives` being ignored. Speculation: this
-is due to the "synctex" flag being interpreted as
-`--directives="system.synctex=1"` and therefore overwriting the previous
-directives.
+## Via JSON
 
-The builder takes a couple of options (in `settings/builder`) for what
-information to report or not, namely the booleans:
-
-  - `show_errors_in_builder`
-  - `show_errors_in_main_view`
-  - `show_full_command_in_builder`
-  - `show_pages_shipped_in_builder`
-  - `show_path_in_builder`
-  - `show_warnings_in_builder`
-
-Also there is `settings/builder/PDF` which contains the settings `PDF_viewer`
-(a string for the name of a PDF viewer that is on your `PATH`) and
-`auto_open_PDF`, a boolean.
-
-Finally, there are the settings
-
-  - `check_syntax_before_build`
-  - `stop_build_if_check_fails`
-
-in `settings/builder/check`. They control whether to do a syntax check before
-running ConTeXt, and if so, whether to stop on a negative result of the
-checker.
-
-# Settings
-
-In the command palette there is a command "simple_ConTeXt: View/change the
-settings", which opens a little GUI for handling the settings. It has some
-limitations, but it is pretty flexible and is usually quicker to change one
-setting than editing the actual settings file.
-
-Of course the settings are in fact just a JSON file (well, technically a
-`sublime-settings` file which is slightly different). An example of such a
-settings file could be:
-
-```JSON
-{
-  "paths": {
-    "default": "...",
-  },
-  "setting_schemes": {
-    "verbose_builder_off": {
-      "builder": {
-        "show_errors_in_builder": false,
-        "show_full_command_in_builder": false,
-        "show_pages_shipped_in_builder": false,
-        "show_path_in_builder": false,
-        "show_warnings_in_builder": false
-      }
-    },
-    "verbose_builder_on": {
-      "builder": {
-        "show_errors_in_builder": true,
-        "show_full_command_in_builder": true,
-        "show_pages_shipped_in_builder": true,
-        "show_path_in_builder": true,
-        "show_warnings_in_builder": true
-      }
-    }
-  },
-  "settings": {
-    "builder": {
-      "program": {
-        "options": {
-          "autogenerate": true,
-          "synctex": "zipped"
-        },
-        "path": "default"
-      }
-    },
-    "pop_ups": {
-      "on": true,
-      "line_break": 65,
-    },
-    "references": {
-      "on": true,
-      "command_regex": "(in|at|about|[a-zA-Z]*ref)",
-      "reference_regex": "[a-zA-Z_\\.\\-\\:]+"
-    }
-  }
-}
-```
-
-There is `setting_schemes` option in the settings which can be used to group
-together settings. For example, `verbose_builder_off` and `verbose_builder_on`
-in the above example. These do nothing in and of themselves, but the GUI is
-aware of them: in it you can select one of them, and this applies all the
-settings contained within. Another use case might be switching between
-installations of ConTeXt:
-
-```JSON
-{
-  "setting_schemes": {
-    "set_alpha": {
-      "path": "alpha"
-    },
-    "set_beta": {
-      "path": "beta"
-    }
-  },
-  "paths": {
-    "alpha": "/path-to-alpha-binaries",
-    "beta": "/path-to-beta-binaries"
-  }
-}
-```
-
-This has become simpler in more recent versions of this package to the point
-where it's hardly worth doing it this way, if the only thing you change is the
-`path`. Instead you can just open up the command palette, choose
-"simple_ConTeXt: View/change the settings", and select "path" there to choose
-between, say, "alpha" and "beta".
+To open the `.sublime-settings` file that all the settings are kept at via the
+menus, under `Preferences/Package Settings/simple_ConTeXt/Settings`, which
+opens the user settings side-by-side with the default ones. Alternatively, in
+the command palette select the option `Preferences: simple_ConTeXt Settings`,
+which has the same effect.
 
 [sublimetext]: https://www.sublimetext.com
 [contextgarden]: http://wiki.contextgarden.net/What_is_ConTeXt
@@ -400,4 +195,6 @@ between, say, "alpha" and "beta".
 [metapost]: http://wiki.contextgarden.net/MetaPost
 [metafun]: http://wiki.contextgarden.net/MetaFun
 
-[completiongif]: https://raw.githubusercontent.com/equiva1ence/simple_ConTeXt/master/resources/completion.gif
+[autocomplete]: https://raw.githubusercontent.com/equiva1ence/simple_ConTeXt/master/resources/autocomplete.gif
+[completion]: https://raw.githubusercontent.com/equiva1ence/simple_ConTeXt/master/resources/completion.gif
+[popup]: https://raw.githubusercontent.com/equiva1ence/simple_ConTeXt/master/resources/popup.png

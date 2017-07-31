@@ -134,10 +134,11 @@ class SimpleContextMacroSignatureEventListener(
             return
 
         name = self.view.substr(cmd)[1:]
-        if name in self.commands_cache.get(self.name, {}).get("details"):
+        if name in self.commands_cache.get(self.name, {}).get("details", {}):
             self.view.show_popup(
                 self.get_popup_text(name),
                 max_width=600,
+                max_height=250,
                 flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
                 on_navigate=self.on_navigate
             )
