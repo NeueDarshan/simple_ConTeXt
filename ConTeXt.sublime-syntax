@@ -12,8 +12,10 @@ scope: text.tex.context
 first_line_match: '^(%.*?macros\s*=\s*mk([vx]i|i[vx])|\s*\\(starttext|usemodule))\b'
 variables:
   key: '[[:alpha:][:digit:]\.,\-\+=_:;\!\?<>&/]'
-  setup: '[[:alpha:][:digit:]\.,\-\+=_:;\!\?<>&/]'
+  setup: '{{key}}'
+  texdefname: '{{key}}'
   verb: '[^\\{\[%#$^_[:alpha:]]'
+  mathvar: '[[:alpha:]]'
 
 contexts:
   prototype:
@@ -34,9 +36,7 @@ contexts:
 
   comment.TeX:
     - match: '(%).*$\n?'
-      captures:
-        '0': comment.line.percentage.context
-        '1': punctuation.definition.comment.context
+      captures: {0: comment.line.percentage.context, 1: punctuation.definition.comment.context}
 
   math:
    - include: math.display
@@ -59,24 +59,17 @@ contexts:
   math.display.control:
     - match: '(\\)startformula\b'
       captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        math.display.formula.main/,
-        generic.list*/,
-      ]
+        0: support.function.general.context meta.other.control.word.context
+        1: punctuation.definition.backslash.context
+      push: [math.display.formula.main/, generic.list*/]
     - match: '(\\)start(display|d)math\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: meta.environment.math.block.context
         - include: generic.pop-if-stop-match-two/
         - include: math.main
     - match: '(\\)display(math|mathematics)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: math.group.display*/
 
   math.display.formula.main/:
@@ -103,22 +96,13 @@ contexts:
 
   math.inline.control:
     - match: '(\\)(m|math|mathematics|formula)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        math.group.inline*/,
-        generic.list*/,
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [math.group.inline*/, generic.list*/]
     - match: '(\\)inline(math|mathematics)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: math.group.inline*/
     - match: '(\\)start(imath|mathmode)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: meta.environment.math.inline.context
         - include: generic.pop-if-stop-match-two/
@@ -163,9 +147,7 @@ contexts:
     - match: '∞'
       scope: constant.numeric.context
     - match: '(\\)infty\b'
-      captures:
-        '0': constant.other.math.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: constant.other.math.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
     - include: generic.real
 
   math.operator:
@@ -174,12 +156,10 @@ contexts:
     - match: '[⋅±∓≤≥≔≃≈≠≡≅≢→∊∈∉∍∋∌⊂⊄⊃⊅⊆⊊⊈⊇⊋⊉]'
       scope: keyword.operator.math.context
     - match: '(\\)([lgn]e|[lg]e(q|qslant)|cdot|(maps)?to|(n|not)?(in|ni)|owns|n?su[bp]set(eq)?|su[bp]setneq|ll|gg|pm|mp|n?equiv|n?eq|cong|simeq|approx|setminus|times|div(ides)?)\b'
-      captures:
-        '0': keyword.operator.math.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: keyword.operator.math.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
 
   math.variable:
-    - match: '[[:alpha:]]'
+    - match: '{{mathvar}}'
       scope: string.quoted.other.math.context # variable.other.math.tex.context
 
   math.group.inner:
@@ -207,34 +187,23 @@ contexts:
 
   math.control.intertext:
     - match: '(\\)start(intertext)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - include: generic.pop-if-stop-match-two/
         - include: main
     - match: '(\\)(inter)?text\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: generic.group*/
 
   math.control.start-stop:
     - match: '(\\)start[[:alpha:]]+'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: generic.lists-or-groups*/
 
   math.control.cases:
     - match: '(\\)startcases\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        math.control.cases.main/,
-        generic.list*/,
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [math.control.cases.main/, generic.list*/]
 
   math.control.cases.main/:
     - include: math.control.cases.pop-at-end/
@@ -247,19 +216,13 @@ contexts:
 
   math.control.cases.rows:
     - match: '(\\)NC\b'
-      captures:
-        '0': entity.name.other.alignment.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: entity.name.other.alignment.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - match: '(\\)NC\b'
-          captures:
-            '0': entity.name.other.alignment.context meta.other.control.word.context
-            '1': punctuation.definition.backslash.context
+          captures: {0: entity.name.other.alignment.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
           set: math.control.cases.text/
         - match: '(\\)MC\b'
-          captures:
-            '0': entity.name.other.alignment.context meta.other.control.word.context
-            '1': punctuation.definition.backslash.context
+          captures: {0: entity.name.other.alignment.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
           set: math.control.cases.math/
         - include: math.control.cases.pop-if-newrow/
         - include: math.control.cases.pop-at-end/
@@ -275,9 +238,7 @@ contexts:
     - include: math.main
   math.control.cases.pop-if-newrow/:
     - match: '(\\)NR\b'
-      captures:
-        '0': entity.name.other.alignment.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: entity.name.other.alignment.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       set: generic.list.adjacent*/
 
   Lua:
@@ -286,18 +247,14 @@ contexts:
 
   Lua.block:
     - match: '(\\)start(luacode)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_include_prototype: false
         - meta_content_scope: source.lua.embedded.context meta.other.major.lua
         - include: generic.pop-if-stop-match-two/
         - include: Lua.main
     - match: '(\\)start(lua)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: source.lua.embedded.context meta.other.minor.lua
         - include: generic.pop-if-stop-match-two/
@@ -305,9 +262,7 @@ contexts:
 
   Lua.inline:
     - match: '(\\)(luacode|(late|direct)lua(code)?|cld(command|context|loadfile|processfile)|ctx(command|directcommand|directlua|latecommand|latelua|lua|report|sprint|write))\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: Lua.group.inline*/
 
   Lua.group.inline/:
@@ -357,47 +312,42 @@ contexts:
 
   MetaFun.use:
     - match: '(\\)(MPposition|reusableMP|(re)?useMP|uniqueMP(page)?)graphic\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        generic.group.with-assignments*/,
-        generic.group*/,
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [generic.group.with-assignments*/, generic.group*/]
 
   MetaFun.block:
     - match: '(\\)startuniqueMPgraphic\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.uniqueMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startuniqueMPpagegraphic\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.uniqueMPpagegraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startuseMPgraphic\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.useMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startusableMPgraphic\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.usableMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startreusableMPgraphic\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.reusableMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startstaticMPfigure\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.staticMPfigure.main/, generic.group*/]
     - match: '(\\)startMPcode\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPcode.main/, generic.group*/]
     - match: '(\\)startMPdefinitions\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPdefinitions.main/, generic.group*/]
     - match: '(\\)startMPinclusions\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPinclusions.main/, generic.group*/, generic.list*/]
     - match: '(\\)startMPpage\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPpage.main/, generic.list*/]
     - match: '(\\)startMPextensions\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPextensions.main/, generic.group*/]
 
   MetaFun.block.MPcode.main/:
@@ -500,9 +450,7 @@ contexts:
 
   templates:
     - match: '(<\?)(lua)\b'
-      captures:
-        '1': punctuation.definition.tag.begin.context
-        '2': entity.name.tag.lua.context
+      captures: {1: punctuation.definition.tag.begin.context, 2: entity.name.tag.lua.context}
       push:
         - meta_include_prototype: false
       # - meta_scope: meta.preprocessor.lua.context meta.tag.lua.context
@@ -523,6 +471,7 @@ contexts:
     - include: ConTeXt.protect
     - include: ConTeXt.asciimode
     - include: ConTeXt.comments
+    - include: ConTeXt.defs
     - include: ConTeXt.setups
     - include: ConTeXt.modules
     - include: ConTeXt.headings
@@ -533,9 +482,7 @@ contexts:
 
   ConTeXt.protect:
     - match: '(\\)unprotect\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: meta.other.unprotect.context
         - match: '(?=\\protect\b)'
@@ -554,15 +501,11 @@ contexts:
 
   ConTeXt.protect.control:
     - match: '(\\)([[:alpha:]_@!?]*[_@!?]+[[:alpha:]_@!?]*)'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.protect.lists-or-groups*/
     - include: control.word.without-generic
     - match: '(\\)[[:alpha:]]+'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.protect.lists-or-groups*/
     - include: control.symbol
     - include: control.active-character
@@ -589,9 +532,7 @@ contexts:
 
   ConTeXt.protect.list.assignments:
     - match: '({{key}}+)(=)'
-      captures:
-        '1': variable.parameter.context
-        '2': keyword.operator.assignment.context
+      captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context
         - include: generic.list.pop-at-end-of-assignment/
@@ -608,18 +549,14 @@ contexts:
 
   ConTeXt.asciimode:
     - match: '(\\)start(asciimode)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_include_prototype: false
         - meta_content_scope: meta.other.asciimode.context
         - include: generic.pop-if-stop-match-two/
         - include: ConTeXt.asciimode.main
     - match: '(\\)asciimode\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_include_prototype: false
         - meta_content_scope: meta.other.asciimode.context
@@ -627,9 +564,7 @@ contexts:
 
   ConTeXt.asciimode.comment:
     - match: '(%%).*$\n?'
-      captures:
-        '0': comment.line.double-percentage.context
-        '1': punctuation.definition.comment.context
+      captures: {0: comment.line.double-percentage.context, 1: punctuation.definition.comment.context}
 
   ConTeXt.asciimode.main:
     - include: ConTeXt.asciimode.comment
@@ -665,22 +600,8 @@ contexts:
     - include: ConTeXt.asciimode.main
 
   ConTeXt.asciimode.list.assignments:
-    - match: '\b(reference)(=)'
-      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
-      push:
-        - meta_include_prototype: false
-        - meta_content_scope: meta.other.value.context meta.other.reference.context
-        - include: generic.list.pop-at-end-of-assignment/
-        - include: ConTeXt.asciimode.main
-    - match: '\b(title)(=)'
-      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
-      push:
-        - meta_include_prototype: false
-        - meta_content_scope: meta.other.value.context entity.name.headings.other.context meta.other.title.context
-        - include: generic.list.pop-at-end-of-assignment/
-        - include: ConTeXt.asciimode.main
     - match: '({{key}}+)(=)'
-      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
       push:
         - meta_include_prototype: false
         - meta_content_scope: meta.other.value.context
@@ -700,65 +621,82 @@ contexts:
   ConTeXt.asciimode.control:
     - include: control.word.without-generic
     - match: '(\\)[[:alpha:]]+'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.asciimode.lists-or-groups*/
     - include: control.symbol
 
   ConTeXt.comments:
     - match: '(\\)start(hiding)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: comment.block.hiding.context
         - include: generic.pop-if-stop-match-two/
 
+  ConTeXt.defs:
+    - include: ConTeXt.defs.texdefinition
+
+  ConTeXt.defs.texdefinition:
+    - match: '(\\)starttexdefinition\b'
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [ConTeXt.defs.texdefinition.name*/, ConTeXt.defs.texdefinition.do-n-tuple*/, ConTeXt.defs.texdefinition.expanded*/, ConTeXt.defs.texdefinition.unexpanded*/, ConTeXt.defs.texdefinition.global*/, ConTeXt.defs.texdefinition.spaces*/]
+
+  ConTeXt.defs.texdefinition.spaces*/:
+    - match: '\b(no)?spaces\b'
+      scope: storage.modifier.spaces.context
+      pop: true
+    - include: generic.gobble-whitespace-then-pop/
+  ConTeXt.defs.texdefinition.global*/:
+    - match: '\bglobal\b'
+      scope: storage.modifier.global.context
+      pop: true
+    - include: generic.gobble-whitespace-then-pop/
+  ConTeXt.defs.texdefinition.unexpanded*/:
+    - match: '\bunexpanded\b'
+      scope: storage.modifier.unexpanded.context
+      pop: true
+    - include: generic.gobble-whitespace-then-pop/
+  ConTeXt.defs.texdefinition.expanded*/:
+    - match: '\bexpanded\b'
+      scope: storage.modifier.expanded.context
+      pop: true
+    - include: generic.gobble-whitespace-then-pop/
+  ConTeXt.defs.texdefinition.do-n-tuple*/:
+    - match: '\b(single|double|triple|quadruple|quintuple|sixtuple)(argument|empty)\b'
+      scope: storage.modifier.n-tuple.context
+      pop: true
+    - include: generic.gobble-whitespace-then-pop/
+  ConTeXt.defs.texdefinition.name*/:
+    - match: '\b{{texdefname}}+\b'
+      scope: support.function.general.context
+      pop: true
+    - include: generic.gobble-whitespace-then-pop/
+
   ConTeXt.modules:
     - match: '(\\)useluamodule\b'
-      captures:
-        '0': keyword.control.import.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: keyword.control.import.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: generic.list*/
     - match: '(\\)use(tex)?module\b'
-      captures:
-        '0': keyword.control.import.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        generic.list*/,
-        generic.list*/,
-        generic.list*/,
-      ]
+      captures: {0: keyword.control.import.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [generic.list*/, generic.list*/, generic.list*/]
 
   ConTeXt.setups:
     - include: ConTeXt.setups.Lua
 
   ConTeXt.setups.Lua:
     - match: '(\\)startluasetups\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push:
         - include: generic.gobble-whitespace
         - match: '(?=\[)'
-          set: [
-            ConTeXt.setups.Lua.main/,
-            generic.list*/,
-            generic.list*/,
-          ]
+          set: [ConTeXt.setups.Lua.main/, generic.list*/, generic.list*/]
         - match: ''
-          set: [
-            ConTeXt.setups.Lua.main/,
-            ConTeXt.setups.Lua.name*/,
-          ]
+          set: [ConTeXt.setups.Lua.main/, ConTeXt.setups.Lua.name*/]
 
   ConTeXt.setups.Lua.name*/:
-    - match: '{{setup}}+'
+    - match: '\b{{setup}}+\b'
       scope: meta.other.setup.name.context
       pop: true
-    - include: generic.gobble-whitespace
-    - include: generic.pop/
+    - include: generic.gobble-whitespace-then-pop/
 
   ConTeXt.setups.Lua.main/:
     - match: ''
@@ -775,25 +713,25 @@ contexts:
 
   ConTeXt.headings.inline:
     - match: '(\\)part\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.group.headings.part*/, ConTeXt.list.headings.reference*/]
     - match: '(\\)(chapter|title)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.group.headings.chapter*/, ConTeXt.list.headings.reference*/]
     - match: '(\\)(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.group.headings.section*/, ConTeXt.list.headings.reference*/]
     - match: '(\\)sub(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.group.headings.subsection*/, ConTeXt.list.headings.reference*/]
     - match: '(\\)subsub(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.deficontext.nition.backslash}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.deficontext.nition.backslash}
       push: [ConTeXt.group.headings.sub2section*/, ConTeXt.list.headings.reference*/]
     - match: '(\\)subsubsub(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.group.headings.sub3section*/, ConTeXt.list.headings.reference*/]
     - match: '(\\)subsubsubsub(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.group.headings.sub4section*/, ConTeXt.list.headings.reference*/]
 
   ConTeXt.list.headings.reference/:
@@ -872,25 +810,25 @@ contexts:
 
   ConTeXt.headings.block:
     - match: '(\\)startpart\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.part*/]
     - match: '(\\)start(chapter|title)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.chapter*/]
     - match: '(\\)start(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.section*/]
     - match: '(\\)startsub(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.subsection*/]
     - match: '(\\)startsubsub(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.sub2section*/]
     - match: '(\\)startsubsubsub(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.sub3section*/]
     - match: '(\\)startsubsubsubsub(section|subject)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.sub4section*/]
 
   ConTeXt.list.headings.part*/:
@@ -899,7 +837,7 @@ contexts:
       set:
         - meta_scope: meta.brackets.context
         - match: '\b(title)(=)'
-          captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+          captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
           push:
             - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.part.context
             - include: ConTeXt.list.headings.common/
@@ -911,7 +849,7 @@ contexts:
       set:
         - meta_scope: meta.brackets.context
         - match: '\b(title)(=)'
-          captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+          captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
           push:
             - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.chapter.context
             - include: ConTeXt.list.headings.common/
@@ -923,7 +861,7 @@ contexts:
       set:
         - meta_scope: meta.brackets.context
         - match: '\b(title)(=)'
-          captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+          captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
           push:
             - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.section.context
             - include: ConTeXt.list.headings.common/
@@ -935,7 +873,7 @@ contexts:
       set:
         - meta_scope: meta.brackets.context
         - match: '\b(title)(=)'
-          captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+          captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
           push:
             - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.subsection.context
             - include: ConTeXt.list.headings.common/
@@ -947,7 +885,7 @@ contexts:
       set:
         - meta_scope: meta.brackets.context
         - match: '\b(title)(=)'
-          captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+          captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
           push:
             - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.subsubsection.context
             - include: ConTeXt.list.headings.common/
@@ -959,7 +897,7 @@ contexts:
       set:
         - meta_scope: meta.brackets.context
         - match: '\b(title)(=)'
-          captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+          captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
           push:
             - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.subsubsubsection.context
             - include: ConTeXt.list.headings.common/
@@ -971,7 +909,7 @@ contexts:
       set:
         - meta_scope: meta.brackets.context
         - match: '\b(title)(=)'
-          captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+          captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
           push:
             - meta_content_scope: meta.other.value.context meta.other.title.context entity.name.headings.subsubsubsubsection.context
             - include: ConTeXt.list.headings.common/
@@ -989,17 +927,10 @@ contexts:
 
   ConTeXt.verbatim.inline:
     - match: '(\\)type?\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        ConTeXt.group-or-angles-or-delim.verbatim*/,
-        generic.list*/,
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [ConTeXt.group-or-angles-or-delim.verbatim*/, generic.list*/]
     - match: '(\\)(tex|arg|mat|dis|astype|verbatim(string)?)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.verbatim*/
 
   ConTeXt.group-or-angles-or-delim.verbatim*/:
@@ -1055,22 +986,22 @@ contexts:
 
   ConTeXt.verbatim.block:
     - match: '(\\)start(typing)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.main/, generic.list*/]
     - match: '(\\)startTEX\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.TEX.main/, generic.list*/]
     - match: '(\\)startLUA\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.LUA.main/, generic.list*/]
     - match: '(\\)startXML\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.XML.main/, generic.list*/]
     - match: '(\\)startPARSEDXML\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.PARSEDXML.main/, generic.list*/]
     - match: '(\\)startMP\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.MP.main/, generic.list*/]
   ConTeXt.verbatim.block.main/:
     - match: ''
@@ -1117,13 +1048,8 @@ contexts:
 
   ConTeXt.verbatim.buffer:
     - match: '(\\)startbuffer\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        ConTeXt.verbatim.buffer.main/,
-        generic.list*/,
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [ConTeXt.verbatim.buffer.main/, generic.list*/]
   ConTeXt.verbatim.buffer.main/:
     - match: ''
       set:
@@ -1138,13 +1064,8 @@ contexts:
 
   ConTeXt.quotes.inline:
     - match: '(\\)(quote|blockquote|quotation)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        ConTeXt.group.quotes*/,
-        generic.list*/,
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [ConTeXt.group.quotes*/, generic.list*/]
 
   ConTeXt.group.quotes/:
     - match: '\{'
@@ -1160,13 +1081,13 @@ contexts:
 
   ConTeXt.quotes.block:
     - match: '(\\)startblockquote\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.quotes.blockquote.main/, generic.list*/, generic.list*/]
     - match: '(\\)startquote\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.quotes.quote.main/, generic.list*/]
     - match: '(\\)startquotation\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.quotes.quotation.main/, generic.list*/, generic.list*/]
 
   ConTeXt.quotes.blockquote.main/:
@@ -1219,76 +1140,76 @@ contexts:
 
   ConTeXt.group.toggle.emphasis:
     - match: '(\{)\s*((\\)(emph|em))\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.emphasis.main/
   ConTeXt.group.toggle.boldface:
     - match: '(\{)\s*((\\)(boldface|(small)?bold|bf(xx|[xabcd])?))\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.boldface.main/
   ConTeXt.group.toggle.italic:
     - match: '(\{)\s*((\\)(italic|it(xx|[xabcd])?))\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.italic.main/
   ConTeXt.group.toggle.slanted:
     - match: '(\{)\s*((\\)((small)?slanted|sl(xx|[xabcd])?))\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.slanted.main/
   ConTeXt.group.toggle.bold-italic:
     - match: '(\{)\s*((\\)((small)?(bolditalic|italicbold)|bi(xx|[xabcd])?))\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.bold-italic.main/
   ConTeXt.group.toggle.bold-slanted:
     - match: '(\{)\s*((\\)((small)?(boldslanted|slantedbold)|bs(xx|[xabcd])?))\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.bold-slanted.main/
   ConTeXt.group.toggle.sans-bold:
     - match: '(\{)\s*((\\)sansbold)\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.sans-bold.main/
   ConTeXt.group.toggle.typewriter:
     - match: '(\{)\s*((\\)(mono|tt(xx|[xabcd])?))\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.typewriter.main/
   ConTeXt.group.toggle.typewriter-bold:
     - match: '(\{)\s*((\\)monobold)\b'
-      captures: {1': punctuation.section.braces.begin.context, 2': support.function.general.context meta.other.control.word.context, '3': punctuation.definition.backslash.context}
+      captures: {1: punctuation.section.braces.begin.context, 2: support.function.general.context meta.other.control.word.context, 3: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.typewriter-bold.main/
 
   ConTeXt.font.command.emphasis:
     - match: '(\\)emph\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.emphasis*/
   ConTeXt.font.command.boldface:
     - match: '(\\)(small)?bold\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.boldface*/
   ConTeXt.font.command.italic:
     - match: '(\\)italic\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.italic*/
   ConTeXt.font.command.slanted:
     - match: '(\\)(small)?slanted\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.slanted*/
   ConTeXt.font.command.bold-italic:
     - match: '(\\)(small)?(bolditalic|italicbold)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.bold-italic*/
   ConTeXt.font.command.bold-slanted:
     - match: '(\\)(small)?(boldslanted|slantedbold)\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.bold-slanted*/
   ConTeXt.font.command.sans-bold:
     - match: '(\\)sansbold\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.sans-bold*/
   ConTeXt.font.command.typewriter:
     - match: '(\\)mono\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.typewriter*/
   ConTeXt.font.command.typewriter-bold:
     - match: '(\\)monobold\b'
-      captures: {'0': support.function.general.context meta.other.control.word.context, '1': punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.group.font.typewriter-bold*/
 
   ConTeXt.group.font.emphasis*/:
@@ -1379,30 +1300,14 @@ contexts:
 
   ConTeXt.tables:
     - match: '(\\)start(table|tabulate)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        generic.list*/,
-        ConTeXt.list.template-or-name*/
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [generic.list*/, ConTeXt.list.template-or-name*/]
     - match: '(\\)(REF|ReFormat)\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        generic.group*/,
-        ConTeXt.list.template*/
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [generic.group*/, ConTeXt.list.template*/]
     - match: '(\\)Use\b'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
-      push: [
-        generic.group*/,
-        ConTeXt.list.template*/,
-        generic.group.with-integers*/
-      ]
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [generic.group*/, ConTeXt.list.template*/, generic.group.with-integers*/]
 
   ConTeXt.list.template-or-name/:
     - match: '\['
@@ -1438,19 +1343,14 @@ contexts:
       scope: entity.name.other.table.context
       push: generic.parens.with-dimensions*/
     - match: '([nNqQ])([[:digit:]]+)\.([[:digit:]]+) ' # space is deliberate
-      captures:
-        '1': entity.name.other.table.context
-        '2': constant.numeric.integer.context
-        '3': constant.numeric.integer.context
+      captures: {1: entity.name.other.table.context, 2: constant.numeric.integer.context, 3: constant.numeric.integer.context}
     - match: '([mM]|[BISRT])'
       scope: string.unquoted.table.context
     - match: '[f]'
       scope: string.unquoted.table.context
       push: generic.group*/
     - match: '([sojk])([[:digit:]])'
-      captures:
-        '1': support.function.table.context
-        '2': constant.numeric.integer.context
+      captures: {1: support.function.table.context, 2: constant.numeric.integer.context}
     - match: '[sojk]'
       scope: support.function.table.context
       push: generic.group.with-integers*/
@@ -1477,36 +1377,26 @@ contexts:
 
   control.word.alignment:
     - match: '(\\)(NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R|CT)\b'
-      captures:
-        '0': entity.name.other.alignment.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: entity.name.other.alignment.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: generic.list.adjacent*/
 
   control.word.conditional:
     - match: '(\\)(doif[[:alpha:]]*else|(if|[[:alpha:]]*doif(else)?)[[:alpha:]]*|[[:alpha:]]+(true|false)|or|else|fi)\b'
-      captures:
-        '0': keyword.control.conditional.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: keyword.control.conditional.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: generic.lists-or-groups*/
 
   control.word.generic:
     - match: '(\\)[[:alpha:]]+'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: generic.lists-or-groups*/
 
   control.word.generic.no-arguments:
     - match: '(\\)[[:alpha:]]+'
-      captures:
-        '0': support.function.general.context meta.other.control.word.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
 
   control.symbol:
     - match: '(\\)[^[:alpha:]]'
-      captures:
-        '0': constant.other.symbol.context
-        '1': punctuation.definition.backslash.context
+      captures: {0: constant.other.symbol.context, 1: punctuation.definition.backslash.context}
 
   control.active-character:
     - match: '[|~]'
@@ -1556,6 +1446,9 @@ contexts:
 
   generic.gobble-whitespace:
     - match: '\s+'
+  generic.gobble-whitespace-then-pop/:
+    - include: generic.gobble-whitespace
+    - include: generic.pop/
 
   generic.pop-at-group-end/:
     - match: '\}'
@@ -1684,25 +1577,23 @@ contexts:
       scope: constant.numeric.context
   generic.dimension:
     - match: '([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\b'
-      captures:
-        '1': constant.numeric.context
-        '2': keyword.other.unit.context
+      captures: {1: constant.numeric.context, 2: keyword.other.unit.context}
 
   generic.list.assignments:
     - match: '\b(reference)(=)'
-      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context meta.other.reference.context
         - include: generic.list.pop-at-end-of-assignment/
         - include: main
     - match: '\b(title)(=)'
-      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context entity.name.headings.other.context meta.other.title.context
         - include: generic.list.pop-at-end-of-assignment/
         - include: main
     - match: '({{key}}+)(=)'
-      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context
         - include: generic.list.pop-at-end-of-assignment/
@@ -1712,7 +1603,7 @@ contexts:
 
   generic.group.assignments:
     - match: '({{key}}+)(=)'
-      captures: {'1': variable.parameter.context, '2': keyword.operator.assignment.context}
+      captures: {1: variable.parameter.context, 2: keyword.operator.assignment.context}
       push:
         - meta_content_scope: meta.other.value.context
         - include: generic.group.pop-at-end-of-assignment/

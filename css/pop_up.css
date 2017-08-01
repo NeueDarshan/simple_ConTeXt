@@ -30,6 +30,10 @@ div.popup o {
     font-style: italic;
 }
 
+div.popup t {
+    font-style: italic;
+}
+
 div.popup d {
     color: var(--bluish);
 }
