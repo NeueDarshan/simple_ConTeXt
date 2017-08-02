@@ -124,6 +124,8 @@ class SimpleContextMacroSignatureEventListener(
                 flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
                 on_navigate=self.on_navigate
             )
+        else:
+            self.view.hide_popup()
 
     def get_popup_text(self, name):
         cmd = self.commands_cache[self.name]["details"][name]
