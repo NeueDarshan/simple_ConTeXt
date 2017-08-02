@@ -1,0 +1,16 @@
+{
+  "cmd":
+  [
+    "mpost",
+    "$file"
+  ],
+  "selector": "source.metapost",
+  "variants":
+  [
+    {
+      "cmd": "mpost",
+      "target": "simple_context_build_metapost",
+      "name": "Use version on ConTeXt path"
+    }
+  ]
+}

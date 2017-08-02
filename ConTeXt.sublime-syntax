@@ -58,9 +58,7 @@ contexts:
 
   math.display.control:
     - match: '(\\)startformula\b'
-      captures:
-        0: support.function.general.context meta.other.control.word.context
-        1: punctuation.definition.backslash.context
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [math.display.formula.main/, generic.list*/]
     - match: '(\\)start(display|d)math\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
