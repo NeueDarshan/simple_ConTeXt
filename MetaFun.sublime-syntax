@@ -21,6 +21,7 @@ contexts:
     - include: scope:source.metapost#definitions
     - include: environments
     - include: scope:source.metapost#TeX
+    - include: delims
 
   comment:
     - include: scope:source.metapost#comment
@@ -64,3 +65,19 @@ contexts:
       scope: entity.name.other.page.metapost.metafun
     - include: scope:source.metapost#environments
 
+  delims:
+    - include: delims.parens
+
+  delims.parens:
+    - match: '\('
+      scope: punctuation.section.parens.begin.metapost
+      push: delims.parens.main/
+  delims.parens.main/:
+    - meta_scope: meta.parens.metapost
+    - include: generic.pop-at-parens-end/
+    - include: main
+
+  generic.pop-at-parens-end/:
+    - match: '\)'
+      scope: punctuation.section.parens.end.metapost
+      pop: true

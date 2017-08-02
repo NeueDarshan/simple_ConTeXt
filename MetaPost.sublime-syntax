@@ -24,6 +24,7 @@ contexts:
     - include: definitions
     - include: environments
     - include: TeX
+    - include: delims
 
   comment:
     - match: '(%).*$\n?'
@@ -39,11 +40,11 @@ contexts:
   constants.numeric:
     - match: '([[:digit:]]*\.[[:digit:]]+)((bp|cc|cm|dd|pc|in|mm|pt)\b)?'
       captures:
-        '1': constant.numeric.float.metapost
+        '1': constant.numeric.metapost
         '2': keyword.other.unit.metapost
     - match: '([[:digit:]]+)((bp|cc|cm|dd|pc|in|mm|pt)\b)?'
       captures:
-        '1': constant.numeric.integer.metapost
+        '1': constant.numeric.metapost
         '2': keyword.other.unit.metapost
     - match: '\b(bp|cc|cm|dd|pc|in|mm|pt)\b'
       scope: keyword.other.unit.metapost
@@ -81,12 +82,7 @@ contexts:
       scope: storage.modifier.metapost
 
   keywords:
-    - include: keywords.language
     - include: keywords.control
-
-  keywords.language:
-    - match: \b(cycle|whatever)\b
-      scope: keyword.other.metapost
 
   keywords.control:
     - match: '\b(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|exit(if|unless)|endfor)\b'
@@ -94,7 +90,7 @@ contexts:
 
   internal-parameters:
     - match: '\b(ah(angle|length)|background|bboxmargin|charcode|current(pen|picture)|cuttings|day|default(colormodel|font|pen|scale)|dotlabeldiam|extra_(begin|end)fig|hour|hppp|jobname|join_radius|labeloffset|line(cap|join)|minute|miterlimit|month|mpprocset|number(precision|system)|output(filename|format|formatoptions|template)|pausing|prologues|restoreclipcolor|showstopping|time|tolerance|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)\b'
-      scope: constant.language.metpost
+      scope: constant.language.metapost
 
   operators:
     - include: operators.word
@@ -120,16 +116,7 @@ contexts:
   functions.dashpattern:
     - match: '\bdashpattern\b'
       scope: support.function.general.metapost
-      push:
-        - match: '\('
-          scope: punctuation.section.parens.begin.metapost
-          set:
-            - meta_scope: meta.parens.metapost
-            - include: generic.pop-at-parens-end/
-            - match: '\b(on|off)\b'
-              scope: keyword.operator.word.metapost
-            - include: main
-        - include: generic.pop-if-no-parens/
+      push: delims.parens.with-on-off*/
 
   functions.input:
     - match: '\b(input)\b'
@@ -150,6 +137,8 @@ contexts:
 
   functions.generic:
     - match: '\b(abs|addto|also|angle|arclength|arctime|ASCII|byte|batchmode|bbox|(sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|decimal|decr|dir|direction(point|time)?|doublepath|draw(arrow|dblarrow|dot|fill|options)?|err(help|message)|(scroll|(error|non)stop)mode|filenametemplate|fill(draw)?|filled|flex|floor|fontmap(file|line)|fontsize|hex|hide|image|incr|interpath|inverse|known|length|loggingall|makepath|makepen|max|message|mexp|min|mlog|(normal|uniform)deviate|oct|odd|pickup|penoffset|point|(post|pre)control|readfrom|reverse|round|scantokens|setbounds|shipout|show(dependencies|token|variable)?|special|sqrt|str|stroked|sub(path|string)|superellipse|tensepath|textual|turningnumber|(top|bot|lft|rt)|tracing(all|none)|un(draw(dot|fill)?|fill(draw)?)|unitvector|unknown|[ul][rl]corner|write|(black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)\b'
+      scope: support.function.general.metapost
+    - match: \b(cycle|whatever)\b
       scope: support.function.general.metapost
 
   functions.parameter:
@@ -248,16 +237,7 @@ contexts:
   environments.fig:
     - match: '\bbeginfig\b'
       scope: entity.name.other.fig.metapost
-      push:
-        - match: '\('
-          scope: punctuation.section.parens.begin.metapost
-          set:
-            - meta_scope: meta.parens.metapost
-            - include: generic.pop-at-parens-end/
-            - match: '[[:digit:]]+'
-              scope: constant.numeric.integer.metapost meta.other.numeric.fig.metapost
-            - include: main
-        - include: generic.pop-if-no-parens/
+      push: delims.parens.with-number*/
 
   environments.group:
     - match: '\b(begin|end)group\b'
@@ -277,6 +257,45 @@ contexts:
         - include: scope:text.tex#main
     - match: '\betex\b'
       scope: entity.name.other.tex.metapost
+
+  delims:
+    - include: delims.parens
+
+  delims.parens:
+    - match: '\('
+      scope: punctuation.section.parens.begin.metapost
+      push: delims.parens.main/
+  delims.parens*/:
+    - match: '\('
+      scope: punctuation.section.parens.begin.metapost
+      set: delims.parens.main/
+    - include: generic.pop-if-no-parens/
+  delims.parens.main/:
+    - meta_scope: meta.parens.metapost
+    - include: generic.pop-at-parens-end/
+    - include: main
+
+  delims.parens.with-number*/:
+    - match: '\('
+      scope: punctuation.section.parens.begin.metapost
+      set:
+        - meta_scope: meta.parens.metapost
+        - include: generic.pop-at-parens-end/
+        - match: '[[:digit:]]+'
+          scope: constant.numeric.metapost meta.other.numeric.fig.metapost
+        - include: main
+    - include: generic.pop-if-no-parens/
+
+  delims.parens.with-on-off*/:
+    - match: '\('
+      scope: punctuation.section.parens.begin.metapost
+      set:
+        - meta_scope: meta.parens.metapost
+        - include: generic.pop-at-parens-end/
+        - match: '\b(on|off)\b'
+          scope: keyword.operator.word.metapost
+        - include: main
+    - include: generic.pop-if-no-parens/
 
   generic.pop-if-no-parens/:
     - match: '(?=[^\(])'
