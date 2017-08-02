@@ -69,14 +69,14 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
 
     def load_css(self):
         if not self.style:
-            with open(os.path.join(
-                sublime.packages_path(),
-                "simple_ConTeXt",
-                "css",
-                "phantom_error.css"
-            )) as f:
-                self.style = \
-                    re.sub(r"/\*.*?\*/", "", f.read(), flags=re.DOTALL)
+            self.style = re.sub(
+                r"/\*.*?\*/",
+                "",
+                sublime.load_resource(
+                    "Packages/simple_ConTeXt/css/phantom_error.css"
+                ),
+                flags=re.DOTALL
+            )
 
     def run(self):
         self.hide_phantoms()
