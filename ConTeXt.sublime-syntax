@@ -1395,7 +1395,7 @@ contexts:
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
 
   control.symbol:
-    - match: '(\\)[^[:alpha:]]'
+    - match: '(\\)([^[:alpha:]]|$)'
       captures: {0: constant.other.symbol.context, 1: punctuation.definition.backslash.context}
 
   control.active-character:

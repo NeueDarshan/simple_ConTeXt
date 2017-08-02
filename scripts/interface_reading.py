@@ -216,15 +216,19 @@ class InterfaceLoader:
         attrib = node.attrib
         file = attrib.get("file")
         if attrib.get("type") == "environment":
-            begin = attrib.get("begin", "start") + name
-            end = attrib.get("end", "stop") + name
+            begin = self.clean_name(attrib.get("begin", "start") + name)
+            end = self.clean_name(attrib.get("end", "stop") + name)
             node_copy = copy.deepcopy(node)
-            self.find(node_copy, "arguments").append(self.dots_node())
-            self.find(node_copy, "arguments").append(self.delim_node(end))
+            args = self.find(node_copy, "arguments")
+            if args:
+                args.append(self.dots_node())
+                args.append(self.delim_node(end))
+            else:
+                node_copy.append(self.tail_args_node(end))
             self.do_command_aux_i(begin, node_copy)
             self.do_command_aux_i(end, self.empty_node(file))
         else:
-            self.do_command_aux_i(name, node)
+            self.do_command_aux_i(self.clean_name(name), node)
 
     def do_command_aux_i(self, name, node):
         arguments = self.find(node, "arguments")
@@ -462,30 +466,43 @@ class InterfaceLoader:
     def identity(self, s):
         return s
 
+    def clean_name(self, s):
+        return s.replace("​", "")  # remove zero||width whitespace
+
     def empty_node(self, file):
-        return ET.fromstring(
-            '<cd:command xmlns:cd="http://www.pragma-ade.com/commands" ' +
-            'file="{}" />'.format(file)
-        )
+        return ET.fromstring((
+            '<cd:command xmlns:cd="http://www.pragma-ade.com/commands" '
+            'file="{}" />'
+        ).format(file))
 
     def dots_node(self):
         return ET.fromstring(
-            '<cd:emptydelimiter xmlns:cd="http://www.pragma-ade.com' +
+            '<cd:emptydelimiter xmlns:cd="http://www.pragma-ade.com'
             '/commands" />'
         )
 
     def delim_node(self, name):
-        return ET.fromstring(
-            '<cd:delimiter xmlns:cd="http://www.pragma-ade.com/commands" ' +
-            'name="{}" />'.format(name)
-        )
+        return ET.fromstring((
+            '<cd:delimiter xmlns:cd="http://www.pragma-ade.com/commands" '
+            'name="{}" />'
+        ).format(name))
+
+    def tail_args_node(self, name):
+        return ET.fromstring((
+            '<cd:arguments xmlns:cd="http://www.pragma-ade.com/commands">'
+            '<cd:emptydelimiter xmlns:cd="http://www.pragma-ade.com/commands" '
+            '/>'
+            '<cd:delimiter xmlns:cd="http://www.pragma-ade.com/commands" '
+            'name="{}" />'
+            '</cd:arguments>'
+        ).format(name))
 
     def find(self, node, query):
-        result = node.find(self.get_tag(query), namespaces=self.namespace)
+        result = node.find(self.get_tag(query))
         return result if result else []
 
     def findall(self, node, query):
-        result = node.findall(self.get_tag(query), namespaces=self.namespace)
+        result = node.findall(self.get_tag(query))
         return result if result else []
 
     def tag_is(self, node, *tags):
