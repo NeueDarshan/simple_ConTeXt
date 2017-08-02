@@ -11,9 +11,10 @@ follows.
 
 ![example completions][completion]
 
-They are unique to each `path`, i.e. to each ConTeXt installation set up in the
-settings. As such, they take a little while to set themselves up in the
-background the first time.
+They are unique to each `path`, i.e. to each ConTeXt installation configured in
+the settings. As such, they take a little while to set themselves up in the
+background the first time. Some details as to the progress of this set-up work
+is reported in the console.
 
 ## Pop-Ups
 
@@ -35,13 +36,15 @@ the second argument inherits all those options that `\setupframed` accepts.
 Finally, it is defined in the file `pack-bck.mkvi`, and that bit of text is a
 click-able link to that file.
 
-The colouring of the pop-ups is determined automatically based on the current
-colour scheme. The options in `settings/pop_ups` are
+The colouring of the pop-ups is determined by a file `css/pop_up.css`. Some of
+the variables in this `css` file are determined by the current colour scheme,
+so that it can adapt to different schemes. There are also options in
+`settings/pop_ups`:
 
-  - `on`: set to a boolean.
-  - `line_break`: set to an integer, or `null`/`false` to never line break.
-  - `show_copy_pop_up`: set to a boolean.
-  - `show_source_files`: set to a boolean.
+  - `on`: a boolean.
+  - `line_break`: an integer, or `null`/`false` to never line break.
+  - `show_copy_pop_up`: a boolean.
+  - `show_source_files`: a boolean.
 
 # Snippets
 
@@ -176,7 +179,7 @@ They can only be edited manually, in the JSON. Here is an example setup:
 This says that there should be two groups, `run_once` and `run_to_completion`.
 On applying the first (which is done by opening the GUI, navigating to
 `setting_groups/run_once`, and selecting it), the option
-`settings/builder/program/options/runs` should be set to `1`. This setting will
+`settings/builder/program/options/runs` should be set to 1. This setting will
 eventually get passed as a command-line option `--runs=1` to the `context`
 program on running the ConTeXt builder, which sets the maximum number of runs
 to 1.
