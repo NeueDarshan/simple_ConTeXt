@@ -2,8 +2,10 @@
 ---
 name: MetaFun
 file_extensions:
-  - mp
   - mf
+  - mp
+  - mpii
+  - mpiv
 scope: source.metapost.metafun
 
 contexts:

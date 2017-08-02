@@ -2,8 +2,10 @@
 ---
 name: MetaPost
 file_extensions:
-  - mp
   - mf
+  - mp
+  - mpii
+  - mpiv
 scope: source.metapost
 
 variables:
