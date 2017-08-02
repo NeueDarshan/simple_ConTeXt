@@ -180,6 +180,10 @@ def is_context(view):
     return view.match_selector(view.sel()[0].begin(), "text.tex.context")
 
 
+def is_metapost(view):
+    return view.match_selector(view.sel()[0].begin(), "source.metapost")
+
+
 def add_path(orig, new):
     if isinstance(new, str) and new:
         new = os.path.abspath(new)

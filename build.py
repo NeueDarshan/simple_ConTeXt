@@ -402,7 +402,7 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
         self.setup_output_view()
 
         self.add_to_output("starting > running ConTeXt syntax check")
-        thread = threading.Thread(target=lambda: self.run_aux(self.path_))
+        thread = threading.Thread(target=lambda: self.run_aux(self._path))
         thread.start()
 
     def run_aux(self, path):
@@ -425,7 +425,7 @@ class SimpleContextCheckCommand(sublime_plugin.WindowCommand):
             opts["env"] = os.environ.copy()
             os.environ["PATH"] = orig_path
 
-        os.chdir(self.dir_)
+        os.chdir(self.dir)
         self.state = CHK_STARTED
         self.process = subprocess.Popen(self.command, **opts)
         self.lock.release()
