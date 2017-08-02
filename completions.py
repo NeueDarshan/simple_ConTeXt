@@ -78,11 +78,14 @@ class SimpleContextMacroSignatureEventListener(
 
     def load_css(self):
         if not self.style:
-            with open(os.path.join(
-                sublime.packages_path(), "simple_ConTeXt", "css", "pop_up.css"
-            )) as f:
-                self.style = \
-                    re.sub(r"/\*.*?\*/", "", f.read(), flags=re.DOTALL)
+            self.style = re.sub(
+                r"/\*.*?\*/",
+                "",
+                sublime.load_resource(
+                    "Packages/simple_ConTeXt/css/pop_up.css"
+                ),
+                flags=re.DOTALL
+            )
 
     def is_visible(self):
         return utilities.is_context(self.view)
