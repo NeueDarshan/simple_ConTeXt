@@ -32,6 +32,7 @@ DOCS = [
     ["Math", "math-mkiv"],
     ["MathML Examples", "mmlexamp"],
     ["MathML", "mmlprime"],
+    ["MetaPost: A User's Manual", "mpman"],
     ["MkIV Hybrid Technology", "hybrid"],
     ["README", "mreadme"],
     ["Rules", "rules-mkiv"],
