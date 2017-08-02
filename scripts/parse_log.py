@@ -1,9 +1,9 @@
-import json
 import re
 from . import utilities
 
 
 IGNORE = 0
+
 SPECIAL = 1
 
 
