@@ -2,12 +2,7 @@ import sublime
 import sublime_plugin
 import subprocess
 import threading
-# import time
-# import json
-# import os
 from .scripts import utilities
-# from .scripts import interface_reading as reading
-# from .scripts import interface_writing as writing
 
 
 CREATE_NO_WINDOW = 0x08000000
