@@ -93,6 +93,9 @@ class VirtualCommandDict:
     def __contains__(self, key):
         return key in self.keys
 
+    def get_keys(self):
+        return sorted(self.keys)
+
 
 class SimpleContextMacroSignatureEventListener(
     sublime_plugin.ViewEventListener
@@ -107,6 +110,7 @@ class SimpleContextMacroSignatureEventListener(
         self.style = None
         self.file_min = 20000
         self.scope_sel = "text.tex.context - (meta.environment.math, source)"
+        self.extensions = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
 
     def reload_settings(self):
         utilities.reload_settings(self)
@@ -186,7 +190,8 @@ class SimpleContextMacroSignatureEventListener(
                     utilities.last_command_in_view(self.view, end=l)
                 ):
                     return [
-                        ["\\" + cmd, ""] for cmd in self.cache[self.name].keys
+                        ["\\" + cmd, ""]
+                        for cmd in self.cache[self.name].get_keys()
                     ]
 
     def on_modified_async(self):
@@ -256,7 +261,7 @@ class SimpleContextMacroSignatureEventListener(
             self.view.window().open_file(main)
         else:
             other = utilities.fuzzy_locate(
-                self._path, name, extensions=["tex", "mkii", "mkiv", "mkvi"]
+                self._path, name, extensions=self.extensions
             )
             if other and os.path.exists(other):
                 # # For some reason, this is crashing ST on finishing the
