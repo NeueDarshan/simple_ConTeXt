@@ -1,9 +1,17 @@
 import sublime
 import subprocess
 import itertools
+import random
 import string
 import os
 import re
+
+
+def safe_random_sample(data, size):
+    if size < len(data):
+        return random.sample(data, size)
+    else:
+        return data
 
 
 def html_unescape(text):
