@@ -225,6 +225,14 @@ def locate(path, file):
     return bytes_decode(result[0])
 
 
+def fuzzy_locate(path, file, extensions=[]):
+    base = base_file(file)
+    for ext in extensions:
+        text = locate(path, "{}.{}".format(base, ext))
+        if text:
+            return text
+
+
 def bytes_decode(text):
     return text.decode(encoding="utf-8", errors="replace").replace(
         "\r\n", "\n").replace("\r", "\n").strip()

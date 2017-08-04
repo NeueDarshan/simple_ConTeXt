@@ -347,6 +347,9 @@ contexts:
     - match: '(\\)startMPextensions\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPextensions.main/, generic.group*/]
+    - match: '(\\)startMPpositiongraphic\b'
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [MetaFun.block.MPpositiongraphic.main/, generic.group*/, generic.group*/]
 
   MetaFun.block.MPcode.main/:
     - match: ''
@@ -423,6 +426,13 @@ contexts:
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
         - match: '(?=\\stopMPextensions\b)'
+          pop: true
+        - include: MetaFun.main
+  MetaFun.block.MPpositiongraphic.main/:
+    - match: ''
+      set:
+        - meta_content_scope: source.metapost.metafun.embedded.context
+        - match: '(?=\\stopMPpositiongraphic\b)'
           pop: true
         - include: MetaFun.main
 

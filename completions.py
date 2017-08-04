@@ -154,7 +154,7 @@ class SimpleContextMacroSignatureEventListener(
             val = cmds[key]
             size += len(str(val))
             cache[key] = val
-            if size > self.file_cap:
+            if size > self.file_min:
                 file = os.path.join(self.interface_path, "{}.json".format(key))
                 with open(file, encoding="utf-8", mode="w") as f:
                     json.dump(cache, f)
@@ -243,20 +243,38 @@ class SimpleContextMacroSignatureEventListener(
     def on_navigate(self, href):
         type_, content = href[:4], href[5:]
         if type_ == "file":
-            file = utilities.locate(self._path, content)
-            if os.path.exists(file):
-                self.view.window().open_file(file)
-            else:
-                msg = (
-                    'Unable to locate file "{}".\n\nSearched in the TeX tree '
-                    'containing "{}".'
-                )
-                sublime.error_message(msg.format(content, self._path))
+            self.on_navigate_file(content)
         elif type_ == "copy":
             if content == "html":
                 self.copy(utilities.html_pretty_print(self.pop_up))
             elif content == "plain":
                 self.copy(utilities.html_raw_print(self.pop_up))
+
+    def on_navigate_file(self, name):
+        main = utilities.locate(self._path, name)
+        if main and os.path.exists(main):
+            self.view.window().open_file(main)
+        else:
+            other = utilities.fuzzy_locate(
+                self._path, name, extensions=["tex", "mkii", "mkiv", "mkvi"]
+            )
+            if other and os.path.exists(other):
+                # # For some reason, this is crashing ST on finishing the
+                # # dialogue \periods
+                # msg = (
+                #     'Unable to locate file "{}".\n\nSearched in the TeX tree '
+                #     'containing "{}".\n\nFound file "{}" with similar name, '
+                #     'open instead?'
+                # ).format(name, self._path, os.path.basename(other))
+                # if sublime.ok_cancel_dialog(msg):
+                #     self.view.window().open_file(other)
+                self.view.window().open_file(other)
+            else:
+                msg = (
+                    'Unable to locate file "{}".\n\nSearched in the TeX tree '
+                    'containing "{}".'
+                )
+                sublime.error_message(msg.format(name, self._path))
 
     def copy(self, text):
         self.view.hide_popup()
