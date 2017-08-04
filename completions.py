@@ -2,7 +2,6 @@ import sublime
 import sublime_plugin
 import collections
 import threading
-import random
 import json
 import os
 import re
@@ -58,36 +57,38 @@ class VirtualCommandDict:
             self.keys = set(json.load(f))
         self.max_size = max_size
         self.local_size = local_size
-        self.store = collections.OrderedDict()
+        self.cache = collections.OrderedDict()
 
     def __setitem__(self, key, value):
         self.keys.add(key)
-        self.store[key] = value
-        self.store.move_to_end(key, last=False)
-        while len(self.store) > self.max_size:
-            self.store.popitem(last=True)
+        self.cache[key] = value
+        self.cache.move_to_end(key, last=False)
+        while len(self.cache) > self.max_size:
+            self.cache.popitem(last=True)
 
     def __getitem__(self, key):
         if key in self.keys:
-            if key in self.store:
-                return self.store[key]
+            if key in self.cache:
+                return self.cache[key]
             else:
                 name = min(f for f in self.missing if key <= f)
                 with open(os.path.join(self.dir, name)) as f:
                     data = json.load(f)
-                while len(self.store) + self.local_size > self.max_size:
-                    self.store.popitem(last=True)
-                for k in random.sample(list(data), self.local_size):
+                while len(self.cache) + self.local_size > self.max_size:
+                    self.cache.popitem(last=True)
+                for k in utilities.safe_random_sample(
+                    list(data), self.local_size
+                ):
                     self.keys.add(k)
-                    self.store[k] = data[k]
-                    self.store.move_to_end(k, last=True)
+                    self.cache[k] = data[k]
+                    self.cache.move_to_end(k, last=True)
                 self[key] = data[key]
                 return self[key]
         else:
             raise KeyError
 
     def __len__(self):
-        return len(self.store)
+        return len(self.cache)
 
     def __contains__(self, key):
         return key in self.keys
