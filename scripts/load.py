@@ -1,20 +1,20 @@
 from . import utilities
 
 
-class InterfaceWriter:
+class InterfaceLoader:
     def __init__(self):
-        self.SYNTAX = '<syntax>{syntax}</syntax>'
-        self.DOCSTRING = '<docstring>{docstring}</docstring>'
-        self.FILE = '<file><a href="file:{file}">{file}</a></file>'
+        self.syntax = '<syntax>{syntax}</syntax>'
+        self.docstring = '<docstring>{docstring}</docstring>'
+        self.file = '<file><a href="file:{file}">{file}</a></file>'
 
-    def render(self, *args, **kwargs):
-        raw_text, raw_extra = self.render_aux(*args, **kwargs)
+    def load(self, *args, **kwargs):
+        raw_text, raw_extra = self.render(*args, **kwargs)
         if kwargs.get("pre_code", False):
             return [utilities.html_pre_code(s) for s in (raw_text, raw_extra)]
         else:
             return raw_text, raw_extra
 
-    def render_aux(self, name, list_, **kwargs):
+    def render(self, name, list_, **kwargs):
         self.kwargs = kwargs
         self.name = name
         parts = []
@@ -26,23 +26,23 @@ class InterfaceWriter:
             sig = []
 
             if not content:
-                syntax, docstring = self.render_aux_i([])
+                syntax, docstring = self.render_aux([])
             elif isinstance(content, dict):
-                syntax, docstring = self.render_aux_i([content])
+                syntax, docstring = self.render_aux([content])
             elif isinstance(content, list):
-                syntax, docstring = self.render_aux_i(content)
+                syntax, docstring = self.render_aux(content)
             else:
                 raise Exception('unexpected type "{}"'.format(type(content)))
 
-            sig.append(self.SYNTAX.format(syntax=syntax))
+            sig.append(self.syntax.format(syntax=syntax))
 
             if len(docstring) > 0:
-                sig.append(self.DOCSTRING.format(docstring=docstring))
+                sig.append(self.docstring.format(docstring=docstring))
 
             parts.append("\n\n".join(sig))
 
         if self.kwargs.get("show_source_files", False) and files:
-            extra = [" ".join(self.FILE.format(file=k) for k in sorted(files))]
+            extra = [" ".join(self.file.format(file=k) for k in sorted(files))]
         else:
             extra = []
         if self.kwargs.get("show_copy_pop_up", False):
@@ -53,7 +53,7 @@ class InterfaceWriter:
 
         return "\n\n".join(parts), "\n\n".join(extra)
 
-    def render_aux_i(self, list_):
+    def render_aux(self, list_):
         cs = "\\" + self.name
         self._syntax = [
             "<c>{}</c>".format(s) for s in [" " * len(cs), cs, " " * len(cs)]
@@ -76,8 +76,8 @@ class InterfaceWriter:
                 self.blank()
             else:
                 self._n += 1
-                self.syntax()
-                self.docstring()
+                self.do_syntax()
+                self.do_docstring()
 
         self.clean_syntax()
         return "\n".join(self._syntax), "\n\n".join(self._docstring)
@@ -96,7 +96,7 @@ class InterfaceWriter:
         self._syntax[1] += self._rendering
         self._syntax[2] += " " * self._len
 
-    def syntax(self):
+    def do_syntax(self):
         if self._optional:
             for i in range(3):
                 self._syntax[i] += "<o>"
@@ -111,7 +111,7 @@ class InterfaceWriter:
             for i in range(3):
                 self._syntax[i] += "</o>"
 
-    def docstring(self):
+    def do_docstring(self):
         if isinstance(self._content, str):
             self._docstring.append(self.docstring_str())
         elif isinstance(self._content, list):

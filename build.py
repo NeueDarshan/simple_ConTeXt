@@ -7,7 +7,7 @@ import html
 import os
 import re
 from .scripts import utilities
-from .scripts import parse_log
+from .scripts import log
 
 
 IDLE = 0
@@ -207,7 +207,7 @@ class SimpleContextBuildCommand(sublime_plugin.WindowCommand):
 
         result = self.process.communicate()
         self.elapsed = time.time() - self.start_time
-        self.log = parse_log.parse_log(result[0])
+        self.log = log.parse(result[0])
         self.process_errors()
         self.do_phantoms()
         self.process = None
