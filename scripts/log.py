@@ -34,25 +34,25 @@ def append_deep_safe(dict_, keys, value):
         dict_[k].append(value)
 
 
-def preprocess_lines(s):
+def preprocess_lines(text):
     return re.sub(
         r"^((?:Over|Under)full)",
         r"tex warning     > tex warning: bad box\n\1",
-        s,
+        text,
         flags=re.MULTILINE
     )
 
 
 def parse_lines(bytes_, decode=True):
     if decode:
-        string = bytes_.decode(encoding="utf-8", errors="replace").replace(
-            "\r\n", "\n").replace("\r", "\n")
+        text = utilities.bytes_decode(bytes_)
     else:
-        string = bytes_
-    string = preprocess_lines(string)
+        text = bytes_
+
+    text = preprocess_lines(text)
     log = {}
     prev = None
-    for line in string.split("\n"):
+    for line in text.split("\n"):
         res = categorize(line)
         if res is IGNORE:
             pass
@@ -67,77 +67,77 @@ def parse_lines(bytes_, decode=True):
 
 
 def parse_lines_aux(log):
-    d = {}
+    dict_ = {}
     for k, v in log.items():
-        d[k] = []
+        dict_[k] = []
         for line in v:
             type_ = line[:4]
-            s = line[5:]
+            text = line[5:]
             if type_ == "init":
-                d[k].append([s])
+                dict_[k].append([text])
             else:
-                d[k][-1].append(s)
-    return {k: ["\n".join(v) for v in d[k]] for k in d}
+                dict_[k][-1].append(text)
+    return {k: ["\n".join(v) for v in dict_[k]] for k in dict_}
 
 
-def parse_log(bytes_, decode=True):
+def parse(bytes_, decode=True):
     tex_err, lua_err, mp_err, other_err = [], [], [], []
     tex_war, other_war = [], []
     info = {}
-    d = parse_lines(bytes_, decode=decode)
+    dict_ = parse_lines(bytes_, decode=decode)
 
-    for k, v in d.items():
+    for k, v in dict_.items():
         if k == "tex error":
-            for s in v:
-                head = re.search(r"([a-zA-Z]+) error on line ([0-9]+)", s)
+            for text in v:
+                head = re.search(r"([a-zA-Z]+) error on line ([0-9]+)", text)
                 if head:
                     if head.group(1) == "tex":
-                        dets = re.search(r"! (.*?)\n", s[head.end():])
+                        dets = re.search(r"! (.*?)\n", text[head.end():])
                         tex_err.append({
                             "details": dets.group(1) if dets else None,
                             "line": int(head.group(2))
                         })
                     elif head.group(1) == "mp":
-                        dets = re.search(r"! (.*?)\n", s[head.end():])
+                        dets = re.search(r"! (.*?)\n", text[head.end():])
                         mp_err.append({
                             "details": dets.group(1) if dets else None,
                             "line": int(head.group(2))
                         })
         elif k == "lua error":
-            for s in v:
-                head = re.search(r"lua error on line ([0-9]+)", s)
+            for text in v:
+                head = re.search(r"lua error on line ([0-9]+)", text)
                 if head:
                     dets = re.search(
-                        r"\[ctxlua\]:([0-9]+): (.*?)\n", s[head.end():]
+                        r"\[ctxlua\]:([0-9]+): (.*?)\n", text[head.end():]
                     )
                     lua_err.append({
                         "details": dets.group(2) if dets else None,
                         "line": int(head.group(1))
                     })
         elif k == "mkiv lua stats":
-            for s in v:
+            for text in v:
                 head = re.search(
                     r"runtime: (.*?) seconds, ([0-9]+) processed "
                     r"pages, ([0-9]+) shipped pages, (.*?) pages/second",
-                    s
+                    text
                 )
                 if head:
                     info["runtime"] = float(head.group(1))
                     info["pages"] = int(head.group(3))
                     info["pages/second"] = float(head.group(4))
         if k == "tex warning":
-            for s in v:
-                head = re.search(r"tex warning: bad box", s)
+            for text in v:
+                head = re.search(r"tex warning: bad box", text)
                 if head:
                     hbox_dets = re.search(
                         r"(Over|Under)full \\hbox \((.*?)\) in paragraph at "
                         r"lines ([0-9]+)\-\-([0-9]+)",
-                        s[head.end():]
+                        text[head.end():]
                     )
                     vbox_dets = re.search(
                         r"(Over|Under)full \\vbox \((.*?)\) detected at line "
                         r"([0-9]+)",
-                        s[head.end():]
+                        text[head.end():]
                     )
                     if hbox_dets:
                         if (
@@ -179,14 +179,14 @@ def parse_log(bytes_, decode=True):
 
     return {
         "errors": {
-            "TeX": utilities.deduplicate(tex_err),
-            "Lua": utilities.deduplicate(lua_err),
-            "MetaPost": utilities.deduplicate(mp_err),
-            "Other": utilities.deduplicate(other_err)
+            "TeX": utilities.remove_duplicates(tex_err),
+            "Lua": utilities.remove_duplicates(lua_err),
+            "MetaPost": utilities.remove_duplicates(mp_err),
+            "Other": utilities.remove_duplicates(other_err)
         },
         "warnings": {
-            "TeX": utilities.deduplicate(tex_war),
-            "Other": utilities.deduplicate(other_war)
+            "TeX": utilities.remove_duplicates(tex_war),
+            "Other": utilities.remove_duplicates(other_war)
         },
         "info": info
     }

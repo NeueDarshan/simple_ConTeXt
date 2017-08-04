@@ -9,15 +9,15 @@ from . import utilities
 NAMESPACE = {"cd": "http://www.pragma-ade.com/commands"}
 
 
-class InterfaceLoader:
+class InterfaceSaver:
     def __init__(self):
-        self.METHOD = {
+        self.method = {
             "range": ":",
             "factor": "*",
             "apply": self.escape("->"),
             "none": None,
         }
-        self.DELIMITERS = {
+        self.delimiters = {
             "braces": "{}",
             "parentheses": "()",
             "default": "[]",
@@ -27,7 +27,7 @@ class InterfaceLoader:
         self.cmds = {}
         self.to_load = []
 
-    def load(self, path, modules=True, tolerant=True, namespace=NAMESPACE):
+    def save(self, path, modules=True, tolerant=True, namespace=NAMESPACE):
         self.path = path
         self.namespace = namespace
         self.tolerant = tolerant
@@ -239,7 +239,7 @@ class InterfaceLoader:
             "content": self.do_content,
             "csname": self.do_csname,
             "delimiter": self.do_delimiter,
-            "emptydelimiter": self.do_empty_delimiter,
+            "dotsdelimiter": self.do_dots_delimiter,
             "index": self.do_index,
             "keywords": self.do_keywords,
             "position": self.do_position,
@@ -267,7 +267,7 @@ class InterfaceLoader:
         name = self.transform(attrib.get("name", ""))
         type_ = self.transform(attrib.get("type", ""))
         prefix = self.transform(attrib.get("prefix", ""))
-        method = self.METHOD.get(attrib.get("method", "none"))
+        method = self.method.get(attrib.get("method", "none"))
         if self.is_true(attrib.get("default")):
             start, stop = "<d>", "</d>"
         else:
@@ -342,7 +342,7 @@ class InterfaceLoader:
             "ren": self.render("delimiter", node.attrib),
         }
 
-    def do_empty_delimiter(self, node):
+    def do_dots_delimiter(self, node):
         return {"con": None, "inh": None, "opt": False, "ren": "..."}
 
     def do_angles(self, node):
@@ -389,7 +389,7 @@ class InterfaceLoader:
 
     def render(self, mode, attrib):
         is_list = self.is_true(attrib.get("list"))
-        delims = self.DELIMITERS.get(attrib.get("delimiters", "default"), "[]")
+        delims = self.delimiters.get(attrib.get("delimiters", "default"), "[]")
         if delims:
             start, stop = delims[0], delims[1]
         else:
@@ -423,8 +423,11 @@ class InterfaceLoader:
         elif mode == "delimiter":
             return "<c>\\{}</c>".format(self.escape(attrib["name"]))
         else:
-            message = 'unexpected mode, mode: "{}", attrib: "{}"'
-            raise Exception(message.format(mode, attrib))
+            msg = 'unexpected mode, mode: "{}", attrib: "{}"'
+            if self.tolerant:
+                print(msg.format(mode, attrib))
+            else:
+                raise Exception(msg.format(mode, attrib))
 
     def is_true(self, val):
         return val == "yes"
@@ -451,23 +454,23 @@ class InterfaceLoader:
             else:
                 return obj
 
-    def transform(self, s, escape=True):
+    def transform(self, text, escape=True):
         f = self.escape if escape else self.identity
-        if s == "cd:sign":
+        if text == "cd:sign":
             return f("[+-]")
-        elif s.startswith("cd:"):
-            return "<t>" + f(s[3:].upper()) + "</t>"
+        elif text.startswith("cd:"):
+            return "<t>" + f(text[3:].upper()) + "</t>"
         else:
-            return f(s)
+            return f(text)
 
-    def escape(self, s):
-        return html.escape(s, quote=False)
+    def escape(self, text):
+        return html.escape(text, quote=False)
 
-    def identity(self, s):
-        return s
+    def identity(self, text):
+        return text
 
-    def clean_name(self, s):
-        return s.replace("​", "")  # remove zero||width whitespace
+    def clean_name(self, text):
+        return text.replace("​", "")  # remove zero||width whitespace
 
     def empty_node(self, file):
         return ET.fromstring((
@@ -477,7 +480,7 @@ class InterfaceLoader:
 
     def dots_node(self):
         return ET.fromstring(
-            '<cd:emptydelimiter xmlns:cd="http://www.pragma-ade.com'
+            '<cd:dotsdelimiter xmlns:cd="http://www.pragma-ade.com'
             '/commands" />'
         )
 
@@ -490,7 +493,7 @@ class InterfaceLoader:
     def tail_args_node(self, name):
         return ET.fromstring((
             '<cd:arguments xmlns:cd="http://www.pragma-ade.com/commands">'
-            '<cd:emptydelimiter xmlns:cd="http://www.pragma-ade.com/commands" '
+            '<cd:dotsdelimiter xmlns:cd="http://www.pragma-ade.com/commands" '
             '/>'
             '<cd:delimiter xmlns:cd="http://www.pragma-ade.com/commands" '
             'name="{}" />'
@@ -521,10 +524,10 @@ class InterfaceLoader:
         return self.defs[name]
 
     def add_cmd(self, name, obj):
-        if name not in self.cmds:
-            self.cmds[name] = [obj]
-        else:
+        if name in self.cmds:
             self.cmds[name].append(obj)
+        else:
+            self.cmds[name] = [obj]
 
     def simplify(self):
         for name in self.cmds:
@@ -567,7 +570,7 @@ class InterfaceLoader:
     def iter_mand_to_opt(self, syntax):
         if syntax["con"] is None:
             yield syntax
-            return
+            raise StopIteration
         if not isinstance(syntax["con"], list):
             syntax["con"] = [syntax["con"]]
         mand_ind = [
@@ -587,7 +590,7 @@ class InterfaceLoader:
     def iter_without_opt(self, syntax):
         if syntax["con"] is None:
             yield syntax
-            return
+            raise StopIteration
         if not isinstance(syntax["con"], list):
             syntax["con"] = [syntax["con"]]
         len_ = len(syntax["con"])

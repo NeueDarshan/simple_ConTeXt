@@ -6,39 +6,39 @@ import os
 import re
 
 
-def html_unescape(s):
-    return s.replace("&gt;", ">").replace("&lt;", "<").replace(
+def html_unescape(text):
+    return text.replace("&gt;", ">").replace("&lt;", "<").replace(
         "&nbsp;", " ").replace("<br>", "\n")
 
 
-def html_strip_tags(s):
-    return re.sub("<[^<]+>", "", s)
+def html_strip_tags(text):
+    return re.sub("<[^<]+>", "", text)
 
 
-def html_pre_code(s):
-    res = ""
+def html_pre_code(text):
+    result = ""
     in_tag = False
-    for c in s:
+    for c in text:
         if c == "<":
-            res += c
+            result += c
             in_tag = True
         elif c == ">":
-            res += c
+            result += c
             in_tag = False
         elif in_tag:
-            res += c
+            result += c
         else:
-            res += c.replace(" ", "&nbsp;")
-    return res.replace("\n", "<br>")
+            result += c.replace(" ", "&nbsp;")
+    return result.replace("\n", "<br>")
 
 
-def html_pretty_print(s):
-    return s.replace("&nbsp;", " ").replace("<br>", "\n")
+def html_pretty_print(text):
+    return text.replace("&nbsp;", " ").replace("<br>", "\n")
 
 
-def html_raw_print(s):
+def html_raw_print(text):
     return html_unescape(
-        html_strip_tags(s.replace("<br>", "\n")).replace("&nbsp;", " ")
+        html_strip_tags(text.replace("<br>", "\n")).replace("&nbsp;", " ")
     )
 
 
@@ -47,12 +47,12 @@ def file_with_ext(file, ext):
 
 
 def base_file(file):
-    return file_with_ext(file, "")
+    return os.path.splitext(os.path.basename(file))[0]
 
 
-def file_as_slug(s):
+def file_as_slug(text):
     slug = ""
-    for c in s:
+    for c in text:
         if c in string.ascii_letters + string.digits:
             slug += c.lower()
         else:
@@ -60,14 +60,14 @@ def file_as_slug(s):
     return slug
 
 
-def deep_update(main, new):
-    for k, v in new.items():
+def deep_update(dict_, new_dict):
+    for k, v in new_dict.items():
         if isinstance(v, dict):
-            if k not in main:
-                main[k] = {}
-            deep_update(main[k], v)
+            if k not in dict_:
+                dict_[k] = {}
+            deep_update(dict_[k], v)
         else:
-            main[k] = v
+            dict_[k] = v
 
 
 def iter_deep(dict_):
@@ -138,12 +138,12 @@ def del_deep_safe(dict_, keys):
         del_deep_safe(dict_[keys[0]], keys[1:])
 
 
-def deduplicate(list_):
-    new = []
-    for e in list_:
-        if e not in new:
-            new.append(e)
-    return new
+def remove_duplicates(list_):
+    accum = []
+    for obj in list_:
+        if obj not in accum:
+            accum.append(obj)
+    return accum
 
 
 def type_as_str(obj):
@@ -157,51 +157,55 @@ def type_as_str(obj):
         return str(type(obj))
 
 
-def guess_type(string):
+def guess_type(text):
     try:
-        return int(string)
+        return int(text)
     except ValueError:
         try:
-            return float(string)
+            return float(text)
         except ValueError:
             pass
 
-    if str(string).lower() == "true":
+    if str(text).lower() == "true":
         return True
-    elif str(string).lower() == "false":
+    elif str(text).lower() == "false":
         return False
-    elif str(string).lower() in ["none", "null"]:
+    elif str(text).lower() in ["none", "null"]:
         return None
     else:
-        return string
+        return text
 
 
 def is_context(view):
-    return view.match_selector(view.sel()[0].begin(), "text.tex.context")
+    return is_scope(view, "text.tex.context")
 
 
 def is_metapost(view):
-    return view.match_selector(view.sel()[0].begin(), "source.metapost")
+    return is_scope(view, "source.metapost")
 
 
-def add_path(orig, new):
+def is_scope(view, scope):
+    return view.match_selector(view.sel()[0].begin(), scope)
+
+
+def add_path(old, new):
     if isinstance(new, str) and new:
         new = os.path.abspath(new)
         if os.path.exists(new):
-            PATH = orig.split(os.pathsep)
-            if new not in PATH:
-                PATH.insert(0, new)
+            old_path = old.split(os.pathsep)
+            if new not in old_path:
+                old_path.insert(0, new)
             else:
-                PATH.remove(new)
-                PATH.insert(0, new)
-            return os.pathsep.join(PATH)
+                old_path.remove(new)
+                old_path.insert(0, new)
+            return os.pathsep.join(old_path)
 
 
 def locate(path, file):
-    orig_path = os.environ["PATH"]
-    os.environ["PATH"] = add_path(orig_path, path)
+    old_path = os.environ["PATH"]
+    os.environ["PATH"] = add_path(old_path, path)
     env = os.environ.copy()
-    os.environ["PATH"] = orig_path
+    os.environ["PATH"] = old_path
     proc = subprocess.Popen(
         ["mtxrun", "--locate", str(file)],
         stdin=subprocess.PIPE,
@@ -210,84 +214,106 @@ def locate(path, file):
         env=env
     )
     result = proc.communicate()
-    return result[0].decode(encoding="utf-8", errors="replace").replace(
+    return bytes_decode(result[0])
+
+
+def bytes_decode(text):
+    return text.decode(encoding="utf-8", errors="replace").replace(
         "\r\n", "\n").replace("\r", "\n").strip()
 
 
-def iter_power_set(iterable):
-    list_ = list(iterable)
+def iter_power_set(iter_):
+    full = list(iter_)
     return itertools.chain.from_iterable(
-        itertools.combinations(list_, n) for n in range(len(list_) + 1)
+        itertools.combinations(full, n) for n in range(len(full) + 1)
     )
 
 
-def iter_i_merge_sorted(sorted_iters, key=lambda x: x):
-    tops = [next(iter_, None) for iter_ in sorted_iters]
-    while any(tops):
+def identity(obj):
+    return obj
+
+
+def second_obj(obj):
+    return obj[1]
+
+
+def iter_i_merge_sorted(sorted_iters, key=identity):
+    heads = [next(iter_, None) for iter_ in sorted_iters]
+    while any(heads):
         i, next_ = min(
-            [(i, top) for i, top in enumerate(tops) if top],
-            key=lambda t: key(t[1])
+            [(i, head) for i, head in enumerate(heads) if head],
+            key=second_obj
         )
         yield i, next_
-        tops[i] = next(sorted_iters[i], None)
+        heads[i] = next(sorted_iters[i], None)
 
 
-def _skip_space(v, p):
-    return v.substr(p).isspace()
+def skip_space(view, point, call=0):
+    return view.substr(point).isspace()
 
 
-def _skip_space_nolines(v, p):
-    str_ = v.substr(p)
-    return str_.isspace() and str_ != "\n"
+def skip_space_nolines(view, point, call=0):
+    text = view.substr(point)
+    return text.isspace() and text != "\n"
 
 
-def _skip_args(v, p):
-    if v.substr(p).isspace():
+def skip_atmost_one_space_nolines(view, point, call=0):
+    if call > 0:
+        return False
+    else:
+        return skip_space_nolines(view, point, call=call)
+
+
+def skip_nothing(view, point, call=0):
+    return False
+
+
+def skip_args(view, point, call=0):
+    if view.substr(point).isspace():
         return True
-    elif v.match_selector(p, "meta.braces.context"):
+    elif view.match_selector(point, "meta.braces.context"):
         return True
-    elif v.match_selector(p, "meta.brackets.context"):
+    elif view.match_selector(point, "meta.brackets.context"):
         return True
     else:
         return False
 
 
-def last_command_in_view(view, begin=-200, end=None, skip=_skip_space_nolines):
+def last_command_in_view(view, begin=-200, end=None, skip=skip_space_nolines):
     if begin is None:
         start = 0
     elif begin < 0:
         start = end + begin
     else:
         start = begin
-
     if end is None:
-        p = len(view) - 2
+        point = len(view) - 2
     else:
-        p = end - 1
+        point = end - 1
 
-    while skip(view, p):
-        p -= 1
-        if p < start:
+    call = 0
+    while skip(view, point, call=call):
+        call += 1
+        point -= 1
+        if point < start:
             return
-
     if not view.match_selector(
-        p,
+        point,
         "meta.other.control.word.context, "
         "punctuation.definition.backslash.context"
     ):
         return
 
-    stop = p + 1
+    stop = point + 1
     while view.match_selector(
-        p,
+        point,
         "meta.other.control.word.context "
         "- punctuation.definition.backslash.context"
     ):
-        p -= 1
-        if p < start:
+        point -= 1
+        if point < start:
             return
-
-    return sublime.Region(p, stop)
+    return sublime.Region(point, stop)
 
 
 def reload_settings(self):
@@ -311,52 +337,52 @@ def reload_settings(self):
     self._check = self._builder.get("check", {})
 
 
-def process_options(name, options, input_, input_base):
+def process_options(name, options, input_, base):
     if isinstance(options, str):
         if input_:
-            command = [name] + options.split(" ") + [input_]
+            cmd = [name] + options.split(" ") + [input_]
         else:
-            command = [name] + options.split(" ")
+            cmd = [name] + options.split(" ")
 
     elif isinstance(options, dict):
-        command = [name]
+        cmd = [name]
 
         if options.get("result"):
-            if input_base:
-                output_file_name = sublime.expand_variables(
-                    options["result"], {"name": input_base}
+            if base:
+                cmd.append(
+                    "--result={}".format(sublime.expand_variables(
+                        options["result"], {"name": base}
+                    ))
                 )
-                command.append("--result={}".format(output_file_name))
             del options["result"]
 
-        for option, value in options.items():
-            if option == "mode":
-                if any(v for k, v in value.items()):
-                    normalized_value = \
-                        ",".join(k for k, v in value.items() if v)
-                    command.append("--{}={}".format(option, normalized_value))
-            elif isinstance(value, dict):
-                normalized_value = " ".join(
-                    "{}={}".format(k, v) for k, v in value.items()
+        for opt, val in options.items():
+            if opt == "mode":
+                if any(v for k, v in val.items()):
+                    pretty_val = ",".join(k for k, v in val.items() if v)
+                    cmd.append("--{}={}".format(opt, pretty_val))
+            elif isinstance(val, dict):
+                pretty_val = " ".join(
+                    "{}={}".format(k, v) for k, v in val.items()
                 )
-                command.append("--{}={}".format(option, normalized_value))
-            elif isinstance(value, bool):
-                if value:
-                    command.append("--{}".format(option))
+                cmd.append("--{}={}".format(opt, pretty_val))
+            elif isinstance(val, bool):
+                if val:
+                    cmd.append("--{}".format(opt))
             else:
-                if option == "script":
-                    command.insert(1, "--{}".format(option))
-                    command.insert(2, "{}".format(value))
+                if opt == "script":
+                    cmd.insert(1, "--{}".format(opt))
+                    cmd.insert(2, "{}".format(val))
                 else:
-                    command.append("--{}={}".format(option, value))
+                    cmd.append("--{}={}".format(opt, val))
 
         if input_:
-            command.append(input_)
+            cmd.append(input_)
 
     else:
         if input_:
-            command = [name, input_]
+            cmd = [name, input_]
         else:
-            command = [name]
+            cmd = [name]
 
-    return command
+    return cmd

@@ -51,7 +51,7 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
             ref_match = re.match(r"\A" + regex + r"\Z", raw)
 
             cmd = utilities.last_command_in_view(
-                view, end=region.end()+1, skip=utilities._skip_args
+                view, end=region.end()+1, skip=utilities.skip_args
             )
             if cmd:
                 cmd_match = \
@@ -108,7 +108,7 @@ class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
 
         end = view.sel()[0].end()
         cmd = utilities.last_command_in_view(
-            view, end=end, skip=utilities._skip_args
+            view, end=end, skip=utilities.skip_args
         )
         if not cmd:
             return
