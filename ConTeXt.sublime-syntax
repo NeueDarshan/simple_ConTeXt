@@ -11,7 +11,7 @@ file_extensions:
 scope: text.tex.context
 first_line_match: '^(%.*?macros\s*=\s*mk([vx]i|i[vx])|\s*\\(starttext|usemodule))\b'
 variables:
-  key: '[[:alpha:][:digit:]\.,\-\+=_:;\!\?<>&/]'
+  key: '[[:alpha:][:digit:]\.,\-\+_:;\!\?<>&/]'
   setup: '{{key}}'
   texdefname: '{{key}}'
   verb: '[^\\{\[%#$^_[:alpha:]]'

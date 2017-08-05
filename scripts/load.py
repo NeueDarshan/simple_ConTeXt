@@ -62,22 +62,23 @@ class InterfaceLoader:
         self._n = 0
 
         for arg in list_:
-            self.new_arg()
+            if arg:
+                self.new_arg()
 
-            self._content = arg.get("con")
-            self._inherits = arg.get("inh")
-            self._optional = arg.get("opt")
-            self._rendering = arg.get("ren")
-            self._len = len(utilities.html_unescape(
-                utilities.html_strip_tags(self._rendering)
-            ))
+                self._content = arg.get("con")
+                self._inherits = arg.get("inh")
+                self._optional = arg.get("opt")
+                self._rendering = arg.get("ren")
+                self._len = len(utilities.html_unescape(
+                    utilities.html_strip_tags(self._rendering)
+                ))
 
-            if self._content is None and self._inherits is None:
-                self.blank()
-            else:
-                self._n += 1
-                self.do_syntax()
-                self.do_docstring()
+                if self._content is None and self._inherits is None:
+                    self.blank()
+                else:
+                    self._n += 1
+                    self.do_syntax()
+                    self.do_docstring()
 
         self.clean_syntax()
         return "\n".join(self._syntax), "\n\n".join(self._docstring)
