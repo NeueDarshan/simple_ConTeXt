@@ -22,6 +22,11 @@
  * like this style for \quote{inherits} so it's staying for now.
  */
 
+html, body {
+    padding: 0.1rem;
+    margin: 0.1rem;
+}
+
 div.popup c {
     color: var(--bluish);
 }

@@ -1,3 +1,16 @@
+html, body {
+    padding: 0.1rem;
+    margin: 0.1rem;
+}
+
+html.light div.error a {
+    background-color: #ffffff18;
+}
+
+html.dark div.error a {
+    background-color: #00000018;
+}
+
 div.hook {
     border-left:
         0.5rem solid color(var(--redish) blend(var(--background) 30%));
@@ -24,12 +37,4 @@ div.error a {
     font-weight: bold;
     padding: 0.35rem 0.7rem 0.45rem 0.8rem;
     position: relative;
-}
-
-html.light div.error a {
-    background-color: #ffffff18;
-}
-
-html.dark div.error a {
-    background-color: #00000018;
 }
