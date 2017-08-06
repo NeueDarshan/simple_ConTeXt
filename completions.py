@@ -2,6 +2,7 @@ import sublime
 import sublime_plugin
 import collections
 import threading
+import string
 import json
 import os
 import re
@@ -109,7 +110,13 @@ class SimpleContextMacroSignatureEventListener(
         self.state = IDLE
         self.style = None
         self.file_min = 20000
-        self.scope_sel = "text.tex.context - (meta.environment.math, source)"
+        self.cmd_scope = "text.tex.context - (meta.environment.math, source)"
+        self.param_scope = (
+            "text.tex.context meta.brackets.context - "
+            "(meta.other.value.context, punctuation.separator.comma.context, "
+            "keyword.operator.assignment.context)"
+        )
+        self.param_char = string.ascii_letters  # + string.whitespace
         self.extensions = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
 
     def reload_settings(self):
@@ -181,35 +188,84 @@ class SimpleContextMacroSignatureEventListener(
     def is_visible(self):
         return utilities.is_context(self.view)
 
+    def fetch_keys(self, command):
+        data = self.cache[self.name][command]
+        for var in data:
+            con = var.get("con")
+            if con:
+                for arg in con:
+                    desc = arg.get("con")
+                    if isinstance(desc, dict):
+                        return [
+                            utilities.html_strip_tags(k).lower()
+                            for k in desc.keys()
+                        ]
+                    # elif isinstance(desc, list):
+                    #     return desc
+
     def on_query_completions(self, prefix, locations):
         self.reload_settings()
+        if not self.is_visible():
+            return
         if self.state == IDLE:
             for l in locations:
+                cmd = utilities.last_command_in_view(
+                    self.view,
+                    begin=None,
+                    end=l,
+                    skip=utilities.skip_args
+                )
                 if (
-                    self.view.match_selector(l, self.scope_sel) and
-                    utilities.last_command_in_view(self.view, end=l)
+                    cmd and
+                    self.view.match_selector(l - 1, self.param_scope) and
+                    self.view.substr(l - 1) in self.param_char
+                ):
+                    cs = self.view.substr(cmd)[1:]
+                    keys = self.fetch_keys(cs)
+                    if keys:
+                        return [[s, "{}=$1,$0".format(s)] for s in keys]
+                elif (
+                    self.view.match_selector(l, self.cmd_scope) and
+                    utilities.last_command_in_view(
+                        self.view, end=l, skip=utilities.skip_nothing
+                    )
                 ):
                     return [
-                        ["\\" + cmd, ""]
-                        for cmd in self.cache[self.name].get_keys()
+                        ["\\" + cs, ""]
+                        for cs in self.cache[self.name].get_keys()
                     ]
 
     def on_modified_async(self):
         self.reload_settings()
-        end = self.view.sel()[0].end()
         if not (
             self.state == IDLE and
-            self.is_visible() and
-            self._pop_ups.get("on") and
-            self.view.match_selector(end, self.scope_sel)
+            self.is_visible()
         ):
             self.view.hide_popup()
+            return
+
+        end = self.view.sel()[0].end()
+        if (
+            self.view.match_selector(end, self.param_scope) and
+            utilities.last_command_in_view(
+                self.view, begin=None, end=end, skip=utilities.skip_args
+            )
+        ):
+            self.view.hide_popup()
+            self.view.run_command(
+                "auto_complete",
+                {"disable_auto_insert": True, "api_completions_only": True}
+            )
             return
 
         cmd = utilities.last_command_in_view(
             self.view, end=end, skip=utilities.skip_nothing
         )
-        if not cmd:
+        if not (
+            self._pop_ups.get("on") and
+            self.view.match_selector(end, self.cmd_scope) and
+            cmd
+        ):
             self.view.hide_popup()
             return
 
