@@ -113,7 +113,8 @@ class SimpleContextMacroSignatureEventListener(
         self.cmd_scope = "text.tex.context - (meta.environment.math, source)"
         self.param_scope = (
             "text.tex.context meta.brackets.context - "
-            "(meta.other.value.context, punctuation.separator.comma.context, "
+            "(comment.line.percentage.context, meta.other.value.context, "
+            "punctuation.separator.comma.context, "
             "keyword.operator.assignment.context)"
         )
         self.param_char = string.ascii_letters  # + string.whitespace
@@ -194,14 +195,15 @@ class SimpleContextMacroSignatureEventListener(
             con = var.get("con")
             if con:
                 for arg in con:
-                    desc = arg.get("con")
-                    if isinstance(desc, dict):
-                        return [
-                            utilities.html_strip_tags(k).lower()
-                            for k in desc.keys()
-                        ]
-                    # elif isinstance(desc, list):
-                    #     return desc
+                    if isinstance(arg, dict):
+                        desc = arg.get("con")
+                        if isinstance(desc, dict):
+                            return [
+                                utilities.html_strip_tags(k).lower()
+                                for k in desc.keys()
+                            ]
+                        # elif isinstance(desc, list):
+                        #     return desc
 
     def on_query_completions(self, prefix, locations):
         self.reload_settings()
@@ -245,7 +247,12 @@ class SimpleContextMacroSignatureEventListener(
             return
 
         end = self.view.sel()[0].end()
+        cmd = utilities.last_command_in_view(
+            self.view, end=end, skip=utilities.skip_nothing
+        )
+
         if (
+            not cmd and
             self.view.match_selector(end, self.param_scope) and
             utilities.last_command_in_view(
                 self.view, begin=None, end=end, skip=utilities.skip_args
@@ -258,9 +265,6 @@ class SimpleContextMacroSignatureEventListener(
             )
             return
 
-        cmd = utilities.last_command_in_view(
-            self.view, end=end, skip=utilities.skip_nothing
-        )
         if not (
             self._pop_ups.get("on") and
             self.view.match_selector(end, self.cmd_scope) and
