@@ -1,10 +1,10 @@
 <snippet>
   <content><![CDATA[
-\startformula
+\startformulas
   $0
-\stopformula
+\stopformulas
 ]]></content>
-  <tabTrigger>form</tabTrigger>
+  <tabTrigger>forms</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
   <description>display math</description>
 </snippet>

@@ -197,7 +197,7 @@ class InterfaceLoader:
             if isinstance(v, str):
                 lines[-1] += " " + v
             elif isinstance(v, list):
-                for s in v:
+                for s in sorted(v, key=utilities.html_strip_tags):
                     next_len = \
                         len(utilities.html_strip_tags(lines[-1] + s)) + 1
                     if next_len > line_break:
@@ -215,7 +215,9 @@ class InterfaceLoader:
         ):
             v = self._content[k]
             lines.append(self.assignments_guide(len_, key=k, num=not i) + " ")
-            lines[-1] += " ".join(v) if isinstance(v, list) else v
+            lines[-1] += " ".join(
+                sorted(v, key=utilities.html_strip_tags)
+            ) if isinstance(v, list) else v
         return "\n".join(lines)
 
     def template(self, t, min=None):
