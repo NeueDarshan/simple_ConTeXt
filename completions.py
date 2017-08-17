@@ -110,7 +110,7 @@ class SimpleContextMacroSignatureEventListener(
         self.state = IDLE
         self.style = None
         self.file_min = 20000
-        self.cmd_scope = "text.tex.context - (meta.environment.math, source)"
+        self.cmd_scope = "text.tex.context"
         self.param_scope = (
             "text.tex.context meta.brackets.context - "
             "(comment.line.percentage.context, meta.other.value.context, "

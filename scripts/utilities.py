@@ -222,7 +222,13 @@ def locate(path, file):
         env=env
     )
     result = proc.communicate()
-    return bytes_decode(result[0])
+    text = bytes_decode(result[0])
+    match = re.match(
+        r"resolvers\s*\|\s*trees\s*\|\s*analyzing\s*'home:texmf'", text
+    )
+    if match:
+        text = text[match.end():]
+    return text
 
 
 def fuzzy_locate(path, file, extensions=[]):
