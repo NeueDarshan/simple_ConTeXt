@@ -40,22 +40,28 @@
     {
       "builder":
       {
-        "show_errors_in_builder": false,
-        "show_full_command_in_builder": false,
-        "show_pages_shipped_in_builder": false,
-        "show_path_in_builder": false,
-        "show_warnings_in_builder": false
+        "options":
+        {
+          "show_errors_in_builder": false,
+          "show_full_command_in_builder": false,
+          "show_pages_shipped_in_builder": false,
+          "show_path_in_builder": false,
+          "show_warnings_in_builder": false
+        }
       }
     },
     "verbose_builder_on":
     {
       "builder":
       {
-        "show_errors_in_builder": true,
-        "show_full_command_in_builder": true,
-        "show_pages_shipped_in_builder": true,
-        "show_path_in_builder": true,
-        "show_warnings_in_builder": true
+        "options":
+        {
+          "show_errors_in_builder": true,
+          "show_full_command_in_builder": true,
+          "show_pages_shipped_in_builder": true,
+          "show_path_in_builder": true,
+          "show_warnings_in_builder": true
+        }
       }
     }
   },
@@ -63,7 +69,8 @@
   {
     "PDF":
     {
-      "viewer": "evince"
+      "viewer": "evince",
+      "open_after_build": true
     },
     "builder":
     {
@@ -72,7 +79,6 @@
         "check_syntax_before_build": true,
         "stop_build_if_check_fails": true
       },
-      "open_PDF_after_build": true,
       "program":
       {
         "name": "context",
@@ -95,12 +101,14 @@
           "timing": false
         }
       },
-      "show_errors_in_builder": true,
-      "show_errors_in_main_view": true,
-      "show_full_command_in_builder": true,
-      "show_pages_shipped_in_builder": true,
-      "show_path_in_builder": true,
-      "show_warnings_in_builder": true
+      "options":
+      {
+        "show_errors_in_builder": true,
+        "show_full_command_in_builder": true,
+        "show_pages_shipped_in_builder": true,
+        "show_path_in_builder": true,
+        "show_warnings_in_builder": true
+      }
     },
     "path": "default",
     "pop_ups":

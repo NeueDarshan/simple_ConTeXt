@@ -50,6 +50,10 @@ def html_raw_print(text):
     )
 
 
+def strip_css_comments(text):
+    return re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+
+
 def file_with_ext(file, ext):
     return os.path.splitext(os.path.basename(file))[0] + ext
 
@@ -222,13 +226,7 @@ def locate(path, file):
         env=env
     )
     result = proc.communicate()
-    text = bytes_decode(result[0])
-    match = re.match(
-        r"resolvers\s*\|\s*trees\s*\|\s*analyzing\s*'home:texmf'", text
-    )
-    if match:
-        text = text[match.end():]
-    return text
+    return decode_and_sanitize_mtxrun_output(result[0])
 
 
 def fuzzy_locate(path, file, extensions=[]):
@@ -237,6 +235,54 @@ def fuzzy_locate(path, file, extensions=[]):
         text = locate(path, "{}.{}".format(base, ext))
         if text:
             return text
+
+
+def sanitize_mtxrun_output(text):
+    return re.sub(
+        r"resolvers\s*[>|]\s*trees\s*[>|]\s*analyzing\s*'home:texmf'",
+        "",
+        text
+    )
+
+
+def parse_checker_output(text, tolerant=True):
+    text = re.sub(r"<cr>\s*<lf>", "\n", text)
+    text = re.sub(r"<(lf|cr)>", "\n", text)
+    parts = text.split("  ", maxsplit=2)
+    if len(parts) < 2:
+        return {"passed": tolerant, "main": text.rstrip()}
+    elif len(parts) < 3:
+        return {"passed": tolerant, "head": parts[0], "main": parts[1].rstrip()}
+    else:
+        try:
+            line, head, tail = parts
+            if head == "no error":
+                return {"passed": True, "head": head}
+            else:
+                other_line = re.search(r"\(see line ([0-9]+)\)\s*\Z", tail)
+                if other_line:
+                    return {
+                        "passed": False,
+                        "head": "lines {}--{} > {}".format(
+                            int(other_line.group(1)), int(line), head
+                        ),
+                        "main": tail[:other_line.start()].rstrip()
+                    }
+                else:
+                    return {
+                        "passed": False,
+                        "head": "line {} > {}".format(1 + int(line), head),
+                        "main": tail.rstrip()
+                    }
+        except:
+            return {
+                "passed": tolerant,
+                "main": text
+            }
+
+
+def decode_and_sanitize_mtxrun_output(bytes_):
+    return sanitize_mtxrun_output(bytes_decode(bytes_))
 
 
 def bytes_decode(text):
@@ -355,6 +401,7 @@ def reload_settings(self):
     self._references = self._settings.get("references", {})
 
     self._builder = self._settings.get("builder", {})
+    self._options = self._builder.get("options", {})
     self._program = self._builder.get("program", {})
     self._check = self._builder.get("check", {})
 

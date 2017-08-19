@@ -1,11 +1,15 @@
 {
-  "target": "simple_context_build",
+  "target": "simple_context_build_context",
   "selector": "text.tex.context",
+  "do_check": "maybe",
+  "do_main": true,
+
   "variants":
   [
     {
-      "name": "Syntax check",
-      "target": "simple_context_check"
+      "name": "Syntax Check",
+      "do_check": true,
+      "do_main": false,
     }
   ]
 }
