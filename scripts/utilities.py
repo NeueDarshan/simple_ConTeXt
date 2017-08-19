@@ -214,16 +214,14 @@ def add_path(old, new):
 
 
 def locate(path, file):
-    old_path = os.environ["PATH"]
-    os.environ["PATH"] = add_path(old_path, path)
-    env = os.environ.copy()
-    os.environ["PATH"] = old_path
+    environ = os.environ.copy()
+    environ["PATH"] = add_path(environ["PATH"], path)
     proc = subprocess.Popen(
         ["mtxrun", "--locate", str(file)],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        env=env
+        env=environ
     )
     result = proc.communicate()
     return decode_and_sanitize_mtxrun_output(result[0])
