@@ -1,6 +1,27 @@
 from . import utilities
 
 
+def nice_sorted(list_, reverse=False):
+    inherits, upper, mixed, lower = [], [], [], []
+    for e in sorted(list_, key=utilities.html_strip_tags):
+        raw = utilities.html_strip_tags(e)
+        if raw.startswith("inherits"):
+            inherits.append(e)
+        elif raw.isupper():
+            upper.append(e)
+        elif any(c.isupper() for c in raw):
+            mixed.append(e)
+        else:
+            lower.append(e)
+    if reverse:
+        return (
+            list(reversed(inherits)) + list(reversed(upper)) +
+            list(reversed(mixed)) + list(reversed(lower))
+        )
+    else:
+        return lower + mixed + upper + inherits
+
+
 class InterfaceLoader:
     def __init__(self):
         self.syntax = '<syntax>{syntax}</syntax>'
@@ -144,9 +165,7 @@ class InterfaceLoader:
             return self.docstring_list_nobreak()
 
     def docstring_list_break(self, line_break):
-        content = sorted(
-            self._content.copy(), key=utilities.html_strip_tags, reverse=True
-        )
+        content = nice_sorted(self._content.copy(), reverse=True)
         lines = []
         init = True
 
@@ -182,9 +201,7 @@ class InterfaceLoader:
             return self.docstring_dict_nobreak(len_)
 
     def docstring_dict_break(self, len_, line_break):
-        keys = sorted(
-            self._content, key=utilities.html_strip_tags, reverse=True
-        )
+        keys = nice_sorted(self._content, reverse=True)
         lines = []
         init = True
 
@@ -197,7 +214,7 @@ class InterfaceLoader:
             if isinstance(v, str):
                 lines[-1] += " " + v
             elif isinstance(v, list):
-                for s in sorted(v, key=utilities.html_strip_tags):
+                for s in nice_sorted(v):
                     next_len = \
                         len(utilities.html_strip_tags(lines[-1] + s)) + 1
                     if next_len > line_break:
@@ -210,14 +227,10 @@ class InterfaceLoader:
 
     def docstring_dict_nobreak(self, len_):
         lines = []
-        for i, k in enumerate(
-            sorted(self._content, key=utilities.html_strip_tags)
-        ):
+        for i, k in enumerate(nice_sorted(self._content)):
             v = self._content[k]
             lines.append(self.assignments_guide(len_, key=k, num=not i) + " ")
-            lines[-1] += " ".join(
-                sorted(v, key=utilities.html_strip_tags)
-            ) if isinstance(v, list) else v
+            lines[-1] += " ".join(nice_sorted(v)) if isinstance(v, list) else v
         return "\n".join(lines)
 
     def template(self, t, min=None):
