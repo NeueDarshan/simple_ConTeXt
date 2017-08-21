@@ -160,6 +160,8 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
             self._base_view.erase_phantoms(self._base_phantom_set_name)
 
     def _base_add_to_output(self, category, text, gap=False):
+        if self._options.get("compact_output"):
+            gap = False
         chars = (
             self._base_output_settings["output_cache"] +
             (

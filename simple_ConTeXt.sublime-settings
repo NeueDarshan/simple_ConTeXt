@@ -107,7 +107,8 @@
         "show_full_command_in_builder": true,
         "show_pages_shipped_in_builder": true,
         "show_path_in_builder": true,
-        "show_warnings_in_builder": true
+        "show_warnings_in_builder": true,
+        "compact_output": true
       }
     },
     "path": "default",
