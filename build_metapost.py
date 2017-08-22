@@ -38,12 +38,11 @@ class SimpleContextBuildMetapostCommand(
 
     def handler_end(self, return_codes):
         stop_time = time.time() - self.start_time
-        self.add_to_output(
-            "stopping",
+        message = ", ".join([
             "success" if return_codes[0] == 0 else "failure",
-            gap=True
-        )
-        self.add_to_output("stopping", "finished in {:.1f}s".format(stop_time))
+            "finished in {:.1f}s".format(stop_time)
+        ])
+        self.add_to_output("stopping", message, gap=True)
 
     def handler_main(self, text):
         for i, line in enumerate(text.split("\n")):

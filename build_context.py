@@ -119,14 +119,14 @@ class SimpleContextBuildContextCommand(
 
     def handler_end(self, return_codes, just_check=False):
         stop_time = time.time() - self.start_time
-        self.add_to_output(
-            "stopping", "finished in {:.1f}s".format(stop_time), gap=True
-        )
         if just_check:
             return
 
         if return_codes[-1] == 0:
-            self.add_to_output("stopping", "success")
+            message = ", ".join([
+                "success", "finished in {:.1f}s".format(stop_time)
+            ])
+            self.add_to_output("stopping", message, gap=True)
             if hasattr(self, "log_data"):
                 pages = self.log_data.get("info", {}).get("pages")
                 if (
@@ -147,7 +147,10 @@ class SimpleContextBuildContextCommand(
                     creationflags=self._base_flags
                 )
         else:
-            self.add_to_output("stopping", "failure")
+            message = ", ".join([
+                "failure", "finished in {:.1f}s".format(stop_time)
+            ])
+            self.add_to_output("stopping", message, gap=True)
 
     def handle_checker(self, text):
         result = utilities.parse_checker_output(text)
