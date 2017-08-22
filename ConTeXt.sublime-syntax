@@ -480,7 +480,6 @@ contexts:
     - include: ConTeXt.asciimode
     - include: ConTeXt.comments
     - include: ConTeXt.defs
-    - include: ConTeXt.setups
     - include: ConTeXt.modules
     - include: ConTeXt.headings
     - include: ConTeXt.verbatim
@@ -687,34 +686,6 @@ contexts:
       captures: {0: keyword.control.import.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, generic.list*/, generic.list*/]
 
-  ConTeXt.setups:
-    - include: ConTeXt.setups.Lua
-
-  ConTeXt.setups.Lua:
-    - match: '(\\)startluasetups\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
-      push:
-        - include: generic.gobble-whitespace
-        - match: '(?=\[)'
-          set: [ConTeXt.setups.Lua.main/, generic.list*/, generic.list*/]
-        - match: ''
-          set: [ConTeXt.setups.Lua.main/, ConTeXt.setups.Lua.name*/]
-
-  ConTeXt.setups.Lua.name*/:
-    - match: '\b{{setup}}+\b'
-      scope: meta.other.setup.name.context
-      pop: true
-    - include: generic.gobble-whitespace-then-pop/
-
-  ConTeXt.setups.Lua.main/:
-    - match: ''
-      set:
-        - meta_include_prototype: false
-        - meta_content_scope: source.lua.embedded.context
-        - match: '(?=\\stopluasetups\b)'
-          pop: true
-        - include: Lua.main
-
   ConTeXt.headings:
     - include: ConTeXt.headings.inline
     - include: ConTeXt.headings.block
@@ -722,25 +693,74 @@ contexts:
   ConTeXt.headings.inline:
     - match: '(\\)part\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
-      push: [ConTeXt.group.headings.part*/, ConTeXt.list.headings.reference*/]
+      push:
+        - match: '(?=\[[^=]*?\])'
+          set: [ConTeXt.group.headings.part*/, generic.group.with-only-integers*/, ConTeXt.list.headings.reference*/]
+        - match: '(?=\[)'
+          set: ConTeXt.list.headings.part*/
+        - match: '(?=\{)'
+          set: [ConTeXt.group.headings.part*/, generic.group.with-only-integers*/]
+        - include: generic.gobble-whitespace-then-pop/
     - match: '(\\)(chapter|title)\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
-      push: [ConTeXt.group.headings.chapter*/, ConTeXt.list.headings.reference*/]
+      push:
+        - match: '(?=\[[^=]*?\])'
+          set: [ConTeXt.group.headings.chapter*/, generic.group.with-only-integers*/, ConTeXt.list.headings.reference*/]
+        - match: '(?=\[)'
+          set: ConTeXt.list.headings.chapter*/
+        - match: '(?=\{)'
+          set: [ConTeXt.group.headings.chapter*/, generic.group.with-only-integers*/]
+        - include: generic.gobble-whitespace-then-pop/
     - match: '(\\)(section|subject)\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
-      push: [ConTeXt.group.headings.section*/, ConTeXt.list.headings.reference*/]
+      push:
+        - match: '(?=\[[^=]*?\])'
+          set: [ConTeXt.group.headings.section*/, generic.group.with-only-integers*/, ConTeXt.list.headings.reference*/]
+        - match: '(?=\[)'
+          set: ConTeXt.list.headings.section*/
+        - match: '(?=\{)'
+          set: [ConTeXt.group.headings.section*/, generic.group.with-only-integers*/]
+        - include: generic.gobble-whitespace-then-pop/
     - match: '(\\)sub(section|subject)\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
-      push: [ConTeXt.group.headings.subsection*/, ConTeXt.list.headings.reference*/]
+      push:
+        - match: '(?=\[[^=]*?\])'
+          set: [ConTeXt.group.headings.subsection*/, generic.group.with-only-integers*/, ConTeXt.list.headings.reference*/]
+        - match: '(?=\[)'
+          set: ConTeXt.list.headings.subsection*/
+        - match: '(?=\{)'
+          set: [ConTeXt.group.headings.subsection*/, generic.group.with-only-integers*/]
+        - include: generic.gobble-whitespace-then-pop/
     - match: '(\\)subsub(section|subject)\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.deficontext.nition.backslash}
-      push: [ConTeXt.group.headings.sub2section*/, ConTeXt.list.headings.reference*/]
+      push:
+        - match: '(?=\[[^=]*?\])'
+          set: [ConTeXt.group.headings.sub2section*/, generic.group.with-only-integers*/, ConTeXt.list.headings.reference*/]
+        - match: '(?=\[)'
+          set: ConTeXt.list.headings.sub2section*/
+        - match: '(?=\{)'
+          set: [ConTeXt.group.headings.sub2section*/, generic.group.with-only-integers*/]
+        - include: generic.gobble-whitespace-then-pop/
     - match: '(\\)subsubsub(section|subject)\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
-      push: [ConTeXt.group.headings.sub3section*/, ConTeXt.list.headings.reference*/]
+      push:
+        - match: '(?=\[[^=]*?\])'
+          set: [ConTeXt.group.headings.sub3section*/, generic.group.with-only-integers*/, ConTeXt.list.headings.reference*/]
+        - match: '(?=\[)'
+          set: ConTeXt.list.headings.sub3section*/
+        - match: '(?=\{)'
+          set: [ConTeXt.group.headings.sub3section*/, generic.group.with-only-integers*/]
+        - include: generic.gobble-whitespace-then-pop/
     - match: '(\\)subsubsubsub(section|subject)\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
-      push: [ConTeXt.group.headings.sub4section*/, ConTeXt.list.headings.reference*/]
+      push:
+        - match: '(?=\[[^=]*?\])'
+          set: [ConTeXt.group.headings.sub4section*/, generic.group.with-only-integers*/, ConTeXt.list.headings.reference*/]
+        - match: '(?=\[)'
+          set: ConTeXt.list.headings.sub4section*/
+        - match: '(?=\{)'
+          set: [ConTeXt.group.headings.sub4section*/, generic.group.with-only-integers*/]
+        - include: generic.gobble-whitespace-then-pop/
 
   ConTeXt.list.headings.reference/:
     - match: '\['
@@ -1518,6 +1538,14 @@ contexts:
     - meta_scope: meta.braces.context
     - include: generic.integer
     - include: generic.group.main/
+
+  generic.group.with-only-integers/:
+    - match: '(\{)\s*([[:digit:]]+)\s*(\})'
+      captures: {0: meta.braces.context, 1: punctuation.section.braces.begin.context, 2: constant.numeric.context, 3: punctuation.section.braces.begin.context}
+      pop: true
+  generic.group.with-only-integers*/:
+    - include: generic.group.with-only-integers/
+    - include: generic.gobble-whitespace-then-pop/
 
   generic.group.with-assignments/:
     - match: '\{'
