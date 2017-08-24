@@ -1,9 +1,9 @@
 {
   "PDF_viewers":
-  [
-    "evince",
-    "okular"
-  ],
+  {
+    "evince": "evince",
+    "okular": "okular"
+  },
   "paths":
   {
     "default": "/path-to-context-binaries"
@@ -90,6 +90,7 @@
           "interface": "en",
           "jit": false,
           "jiton": false,
+          "timing": false,
           "mode":
           {
             "draft": false,

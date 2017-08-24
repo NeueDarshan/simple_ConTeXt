@@ -192,10 +192,10 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             ]
         if len(self.location) > 0:
             if len(self.location) > 1:
-                prev = "/" + "/".join(self.location[:-1])
+                prev = "/" + "/".join(self.location[:-1]) + "/"
             else:
-                prev = "root"
-            return [["..", '↑ go back to "{}"'.format(prev)]] + main
+                prev = "/"
+            return [["..", '↑ go back to {}'.format(prev)]] + main
         else:
             return main
 

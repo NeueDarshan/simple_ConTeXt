@@ -78,12 +78,12 @@ The `.sublime-settings` file for simple_ConTeXt is structured in this way:
   },
 
   "paths": {"...": "..."},
-  "PDF_viewers": ["..."],
+  "PDF_viewers": {"...": "..."},
   "setting_groups": {"...": "..."}
 }
 ```
 
-The main part is everything under `settings`. The `setting_groups` are described some in the [GUI](#via-gui) section. The names in `PDF_viewers` should be findable on `$PATH`, or else an absolute path.
+The main part is everything under `settings`. The `setting_groups` are described some in the [GUI](#via-gui) section. The keys in `PDF_viewers` should be symbolic names, and the values should be either names findable on `$PATH`, or else an absolute path.
 
 In `paths` the keys can be any name, and the values should point to the location of the context binaries (`mtxrun` and such) in a given ConTeXt installation.
 

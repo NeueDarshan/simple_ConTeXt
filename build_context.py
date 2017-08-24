@@ -39,14 +39,17 @@ class SimpleContextBuildContextCommand(
 
     def reload_settings(self):
         self._base_reload_settings()
-        self.check_command = ["mtxrun", "--script", "check", self._base_input]
         self.command_name = self._program.get("name", "context")
-        self.main_command = utilities.process_options(
-            self.command_name,
-            self._program.get("options", {}),
-            self._base_input,
-            self._base_file
-        )
+        if self._base_input:
+            self.check_command = \
+                ["mtxrun", "--script", "check", self._base_input]
+            if self._base_file:
+                self.main_command = utilities.process_options(
+                    self.command_name,
+                    self._program.get("options", {}),
+                    self._base_input,
+                    self._base_file
+                )
         self.load_css()
 
     def load_css(self):
@@ -62,6 +65,10 @@ class SimpleContextBuildContextCommand(
 
     def run(self, *args, **kwargs):
         self.reload_settings()
+        if not (
+            hasattr(self, "check_command") and hasattr(self, "main_command")
+        ):
+            return
         commands = []
         do_check = self.setting_is_yes(kwargs.get("do_check"))
         do_main = self.setting_is_yes(kwargs.get("do_main"))
@@ -107,7 +114,7 @@ class SimpleContextBuildContextCommand(
         )
         if self._options.get("show_path_in_builder"):
             path = self._settings.get("path")
-            chars = 'using PATH "{}"'.format(path)
+            chars = 'using $PATH "{}"'.format(path)
             if path != self._path:
                 chars += ' (i.e. "{}")'.format(self._path)
             self.add_to_output("starting", chars)
@@ -137,10 +144,11 @@ class SimpleContextBuildContextCommand(
                         pages, "" if pages == 1 else "s"
                     )
                     self.add_to_output("stopping", chars)
-            viewer = self._PDF.get("viewer")
+            name = self._PDF.get("viewer")
+            viewer = self._PDF_viewers.get(name)
             if viewer and self._PDF.get("open_after_build"):
                 self.add_to_output(
-                    "stopping", "opening PDF with {}".format(viewer)
+                    "stopping", "opening PDF with {}".format(name)
                 )
                 subprocess.Popen(
                     [viewer, "{}.pdf".format(self._base_file)],

@@ -52,7 +52,7 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
                 os.path.split(self._base_view.file_name())
             self._base_file = utilities.base_file(self._base_input)
         except AttributeError:
-            pass
+            self._base_dir, self._base_input = None, None
 
         self._base_flags = \
             CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
