@@ -64,11 +64,12 @@ def base_file(file):
 
 def file_as_slug(text):
     slug = ""
-    for c in text:
-        if c in string.ascii_letters + string.digits:
-            slug += c.lower()
-        else:
-            slug += "_"
+    if text:
+        for c in text:
+            if c in string.ascii_letters + string.digits:
+                slug += c.lower()
+            else:
+                slug += "_"
     return slug
 
 
@@ -211,13 +212,15 @@ def add_path(old, new):
                 old_path.remove(new)
                 old_path.insert(0, new)
             return os.pathsep.join(old_path)
+    return old
 
 
-def locate(path, file):
+def locate(path, file, flags=0):
     environ = os.environ.copy()
     environ["PATH"] = add_path(environ["PATH"], path)
     proc = subprocess.Popen(
         ["mtxrun", "--locate", str(file)],
+        creationflags=flags,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -227,10 +230,10 @@ def locate(path, file):
     return decode_and_sanitize_mtxrun_output(result[0])
 
 
-def fuzzy_locate(path, file, extensions=[]):
+def fuzzy_locate(path, file, flags=0, extensions=[]):
     base = base_file(file)
     for ext in extensions:
-        text = locate(path, "{}.{}".format(base, ext))
+        text = locate(path, "{}.{}".format(base, ext), flags=flags)
         if text:
             return text
 
@@ -250,7 +253,9 @@ def parse_checker_output(text, tolerant=True):
     if len(parts) < 2:
         return {"passed": tolerant, "main": text.rstrip()}
     elif len(parts) < 3:
-        return {"passed": tolerant, "head": parts[0], "main": parts[1].rstrip()}
+        return {
+            "passed": tolerant, "head": parts[0], "main": parts[1].rstrip()
+        }
     else:
         try:
             line, head, tail = parts

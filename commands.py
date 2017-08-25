@@ -84,7 +84,9 @@ class SimpleContextFindDocs(sublime_plugin.WindowCommand):
         self.run_panel(selected_index=len(self.docs))
 
     def open_doc(self, name):
-        file = utilities.locate(self._path, "{}.pdf".format(name))
+        file = utilities.locate(
+            self._path, "{}.pdf".format(name), flags=self.flags
+        )
         if self.viewer and file:
             subprocess.Popen([self.viewer, file], creationflags=self.flags)
         else:

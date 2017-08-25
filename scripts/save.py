@@ -10,7 +10,7 @@ NAMESPACE = {"cd": "http://www.pragma-ade.com/commands"}
 
 
 class InterfaceSaver:
-    def __init__(self):
+    def __init__(self, flags=0):
         self.method = {
             "range": ":",
             "factor": "*",
@@ -26,6 +26,7 @@ class InterfaceSaver:
         self.defs = {}
         self.cmds = {}
         self.to_load = []
+        self.flags = flags
 
     def save(self, path, modules=True, tolerant=True, namespace=NAMESPACE):
         self.path = path
@@ -41,7 +42,9 @@ class InterfaceSaver:
         self.load_definitions_aux()
 
     def load_definitions_aux(self):
-        file = utilities.locate(self.path, "i-common-definitions.xml")
+        file = utilities.locate(
+            self.path, "i-common-definitions.xml", flags=self.flags
+        )
         if not file:
             raise Exception('unable to locate "i-common-definitions.xml"')
         try:
@@ -53,13 +56,7 @@ class InterfaceSaver:
                     self.load_definitions_aux_i(child.attrib.get("filename"))
                 else:
                     raise Exception('unexpected tag "{}"'.format(child.tag))
-        except FileNotFoundError as e:
-            msg = 'in file "{}", error "{}"'.format(os.path.split(file)[-1], e)
-            if self.tolerant:
-                print(msg)
-            else:
-                raise Exception(msg)
-        except ET.ParseError as e:
+        except (FileNotFoundError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", error "{}"'.format(os.path.split(file)[-1], e)
             if self.tolerant:
                 print(msg)
@@ -67,7 +64,7 @@ class InterfaceSaver:
                 raise Exception(msg)
 
     def load_definitions_aux_i(self, filename):
-        file = utilities.locate(self.path, filename)
+        file = utilities.locate(self.path, filename, flags=self.flags)
         if not file:
             raise Exception('unable to locate "{}"'.format(filename))
         try:
@@ -76,13 +73,7 @@ class InterfaceSaver:
                 root = tree.getroot()
             for child in root:
                 self.do_define(child)
-        except FileNotFoundError as e:
-            msg = 'in file "{}", error "{}"'.format(os.path.split(file)[-1], e)
-            if self.tolerant:
-                print(msg)
-            else:
-                raise Exception(msg)
-        except ET.ParseError as e:
+        except (FileNotFoundError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", error "{}"'.format(os.path.split(file)[-1], e)
             if self.tolerant:
                 print(msg)
@@ -92,7 +83,7 @@ class InterfaceSaver:
     def load_commands(self, modules=True):
         self.to_load = set()
 
-        main = utilities.locate(self.path, "i-context.xml")
+        main = utilities.locate(self.path, "i-context.xml", flags=self.flags)
         if main:
             dir_ = os.path.split(main)[0]
             for f in os.listdir(dir_):
@@ -101,7 +92,7 @@ class InterfaceSaver:
 
         if modules:
             # use \type{t-rst.xml} as a smoking gun
-            alt = utilities.locate(self.path, "t-rst.xml")
+            alt = utilities.locate(self.path, "t-rst.xml", flags=self.flags)
             if alt:
                 dir_ = os.path.split(alt)[0]
                 for f in os.listdir(dir_):
@@ -132,16 +123,12 @@ class InterfaceSaver:
                             'in file "{}", unexpected tag "{}"'
                             .format(f, child.tag)
                         )
-            except FileNotFoundError as e:
-                msg = \
-                    'in file "{}", error "{}"'.format(os.path.split(f)[-1], e)
-                if self.tolerant:
-                    print(msg)
-                else:
-                    raise Exception(msg)
-            except ET.ParseError as e:
-                msg = \
-                    'in file "{}", error "{}"'.format(os.path.split(f)[-1], e)
+            except (
+                FileNotFoundError, ET.ParseError, UnicodeDecodeError
+            ) as e:
+                msg = 'in file "{}", error "{}"'.format(
+                    os.path.split(f)[-1], e
+                )
                 if self.tolerant:
                     print(msg)
                 else:
