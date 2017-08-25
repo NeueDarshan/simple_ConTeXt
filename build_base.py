@@ -48,9 +48,10 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
             sublime.PhantomSet(self._base_view, self._base_phantom_set_name)
 
         try:
-            self._base_dir, self._base_input = \
-                os.path.split(self._base_view.file_name())
-            self._base_file = utilities.base_file(self._base_input)
+            file_name = self._base_view.file_name()
+            if file_name:
+                self._base_dir, self._base_input = os.path.split(file_name)
+                self._base_file = utilities.base_file(self._base_input)
         except AttributeError:
             self._base_dir, self._base_input = None, None
 
@@ -62,7 +63,7 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
             "stdout": subprocess.PIPE,
             "stderr": subprocess.STDOUT
         }
-        if os.path.exists(self._path):
+        if self._path and os.path.exists(self._path):
             environ = os.environ.copy()
             environ["PATH"] = utilities.add_path(environ["PATH"], self._path)
             self._base_command_options["env"] = environ

@@ -26,6 +26,8 @@ TEMPLATE = """
 </html>
 """
 
+CREATE_NO_WINDOW = 0x08000000
+
 
 class LruCache:
     def __init__(self, max_size=100):
@@ -122,6 +124,7 @@ class SimpleContextMacroSignatureEventListener(
 
     def reload_settings(self):
         utilities.reload_settings(self)
+        self.flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         self.load_css()
         self.name = utilities.file_as_slug(self._path)
         if (
@@ -134,14 +137,11 @@ class SimpleContextMacroSignatureEventListener(
             thread.start()
 
     def load_css(self):
-        if not self.style:
-            self.style = re.sub(
-                r"/\*.*?\*/",
-                r"",
+        if not hasattr(self, "style"):
+            self.style = utilities.strip_css_comments(
                 sublime.load_resource(
-                    "Packages/simple_ConTeXt/css/pop_up.css"
-                ),
-                flags=re.DOTALL
+                    "Packages/simple_ConTeXt/css/phantom_error.css"
+                )
             )
 
     def reload_settings_aux(self):
@@ -157,7 +157,7 @@ class SimpleContextMacroSignatureEventListener(
         self.state = IDLE
 
     def save_interface(self):
-        saver = save.InterfaceSaver()
+        saver = save.InterfaceSaver(flags=self.flags)
         saver.save(self._path, modules=True, tolerant=True)
         cmds = saver.encode()
         cache, key, size = {}, None, 0
@@ -316,12 +316,12 @@ class SimpleContextMacroSignatureEventListener(
                 self.copy(utilities.html_raw_print(self.pop_up))
 
     def on_navigate_file(self, name):
-        main = utilities.locate(self._path, name)
+        main = utilities.locate(self._path, name, flags=self.flags)
         if main and os.path.exists(main):
             self.view.window().open_file(main)
         else:
             other = utilities.fuzzy_locate(
-                self._path, name, extensions=self.extensions
+                self._path, name, extensions=self.extensions, flags=self.flags
             )
             if other and os.path.exists(other):
                 # # For some reason, this is crashing ST on finishing the
