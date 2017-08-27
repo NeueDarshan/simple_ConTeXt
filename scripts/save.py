@@ -28,6 +28,9 @@ class InterfaceSaver:
         self.to_load = []
         self.flags = flags
 
+    def parse(self, file):
+        return ET.parse(file).getroot()
+
     def save(self, path, modules=True, tolerant=True, namespace=NAMESPACE):
         self.path = path
         self.namespace = namespace
@@ -42,39 +45,41 @@ class InterfaceSaver:
         self.load_definitions_aux()
 
     def load_definitions_aux(self):
-        file = utilities.locate(
+        f = utilities.locate(
             self.path, "i-common-definitions.xml", flags=self.flags
         )
-        if not file:
+        if not f:
             raise Exception('unable to locate "i-common-definitions.xml"')
         try:
-            with open(file) as x:
-                tree = ET.parse(x)
-                root = tree.getroot()
+            with open(f, encoding="utf-8") as x:
+                root = self.parse(x)
             for child in root:
                 if self.tag_is(child, "interfacefile"):
                     self.load_definitions_aux_i(child.attrib.get("filename"))
                 else:
                     raise Exception('unexpected tag "{}"'.format(child.tag))
         except (FileNotFoundError, ET.ParseError, UnicodeDecodeError) as e:
-            msg = 'in file "{}", error "{}"'.format(os.path.split(file)[-1], e)
+            msg = 'in file "{}", {} error: "{}"'.format(
+                os.path.split(f)[-1], type(e), e
+            )
             if self.tolerant:
                 print(msg)
             else:
                 raise Exception(msg)
 
     def load_definitions_aux_i(self, filename):
-        file = utilities.locate(self.path, filename, flags=self.flags)
-        if not file:
+        f = utilities.locate(self.path, filename, flags=self.flags)
+        if not f:
             raise Exception('unable to locate "{}"'.format(filename))
         try:
-            with open(file) as x:
-                tree = ET.parse(x)
-                root = tree.getroot()
+            with open(f, encoding="utf-8") as x:
+                root = self.parse(x)
             for child in root:
                 self.do_define(child)
         except (FileNotFoundError, ET.ParseError, UnicodeDecodeError) as e:
-            msg = 'in file "{}", error "{}"'.format(os.path.split(file)[-1], e)
+            msg = 'in file "{}", {} error: "{}"'.format(
+                os.path.split(f)[-1], type(e), e
+            )
             if self.tolerant:
                 print(msg)
             else:
@@ -112,9 +117,8 @@ class InterfaceSaver:
     def load_commands_aux_i(self):
         for f in self.to_load:
             try:
-                with open(f) as x:
-                    tree = ET.parse(x)
-                    root = tree.getroot()
+                with open(f, encoding="utf-8") as x:
+                    root = self.parse(x)
                 for child in root:
                     if self.tag_is(child, "command"):
                         self.do_command(child)
@@ -126,8 +130,8 @@ class InterfaceSaver:
             except (
                 FileNotFoundError, ET.ParseError, UnicodeDecodeError
             ) as e:
-                msg = 'in file "{}", error "{}"'.format(
-                    os.path.split(f)[-1], e
+                msg = 'in file "{}", {} error: "{}"'.format(
+                    os.path.split(f)[-1], type(e), e
                 )
                 if self.tolerant:
                     print(msg)

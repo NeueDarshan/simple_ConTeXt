@@ -52,6 +52,8 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
             if file_name:
                 self._base_dir, self._base_input = os.path.split(file_name)
                 self._base_file = utilities.base_file(self._base_input)
+            else:
+                self._base_dir, self._base_input = None, None
         except AttributeError:
             self._base_dir, self._base_input = None, None
 

@@ -5,7 +5,6 @@ import threading
 import string
 import json
 import os
-import re
 from .scripts import utilities
 from .scripts import save
 from .scripts import load
