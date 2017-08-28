@@ -109,7 +109,6 @@ class SimpleContextMacroSignatureEventListener(
         self.lock = threading.Lock()
         self.loader = load.InterfaceLoader()
         self.state = IDLE
-        self.style = None
         self.file_min = 20000
         self.cmd_scope = "text.tex.context"
         self.param_scope = (
@@ -139,7 +138,7 @@ class SimpleContextMacroSignatureEventListener(
         if not hasattr(self, "style"):
             self.style = utilities.strip_css_comments(
                 sublime.load_resource(
-                    "Packages/simple_ConTeXt/css/phantom_error.css"
+                    "Packages/simple_ConTeXt/css/pop_up.css"
                 )
             )
 
