@@ -59,9 +59,7 @@ class InterfaceSaver:
                 else:
                     raise Exception('unexpected tag "{}"'.format(child.tag))
         except (FileNotFoundError, ET.ParseError, UnicodeDecodeError) as e:
-            msg = 'in file "{}", {} error: "{}"'.format(
-                os.path.split(f)[-1], type(e), e
-            )
+            msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
             if self.tolerant:
                 print(msg)
             else:
@@ -77,9 +75,7 @@ class InterfaceSaver:
             for child in root:
                 self.do_define(child)
         except (FileNotFoundError, ET.ParseError, UnicodeDecodeError) as e:
-            msg = 'in file "{}", {} error: "{}"'.format(
-                os.path.split(f)[-1], type(e), e
-            )
+            msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
             if self.tolerant:
                 print(msg)
             else:
@@ -130,9 +126,7 @@ class InterfaceSaver:
             except (
                 FileNotFoundError, ET.ParseError, UnicodeDecodeError
             ) as e:
-                msg = 'in file "{}", {} error: "{}"'.format(
-                    os.path.split(f)[-1], type(e), e
-                )
+                msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
                 if self.tolerant:
                     print(msg)
                 else:
