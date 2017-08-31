@@ -9,12 +9,11 @@ file_extensions:
   - mkix
   - mkxi
 scope: text.tex.context
-first_line_match: '^(%.*?macros\s*=\s*mk([vx]i|i[vx])|\s*\\(starttext|usemodule))\b'
+first_line_match: '^(%.*?macros\s*=\s*mk([vx]i|i[vx])|\s*\\(starttext|usemodule|setup[[:alpha:]]+))\b'
 variables:
-  key: '[[:alpha:][:digit:]\.,\-\+_:;\!\?<>&/]'
+  key: '[[:alpha:][:digit:]\.\-\+_:;\!\?<>&/]'
   setup: '{{key}}'
-  texdefname: '{{key}}'
-  verb: '[^\\{\[%#$^_[:alpha:]]'
+  verb: '[-+~|!:/.*`^]'
   mathvar: '[[:alpha:]]'
 
 contexts:
@@ -480,6 +479,7 @@ contexts:
     - include: ConTeXt.asciimode
     - include: ConTeXt.comments
     - include: ConTeXt.defs
+    - include: ConTeXt.files
     - include: ConTeXt.modules
     - include: ConTeXt.headings
     - include: ConTeXt.verbatim
@@ -673,10 +673,83 @@ contexts:
       pop: true
     - include: generic.gobble-whitespace-then-pop/
   ConTeXt.defs.texdefinition.name*/:
-    - match: '\b{{texdefname}}+\b'
+    - match: '{{setup}}+'
       scope: support.function.general.context
       pop: true
     - include: generic.gobble-whitespace-then-pop/
+
+  ConTeXt.files:
+    - include: ConTeXt.files.projects
+    - include: ConTeXt.files.input
+
+  ConTeXt.files.projects:
+    - match: '(\\)(component|environment|product|project)\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.file.context, 1: punctuation.definition.backslash.context}
+      push: [ConTeXt.files.meta_scope*/, ConTeXt.files.list-or-name*/]
+    - match: '(\\)use(component|environment|product|project)\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.file.context, 1: punctuation.definition.backslash.context}
+      push: [ConTeXt.files.meta_scope*/, ConTeXt.list.files*/]
+
+  ConTeXt.files.input:
+    - match: '(\\)input\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.file.context, 1: punctuation.definition.backslash.context}
+      push: [ConTeXt.files.meta_scope*/, ConTeXt.files.group-or-name*/]
+
+  ConTeXt.files.meta_scope*/:
+    - meta_scope: meta.other.file.context
+    - include: generic.pop/
+
+  ConTeXt.files.group-or-name*/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.gobble-whitespace
+    - match: '(?=\{)'
+      set: ConTeXt.group.files*/
+    - match: '(?=.)'
+      set: ConTeXt.files.name*/
+
+  ConTeXt.files.list-or-name*/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.gobble-whitespace
+    - match: '(?=\[)'
+      set: ConTeXt.list.files*/
+    - match: '(?=.)'
+      set: ConTeXt.files.name*/
+
+  ConTeXt.files.name*/:
+    - match: '{{setup}}+'
+      scope: meta.other.file.name.context
+      pop: true
+    - include: generic.gobble-whitespace-then-pop/
+
+  ConTeXt.list.files/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: ConTeXt.list.files.core/
+  ConTeXt.list.files*/:
+    - include: ConTeXt.list.files/
+    - include: generic.pop-if-no-nearby-list/
+  ConTeXt.list.files.core/:
+    - meta_scope: meta.brackets.context
+    - include: generic.gobble-whitespace
+    - match: '{{setup}}+'
+      scope: meta.other.file.name.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  ConTeXt.group.files/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: ConTeXt.group.files.core/
+  ConTeXt.group.files*/:
+    - include: ConTeXt.group.files/
+    - include: generic.pop-if-no-nearby-group/
+  ConTeXt.group.files.core/:
+    - meta_scope: meta.braces.context
+    - include: generic.gobble-whitespace
+    - match: '{{setup}}+'
+      scope: meta.other.file.name.context
+    - include: generic.pop-at-group-end/
+    - include: main
 
   ConTeXt.modules:
     - match: '(\\)useluamodule\b'
@@ -977,6 +1050,7 @@ contexts:
         - match: '\1'
           scope: punctuation.section.delim.end.context
           pop: true
+    - include: generic.pop/
 
   ConTeXt.group.verbatim/:
     - match: '\{'

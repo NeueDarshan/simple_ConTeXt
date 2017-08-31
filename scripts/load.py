@@ -2,8 +2,11 @@ from . import utilities
 
 
 def nice_sorted(list_, reverse=False):
+    list_ = sorted(
+        [l for l in list_ if l is not None], key=utilities.html_strip_tags
+    )
     inherits, upper, mixed, lower = [], [], [], []
-    for e in sorted(list_, key=utilities.html_strip_tags):
+    for e in list_:
         raw = utilities.html_strip_tags(e)
         if raw.startswith("inherits"):
             inherits.append(e)
@@ -76,9 +79,7 @@ class InterfaceLoader:
 
     def render_aux(self, list_):
         cs = "\\" + self.name
-        self._syntax = [
-            "<c>{}</c>".format(s) for s in [" " * len(cs), cs, " " * len(cs)]
-        ]
+        self._syntax = [" " * len(cs), "<c>{}</c>".format(cs), " " * len(cs)]
         self._docstring = []
         self._n = 0
 

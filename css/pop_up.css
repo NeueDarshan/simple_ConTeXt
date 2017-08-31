@@ -22,19 +22,48 @@
  * like this style for \quote{inherits} so it's staying for now.
  */
 
+html {
+    --control-sequence: var(--bluish);
+    --default-value: var(--bluish);
+    --integer: var(--purplish);
+    --inner-background-color: var(--background);
+    --outer-background-color:
+        color(var(--foreground) blend(var(--background) 20%));
+}
+
 html, body {
+    margin: 0rem;
+    padding: 0rem;
+}
+
+div.outer {
+    display: block;
+    background-color: var(--outer-background-color);
     padding: 0.1rem;
+    margin: 0rem;
+}
+
+div.inner {
+    display: block;
+    background-color: var(--inner-background-color);
+    padding: 0.5rem;
     margin: 0.1rem;
 }
 
 div.popup c {
-    color: var(--bluish);
+    color: var(--control-sequence);
 }
+
+/*
+div.popup n {
+    color: var(--integer);
+}
+*/
 
 div.popup o {
     font-style: italic;
 }
 
 div.popup d {
-    color: var(--bluish);
+    color: var(--default-value);
 }

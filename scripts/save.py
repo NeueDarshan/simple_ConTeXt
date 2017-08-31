@@ -118,6 +118,8 @@ class InterfaceSaver:
                 for child in root:
                     if self.tag_is(child, "command"):
                         self.do_command(child)
+                    elif self.tag_is(child, "define"):
+                        self.do_define(child)
                     else:
                         raise Exception(
                             'in file "{}", unexpected tag "{}"'

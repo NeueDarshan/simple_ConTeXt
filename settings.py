@@ -229,3 +229,16 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
         self._settings.get("PDF", {})["viewer"] = \
             self.encoded_settings["PDF"]["viewer"].get()
         del self._settings["setting_groups"]
+
+
+class SimpleContextEditSettings(sublime_plugin.WindowCommand):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.args = {
+            "base_file":
+                "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings",
+            "default": "{\n\t$0\n}\n"
+        }
+
+    def run(self, *args, **kwargs):
+        sublime.run_command("edit_settings", self.args)
