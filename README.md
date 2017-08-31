@@ -37,7 +37,7 @@ The main snippets provided are as follows.
 | luacode  | `\startluacode ... \stopluacode`             |                     |
 | template | `<?lua ... ?>`                               | for mkxi templates  |
 | math     | `\math{ ... }`                               | text-mode only      |
-| formula  | `\startformula ... \stopformula`             | text-mode only      |
+| form     | `\startformula ... \stopformula`             | text-mode only      |
 | align    | `\startalign ... \stopalign`                 | math-mode only      |
 | em       | `{\em ... }`                                 | text-mode only      |
 | bf       | `{\bf ... }`                                 | text-mode only      |

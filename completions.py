@@ -10,6 +10,8 @@ from .scripts import save
 from .scripts import load
 
 
+CREATE_NO_WINDOW = 0x08000000
+
 IDLE = 0
 
 RUNNING = 1
@@ -20,12 +22,14 @@ TEMPLATE = """
         {style}
     </style>
     <body id="simple-ConTeXt-pop-up">
-        <div class="popup">{body}</div>
+        <div class="outer">
+            <div class="inner">
+                <div class="popup">{body}</div>
+            </div>
+        </div>
     </body>
 </html>
 """
-
-CREATE_NO_WINDOW = 0x08000000
 
 
 class LruCache:

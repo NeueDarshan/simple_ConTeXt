@@ -55,11 +55,11 @@ def strip_css_comments(text):
 
 
 def file_with_ext(file, ext):
-    return os.path.splitext(os.path.basename(file))[0] + ext
+    return os.path.splitext(file)[0] + ext
 
 
 def base_file(file):
-    return os.path.splitext(os.path.basename(file))[0]
+    return os.path.splitext(file)[0]
 
 
 def file_as_slug(text):
@@ -215,27 +215,44 @@ def add_path(old, new):
     return old
 
 
-def locate(path, file, flags=0):
-    environ = os.environ.copy()
-    environ["PATH"] = add_path(environ["PATH"], path)
-    proc = subprocess.Popen(
-        ["mtxrun", "--locate", str(file)],
-        creationflags=flags,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        env=environ
-    )
-    result = proc.communicate()
-    return decode_and_sanitize_mtxrun_output(result[0])
+def locate(path, file, flags=0, methods=[None]):
+    for method in methods:
+        if method is None:
+            environ = os.environ.copy()
+            environ["PATH"] = add_path(environ["PATH"], path)
+            proc = subprocess.Popen(
+                ["mtxrun", "--locate", str(file)],
+                creationflags=flags,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=environ
+            )
+            result = proc.communicate()
+            return sanitize_mtxrun_output(bytes_decode(result[0]))
+        else:
+            if os.path.sep in file:
+                dir_, name = os.path.split(file)
+                for root, dirs, files in os.walk(
+                    os.path.normpath(os.path.join(method, dir_))
+                ):
+                    if name in files:
+                        return os.path.normpath(os.path.join(root, name))
+            else:
+                for root, dirs, files in os.walk(os.path.normpath(method)):
+                    if file in files:
+                        return os.path.normpath(os.path.join(root, file))
 
 
-def fuzzy_locate(path, file, flags=0, extensions=[]):
+def fuzzy_locate(path, file, flags=0, methods=[None], extensions=[]):
     base = base_file(file)
-    for ext in extensions:
-        text = locate(path, "{}.{}".format(base, ext), flags=flags)
-        if text:
-            return text
+    for method in methods:
+        for ext in extensions:
+            text = locate(
+                path, "{}.{}".format(base, ext), flags=flags, methods=[method]
+            )
+            if text:
+                return text
 
 
 def sanitize_mtxrun_output(text):
@@ -282,10 +299,6 @@ def parse_checker_output(text, tolerant=True):
                 "passed": tolerant,
                 "main": text
             }
-
-
-def decode_and_sanitize_mtxrun_output(bytes_):
-    return sanitize_mtxrun_output(bytes_decode(bytes_))
 
 
 def bytes_decode(text):
@@ -384,7 +397,42 @@ def last_command_in_view(view, begin=-200, end=None, skip=skip_space_nolines):
         point -= 1
         if point < start:
             return
-    return sublime.Region(point, stop)
+
+    if not view.match_selector(stop, "meta.other.control.word.context"):
+        return sublime.Region(point, stop)
+    else:
+        return
+
+
+def match_enclosing_block(view, point, scope):
+    begin = end = point
+    empty = True
+    while view.match_selector(begin, scope) and begin > 0:
+        begin -= 1
+        empty = False
+    while view.match_selector(end, scope):
+        end += 1
+        empty = False
+    if empty:
+        return
+    else:
+        return begin + 1, end
+
+
+def match_last_block_in_region(view, min_, max_, scope):
+    end = max_
+    empty = True
+    while not view.match_selector(end, scope) and end > min_:
+        end -= 1
+        empty = False
+    begin = end
+    while view.match_selector(begin, scope) and begin > min_:
+        begin -= 1
+        empty = False
+    if empty:
+        return
+    else:
+        return begin + 1, end + 1
 
 
 def reload_settings(self):

@@ -1,29 +1,34 @@
-html, body {
+html {
+    --light-error-link: #ffffff18;
+    --dark-error-link: #00000018;
+    --error-background: color(var(--redish) blend(var(--background) 30%));
+}
+
+body {
     padding: 0rem;
     margin: 0rem;
 }
 
 html.light div.error a {
-    background-color: #ffffff18;
+    background-color: var(--light-error-link);
 }
 
 html.dark div.error a {
-    background-color: #00000018;
+    background-color: var(--dark-error-link);
 }
 
 div.hook {
-    border-left:
-        0.5rem solid color(var(--redish) blend(var(--background) 30%));
+    border-left: 0.5rem solid var(--error-background);
     border-top: 0.4rem solid transparent;
-    height: 0;
-    width: 0;
+    height: 0rem;
+    width: 0rem;
 }
 
 div.error {
-    background-color: color(var(--redish) blend(var(--background) 30%));
-    border-radius: 0 0.2rem 0.2rem 0.2rem;
-    margin: 0 0 0.2rem;
-    padding: 0.4rem 0 0.4rem 0.7rem;
+    background-color: var(--error-background);
+    border-radius: 0rem 0.2rem 0.2rem 0.2rem;
+    margin: 0rem 0rem 0.2rem;
+    padding: 0.4rem 0rem 0.4rem 0.7rem;
 }
 
 div.error span.message {
