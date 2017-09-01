@@ -27,7 +27,8 @@ TEMPLATE = """
 class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.extensions = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
+        exts = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
+        self.extensions = [""] + [".{}".format(s) for s in exts]
 
     def reload_settings(self):
         utilities.reload_settings(self)

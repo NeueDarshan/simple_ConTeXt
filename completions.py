@@ -122,7 +122,8 @@ class SimpleContextMacroSignatureEventListener(
             "keyword.operator.assignment.context)"
         )
         self.param_char = string.ascii_letters  # + string.whitespace
-        self.extensions = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
+        exts = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
+        self.extensions = [".{}".format(s) for s in exts]
 
     def reload_settings(self):
         utilities.reload_settings(self)

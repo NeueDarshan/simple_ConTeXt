@@ -221,7 +221,7 @@ def locate(path, file, flags=0, methods=[None]):
             environ = os.environ.copy()
             environ["PATH"] = add_path(environ["PATH"], path)
             proc = subprocess.Popen(
-                ["mtxrun", "--locate", str(file)],
+                ["mtxrun", "--locate", file],
                 creationflags=flags,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
@@ -244,12 +244,11 @@ def locate(path, file, flags=0, methods=[None]):
                         return os.path.normpath(os.path.join(root, file))
 
 
-def fuzzy_locate(path, file, flags=0, methods=[None], extensions=[]):
-    base = base_file(file)
+def fuzzy_locate(path, file, flags=0, methods=[None], extensions=[""]):
     for method in methods:
         for ext in extensions:
             text = locate(
-                path, "{}.{}".format(base, ext), flags=flags, methods=[method]
+                path, "{}{}".format(file, ext), flags=flags, methods=[method]
             )
             if text:
                 return text
