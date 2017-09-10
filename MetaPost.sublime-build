@@ -9,7 +9,13 @@
   [
     {
       "target": "simple_context_build_metapost",
-      "name": "Use Version On ConTeXt $PATH"
+      "name": "Use version shipped with ConTeXt",
+      "method": "mpost"
+    },
+    {
+      "target": "simple_context_build_metapost",
+      "name": "Use ConTeXt directly",
+      "method": "context"
     }
   ]
 }

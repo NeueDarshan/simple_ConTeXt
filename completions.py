@@ -6,11 +6,12 @@ import string
 import json
 import os
 from .scripts import utilities
+from .scripts import html_css
+from .scripts import scopes
+from .scripts import files
 from .scripts import save
 from .scripts import load
 
-
-CREATE_NO_WINDOW = 0x08000000
 
 IDLE = 0
 
@@ -114,22 +115,18 @@ class SimpleContextMacroSignatureEventListener(
         self.loader = load.InterfaceLoader()
         self.state = IDLE
         self.file_min = 20000
-        self.cmd_scope = "text.tex.context"
-        self.param_scope = (
-            "text.tex.context meta.brackets.context - "
-            "(comment.line.percentage.context, meta.other.value.context, "
-            "punctuation.separator.comma.context, "
-            "keyword.operator.assignment.context)"
-        )
         self.param_char = string.ascii_letters  # + string.whitespace
-        exts = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
+        exts = ["tex"] + [
+            "mk{}".format(s) for s in ["ii", "iv", "vi", "ix", "xi"]
+        ]
         self.extensions = [".{}".format(s) for s in exts]
 
     def reload_settings(self):
         utilities.reload_settings(self)
-        self.flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+        self.flags = \
+            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         self.load_css()
-        self.name = utilities.file_as_slug(self._path)
+        self.name = files.file_as_slug(self._path)
         if (
             self.state == IDLE and
             self.is_visible() and
@@ -141,7 +138,7 @@ class SimpleContextMacroSignatureEventListener(
 
     def load_css(self):
         if not hasattr(self, "style"):
-            self.style = utilities.strip_css_comments(
+            self.style = html_css.strip_css_comments(
                 sublime.load_resource(
                     "Packages/simple_ConTeXt/css/pop_up.css"
                 )
@@ -192,101 +189,76 @@ class SimpleContextMacroSignatureEventListener(
     def is_visible(self):
         return utilities.is_context(self.view)
 
-    def fetch_keys(self, command):
-        data = self.cache[self.name][command]
-        for var in data:
-            con = var.get("con")
-            if con:
-                for arg in con:
-                    if isinstance(arg, dict):
-                        desc = arg.get("con")
-                        if isinstance(desc, dict):
-                            return [
-                                utilities.html_strip_tags(k).lower()
-                                for k in desc.keys()
-                            ]
-                        # elif isinstance(desc, list):
-                        #     return desc
-
     def on_query_completions(self, prefix, locations):
         self.reload_settings()
-        if not self.is_visible():
+        if self.state != IDLE or not self.is_visible():
             return
-        if self.state == IDLE:
-            for l in locations:
-                cmd = utilities.last_command_in_view(
-                    self.view,
-                    begin=None,
-                    end=l,
-                    skip=utilities.skip_args
-                )
-                if (
-                    cmd and
-                    self.view.match_selector(l - 1, self.param_scope) and
-                    self.view.substr(l - 1) in self.param_char
-                ):
-                    cs = self.view.substr(cmd)[1:]
-                    keys = self.fetch_keys(cs)
-                    if keys:
-                        return [[s, "{}=$1,$0".format(s)] for s in keys]
-                elif (
-                    self.view.match_selector(l, self.cmd_scope) and
-                    utilities.last_command_in_view(
-                        self.view, end=l, skip=utilities.skip_nothing
-                    )
-                ):
-                    return [
-                        ["\\" + cs, ""]
-                        for cs in self.cache[self.name].get_keys()
-                    ]
 
-    def on_modified_async(self):
+        for location in locations:
+            if scopes.enclosing_block(
+                self.view, location - 1, scopes.FULL_CONTROL_SEQ
+            ):
+                return [
+                    ["\\" + ctrl, ""]
+                    for ctrl in self.cache[self.name].get_keys()
+                ]
+
+    def on_hover(self, point, hover_zone):
         self.reload_settings()
-        if not (
-            self.state == IDLE and
-            self.is_visible()
-        ):
-            self.view.hide_popup()
-            return
-
-        end = self.view.sel()[0].end()
-        cmd = utilities.last_command_in_view(
-            self.view, end=end, skip=utilities.skip_nothing
-        )
-
         if (
-            not cmd and
-            self.view.match_selector(end, self.param_scope) and
-            utilities.last_command_in_view(
-                self.view, begin=None, end=end, skip=utilities.skip_args
-            )
-        ):
-            self.view.hide_popup()
-            self.view.run_command(
-                "auto_complete",
-                {"disable_auto_insert": True, "api_completions_only": True}
-            )
-            return
-
-        if not (
-            self._pop_ups.get("on") and
-            self.view.match_selector(end, self.cmd_scope) and
-            cmd
+            self.state != IDLE or
+            hover_zone != sublime.HOVER_TEXT or
+            not self._pop_ups.get("methods", {}).get("on_hover") or
+            not self.is_visible()
         ):
             self.view.hide_popup()
             return
 
-        name = self.view.substr(cmd)[1:]
-        if name in self.cache[self.name]:
+        ctrl = scopes.enclosing_block(self.view, point, scopes.CONTROL_WORD)
+        if not ctrl:
+            return
+        name = self.view.substr(sublime.Region(*ctrl))
+        if name in self.cache.get(self.name, {}):
             self.view.show_popup(
                 self.get_popup_text(name),
+                location=ctrl[0],
                 max_width=600,
                 max_height=250,
-                flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
-                on_navigate=self.on_navigate
+                flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY,
+                on_navigate=self.on_navigate,
             )
         else:
             self.view.hide_popup()
+
+    def on_modified_async(self):
+        self.reload_settings()
+        if (
+            self.state != IDLE or
+            not self.is_visible() or
+            not self._pop_ups.get("methods", {}).get("auto_complete")
+        ):
+            self.view.hide_popup()
+            return
+
+        for sel in self.view.sel():
+            ctrl = scopes.left_enclosing_block(
+                self.view, sel.end() - 1, scopes.CONTROL_SEQ
+            )
+            if not ctrl:
+                self.view.hide_popup()
+                continue
+            name = self.view.substr(sublime.Region(*ctrl))
+            if name in self.cache.get(self.name, {}):
+                self.view.show_popup(
+                    self.get_popup_text(name),
+                    location=ctrl[0],
+                    max_width=600,
+                    max_height=250,
+                    flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
+                    on_navigate=self.on_navigate,
+                )
+            else:
+                self.view.hide_popup()
 
     def get_popup_text(self, name):
         new_pop_up_state = json.dumps(self._pop_ups, sort_keys=True)
@@ -298,7 +270,7 @@ class SimpleContextMacroSignatureEventListener(
         ):
             cmd = self.cache[self.name][name]
             self.pop_up, extra = self.loader.load(
-                name, cmd, pre_code=True, **self._pop_ups
+                name, cmd, protect_space=True, **self._pop_ups
             )
             self.html_cache[self.name][name] = self.pop_up
             if extra:
@@ -314,21 +286,21 @@ class SimpleContextMacroSignatureEventListener(
             self.on_navigate_file(content)
         elif type_ == "copy":
             if content == "html":
-                self.copy(utilities.html_pretty_print(self.pop_up))
+                self.copy(html_css.pretty_print(self.pop_up))
             elif content == "plain":
-                self.copy(utilities.html_raw_print(self.pop_up))
+                self.copy(html_css.raw_print(self.pop_up))
 
     def on_navigate_file(self, name):
-        main = utilities.locate(self._path, name, flags=self.flags)
+        main = files.locate(self._path, name, flags=self.flags)
         if main and os.path.exists(main):
             self.view.window().open_file(main)
         else:
-            other = utilities.fuzzy_locate(
+            other = files.fuzzy_locate(
                 self._path, name, extensions=self.extensions, flags=self.flags
             )
             if other and os.path.exists(other):
-                # # For some reason, this is crashing ST on finishing the
-                # # dialogue \periods
+                #D For some reason, this is crashing Sublime Text on finishing
+                #D the dialogue \periods.
                 # msg = (
                 #     'Unable to locate file "{}".\n\nSearched in the TeX tree '
                 #     'containing "{}".\n\nFound file "{}" with similar name, '
@@ -336,6 +308,7 @@ class SimpleContextMacroSignatureEventListener(
                 # ).format(name, self._path, os.path.basename(other))
                 # if sublime.ok_cancel_dialog(msg):
                 #     self.view.window().open_file(other)
+                #D So instead let's just open the file.
                 self.view.window().open_file(other)
             else:
                 msg = (

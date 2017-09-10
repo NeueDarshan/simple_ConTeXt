@@ -19,12 +19,12 @@ class SimpleContextBuildMetapostCommand(
 
     def reload_settings(self):
         self._base_reload_settings()
-        self.command = ["mpost", self._base_input]
 
     def is_visible(self):
         return utilities.is_metapost(self._base_view)
 
     def run(self, *args, **kwargs):
+        self.command = [kwargs.get("method", "mpost"), self._base_input]
         self.reload_settings()
         self._base_run(
             [{"command": self.command, "handler": self.handler_main}],
@@ -45,8 +45,9 @@ class SimpleContextBuildMetapostCommand(
         self.add_to_output("stopping", message, gap=True)
 
     def handler_main(self, text):
-        for i, line in enumerate(text.split("\n")):
-            self.add_to_output("result", line, gap=not i)
+        pass
+        # for i, line in enumerate(text.split("\n")):
+        #     self.add_to_output("result", line, gap=not i)
 
     def add_to_output(self, category, text, gap=False):
         self._base_add_to_output(category, text, gap=gap)

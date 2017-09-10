@@ -10,7 +10,8 @@ contexts:
   main:
     - include: snippet
     - include: system
-    - include: comment # purely to enable \type{SYNTAX TEST}s
+    #D We put in \type{comment}s purely to enable syntax tests.
+    - include: comment
 
   snippet:
     - match: '^\s*([[:digit:]]+)\s*(>>)?'

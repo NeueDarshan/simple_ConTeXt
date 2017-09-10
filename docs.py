@@ -3,9 +3,8 @@ import sublime_plugin
 import subprocess
 import threading
 from .scripts import utilities
+from .scripts import files
 
-
-CREATE_NO_WINDOW = 0x08000000
 
 DOCS = [
     ["bibTeX: The ConTeXt Way", "mkiv-publications"],
@@ -52,7 +51,8 @@ class SimpleContextFindDocs(sublime_plugin.WindowCommand):
     def reload_settings(self):
         utilities.reload_settings(self)
         self.viewer = self._PDF.get("viewer")
-        self.flags = CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+        self.flags = \
+            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         self.docs = DOCS
 
     def run(self):
@@ -85,9 +85,8 @@ class SimpleContextFindDocs(sublime_plugin.WindowCommand):
         self.run_panel(selected_index=len(self.docs))
 
     def open_doc(self, name):
-        file = utilities.locate(
-            self._path, "{}.pdf".format(name), flags=self.flags
-        )
+        file = \
+            files.locate(self._path, "{}.pdf".format(name), flags=self.flags)
         if self.viewer and file:
             subprocess.Popen([self.viewer, file], creationflags=self.flags)
         else:

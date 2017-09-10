@@ -26,7 +26,6 @@ contexts:
     - include: definitions
     - include: environments
     - include: TeX
-    - include: delims
 
   comment:
     - match: '(%).*$\n?'
@@ -259,9 +258,6 @@ contexts:
         - include: scope:text.tex#main
     - match: '\betex\b'
       scope: entity.name.other.tex.metapost
-
-  delims:
-    - include: delims.parens
 
   delims.parens:
     - match: '\('

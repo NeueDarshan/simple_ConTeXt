@@ -1,6 +1,7 @@
 import sublime
 import sublime_plugin
 from .scripts import utilities
+from .scripts import deep_dict
 
 
 def simplify(obj):
@@ -82,7 +83,7 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             self.location.append(key)
 
             if isinstance(value, bool):
-                utilities.set_deep_safe(
+                deep_dict.set_safe(
                     self.encoded_settings, self.location, not value
                 )
                 self.location.pop()
@@ -126,8 +127,8 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             value = here[key]
             self.last_scheme = key
             self.decode_settings()
-            for location, val in utilities.iter_deep(value):
-                utilities.set_deep_safe(self._settings, location, val)
+            for location, val in deep_dict.iter_(value):
+                deep_dict.set_safe(self._settings, location, val)
             self.save(decode=False)
             self.run_panel_scheme()
 
@@ -151,14 +152,12 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             self.run_panel()
         else:
             here.set(key)
-            utilities.set_deep_safe(
-                self.encoded_settings, self.location, here
-            )
+            deep_dict.set_safe(self.encoded_settings, self.location, here)
             self.save()
             self.run_panel_choice()
 
     def on_done(self, string):
-        utilities.set_deep_safe(
+        deep_dict.set_safe(
             self.encoded_settings,
             self.location,
             utilities.guess_type(string)
@@ -175,7 +174,7 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
         self.run_panel()
 
     def current_level(self):
-        return utilities.get_deep_safe(self.encoded_settings, self.location)
+        return deep_dict.get_safe(self.encoded_settings, self.location)
 
     def flatten_current_level(self):
         if len(self.location) > 0 and self.location[-1] == "setting_groups":
@@ -191,11 +190,9 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
                 for k in sorted(self.current_level())
             ]
         if len(self.location) > 0:
-            if len(self.location) > 1:
-                prev = "/" + "/".join(self.location[:-1]) + "/"
-            else:
-                prev = "/"
-            return [["..", '↑ go back to {}'.format(prev)]] + main
+            return [
+                ["..", "↑ in /{}/, go back".format("/".join(self.location))]
+            ] + main
         else:
             return main
 
@@ -222,12 +219,18 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             self._PDF_viewers,
             choice=self._settings.get("PDF", {}).get("viewer")
         )
+        # self.encoded_settings.setdefault("pop_ups", {})["method"] = Choice(
+        #     ["auto_complete", "on_hover", "disabled"],
+        #     choice=self._settings.get("pop_ups", {}).get("method", "on_hover")
+        # )
         self.encoded_settings["setting_groups"] = self._setting_groups
 
     def decode_settings(self):
         self._settings["path"] = self.encoded_settings["path"].get()
         self._settings.get("PDF", {})["viewer"] = \
             self.encoded_settings["PDF"]["viewer"].get()
+        # self._settings.get("pop_ups", {})["method"] = \
+        #     self.encoded_settings["pop_ups"]["method"].get()
         del self._settings["setting_groups"]
 
 

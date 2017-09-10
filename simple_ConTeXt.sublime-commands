@@ -4,11 +4,11 @@
     "command": "simple_context_settings_controller"
   },
   {
+    "caption": "Preferences: simple_ConTeXt Settings",
+    "command": "simple_context_edit_settings"
+  },
+  {
     "caption": "simple_ConTeXt: Open TeX/ConTeXt documentation",
     "command": "simple_context_find_docs"
   },
-  {
-    "caption": "Preferences: simple_ConTeXt Settings",
-    "command": "simple_context_edit_settings"
-  }
 ]

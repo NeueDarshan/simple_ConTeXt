@@ -4,9 +4,7 @@ import subprocess
 import threading
 import os
 from .scripts import utilities
-
-
-CREATE_NO_WINDOW = 0x08000000
+from .scripts import files
 
 
 class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
@@ -51,14 +49,14 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
             file_name = self._base_view.file_name()
             if file_name:
                 self._base_dir, self._base_input = os.path.split(file_name)
-                self._base_file = utilities.base_file(self._base_input)
+                self._base_file = files.base_file(self._base_input)
             else:
                 self._base_dir, self._base_input = None, None
         except AttributeError:
             self._base_dir, self._base_input = None, None
 
         self._base_flags = \
-            CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         self._base_command_options = {
             "creationflags": self._base_flags,
             "stdin": subprocess.PIPE,
@@ -67,7 +65,7 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
         }
         if self._path and os.path.exists(self._path):
             environ = os.environ.copy()
-            environ["PATH"] = utilities.add_path(environ["PATH"], self._path)
+            environ["PATH"] = files.add_path(environ["PATH"], self._path)
             self._base_command_options["env"] = environ
         else:
             self._base_command_options["env"] = os.environ
@@ -136,7 +134,7 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
 
         self._base_lock.acquire()
         if not self._base_is_stopping():
-            handler(utilities.bytes_decode(result[0]))
+            handler(files.decode_bytes(result[0]))
         self._base_lock.release()
 
     def _base_run_stop(self):

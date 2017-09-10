@@ -15,7 +15,7 @@ contexts:
   main:
     - include: constants
     - include: scope:source.metapost#terminator
-    - include: scope:source.metapost#types
+    - include: types
     - include: scope:source.metapost#keywords
     - include: internal-parameters
     - include: operators
@@ -23,10 +23,14 @@ contexts:
     - include: scope:source.metapost#definitions
     - include: environments
     - include: scope:source.metapost#TeX
-    - include: delims
 
   comment:
     - include: scope:source.metapost#comment
+
+  types:
+    - match: '\b(new)(boolean|numeric|pair|path|pen|picture|string|transform)\b'
+      scope: storage.type.metapost.metafun
+    - include: scope:source.metapost#types
 
   constants:
     - match: '\b(Page(Offset|Depth|StateAvailable)?|(Top|Bottom|Back|Cut)Space|(Left|Right|Inner|Outer)(Edge|Margin)(Width|Distance)|(Top|Header|Footer|Bottom)(Height|Distance)|(Makeup|Text)(Height|Width)|(Print)?Paper(Height|Width)|LayoutColumn(s|Distance|Width)|(Top|BaseLine)Skip|([HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(Right|Odd)Page|InPageBody|(Real|Last)?PageNumber|NOf(Pages|Columns)|Current(Column|Layout|Width|Height)|Overlay(Box|Offset|Color|Depth|Height|Line(Color|Width)|Width)|Strut(Depth|Height)|Rule(Direction|Option|Width|Height|Depth|Thickness|Factor|Offset|Color)|shaded(up|down|left|right)?|fullsquare|(full|unit)diamond|[ul][lr]triangle|(unit|[btrl]|[ul][lr])circle|yellow)\b'
@@ -66,9 +70,6 @@ contexts:
     - match: '\b(Start|Stop)Page\b'
       scope: entity.name.other.page.metapost.metafun
     - include: scope:source.metapost#environments
-
-  delims:
-    - include: delims.parens
 
   delims.parens:
     - match: '\('

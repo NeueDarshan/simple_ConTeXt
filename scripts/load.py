@@ -1,13 +1,13 @@
-from . import utilities
+from . import html_css
 
 
 def nice_sorted(list_, reverse=False):
     list_ = sorted(
-        [l for l in list_ if l is not None], key=utilities.html_strip_tags
+        [l for l in list_ if l is not None], key=html_css.strip_tags
     )
     inherits, upper, mixed, lower = [], [], [], []
     for e in list_:
-        raw = utilities.html_strip_tags(e)
+        raw = html_css.strip_tags(e)
         if raw.startswith("inherits"):
             inherits.append(e)
         elif raw.isupper():
@@ -33,8 +33,8 @@ class InterfaceLoader:
 
     def load(self, *args, **kwargs):
         raw_text, raw_extra = self.render(*args, **kwargs)
-        if kwargs.get("pre_code", False):
-            return [utilities.html_pre_code(s) for s in (raw_text, raw_extra)]
+        if kwargs.get("protect_space", False):
+            return [html_css.protect_space(s) for s in (raw_text, raw_extra)]
         else:
             return raw_text, raw_extra
 
@@ -91,8 +91,8 @@ class InterfaceLoader:
                 self._inherits = arg.get("inh")
                 self._optional = arg.get("opt")
                 self._rendering = arg.get("ren")
-                self._len = len(utilities.html_unescape(
-                    utilities.html_strip_tags(self._rendering)
+                self._len = len(html_css.unescape(
+                    html_css.strip_tags(self._rendering)
                 ))
 
                 if self._content is None and self._inherits is None:
@@ -111,7 +111,7 @@ class InterfaceLoader:
 
     def clean_syntax(self):
         for i in range(2, -1, -1):
-            if not utilities.html_strip_tags(self._syntax[i]).rstrip():
+            if not html_css.strip_tags(self._syntax[i]).rstrip():
                 del self._syntax[i]
 
     def blank(self):
@@ -180,7 +180,7 @@ class InterfaceLoader:
                     lines[-1] += s
                     begin = False
                 else:
-                    len_ = len(utilities.html_strip_tags(lines[-1] + s)) + 1
+                    len_ = len(html_css.strip_tags(lines[-1] + s)) + 1
                     if len_ > line_break:
                         space = False
                         content.append(s)
@@ -194,7 +194,7 @@ class InterfaceLoader:
 
     def docstring_dict(self):
         line_break = self.kwargs.get("line_break", 80)
-        len_ = max(len(utilities.html_strip_tags(k)) for k in self._content)
+        len_ = max(len(html_css.strip_tags(k)) for k in self._content)
 
         if isinstance(line_break, int):
             return self.docstring_dict_break(len_, line_break)
@@ -217,7 +217,7 @@ class InterfaceLoader:
             elif isinstance(v, list):
                 for s in nice_sorted(v):
                     next_len = \
-                        len(utilities.html_strip_tags(lines[-1] + s)) + 1
+                        len(html_css.strip_tags(lines[-1] + s)) + 1
                     if next_len > line_break:
                         lines.append(self.assignments_guide(len_, num=init))
                         lines[-1] += " " + s
@@ -249,7 +249,7 @@ class InterfaceLoader:
     def assignments_guide(self, len_, key=None, num=True):
         start = self.guide(num=num)
         if key:
-            len_ += len(key) - len(utilities.html_strip_tags(key))
+            len_ += len(key) - len(html_css.strip_tags(key))
             return start + ("{:<%s} <e>=</e>" % len_).format(key)
         else:
             return start + (" " * (len_ + 2))

@@ -1,10 +1,6 @@
 import sublime
-import subprocess
 import itertools
 import random
-import string
-import os
-import re
 
 
 def safe_random_sample(data, size):
@@ -12,143 +8,6 @@ def safe_random_sample(data, size):
         return random.sample(data, size)
     else:
         return data
-
-
-def html_unescape(text):
-    return text.replace("&gt;", ">").replace("&lt;", "<").replace(
-        "&nbsp;", " ").replace("<br>", "\n")
-
-
-def html_strip_tags(text):
-    return re.sub("<[^<]+>", "", text)
-
-
-def html_pre_code(text):
-    result = ""
-    in_tag = False
-    for c in text:
-        if c == "<":
-            result += c
-            in_tag = True
-        elif c == ">":
-            result += c
-            in_tag = False
-        elif in_tag:
-            result += c
-        else:
-            result += c.replace(" ", "&nbsp;")
-    return result.replace("\n", "<br>")
-
-
-def html_pretty_print(text):
-    return text.replace("&nbsp;", " ").replace("<br>", "\n")
-
-
-def html_raw_print(text):
-    return html_unescape(
-        html_strip_tags(text.replace("<br>", "\n")).replace("&nbsp;", " ")
-    )
-
-
-def strip_css_comments(text):
-    return re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
-
-
-def file_with_ext(file, ext):
-    return os.path.splitext(file)[0] + ext
-
-
-def base_file(file):
-    return os.path.splitext(file)[0]
-
-
-def file_as_slug(text):
-    slug = ""
-    if text:
-        for c in text:
-            if c in string.ascii_letters + string.digits:
-                slug += c.lower()
-            else:
-                slug += "_"
-    return slug
-
-
-def deep_update(dict_, new_dict):
-    for k, v in new_dict.items():
-        if isinstance(v, dict):
-            if k not in dict_:
-                dict_[k] = {}
-            deep_update(dict_[k], v)
-        else:
-            dict_[k] = v
-
-
-def iter_deep(dict_):
-    for k, v in dict_.items():
-        if isinstance(v, dict):
-            for key, val in iter_deep(v):
-                yield [k] + key, val
-        else:
-            yield [k], v
-
-
-def get_deep(dict_, keys):
-    if len(keys) == 0:
-        return dict_
-    elif len(keys) == 1:
-        return dict_[keys[0]]
-    else:
-        return get_deep(dict_[keys[0]], keys[1:])
-
-
-def get_deep_safe(dict_, keys):
-    if len(keys) == 0:
-        return dict_
-    elif len(keys) == 1:
-        return dict_.get(keys[0])
-    else:
-        dict_.setdefault(keys[0], {})
-        return get_deep_safe(dict_[keys[0]], keys[1:])
-
-
-def set_deep(dict_, keys, value):
-    if len(keys) <= 1:
-        dict_[keys[0]] = value
-    else:
-        set_deep(dict_[keys[0]], keys[1:], value)
-
-
-def set_deep_safe(dict_, keys, value):
-    if len(keys) <= 1:
-        dict_[keys[0]] = value
-    else:
-        dict_.setdefault(keys[0], {})
-        set_deep_safe(dict_[keys[0]], keys[1:], value)
-
-
-def in_deep(dict_, keys):
-    if len(keys) <= 1:
-        return (keys[0] in dict_)
-    else:
-        return in_deep(dict_[keys[0]], keys[1:])
-
-
-def del_deep(dict_, keys):
-    if len(keys) <= 1:
-        del dict_[keys[0]]
-    else:
-        del_deep(dict_[keys[0]], keys[1:])
-
-
-def del_deep_safe(dict_, keys):
-    if len(keys) <= 1:
-        try:
-            del dict_[keys[0]]
-        except KeyError:
-            pass
-    else:
-        dict_.setdefault(keys[0], {})
-        del_deep_safe(dict_[keys[0]], keys[1:])
 
 
 def remove_duplicates(list_):
@@ -170,23 +29,25 @@ def type_as_str(obj):
         return str(type(obj))
 
 
-def guess_type(text):
+def guess_type(obj):
     try:
-        return int(text)
+        return int(obj)
     except ValueError:
         try:
-            return float(text)
+            return float(obj)
         except ValueError:
-            pass
+            if str(obj).lower() == "true":
+                return True
+            elif str(obj).lower() == "false":
+                return False
+            elif str(obj).lower() in ["none", "null"]:
+                return None
+            else:
+                return obj
 
-    if str(text).lower() == "true":
-        return True
-    elif str(text).lower() == "false":
-        return False
-    elif str(text).lower() in ["none", "null"]:
-        return None
-    else:
-        return text
+
+def is_scope(view, scope):
+    return view.match_selector(view.sel()[0].begin(), scope)
 
 
 def is_context(view):
@@ -197,114 +58,6 @@ def is_metapost(view):
     return is_scope(view, "source.metapost")
 
 
-def is_scope(view, scope):
-    return view.match_selector(view.sel()[0].begin(), scope)
-
-
-def add_path(old, new):
-    if isinstance(new, str) and new:
-        new = os.path.abspath(new)
-        if os.path.exists(new):
-            old_path = old.split(os.pathsep)
-            if new not in old_path:
-                old_path.insert(0, new)
-            else:
-                old_path.remove(new)
-                old_path.insert(0, new)
-            return os.pathsep.join(old_path)
-    return old
-
-
-def locate(path, file, flags=0, methods=[None]):
-    for method in methods:
-        if method is None:
-            environ = os.environ.copy()
-            environ["PATH"] = add_path(environ["PATH"], path)
-            proc = subprocess.Popen(
-                ["mtxrun", "--locate", file],
-                creationflags=flags,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=environ
-            )
-            result = proc.communicate()
-            return sanitize_mtxrun_output(bytes_decode(result[0]))
-        else:
-            if os.path.sep in file:
-                dir_, name = os.path.split(file)
-                for root, dirs, files in os.walk(
-                    os.path.normpath(os.path.join(method, dir_))
-                ):
-                    if name in files:
-                        return os.path.normpath(os.path.join(root, name))
-            else:
-                for root, dirs, files in os.walk(os.path.normpath(method)):
-                    if file in files:
-                        return os.path.normpath(os.path.join(root, file))
-
-
-def fuzzy_locate(path, file, flags=0, methods=[None], extensions=[""]):
-    for method in methods:
-        for ext in extensions:
-            text = locate(
-                path, "{}{}".format(file, ext), flags=flags, methods=[method]
-            )
-            if text:
-                return text
-
-
-def sanitize_mtxrun_output(text):
-    return re.sub(
-        r"resolvers\s*[>|]\s*trees\s*[>|]\s*analyzing\s*'home:texmf'",
-        "",
-        text
-    )
-
-
-def parse_checker_output(text, tolerant=True):
-    text = re.sub(r"<cr>\s*<lf>", "\n", text)
-    text = re.sub(r"<(lf|cr)>", "\n", text)
-    parts = text.split("  ", maxsplit=2)
-    if len(parts) < 2:
-        return {"passed": tolerant, "main": text.rstrip()}
-    elif len(parts) < 3:
-        return {
-            "passed": tolerant, "head": parts[0], "main": parts[1].rstrip()
-        }
-    else:
-        try:
-            line, head, tail = parts
-            if head == "no error":
-                return {"passed": True, "head": head}
-            else:
-                other_line = re.search(r"\(see line ([0-9]+)\)\s*\Z", tail)
-                if other_line:
-                    return {
-                        "passed": False,
-                        "head": "lines {}--{} > {}".format(
-                            int(other_line.group(1)), int(line), head
-                        ),
-                        "main": tail[:other_line.start()].rstrip()
-                    }
-                else:
-                    return {
-                        "passed": False,
-                        "head": "line {} > {}".format(1 + int(line), head),
-                        "main": tail.rstrip()
-                    }
-        except:
-            return {
-                "passed": tolerant,
-                "main": text
-            }
-
-
-def bytes_decode(text):
-    return text.decode(encoding="utf-8", errors="replace").replace(
-        "\r\n", "\n").replace("\r", "\n").strip()
-
-
 def iter_power_set(iter_):
     full = list(iter_)
     return itertools.chain.from_iterable(
@@ -312,126 +65,21 @@ def iter_power_set(iter_):
     )
 
 
-def identity(obj):
+def first_of_one(obj):
     return obj
 
 
-def second_obj(obj):
+def second_of_n(obj):
     return obj[1]
 
 
-def iter_i_merge_sorted(sorted_iters, key=identity):
-    heads = [next(iter_, None) for iter_ in sorted_iters]
-    while any(heads):
-        i, next_ = min(
-            [(i, head) for i, head in enumerate(heads) if head],
-            key=second_obj
-        )
+def iter_i_merge_sorted(sorted_iters, key=first_of_one):
+    stack = [next(iter_, None) for iter_ in sorted_iters]
+    while any(stack):
+        tops = [(i, top) for i, top in enumerate(stack) if top is not None]
+        i, next_ = min(tops, key=key)
         yield i, next_
-        heads[i] = next(sorted_iters[i], None)
-
-
-def skip_space(view, point, call=0):
-    return view.substr(point).isspace()
-
-
-def skip_space_nolines(view, point, call=0):
-    text = view.substr(point)
-    return text.isspace() and text != "\n"
-
-
-def skip_atmost_one_space_nolines(view, point, call=0):
-    if call > 0:
-        return False
-    else:
-        return skip_space_nolines(view, point, call=call)
-
-
-def skip_nothing(view, point, call=0):
-    return False
-
-
-def skip_args(view, point, call=0):
-    if view.substr(point).isspace():
-        return True
-    elif view.match_selector(point, "meta.braces.context"):
-        return True
-    elif view.match_selector(point, "meta.brackets.context"):
-        return True
-    else:
-        return False
-
-
-def last_command_in_view(view, begin=-200, end=None, skip=skip_space_nolines):
-    if begin is None:
-        start = 0
-    elif begin < 0:
-        start = end + begin
-    else:
-        start = begin
-    if end is None:
-        point = len(view) - 2
-    else:
-        point = end - 1
-
-    call = 0
-    while skip(view, point, call=call):
-        call += 1
-        point -= 1
-        if point < start:
-            return
-    if not view.match_selector(
-        point,
-        "meta.other.control.word.context, "
-        "punctuation.definition.backslash.context"
-    ):
-        return
-
-    stop = point + 1
-    while view.match_selector(
-        point,
-        "meta.other.control.word.context "
-        "- punctuation.definition.backslash.context"
-    ):
-        point -= 1
-        if point < start:
-            return
-
-    if not view.match_selector(stop, "meta.other.control.word.context"):
-        return sublime.Region(point, stop)
-    else:
-        return
-
-
-def match_enclosing_block(view, point, scope):
-    begin = end = point
-    empty = True
-    while view.match_selector(begin, scope) and begin > 0:
-        begin -= 1
-        empty = False
-    while view.match_selector(end, scope):
-        end += 1
-        empty = False
-    if empty:
-        return
-    else:
-        return begin + 1, end
-
-
-def match_last_block_in_region(view, min_, max_, scope):
-    end = max_
-    empty = True
-    while not view.match_selector(end, scope) and end > min_:
-        end -= 1
-        empty = False
-    begin = end
-    while view.match_selector(begin, scope) and begin > min_:
-        begin -= 1
-        empty = False
-    if empty:
-        return
-    else:
-        return begin + 1, end + 1
+        stack[i] = next(sorted_iters[i], None)
 
 
 def reload_settings(self):
@@ -465,7 +113,6 @@ def process_options(name, options, input_, base):
 
     elif isinstance(options, dict):
         cmd = [name]
-
         if options.get("result"):
             if base:
                 cmd.append(
@@ -474,7 +121,6 @@ def process_options(name, options, input_, base):
                     ))
                 )
             del options["result"]
-
         for opt, val in options.items():
             if opt == "mode":
                 if any(v for k, v in val.items()):
@@ -494,7 +140,6 @@ def process_options(name, options, input_, base):
                     cmd.insert(2, "{}".format(val))
                 else:
                     cmd.append("--{}={}".format(opt, val))
-
         if input_:
             cmd.append(input_)
 

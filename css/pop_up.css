@@ -1,30 +1,30 @@
-/* We use a couple of HTML tags. We chose short tags because it makes the
- * files/strings significantly shorter than using long descriptive names. Here
- * are their meanings:
- *
- * \starttabulate[|rT|l|]
- *   \NC <c> \NC control sequence \type{\...} \NC\NR
- *   \NC <o> \NC optional argument \NC\NR
- *   \NC <n> \NC number \NC\NR
- *   \NC <k> \NC key, as in \type{key=value} \NC\NR
- *   \NC <e> \NC equals, as in \type{key=value} \NC\NR
- *   \NC <v> \NC value, as in \type{key=value} \NC\NR
- *   \NC <t> \NC type name, e.g.\ \type{CSNAME} means a control sequence
- *               name \NC\NR
- *   \NC <d> \NC default value \NC\NR
- *   \NC <i> \NC inherits, styles the bit of text \quote{inherits:} in
- *               \type{inherits: \...} \NC\NR
- * \stoptabulate
- *
- * I believe that, of these tags, only \type{<i>} is recognized by miniHTML.
- * So, for \type{<i>}, bear in mind that it will have the default behaviour of
- * italicizing things. Better would be to use another letter, but I actually
- * like this style for \quote{inherits} so it's staying for now.
+/*D We use a couple of HTML tags. We chose short tags because it makes the
+ *D files/strings significantly shorter than using long descriptive names. Here
+ *D are their meanings:
+ *D
+ *D \starttabulate[|rT|l|]
+ *D   \NC <c> \NC control sequence \type{\...} \NC\NR
+ *D   \NC <o> \NC optional argument \NC\NR
+ *D   \NC <n> \NC number \NC\NR
+ *D   \NC <k> \NC key, as in \type{key=value} \NC\NR
+ *D   \NC <e> \NC equals, as in \type{key=value} \NC\NR
+ *D   \NC <v> \NC value, as in \type{key=value} \NC\NR
+ *D   \NC <t> \NC type name, e.g.\ \type{CSNAME} means a control sequence
+ *D               name \NC\NR
+ *D   \NC <d> \NC default value \NC\NR
+ *D   \NC <i> \NC inherits, styles the bit of text \quote{inherits:} in
+ *D               \type{inherits: \...} \NC\NR
+ *D \stoptabulate
+ *D
+ *D I believe that, of these tags, only \type{<i>} is recognized by miniHTML.
+ *D So, for \type{<i>}, bear in mind that it will have the default behaviour of
+ *D italicizing things. Better would be to use another letter, but I actually
+ *D like this style for \quote{inherits} so it's staying for now.
  */
 
 html {
     --control-sequence: var(--bluish);
-    --default-value: var(--bluish);
+    --default-value: var(--control-sequence);
     --integer: var(--purplish);
     --inner-background-color: var(--background);
     --outer-background-color:
@@ -55,10 +55,11 @@ div.popup c {
 }
 
 /*
-div.popup n {
-    color: var(--integer);
-}
-*/
+ * div.popup n {
+ *     color: var(--integer);
+ * }
+ *
+ */
 
 div.popup o {
     font-style: italic;

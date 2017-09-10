@@ -3,16 +3,7 @@ import sublime_plugin
 import collections
 import re
 from .scripts import utilities
-
-
-DEFINITE_REF_SELECTOR = "meta.other.reference.context"
-
-POSSIBLE_REF_SELECTOR = (
-    "meta.brackets.context - (meta.other.reference.context, "
-    "punctuation.section.brackets.begin.context, "
-    "punctuation.section.brackets.end.context, variable.parameter.context, "
-    "keyword.operator.assignment.context, meta.other.value.context)"
-)
+from .scripts import scopes
 
 
 class SimpleContextReferenceInsert(sublime_plugin.TextCommand):
@@ -29,37 +20,13 @@ class SimpleContextReferenceInsert(sublime_plugin.TextCommand):
 class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
     def reload_settings(self):
         utilities.reload_settings(self)
-        regex = self._references.get(
-            "reference_regex",
-            r"[a-zA-Z_\\.\\-\\:]*[_\\.\\-\\:]+[a-zA-Z_\\.\\-\\:]*"
-        )
-        cmd_regex = self._references.get(
-            "command_regex", r"(in|at|about|[a-zA-Z]*ref)")
-
         self.references = collections.OrderedDict()
         view = self.window.active_view()
-
-        for region in view.find_by_selector(DEFINITE_REF_SELECTOR):
+        for region in view.find_by_selector(scopes.REFERENCE):
             raw = view.substr(region).strip()
             if raw.startswith("{") and raw.endswith("}"):
                 self.references[raw[1:-1]] = region
             else:
-                self.references[raw] = region
-
-        for region in view.find_by_selector(POSSIBLE_REF_SELECTOR):
-            raw = view.substr(region).strip()
-            ref_match = re.match(r"\A" + regex + r"\Z", raw)
-
-            cmd = utilities.last_command_in_view(
-                view, end=region.end()+1, skip=utilities.skip_args
-            )
-            if cmd:
-                cmd_match = \
-                    re.match(r"\A" + cmd_regex + r"\Z", view.substr(cmd)[1:])
-            else:
-                cmd_match = False
-
-            if ref_match and not cmd_match:
                 self.references[raw] = region
 
     def is_visible(self):
@@ -107,17 +74,19 @@ class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
             return
 
         end = view.sel()[0].end()
-        cmd = utilities.last_command_in_view(
-            view, end=end, skip=utilities.skip_args
+        cmd = scopes.last_block_in_region(
+            view,
+            end - 500,
+            end,
+            scopes.CONTROL_WORD,
+            skip=scopes.SKIP_ARGS_AND_SPACES
         )
         if not cmd:
             return
 
-        name = view.substr(cmd)[1:]
+        name = view.substr(sublime.Region(*cmd))[1:]
         if (
-            view.match_selector(
-                end-1, "punctuation.section.brackets.begin.context"
-            ) and
+            view.match_selector(end - 1, scopes.BEGIN_BRACKET) and
             re.match(r"\A" + self.current_cmd_regex + r"\Z", name)
         ):
             view.window().run_command("simple_context_reference_selector")

@@ -4,6 +4,3 @@ desktop.ini
 
 # don't track package metadata
 package-metadata.json
-
-# we hide some preliminary bits and bobs
-preliminary/

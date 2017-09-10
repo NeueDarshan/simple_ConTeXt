@@ -10,32 +10,6 @@
   },
   "setting_groups":
   {
-    "run_once":
-    {
-      "builder":
-      {
-        "program":
-        {
-          "options":
-          {
-            "runs": 1
-          }
-        }
-      }
-    },
-    "run_to_completion":
-    {
-      "builder":
-      {
-        "program":
-        {
-          "options":
-          {
-            "runs": 9
-          }
-        }
-      }
-    },
     "verbose_builder_off":
     {
       "builder":
@@ -84,22 +58,15 @@
         "name": "context",
         "options":
         {
-          "arrange": false,
-          "auto_pdf": false,
           "autogenerate": true,
-          "interface": "en",
-          "jit": false,
-          "jiton": false,
-          "timing": false,
+          "jit": true,
           "mode":
           {
             "draft": false,
             "final": false
           },
           "paranoid": false,
-          "runs": 9,
           "synctex": 1,
-          "timing": false
         }
       },
       "options":
@@ -116,15 +83,17 @@
     "pop_ups":
     {
       "line_break": 60,
-      "on": true,
+      "methods":
+      {
+        "on_hover": true,
+        "auto_complete": true
+      },
       "show_copy_pop_up": false,
       "show_source_files": false
     },
     "references":
     {
-      "command_regex": "(in|at|about|[a-zA-Z]*ref)",
-      "on": true,
-      "reference_regex": "[a-zA-Z_\\.\\-\\:]*[_\\.\\-\\:]+[a-zA-Z_\\.\\-\\:]*"
+      "on": true
     }
   }
 }

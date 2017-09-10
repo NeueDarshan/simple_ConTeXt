@@ -8,6 +8,8 @@ Completions suggest possible commands whenever you start typing a command. For e
 
 ![example completions][completion]
 
+To get these to show up automatically, see the [general](#general) section.
+
 They are unique to each `path`, i.e. to each ConTeXt installation configured in the settings. As such, they take a little while to set themselves up in the background the first time. Some details as to the progress of this set-up work is reported in the console.
 
 ## Pop-Ups
@@ -68,9 +70,7 @@ The `.sublime-settings` file for simple_ConTeXt is structured in this way:
         "name": "...",
         "options": {"...": "..."}
       },
-      "options": {
-        "...": "..."
-      }
+      "options": {"...": "..."}
     },
     "path": "...",
     "pop_ups": {"...": "..."},
@@ -110,7 +110,7 @@ That is, add an entry to the `auto_complete_triggers` key like this, for ConTeXt
 
 The usual way to edit Sublime Text settings is of course to [manually edit](#via-json) the JSON file they live in. For convenience's sake simple_ConTeXt provides another option. In the command palette (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) there is command `simple_ConTeXt: View/change the settings`. Selecting this brings up a menu for perusing the currently active settings and changing them. Most settings can bechanged quickly and easily in this fashion. For more control, defer to manually editing the JSON.
 
-There is one special provision made for this approach, called `setting_groups`. They can only be edited manually, in the JSON. Here is an example setup from the default settings:
+There is one special provision made for this approach, called `setting_groups`. They can only be edited manually, in the JSON. Here is an example setup:
 
 ```JSON
 {
@@ -137,7 +137,9 @@ There is one special provision made for this approach, called `setting_groups`. 
 }
 ```
 
-This says that there should be two groups, `run_once` and `run_to_completion`. On applying the first (which is done by opening the GUI, navigating to `setting_groups/run_once`, and selecting it), the option `settings/builder/program/options/runs` should be set to 1. This setting will eventually get passed as a command-line option `--runs=1` to the `context` program on running the ConTeXt builder, which sets the maximum number of runs to 1.
+This says that there should be two groups, `run_once` and `run_to_completion`. On applying the first (which is done by opening the GUI, navigating to `setting_groups/run_once`, and selecting it), the option `settings/builder/program/options/runs` should be set to 1.
+
+This setting will eventually get passed as a command-line option `--runs=1` to the `context` program on running the ConTeXt builder, which sets the maximum number of runs to 1. What this does on the TeX level is, limit the number of TeX runs to 1, so no multi-pass data will be taken advantage of. For example, references and tables of contents and such will not work as expected (unless there have already been previous runs to generate said data).
 
 ## Via JSON
 

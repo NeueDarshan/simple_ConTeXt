@@ -4,6 +4,8 @@ import time
 import html
 from . import build_base
 from .scripts import utilities
+from .scripts import html_css
+from .scripts import files
 from .scripts import log
 
 
@@ -54,7 +56,7 @@ class SimpleContextBuildContextCommand(
 
     def load_css(self):
         if not hasattr(self, "style"):
-            self.style = utilities.strip_css_comments(
+            self.style = html_css.strip_css_comments(
                 sublime.load_resource(
                     "Packages/simple_ConTeXt/css/phantom_error.css"
                 )
@@ -161,7 +163,7 @@ class SimpleContextBuildContextCommand(
             self.add_to_output("stopping", message, gap=True)
 
     def handle_checker(self, text):
-        result = utilities.parse_checker_output(text)
+        result = files.parse_checker(text)
         passed = result.get("passed")
         head = result.get("head")
         main = result.get("main")

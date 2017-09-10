@@ -58,12 +58,9 @@
     a := not (true or false);
   %   ^^                      keyword.operator.metapost
   %      ^^^                  keyword.operator.word.metapost
-  %          ^                punctuation.section.parens.begin.metapost
   %           ^^^^            constant.language.metapost
   %                ^^         keyword.operator.word.metapost
   %                   ^^^^^   constant.language.metapost
-  %                        ^  punctuation.section.parens.end.metapost
-  %          ^^^^^^^^^^^^^^^  meta.parens.metapost
   %                         ^ punctuation.terminator.semicolon.metapost
 
   b := 0.5[blue, red];

@@ -39,8 +39,8 @@ class InterfaceSaver:
         self.load_commands(modules=modules)
 
     def load_definitions(self):
-        # to handle resolves pointing to objects not yet defined, we simply do
-        # two passes
+        #D To handle resolves pointing to objects not yet defined, we simply do
+        #D two passes.
         self.load_definitions_aux()
         self.load_definitions_aux()
 
@@ -92,7 +92,7 @@ class InterfaceSaver:
                     self.to_load.add(os.path.join(dir_, f))
 
         if modules:
-            # use \type{t-rst.xml} as a smoking gun
+            #D Let's use \type{t-rst.xml} as a smoking gun.
             alt = utilities.locate(self.path, "t-rst.xml", flags=self.flags)
             if alt:
                 dir_ = os.path.split(alt)[0]

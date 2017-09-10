@@ -11,9 +11,9 @@ file_extensions:
 scope: text.tex.context
 first_line_match: '^(%.*?macros\s*=\s*mk([vx]i|i[vx])|\s*\\(starttext|usemodule|setup[[:alpha:]]+))\b'
 variables:
-  key: '[[:alpha:][:digit:]\.\-\+_:;\!\?<>&/]'
+  key: '[[:alpha:][:digit:].\-\+_:;!\?<>&/]'
   setup: '{{key}}'
-  verb: '[-+~|!:/.*`^]'
+  verb: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
   mathvar: '[[:alpha:]]'
 
 contexts:
@@ -45,6 +45,8 @@ contexts:
     - include: math.display.dollars
     - include: math.display.control
 
+  #D It is \emph{strongly} advised not to use double dollar display||style math
+  #D \type{$$ ... $$} in \ConTeXt. But, it is not impossible, so we support it.
   math.display.dollars:
     - match: '\$\$'
       scope: punctuation.section.dollars.begin.context
@@ -57,10 +59,10 @@ contexts:
 
   math.display.control:
     - match: '(\\)startformula\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [math.display.formula.main/, generic.list*/]
     - match: '(\\)start(display|d)math\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: meta.environment.math.block.context
         - include: generic.pop-if-stop-match-two/
@@ -99,7 +101,7 @@ contexts:
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: math.group.inline*/
     - match: '(\\)start(imath|mathmode)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: meta.environment.math.inline.context
         - include: generic.pop-if-stop-match-two/
@@ -140,6 +142,8 @@ contexts:
     - include: TeX.parameter
     - include: templates
 
+  #D Should we try to handle unicode entities? As an experiment we handle some
+  #D common examples.
   math.number:
     - match: '∞'
       scope: constant.numeric.context
@@ -147,6 +151,7 @@ contexts:
       captures: {0: constant.other.math.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
     - include: generic.real
 
+  #D We can make this list more complete as time goes on.
   math.operator:
     - match: '([\+\-\*/=\^_<>])'
       scope: keyword.operator.math.context
@@ -157,7 +162,7 @@ contexts:
 
   math.variable:
     - match: '{{mathvar}}'
-      scope: string.quoted.other.math.context # variable.other.math.tex.context
+      scope: string.quoted.other.math.context  # variable.other.math.tex.context
 
   math.group.inner:
     - match: '\{'
@@ -184,7 +189,7 @@ contexts:
 
   math.control.intertext:
     - match: '(\\)start(intertext)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push:
         - include: generic.pop-if-stop-match-two/
         - include: main
@@ -193,13 +198,17 @@ contexts:
       push: generic.group*/
 
   math.control.start-stop:
-    - match: '(\\)start[[:alpha:]]+'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)start[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: generic.lists-or-groups*/
+    - match: '(\\)stop[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
 
+  #D Understanding math vs.\ text in \type{\startcases ... \stopcases} is a
+  #D nice feature to have. As the code is fairly clean so far, let's keep it.
   math.control.cases:
     - match: '(\\)startcases\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [math.control.cases.main/, generic.list*/]
 
   math.control.cases.main/:
@@ -238,26 +247,32 @@ contexts:
       captures: {0: entity.name.other.alignment.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       set: generic.list.adjacent*/
 
+  #D We try to keep track of catcode regimes in embedded \Lua. Of course, there
+  #D is only so much we can do without implementing \TeX\ within Sublime Text,
+  #D but for typical use cases we can do very well.
   Lua:
     - include: Lua.block
     - include: Lua.inline
 
   Lua.block:
     - match: '(\\)start(luacode)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_include_prototype: false
         - meta_content_scope: source.lua.embedded.context meta.other.major.lua
         - include: generic.pop-if-stop-match-two/
         - include: Lua.main
     - match: '(\\)start(lua)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: source.lua.embedded.context meta.other.minor.lua
         - include: generic.pop-if-stop-match-two/
         - include: Lua.main
 
   Lua.inline:
+    - match: '(\\)(late|direct)lua\b'
+      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      push: [Lua.group.inline*/, generic.integer*/]
     - match: '(\\)(luacode|(late|direct)lua(code)?|cld(command|context|loadfile|processfile)|ctx(command|directcommand|directlua|latecommand|latelua|lua|report|sprint|write))\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: Lua.group.inline*/
@@ -314,40 +329,40 @@ contexts:
 
   MetaFun.block:
     - match: '(\\)startuniqueMPgraphic\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.uniqueMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startuniqueMPpagegraphic\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.uniqueMPpagegraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startuseMPgraphic\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.useMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startusableMPgraphic\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.usableMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startreusableMPgraphic\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.reusableMPgraphic.main/, generic.group*/, generic.group*/]
     - match: '(\\)startstaticMPfigure\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.staticMPfigure.main/, generic.group*/]
     - match: '(\\)startMPcode\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPcode.main/, generic.group*/]
     - match: '(\\)startMPdefinitions\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPdefinitions.main/, generic.group*/]
     - match: '(\\)startMPinclusions\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPinclusions.main/, generic.group*/, generic.list*/]
     - match: '(\\)startMPpage\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPpage.main/, generic.list*/]
     - match: '(\\)startMPextensions\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPextensions.main/, generic.group*/]
     - match: '(\\)startMPpositiongraphic\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [MetaFun.block.MPpositiongraphic.main/, generic.group*/, generic.group*/]
 
   MetaFun.block.MPcode.core/:
@@ -474,6 +489,9 @@ contexts:
     - match: '\b(inject)\b'
       scope: support.function.lua
 
+  #D Should we bother trying to handle \type{\unprotect ... \protect}, or
+  #D \type{\startasciimode ... \stopasciimode}? As an experiment, we shall try
+  #D to do so.
   ConTeXt:
     - include: ConTeXt.protect
     - include: ConTeXt.asciimode
@@ -489,12 +507,14 @@ contexts:
 
   ConTeXt.protect:
     - match: '(\\)unprotect\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: meta.other.unprotect.context
         - match: '(?=\\protect\b)'
           pop: true
         - include: ConTeXt.protect.main
+    - match: '(\\)protect\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
 
   ConTeXt.protect.main:
     - include: math
@@ -507,10 +527,24 @@ contexts:
     - include: ConTeXt.protect.group
 
   ConTeXt.protect.control:
+    - match: '(\\)start([[:alpha:]_@!?]*[_@!?]+[[:alpha:]_@!?]*)'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+      push: ConTeXt.protect.lists-or-groups*/
+    - match: '(\\)stop([[:alpha:]_@!?]*[_@!?]+[[:alpha:]_@!?]*)'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
     - match: '(\\)([[:alpha:]_@!?]*[_@!?]+[[:alpha:]_@!?]*)'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.protect.lists-or-groups*/
     - include: control.word.without-generic
+    - match: '(\\)start[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+      push: ConTeXt.protect.lists-or-groups*/
+    - match: '(\\)stop[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)(b|begin)group\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)(e|end)group\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
     - match: '(\\)[[:alpha:]]+'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.protect.lists-or-groups*/
@@ -556,7 +590,7 @@ contexts:
 
   ConTeXt.asciimode:
     - match: '(\\)start(asciimode)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_include_prototype: false
         - meta_content_scope: meta.other.asciimode.context
@@ -627,6 +661,15 @@ contexts:
 
   ConTeXt.asciimode.control:
     - include: control.word.without-generic
+    - match: '(\\)start[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+      push: ConTeXt.asciimode.lists-or-groups*/
+    - match: '(\\)stop[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)(b|begin)group\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)(e|end)group\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
     - match: '(\\)[[:alpha:]]+'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: ConTeXt.asciimode.lists-or-groups*/
@@ -634,17 +677,19 @@ contexts:
 
   ConTeXt.comments:
     - match: '(\\)start(hiding)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push:
         - meta_content_scope: comment.block.hiding.context
         - include: generic.pop-if-stop-match-two/
 
+  #D For the moment, we only bother to handle so called \quote{texdefinition}s.
+  #D Could also handle \type{\define} and \type{\defineexpandable} \periods.
   ConTeXt.defs:
     - include: ConTeXt.defs.texdefinition
 
   ConTeXt.defs.texdefinition:
     - match: '(\\)starttexdefinition\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.defs.texdefinition.name*/, ConTeXt.defs.texdefinition.do-n-tuple*/, ConTeXt.defs.texdefinition.expanded*/, ConTeXt.defs.texdefinition.unexpanded*/, ConTeXt.defs.texdefinition.global*/, ConTeXt.defs.texdefinition.spaces*/]
 
   ConTeXt.defs.texdefinition.spaces*/:
@@ -731,7 +776,7 @@ contexts:
   ConTeXt.list.files.core/:
     - meta_scope: meta.brackets.context
     - include: generic.gobble-whitespace
-    - match: '{{setup}}+'
+    - match: '[{{setup}} ]+'
       scope: meta.other.file.name.context
     - include: generic.pop-at-list-end/
     - include: main
@@ -746,7 +791,7 @@ contexts:
   ConTeXt.group.files.core/:
     - meta_scope: meta.braces.context
     - include: generic.gobble-whitespace
-    - match: '{{setup}}+'
+    - match: '[{{setup}} ]+'
       scope: meta.other.file.name.context
     - include: generic.pop-at-group-end/
     - include: main
@@ -911,25 +956,25 @@ contexts:
 
   ConTeXt.headings.block:
     - match: '(\\)startpart\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.part*/]
     - match: '(\\)start(chapter|title)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.chapter*/]
     - match: '(\\)start(section|subject)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.section*/]
     - match: '(\\)startsub(section|subject)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.subsection*/]
     - match: '(\\)startsubsub(section|subject)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.sub2section*/]
     - match: '(\\)startsubsubsub(section|subject)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.sub3section*/]
     - match: '(\\)startsubsubsubsub(section|subject)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.headings.sub4section*/]
 
   ConTeXt.list.headings.part*/:
@@ -1041,12 +1086,15 @@ contexts:
     - include: ConTeXt.angles.verbatim/
     - include: ConTeXt.delim.verbatim/
 
+  #D Allowing \type{\type} with arbitrary delimiters can cause more trouble
+  #D than it solves \periods. We settle, at the moment, for a compromise: we
+  #D handle this usage, but only for \emph{some} delimiters.
   ConTeXt.delim.verbatim/:
     - match: '({{verb}})'
       scope: punctuation.section.delim.begin.context
       set:
         - meta_include_prototype: false
-        - meta_content_scope: markup.raw.block.context # markup.raw.inline.context
+        - meta_content_scope: markup.raw.block.context  # markup.raw.inline.context
         - match: '\1'
           scope: punctuation.section.delim.end.context
           pop: true
@@ -1061,7 +1109,7 @@ contexts:
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.verbatim.main/:
     - meta_include_prototype: false
-    - meta_content_scope: markup.raw.block.context # markup.raw.inline.context
+    - meta_content_scope: markup.raw.block.context  # markup.raw.inline.context
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
     - include: ConTeXt.group.verbatim.dummy
@@ -1072,7 +1120,7 @@ contexts:
       set: ConTeXt.angles.verbatim.main/
   ConTeXt.angles.verbatim.main/:
     - meta_include_prototype: false
-    - meta_content_scope: markup.raw.block.context # markup.raw.inline.context
+    - meta_content_scope: markup.raw.block.context  # markup.raw.inline.context
     - meta_scope: meta.angles.context
     - match: '>>'
       scope: punctuation.section.angles.end.context
@@ -1086,24 +1134,26 @@ contexts:
           pop: true
         - include: ConTeXt.group.verbatim.dummy
 
+  #D Should we embed the appropriate syntaxes inside \type{TEX}, \type{LUA},
+  #D \type{XML}, etc.? Perhaps; it might be more trouble than it's worth.
   ConTeXt.verbatim.block:
     - match: '(\\)start(typing)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.main/, generic.list*/]
     - match: '(\\)startTEX\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.TEX.main/, generic.list*/]
     - match: '(\\)startLUA\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.LUA.main/, generic.list*/]
     - match: '(\\)startXML\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.XML.main/, generic.list*/]
     - match: '(\\)startPARSEDXML\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.PARSEDXML.main/, generic.list*/]
     - match: '(\\)startMP\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.block.MP.main/, generic.list*/]
   ConTeXt.verbatim.block.main/:
     - match: ''
@@ -1150,7 +1200,7 @@ contexts:
 
   ConTeXt.verbatim.buffer:
     - match: '(\\)startbuffer\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.verbatim.buffer.main/, generic.list*/]
   ConTeXt.verbatim.buffer.main/:
     - match: ''
@@ -1164,6 +1214,7 @@ contexts:
     - include: ConTeXt.quotes.inline
     - include: ConTeXt.quotes.block
 
+  #D Any other \quote{quote}s defined by default that we've missed?
   ConTeXt.quotes.inline:
     - match: '(\\)(quote|blockquote|quotation)\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
@@ -1183,13 +1234,13 @@ contexts:
 
   ConTeXt.quotes.block:
     - match: '(\\)startblockquote\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.quotes.blockquote.main/, generic.list*/, generic.list*/]
     - match: '(\\)startquote\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.quotes.quote.main/, generic.list*/]
     - match: '(\\)startquotation\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [ConTeXt.quotes.quotation.main/, generic.list*/, generic.list*/]
 
   ConTeXt.quotes.blockquote.main/:
@@ -1384,7 +1435,7 @@ contexts:
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.font.typewriter.main/:
     - meta_scope: meta.braces.context
-    - meta_content_scope: markup.raw.block.context # markup.raw.typewriter.context
+    - meta_content_scope: markup.raw.block.context  # markup.raw.typewriter.context
     - include: ConTeXt.group.font.common
   ConTeXt.group.font.typewriter-bold*/:
     - match: '\{'
@@ -1393,7 +1444,7 @@ contexts:
     - include: generic.pop-if-no-nearby-group/
   ConTeXt.group.font.typewriter-bold.main/:
     - meta_scope: meta.braces.context
-    - meta_content_scope: markup.bold.boldface.context markup.raw.block.context # markup.raw.typewriter.context
+    - meta_content_scope: markup.bold.boldface.context markup.raw.block.context  # markup.raw.typewriter.context
     - include: ConTeXt.group.font.common
 
   ConTeXt.group.font.common:
@@ -1402,7 +1453,7 @@ contexts:
 
   ConTeXt.tables:
     - match: '(\\)start(table|tabulate)\b'
-      captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
       push: [generic.list*/, ConTeXt.list.template-or-name*/]
     - match: '(\\)(REF|ReFormat)\b'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
@@ -1413,7 +1464,7 @@ contexts:
 
   ConTeXt.list.template-or-name/:
     - match: '\['
-      scope: punctuation.section.brackets.begin.context
+      scope: meta.brackets.context punctuation.section.brackets.begin.context
       set: ConTeXt.list.template-or-name.main/
   ConTeXt.list.template-or-name*/:
     - include: ConTeXt.list.template-or-name/
@@ -1444,7 +1495,7 @@ contexts:
     - match: '[wp]'
       scope: entity.name.other.table.context
       push: generic.parens.with-dimensions*/
-    - match: '([nNqQ])([[:digit:]]+)\.([[:digit:]]+) ' # space is deliberate
+    - match: '([nNqQ])([[:digit:]]+)\.([[:digit:]]+) '  # the space is important
       captures: {1: entity.name.other.table.context, 2: constant.numeric.integer.context, 3: constant.numeric.integer.context}
     - match: '([mM]|[BISRT])'
       scope: string.unquoted.table.context
@@ -1483,16 +1534,33 @@ contexts:
       push: generic.list.adjacent*/
 
   control.word.conditional:
-    - match: '(\\)(doif[[:alpha:]]*else|(if|[[:alpha:]]*doif(else)?)[[:alpha:]]*|[[:alpha:]]+(true|false)|or|else|fi)\b'
+    - match: '(\\)(doif[[:alpha:]]*else|(if|[[:alpha:]]*doif(else)?)[[:alpha:]]*|[[:alpha:]]*(true|false)|or|else|fi)\b'
       captures: {0: keyword.control.conditional.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: generic.lists-or-groups*/
 
   control.word.generic:
+    - match: '(\\)start[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+      push: generic.lists-or-groups*/
+    - match: '(\\)stop[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)(b|begin)group\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)(e|end)group\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
     - match: '(\\)[[:alpha:]]+'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
       push: generic.lists-or-groups*/
 
   control.word.generic.no-arguments:
+    - match: '(\\)start[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)stop[[:alpha:]]*'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)(b|begin)group\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.start.context, 1: punctuation.definition.backslash.context}
+    - match: '(\\)(e|end)group\b'
+      captures: {0: support.function.general.context meta.other.control.word.context meta.other.structure.stop.context, 1: punctuation.definition.backslash.context}
     - match: '(\\)[[:alpha:]]+'
       captures: {0: support.function.general.context meta.other.control.word.context, 1: punctuation.definition.backslash.context}
 
@@ -1682,6 +1750,14 @@ contexts:
   generic.integer:
     - match: '[[:digit:]]+'
       scope: constant.numeric.context
+  generic.integer/:
+    - match: '[[:digit:]]+'
+      scope: constant.numeric.context
+      pop: true
+  generic.integer*/:
+    - include: generic.gobble-whitespace
+    - include: generic.integer/
+    - include: generic.pop/
   generic.real:
     - match: '([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)'
       scope: constant.numeric.context
