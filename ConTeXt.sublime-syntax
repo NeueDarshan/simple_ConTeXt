@@ -1448,6 +1448,14 @@ contexts:
         0: meta.control-word.context meta.structure.start.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups*/
+    - match: '(\\)define[[:alpha:]]*'
+      captures:
+        0: meta.control-word.context support.function.context
+        1: punctuation.definition.backslash.context
+      push: [
+        argument.lists-or-groups*/,
+        argument.list.definition*/,
+      ]
     - include: control.word.generic.common
     - match: '(\\)[[:alpha:]]+'
       captures:
@@ -1460,6 +1468,14 @@ contexts:
         0: meta.control-word.context meta.structure.start.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.adjacent*/
+    - match: '(\\)define[[:alpha:]]*'
+      captures:
+        0: meta.control-word.context support.function.context
+        1: punctuation.definition.backslash.context
+      push: [
+        argument.lists-or-groups.adjacent*/,
+        argument.list.definition.adjacent*/,
+      ]
     - include: control.word.generic.common
     - match: '(\\)[[:alpha:]]+'
       captures:
@@ -1477,6 +1493,14 @@ contexts:
         0: meta.control-word.context meta.structure.start.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.math.adjacent*/
+  # - match: '(\\)define[[:alpha:]]*'
+  #   captures:
+  #     0: meta.control-word.context support.function.context
+  #     1: punctuation.definition.backslash.context
+  #   push: [
+  #     argument.lists-or-groups.math.adjacent*/,
+  #     argument.list.definition.adjacent*/,
+  #   ]
     - include: control.word.generic.common
     - match: '(\\)[[:alpha:]]+'
       captures:
@@ -2047,6 +2071,19 @@ contexts:
   argument.list.this-file.main/:
     - meta_scope: meta.brackets.context meta.environment.argument.context
     - meta_content_scope: meta.this-file-name.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  argument.list.definition/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.definition.main/
+  argument.list.definition*/:
+    - include: argument.list.definition/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.definition.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: entity.name.function.other.context
     - include: generic.pop-at-list-end/
     - include: main
 

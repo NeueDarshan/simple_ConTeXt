@@ -2,30 +2,31 @@
 ---
 name: MetaPost
 file_extensions:
-  - mf
   - mp
   - mpii
   - mpiv
 scope: source.metapost
-
 variables:
   tokens: '(?:[[:alpha:]_]+|[\:\<\=\>\|]+|[\#\&\@\$]+|[\/\*\\]+|[\+\-]+|[\!\?]+|[\^\~]+|[\{\}]+|\[+|\]+)'
+
 
 contexts:
   prototype:
     - include: comment
 
+
   main:
-    - include: constants
-    - include: terminator
-    - include: types
-    - include: keywords
-    - include: internal-parameters
-    - include: operators
-    - include: functions
-    - include: definitions
-    - include: environments
+    - include: constant
+    - include: punctuation
+    - include: type
+    - include: keyword
+    - include: internal-parameter
+    - include: operator
+    - include: function
+    - include: definition
+    - include: environment
     - include: TeX
+
 
   comment:
     - match: '(%).*$\n?'
@@ -33,12 +34,13 @@ contexts:
         '0': comment.line.percentage.metapost
         '1': punctuation.definition.comment.metapost
 
-  constants:
-    - include: constants.numeric
-    - include: constants.string
-    - include: constants.language
 
-  constants.numeric:
+  constant:
+    - include: constant.numeric
+    - include: constant.string
+    - include: constant.language
+
+  constant.numeric:
     - match: '([[:digit:]]*\.[[:digit:]]+)((bp|cc|cm|dd|pc|in|mm|pt)\b)?'
       captures:
         '1': constant.numeric.metapost
@@ -50,11 +52,11 @@ contexts:
     - match: '\b(bp|cc|cm|dd|pc|in|mm|pt)\b'
       scope: keyword.other.unit.metapost
 
-  constants.string:
+  constant.string:
     - match: '"'
       scope: punctuation.definition.string.begin.metapost
-      push: constants.string.main/
-  constants.string.main/:
+      push: constant.string.main/
+  constant.string.main/:
     - meta_include_prototype: false
     - meta_scope: string.quoted.double.metapost
     - match: '"'
@@ -68,245 +70,201 @@ contexts:
     - match: '%(j|[[:digit:]]?[cymdHM]|)'
       scope: constant.other.placeholder.metapost
 
-  constants.language:
+  constant.language:
     - match: '\b(beveled|black|blue|butt|ditto|down|EOF|eps(ilon)?|evenly|false|green|(full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(pen|picture)|blankpicture|origin|pen(circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|white|withdots)\b'
       scope: constant.language.metapost
 
-  terminator:
+
+  punctuation:
     - match: ';'
       scope: punctuation.terminator.semicolon.metapost
+    - match: ':'
+      scope: punctuation.separator.colon.metapost
 
-  types:
+
+  type:
     - match: '\b(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)\b'
       scope: storage.type.metapost
     - match: '\b(save|interim|newinternal)\b'
       scope: storage.modifier.metapost
 
-  keywords:
-    - include: keywords.control
 
-  keywords.control:
+  keyword:
+    - include: keyword.control
+
+  keyword.control:
     - match: '\b(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|exit(if|unless)|endfor)\b'
-      scope: keyword.control.metapost
+      scope: keyword.control.conditional.metapost
 
-  internal-parameters:
+
+  internal-parameter:
     - match: '\b(ah(angle|length)|background|bboxmargin|charcode|current(pen|picture)|cuttings|day|default(colormodel|font|pen|scale)|dotlabeldiam|extra_(begin|end)fig|hour|hppp|jobname|join_radius|labeloffset|line(cap|join)|minute|miterlimit|month|mpprocset|number(precision|system)|output(filename|format|formatoptions|template)|pausing|prologues|restoreclipcolor|showstopping|time|tolerance|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)\b'
-      scope: constant.language.metapost
+      scope: variable.language.metapost
 
-  operators:
-    - include: operators.word
-    - include: operators.symbol
 
-  operators.word:
+  operator:
+    - include: operator.word
+    - include: operator.symbol
+
+  operator.word:
     - match: '\b(and|atleast|controls|curl|cut(after|before|ends)|dashed|div|dotprod|glyph|infont|intersection(point|times)|mod|not|of|or|off|on|reflectedabout|rotated(around)?|scaled|shifted|slanted|softjoin|tension|to|transformed|with((cmyk|grey|out|rgb)?color|gray|greyscale|(pre|post)script|pen)|[xyz]scaled)\b'
       scope: keyword.operator.word.metapost
 
-  operators.symbol:
+  operator.symbol:
     - match: '[\.\-]{2,3}'
       scope: keyword.operator.metapost
     - match: '([:<>]?=|<>|\+\-\+|[*+]{2}|[<>&*/+-])'
       scope: keyword.operator.metapost
 
-  functions:
-    - include: functions.dashpattern
-    - include: functions.input
-    - include: functions.labels
-    - include: functions.generic
-    - include: functions.parameter
 
-  functions.dashpattern:
+  function:
+    - include: function.dashpattern
+    - include: function.input
+    - include: function.labels
+    - include: function.generic
+    - include: function.parameter
+
+  function.dashpattern:
     - match: '\bdashpattern\b'
-      scope: support.function.general.metapost
-      push: delims.parens.with-on-off*/
+      scope: support.function.metapost
+    # push: argument.parens.with-on-off*/
 
-  functions.input:
-    - match: '\b(input)\b'
-      scope: support.function.general.metapost
-      push:
-        - match: '"'
-          pop: punctuation.definition.string.begin.metapost
-          set: constants.string.main/
-        - match: '({{tokens}}*)'
-          set: meta.other.file.metapost
-          pop: true
-        - include: generic.gobble-whitespace
-        - include: generic.pop/
+  function.input:
+    - match: '\binput\b'
+      scope: support.function.metapost
+      push: argument.string-or-file-name*/
 
-  functions.labels:
+  function.labels:
     - match: '\b(thelabel|(dot)?labels?)(\.(top|[ul]?(lft|rt)|bot))?\b'
-      scope: support.function.general.metapost
+      scope: support.function.metapost
 
-  functions.generic:
+  function.generic:
     - match: '\b(abs|addto|also|angle|arclength|arctime|ASCII|byte|batchmode|bbox|(sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|decimal|decr|dir|direction(point|time)?|doublepath|draw(arrow|dblarrow|dot|fill|options)?|err(help|message)|(scroll|(error|non)stop)mode|filenametemplate|fill(draw)?|filled|flex|floor|fontmap(file|line)|fontsize|hex|hide|image|incr|interpath|inverse|known|length|loggingall|makepath|makepen|max|message|mexp|min|mlog|(normal|uniform)deviate|oct|odd|pickup|penoffset|point|(post|pre)control|readfrom|reverse|round|scantokens|setbounds|shipout|show(dependencies|token|variable)?|special|sqrt|str|stroked|sub(path|string)|superellipse|tensepath|textual|turningnumber|(top|bot|lft|rt)|tracing(all|none)|un(draw(dot|fill)?|fill(draw)?)|unitvector|unknown|[ul][rl]corner|write|(black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)\b'
-      scope: support.function.general.metapost
-    - match: \b(cycle|whatever)\b
-      scope: support.function.general.metapost
+      scope: support.function.metapost
+    - match: '\b(cycle|whatever)\b'
+      scope: support.function.metapost
 
-  functions.parameter:
+  function.parameter:
     - match: '@\#'
       scope: variable.parameter.suffix.metapost
 
-  definitions:
-    - include: definitions.let
-    - include: definitions.binarydef
-    - include: definitions.def
-    - include: definitions.end
 
-  definitions.end:
+  definition:
+    - include: definition.def
+    - include: definition.binarydef
+    - include: definition.end
+    - include: definition.let
+
+  definition.end:
     - match: '\benddef\b'
-      scope: storage.type.function.general.metapost
-
-  definitions.let:
-    - match: '\blet\b'
-      scope: storage.type.function.general.metapost
-      push: [
-        definitions.name*/,
-        definitions.equals*/,
-        definitions.let.name*/,
-      ]
-
-  definitions.let.name*/:
-    - match: '{{tokens}}'
-      scope: entity.name.function.metapost meta.other.function.let.metapost
-      pop: true
-    - include: generic.gobble-whitespace
-    - include: generic.pop/
-
-  definitions.binarydef:
-    - match: '\b(primary|secondary|tertiary)def\b'
-      scope: storage.type.function.general.metapost
-      push: [
-        definitions.equals*/,
-        definitions.var*/,
-        definitions.def.name*/,
-        definitions.var*/,
-      ]
-
-  definitions.def:
-    - match: '\b(var)?def\b'
-      scope: storage.type.function.general.metapost
-      push: [
-        definitions.args*/,
-        definitions.def.name*/,
-      ]
-
-  definitions.def.name*/:
-    - match: '{{tokens}}'
-      scope: entity.name.function.metapost meta.other.function.def.metapost
-      pop: true
-    - include: generic.gobble-whitespace
-    - include: generic.pop/
-
-  definitions.name*/:
-    - match: '{{tokens}}'
-      scope: entity.name.function.metapost
-      pop: true
-    - include: generic.gobble-whitespace
-    - include: generic.pop/
-
-  definitions.equals*/:
-    - match: '='
-      scope: keyword.operator.assignment.metapost
-      pop: true
-    - include: generic.gobble-whitespace
-    - include: generic.pop/
-
-  definitions.var*/:
-    - match: '{{tokens}}'
-      scope: variable.parameter.metapost
-      pop: true
-    - include: generic.gobble-whitespace
-    - include: generic.pop/
-
-  definitions.args*/:
-    - match: '(?==)'
-      pop: true
-    - match: '\('
-      scope: punctuation.section.parens.begin.metapost
-    - match: '\)'
-      scope: punctuation.section.parens.end.metapost
-    - match: '\b(expr|suffix|of|text|primary)\b'
       scope: storage.type.metapost
-    - match: '{{tokens}}'
-      scope: variable.parameter.metapost
-    - include: main
 
-  environments:
-    - include: environments.fig
-    - include: environments.group
+  definition.let:
+    - match: '\blet\b'
+      scope: storage.type.metapost
+      push: [
+        argument.name*/,
+        argument.equals*/,
+        argument.name.definition*/,
+      ]
 
-  environments.fig:
+  definition.binarydef:
+    - match: '\b(primary|secondary|tertiary)def\b'
+      scope: storage.type.metapost
+      push: [
+        argument.equals*/,
+        argument.name.variable*/,
+        argument.name.definition*/,
+        argument.name.variable*/,
+      ]
+
+
+  environment:
+    - include: environment.fig
+    - include: environment.group
+
+  environment.fig:
     - match: '\bbeginfig\b'
-      scope: entity.name.other.fig.metapost
-      push: delims.parens.with-number*/
+      scope: support.function.metapost
+    # push: argument.parens.figure.with-number*/
 
-  environments.group:
+  environment.group:
     - match: '\b(begin|end)group\b'
-      scope: entity.name.other.group.metapost
+      scope: support.function.metapost
     - match: '\bendfig\b'
-      scope: entity.name.other.fig.metapost
-    - match: '\b(end|bye)\b'
-      scope: entity.name.other.end.metapost
+      scope: support.function.metapost
+    - match: '\b(end(input)?|bye)\b'
+      scope: support.function.metapost
+
 
   TeX:
     - match: '\b(b|verbatim)tex\b'
-      scope: entity.name.other.tex.metapost
-      push:
-        - meta_content_scope: text.tex.embedded.metapost
-        - match: '(?=\betex\b)'
-          pop: true
-        - include: scope:text.tex#main
+      scope: support.function.metapost
+      push: TeX.main/
     - match: '\betex\b'
-      scope: entity.name.other.tex.metapost
+      scope: support.function.metapost
+  TeX.main/:
+    - meta_content_scope: text.tex.embedded.metapost
+    - match: '(?=\betex\b)'
+      pop: true
+    - include: scope:text.tex#main
 
-  delims.parens:
-    - match: '\('
-      scope: punctuation.section.parens.begin.metapost
-      push: delims.parens.main/
-  delims.parens*/:
-    - match: '\('
-      scope: punctuation.section.parens.begin.metapost
-      set: delims.parens.main/
-    - include: generic.pop-if-no-parens/
-  delims.parens.main/:
-    - meta_scope: meta.parens.metapost
-    - include: generic.pop-at-parens-end/
-    - include: main
 
-  delims.parens.with-number*/:
-    - match: '\('
-      scope: punctuation.section.parens.begin.metapost
-      set:
-        - meta_scope: meta.parens.metapost
-        - include: generic.pop-at-parens-end/
-        - match: '[[:digit:]]+'
-          scope: constant.numeric.metapost meta.other.numeric.fig.metapost
-        - include: main
-    - include: generic.pop-if-no-parens/
+  argument.string-or-file-name/:
+    - include: generic.gobble-whitespace
+    - match: '"'
+      scope: punctuation.definition.string.begin.metapost
+      set: constant.string.main/
+    - match: ''
+      set: argument.name.file/
+  argument.string-or-file-name*/:
+    - include: argument.string-or-file-name/
+    - include: generic.gobble-whitespace-or-pop/
 
-  delims.parens.with-on-off*/:
-    - match: '\('
-      scope: punctuation.section.parens.begin.metapost
-      set:
-        - meta_scope: meta.parens.metapost
-        - include: generic.pop-at-parens-end/
-        - match: '\b(on|off)\b'
-          scope: keyword.operator.word.metapost
-        - include: main
-    - include: generic.pop-if-no-parens/
-
-  generic.pop-if-no-parens/:
-    - match: '(?=[^\(])'
+  argument.equals/:
+    - match: '='
+      scope: keyword.operator.assignment.metapost
+      pop: true
+  argument.name/:
+    - match: '{{tokens}}'
+      pop: true
+  argument.name.file/:
+    - include: argument.name/
+  argument.name.definition/:
+    - match: '{{tokens}}'
+      scope: entity.name.function.metapost
+      pop: true
+  argument.name.variable/:
+    - match: '{{tokens}}'
+      scope: variable.parameter.metapost
       pop: true
 
-  generic.pop-at-parens-end/:
-    - match: '\)'
-      scope: punctuation.section.parens.end.metapost
-      pop: true
+  argument.equals*/:
+    - include: argument.equals/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name*/:
+    - include: argument.name/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name.file*/:
+    - include: argument.name.file/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name.definition*/:
+    - include: argument.name.definition/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name.variable*/:
+    - include: argument.name.variable/
+    - include: generic.gobble-whitespace-or-pop/
+
 
   generic.gobble-whitespace:
     - match: '\s+'
+  generic.gobble-whitespace-or-pop-if-blank-line/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.gobble-whitespace
+  generic.gobble-whitespace-or-pop/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop/
 
-  generic.pop/:
-    - match: ''
+  generic.pop-if-blank-line/:
+    - match: '(?=^\s*$\n?)'
       pop: true
