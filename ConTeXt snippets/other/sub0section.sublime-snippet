@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\startsection[title=${1:name}]
+
+$0
+
+\stopsection
+]]></content>
+  <tabTrigger>sec</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>start/stop section</description>
+</snippet>

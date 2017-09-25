@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+\startplace${1:float}[title=${2:name}, location=$3]
+  $0
+\stopplace$1
+]]></content>
+  <tabTrigger>place</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>place float</description>
+</snippet>

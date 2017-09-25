@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\startenvironment ${1:${TM_FILENAME/^(.*)\.([^.]+)$/\1/}}
+
+$0
+
+\stopenvironment
+]]></content>
+  <tabTrigger>environment</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>environment</description>
+</snippet>

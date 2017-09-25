@@ -10,5 +10,10 @@
   {
     "caption": "simple_ConTeXt: Open TeX/ConTeXt documentation",
     "command": "simple_context_find_docs"
-  },
+  }
+  // in the future (?):
+  // {
+  //   "caption": "simple_ConTeXt: Format ConTeXt file",
+  //   "command": "simple_context_format"
+  // }
 ]

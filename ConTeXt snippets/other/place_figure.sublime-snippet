@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+\startplacefigure[title=${1:name}, location=$2]
+  $0
+\stopplacefigure
+]]></content>
+  <tabTrigger>pfig</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>place figure</description>
+</snippet>

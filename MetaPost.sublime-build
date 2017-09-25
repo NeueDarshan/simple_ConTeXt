@@ -8,14 +8,17 @@
   "variants":
   [
     {
-      "target": "simple_context_build_metapost",
-      "name": "Use version shipped with ConTeXt",
-      "method": "mpost"
+      "name": "Use 'mpost' in settings",
+      "target": "simple_context_build_metapost"
     },
     {
+      "name": "Use 'context' in settings (MetaFun)",
       "target": "simple_context_build_metapost",
-      "name": "Use ConTeXt directly",
-      "method": "context"
+      "cmd":
+      [
+        "context",
+        "$file"
+      ]
     }
   ]
 }

@@ -4,7 +4,7 @@
   <key>name</key>
   <string>Lua comments</string>
   <key>scope</key>
-  <string>text.tex.context meta.other.major.lua</string>
+  <string>text.tex.context meta.environment.lua.major.context</string>
   <key>settings</key>
   <dict>
     <key>shellVariables</key>

@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+\startitem
+  $0
+\stopitem
+]]></content>
+  <tabTrigger>item</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>start/stop item</description>
+</snippet>

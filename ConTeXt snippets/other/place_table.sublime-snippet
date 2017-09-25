@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+\startplacetable[title=${1:name}, location=$2]
+  $0
+\stopplacetable
+]]></content>
+  <tabTrigger>ptab</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>place table</description>
+</snippet>

@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+\startitemize
+  $0
+\stopitemize
+]]></content>
+  <tabTrigger>items</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>start/stop itemize</description>
+</snippet>

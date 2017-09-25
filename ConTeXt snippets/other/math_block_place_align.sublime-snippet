@@ -1,0 +1,14 @@
+<snippet>
+  <content><![CDATA[
+\startplaceformula[${1:placement options}]
+  \startformula
+    \startalign[${2:alignment options}]
+      $0
+    \stopalign
+  \stopformula
+\stopplaceformula
+]]></content>
+  <tabTrigger>pforma</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>place display math aligned</description>
+</snippet>

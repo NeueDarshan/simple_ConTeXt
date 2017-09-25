@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\startdocument[${1:options}]
+
+$0
+
+\stopdocument
+]]></content>
+  <tabTrigger>doc</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>start/stop document</description>
+</snippet>

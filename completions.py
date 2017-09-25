@@ -21,6 +21,7 @@ TEMPLATE = """
 <html>
     <style>
         {style}
+        {extra_style}
     </style>
     <body id="simple-ConTeXt-pop-up">
         <div class="outer">
@@ -135,14 +136,7 @@ class SimpleContextMacroSignatureEventListener(
             self.state = RUNNING
             thread = threading.Thread(target=self.reload_settings_aux)
             thread.start()
-
-    def load_css(self):
-        if not hasattr(self, "style"):
-            self.style = html_css.strip_css_comments(
-                sublime.load_resource(
-                    "Packages/simple_ConTeXt/css/pop_up.css"
-                )
-            )
+        self.size = self.view.size()
 
     def reload_settings_aux(self):
         self.interface_path = os.path.join(
@@ -155,6 +149,14 @@ class SimpleContextMacroSignatureEventListener(
             self.save_interface()
         self.load_commands()
         self.state = IDLE
+
+    def load_css(self):
+        if not hasattr(self, "style"):
+            self.style = html_css.strip_css_comments(
+                sublime.load_resource(
+                    "Packages/simple_ConTeXt/css/pop_up.css"
+                )
+            )
 
     def save_interface(self):
         saver = save.InterfaceSaver(flags=self.flags)
@@ -187,7 +189,7 @@ class SimpleContextMacroSignatureEventListener(
         self.html_cache[self.name] = LruCache(max_size=500)
 
     def is_visible(self):
-        return utilities.is_context(self.view)
+        return scopes.is_context(self.view)
 
     def on_query_completions(self, prefix, locations):
         self.reload_settings()
@@ -196,7 +198,7 @@ class SimpleContextMacroSignatureEventListener(
 
         for location in locations:
             if scopes.enclosing_block(
-                self.view, location - 1, scopes.FULL_CONTROL_SEQ
+                self.view, location - 1, self.size, scopes.FULL_CONTROL_SEQ
             ):
                 return [
                     ["\\" + ctrl, ""]
@@ -214,7 +216,9 @@ class SimpleContextMacroSignatureEventListener(
             self.view.hide_popup()
             return
 
-        ctrl = scopes.enclosing_block(self.view, point, scopes.CONTROL_WORD)
+        ctrl = scopes.enclosing_block(
+            self.view, point, self.size, scopes.CONTROL_WORD
+        )
         if not ctrl:
             return
         name = self.view.substr(sublime.Region(*ctrl))
@@ -223,9 +227,8 @@ class SimpleContextMacroSignatureEventListener(
                 self.get_popup_text(name),
                 location=ctrl[0],
                 max_width=600,
-                max_height=250,
                 flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY,
-                on_navigate=self.on_navigate,
+                on_navigate=self.on_navigate
             )
         else:
             self.view.hide_popup()
@@ -242,7 +245,7 @@ class SimpleContextMacroSignatureEventListener(
 
         for sel in self.view.sel():
             ctrl = scopes.left_enclosing_block(
-                self.view, sel.end() - 1, scopes.CONTROL_SEQ
+                self.view, sel.end() - 1, self.size, scopes.CONTROL_SEQ
             )
             if not ctrl:
                 self.view.hide_popup()
@@ -253,31 +256,36 @@ class SimpleContextMacroSignatureEventListener(
                     self.get_popup_text(name),
                     location=ctrl[0],
                     max_width=600,
-                    max_height=250,
                     flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
-                    on_navigate=self.on_navigate,
+                    on_navigate=self.on_navigate
                 )
             else:
                 self.view.hide_popup()
 
     def get_popup_text(self, name):
-        new_pop_up_state = json.dumps(self._pop_ups, sort_keys=True)
         if not hasattr(self, "prev_pop_up_state"):
             self.prev_pop_up_state = ""
+        new_pop_up_state = json.dumps(self._pop_ups, sort_keys=True)
         if not (
-            name in self.html_cache[self.name] and
-            new_pop_up_state == self.prev_pop_up_state
+            new_pop_up_state == self.prev_pop_up_state and
+            name in self.html_cache[self.name]
         ):
             cmd = self.cache[self.name][name]
-            self.pop_up, extra = self.loader.load(
+            self.html_cache[self.name][name] = self.loader.load(
                 name, cmd, protect_space=True, **self._pop_ups
             )
-            self.html_cache[self.name][name] = self.pop_up
-            if extra:
-                self.html_cache[self.name][name] += "<br><br>" + extra
         self.prev_pop_up_state = new_pop_up_state
+        self.popup_name = name
+        #D One day we can try parse the current colour scheme and, based off
+        #D this, style elements of the pop||up. That's gonna be complicated.
+        #D For the moment, let's just make control sequences blue||ish (as they
+        #D are in many colour schemes) and call it a day.
         return TEMPLATE.format(
-            body=self.html_cache[self.name][name], style=self.style
+            body="<br><br>".join(
+                s for s in self.html_cache[self.name][name] if s
+            ),
+            style=self.style,
+            extra_style="div.popup c { color: var(--bluish); }"
         )
 
     def on_navigate(self, href):
@@ -285,10 +293,14 @@ class SimpleContextMacroSignatureEventListener(
         if type_ == "file":
             self.on_navigate_file(content)
         elif type_ == "copy":
+            text = "<br><br>".join(
+                s for s in self.html_cache[self.name][self.popup_name][:-1]
+                if s
+            )
             if content == "html":
-                self.copy(html_css.pretty_print(self.pop_up))
+                self.copy(html_css.pretty_print(text))
             elif content == "plain":
-                self.copy(html_css.raw_print(self.pop_up))
+                self.copy(html_css.raw_print(text))
 
     def on_navigate_file(self, name):
         main = files.locate(self._path, name, flags=self.flags)

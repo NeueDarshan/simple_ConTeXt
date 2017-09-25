@@ -1,8 +1,0 @@
-<snippet>
-  <content><![CDATA[
-<?lua $1 ?>$0
-]]></content>
-  <tabTrigger>template</tabTrigger>
-  <scope>text.tex.context - source</scope>
-  <description>lua template</description>
-</snippet>

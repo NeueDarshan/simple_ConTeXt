@@ -8,24 +8,27 @@
  *D   \NC <n> \NC number \NC\NR
  *D   \NC <k> \NC key, as in \type{key=value} \NC\NR
  *D   \NC <e> \NC equals, as in \type{key=value} \NC\NR
- *D   \NC <v> \NC value, as in \type{key=value} \NC\NR
  *D   \NC <t> \NC type name, e.g.\ \type{CSNAME} means a control sequence
  *D               name \NC\NR
  *D   \NC <d> \NC default value \NC\NR
  *D   \NC <i> \NC inherits, styles the bit of text \quote{inherits:} in
  *D               \type{inherits: \...} \NC\NR
+ *D   \NC <s> \NC scoping, a.k.a.\ delimiters, i.e.\ the brackets \type{[]} in
+ *D               \type{[...]}; also covers braces \type{{...}} and any other
+ *D               delimiters \NC\NR
  *D \stoptabulate
  *D
- *D I believe that, of these tags, only \type{<i>} is recognized by miniHTML.
- *D So, for \type{<i>}, bear in mind that it will have the default behaviour of
- *D italicizing things. Better would be to use another letter, but I actually
- *D like this style for \quote{inherits} so it's staying for now.
+ *D With the \type{<i>} tag, bear in mind that it will have the default
+ *D behaviour of italicizing things. Better would be to modify the code and use
+ *D another letter.
+ *D
+ *D We would like to be able to, for example, style the \type{<c>} tag in the
+ *D same way as the current colour scheme styles the scope
+ *D \type{support.function}. Unfortunately, there doesn't seem to be any easy
+ *D way to do this \quote{out||of||the||box} in Sublime Text. Hmm.
  */
 
 html {
-    --control-sequence: var(--bluish);
-    --default-value: var(--control-sequence);
-    --integer: var(--purplish);
     --inner-background-color: var(--background);
     --outer-background-color:
         color(var(--foreground) blend(var(--background) 20%));
@@ -36,6 +39,10 @@ html, body {
     padding: 0rem;
 }
 
+/*D We use this approach with an \quote{outer} and an \quote{inner} element to
+ *D get a border around the pop||ups. There is probably a better way, but I'm
+ *D not that fluent in CSS.
+ */
 div.outer {
     display: block;
     background-color: var(--outer-background-color);
@@ -50,21 +57,10 @@ div.inner {
     margin: 0.1rem;
 }
 
-div.popup c {
-    color: var(--control-sequence);
-}
-
-/*
- * div.popup n {
- *     color: var(--integer);
- * }
- *
- */
-
 div.popup o {
     font-style: italic;
 }
 
 div.popup d {
-    color: var(--default-value);
+    text-decoration: underline;
 }

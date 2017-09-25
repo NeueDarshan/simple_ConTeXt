@@ -1,0 +1,17 @@
+<snippet>
+  <content><![CDATA[
+\bTABLE[${1:options}]$0
+  \bTR
+    \bTC a \eTC
+    \bTC b \eTC
+  \eTR
+  \bTR
+    \bTC c \eTC
+    \bTC d \eTC
+  \eTR
+\eTABLE
+]]></content>
+  <tabTrigger>ntab</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>natural table</description>
+</snippet>

@@ -4,7 +4,7 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>text.tex.context entity.name.headings.chapter</string>
+  <string>text.tex.context entity.name.section.chapter</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>

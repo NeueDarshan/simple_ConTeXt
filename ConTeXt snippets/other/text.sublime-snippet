@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\starttext
+
+$0
+
+\stoptext
+]]></content>
+  <tabTrigger>text</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>start/stop text</description>
+</snippet>

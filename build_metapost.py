@@ -1,6 +1,9 @@
+import sublime
 import time
+import os
 from . import build_base
-from .scripts import utilities
+from .scripts import scopes
+from .scripts import files
 
 
 class SimpleContextBuildMetapostCommand(
@@ -21,11 +24,14 @@ class SimpleContextBuildMetapostCommand(
         self._base_reload_settings()
 
     def is_visible(self):
-        return utilities.is_metapost(self._base_view)
+        return scopes.is_metapost(self._base_view)
 
     def run(self, *args, **kwargs):
-        self.command = [kwargs.get("method", "mpost"), self._base_input]
         self.reload_settings()
+        if "cmd" in kwargs:
+            self.command = kwargs.get("cmd")
+        else:
+            self.command = ["mpost", self._base_input]
         self._base_run(
             [{"command": self.command, "handler": self.handler_main}],
             begin=self.handler_begin,
@@ -36,6 +42,11 @@ class SimpleContextBuildMetapostCommand(
         self.start_time = time.time()
         self.add_to_output("starting", "running MetaPost...")
 
+    def handler_main(self, text):
+        # for i, line in enumerate(text.split("\n")):
+        #     self.add_to_output("result", line, gap=not i)
+        pass
+
     def handler_end(self, return_codes):
         stop_time = time.time() - self.start_time
         message = ", ".join([
@@ -44,10 +55,28 @@ class SimpleContextBuildMetapostCommand(
         ])
         self.add_to_output("stopping", message, gap=True)
 
-    def handler_main(self, text):
-        pass
-        # for i, line in enumerate(text.split("\n")):
-        #     self.add_to_output("result", line, gap=not i)
-
     def add_to_output(self, category, text, gap=False):
         self._base_add_to_output(category, text, gap=gap)
+
+
+#D Why doesn't this work?
+class SimpleContextBuildMetapostAltCommand(
+    build_base.SimpleContextBuildBaseCommand
+):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reload_settings()
+
+    def reload_settings(self):
+        self._base_reload_settings()
+
+    def is_visible(self):
+        return scopes.is_metapost(self._base_view)
+
+    def run(self, *args, **kwargs):
+        self.reload_settings()
+        env = os.environ.copy()
+        if self._path and os.path.exists(self._path):
+            env["PATH"] = files.add_path(env["PATH"], self._path)
+        kwargs["env"] = env
+        sublime.run_command("exec", kwargs)

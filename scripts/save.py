@@ -4,6 +4,7 @@ import html
 import copy
 import os
 from . import utilities
+from . import files
 
 
 NAMESPACE = {"cd": "http://www.pragma-ade.com/commands"}
@@ -45,7 +46,7 @@ class InterfaceSaver:
         self.load_definitions_aux()
 
     def load_definitions_aux(self):
-        f = utilities.locate(
+        f = files.locate(
             self.path, "i-common-definitions.xml", flags=self.flags
         )
         if not f:
@@ -66,7 +67,7 @@ class InterfaceSaver:
                 raise Exception(msg)
 
     def load_definitions_aux_i(self, filename):
-        f = utilities.locate(self.path, filename, flags=self.flags)
+        f = files.locate(self.path, filename, flags=self.flags)
         if not f:
             raise Exception('unable to locate "{}"'.format(filename))
         try:
@@ -84,7 +85,7 @@ class InterfaceSaver:
     def load_commands(self, modules=True):
         self.to_load = set()
 
-        main = utilities.locate(self.path, "i-context.xml", flags=self.flags)
+        main = files.locate(self.path, "i-context.xml", flags=self.flags)
         if main:
             dir_ = os.path.split(main)[0]
             for f in os.listdir(dir_):
@@ -93,7 +94,7 @@ class InterfaceSaver:
 
         if modules:
             #D Let's use \type{t-rst.xml} as a smoking gun.
-            alt = utilities.locate(self.path, "t-rst.xml", flags=self.flags)
+            alt = files.locate(self.path, "t-rst.xml", flags=self.flags)
             if alt:
                 dir_ = os.path.split(alt)[0]
                 for f in os.listdir(dir_):
@@ -226,6 +227,7 @@ class InterfaceSaver:
             "content": self.do_content,
             "csname": self.do_csname,
             "delimiter": self.do_delimiter,
+            #D This one is an addition of ours for convenience.
             "dotsdelimiter": self.do_dots_delimiter,
             "index": self.do_index,
             "keywords": self.do_keywords,
@@ -377,8 +379,9 @@ class InterfaceSaver:
     def render(self, mode, attrib):
         is_list = self.is_true(attrib.get("list"))
         delims = self.delimiters.get(attrib.get("delimiters", "default"), "[]")
+        punct = "<s>{}</s>"
         if delims:
-            start, stop = delims[0], delims[1]
+            start, stop = punct.format(delims[0]), punct.format(delims[1])
         else:
             start, stop = "", ""
 
@@ -386,7 +389,7 @@ class InterfaceSaver:
             middle = "...,..." if is_list else "..."
             return start + middle + stop
         elif mode == "assignments":
-            middle = "..,..=..,.." if is_list else "..=.."
+            middle = "..,..<e>=</e>..,.." if is_list else "..<e>=</e>.."
             return start + middle + stop
         elif mode == "triplet":
             middle = "..,x:y:z,.." if is_list else "x:y:z"
@@ -396,17 +399,22 @@ class InterfaceSaver:
         elif mode == "template":
             return start + "|...|" + stop
         elif mode == "angles":
-            return self.escape("<<...>>")
+            return "<s>{}</s>...<s>{}</s>".format(
+                self.escape("<<"), self.escape(">>")
+            )
         elif mode == "apply":
-            middle = "..,..=>..,.." if is_list else "..=>.."
-            return start + self.escape(middle) + stop
+            if is_list:
+                middle = "..,..<e>{}</e>..,..".format(self.escape("=>"))
+            else:
+                middle = "..<e>{}</e>..".format(self.escape("=>"))
+            return start + middle + stop
         elif mode == "position":
             middle = "...,..." if is_list else "..."
-            return "(" + middle + ")"
+            return punct.format("(") + middle + punct.format(")")
         elif mode == "csname":
             return "<c>\\...</c>"
         elif mode in ["content", "text"]:
-            return "{...}"
+            return "<s>{</s>...<s>}</s>"
         elif mode == "delimiter":
             return "<c>\\{}</c>".format(self.escape(attrib["name"]))
         else:
@@ -592,4 +600,5 @@ class InterfaceSaver:
             yield [syntax["con"][i] for i in sorted(ind)]
 
     def encode(self):
+        self.simplify()
         return self.cmds

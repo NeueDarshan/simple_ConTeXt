@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+\startluacode
+  $0
+\stopluacode
+]]></content>
+  <tabTrigger>lua</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>block lua</description>
+</snippet>

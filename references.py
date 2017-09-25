@@ -1,7 +1,6 @@
 import sublime
 import sublime_plugin
 import collections
-import re
 from .scripts import utilities
 from .scripts import scopes
 
@@ -30,7 +29,7 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
                 self.references[raw] = region
 
     def is_visible(self):
-        return utilities.is_context(self.window.active_view())
+        return scopes.is_context(self.window.active_view())
 
     def run(self):
         self.reload_settings()
@@ -64,29 +63,19 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
 class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
     def reload_settings(self):
         utilities.reload_settings(self)
-        self.current_cmd_regex = self._references.get(
-            "command_regex", r"(in|at|about|[a-zA-Z]*ref)"
-        )
 
     def on_modified_async(self, view):
         self.reload_settings()
         if not self._references.get("on"):
             return
 
-        end = view.sel()[0].end()
-        cmd = scopes.last_block_in_region(
-            view,
-            end - 500,
-            end,
-            scopes.CONTROL_WORD,
-            skip=scopes.SKIP_ARGS_AND_SPACES
-        )
-        if not cmd:
-            return
-
-        name = view.substr(sublime.Region(*cmd))[1:]
-        if (
-            view.match_selector(end - 1, scopes.BEGIN_BRACKET) and
-            re.match(r"\A" + self.current_cmd_regex + r"\Z", name)
-        ):
-            view.window().run_command("simple_context_reference_selector")
+        # end = view.sel()[0].end()
+        # cmd = scopes.last_block_in_region(
+        #     view,
+        #     end - 500,
+        #     end,
+        #     scopes.CONTROL_WORD,
+        #     skip=scopes.SKIP_ARGS_AND_SPACES
+        # )
+        # if cmd and view.match_selector(end - 1, scopes.BEGIN_BRACKET):
+        #     view.window().run_command("simple_context_reference_selector")

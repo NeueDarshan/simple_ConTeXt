@@ -1,0 +1,25 @@
+{
+  "cmd":
+  [
+    "texlua",
+    "$file"
+  ],
+  "file_regex": "^(?:lua:)?[\t ](...*?):([0-9]*):?([0-9]*)",
+  "selector": "source.lua",
+  "variants":
+  [
+    {
+      "name": "Use 'luatex' in settings",
+      "target": "simple_context_build_lua"
+    },
+    {
+      "name": "Use 'luatex' in settings (raw)",
+      "target": "simple_context_build_lua",
+      "output": "raw"
+    }
+    // {
+    //   "name": "Use 'luatex' in settings (wrapper)",
+    //   "target": "simple_context_build_lua_alt",
+    // }
+  ]
+}

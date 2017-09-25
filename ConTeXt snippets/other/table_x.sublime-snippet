@@ -1,0 +1,17 @@
+<snippet>
+  <content><![CDATA[
+\startxtable[${1:options}]$0
+  \startxrow
+    \startxcell a \stopxcell
+    \startxcell b \stopxcell
+  \stopxrow
+  \startxrow
+    \startxcell c \stopxcell
+    \startxcell d \stopxcell
+  \stopxrow
+\stopxtable
+]]></content>
+  <tabTrigger>xtab</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>xtable</description>
+</snippet>

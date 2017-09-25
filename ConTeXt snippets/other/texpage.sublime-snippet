@@ -1,0 +1,10 @@
+<snippet>
+  <content><![CDATA[
+\startTEXpage
+  $0
+\stopTEXpage
+]]></content>
+  <tabTrigger>page</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>start/stop TEX page</description>
+</snippet>

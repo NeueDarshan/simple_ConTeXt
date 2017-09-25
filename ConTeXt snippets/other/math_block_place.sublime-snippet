@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\startplaceformula[${1:options}]
+  \startformula
+    $0
+  \stopformula
+\stopplaceformula
+]]></content>
+  <tabTrigger>pform</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>place display math</description>
+</snippet>

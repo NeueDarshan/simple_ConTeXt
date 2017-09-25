@@ -82,15 +82,23 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             value = here[key]
             self.location.append(key)
 
-            if isinstance(value, bool):
-                deep_dict.set_safe(
-                    self.encoded_settings, self.location, not value
-                )
-                self.location.pop()
-                self.save()
-                self.run_panel()
+            #D This is nice for quickly toggling booleans. On the other hand,
+            #D as a consequence of having this behaviour, you can't change a
+            #D \type{bool} into e.g.\ a string. Oh, another thing to watch out
+            #D for when playing around with this code: in Python, \type{bool}s
+            #D are a subclass of \type{int}. For example,
+            #D \type{isinstance(True, int)} returns \type{True}.
 
-            elif isinstance(value, (int, float, str)) or value is None:
+            # if isinstance(value, bool):
+            #     deep_dict.set_safe(
+            #         self.encoded_settings, self.location, not value
+            #     )
+            #     self.location.pop()
+            #     self.save()
+            #     self.run_panel()
+            # elif isinstance(value, (int, float, str)) or value is None:
+
+            if isinstance(value, (int, float, str, bool)) or value is None:
                 self.window.show_input_panel(
                     "new value",
                     str(value),
@@ -191,7 +199,7 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             ]
         if len(self.location) > 0:
             return [
-                ["..", "↑ in /{}/, go back".format("/".join(self.location))]
+                ["..", "in /{}/".format("/".join(self.location))]
             ] + main
         else:
             return main
@@ -219,18 +227,12 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
             self._PDF_viewers,
             choice=self._settings.get("PDF", {}).get("viewer")
         )
-        # self.encoded_settings.setdefault("pop_ups", {})["method"] = Choice(
-        #     ["auto_complete", "on_hover", "disabled"],
-        #     choice=self._settings.get("pop_ups", {}).get("method", "on_hover")
-        # )
         self.encoded_settings["setting_groups"] = self._setting_groups
 
     def decode_settings(self):
         self._settings["path"] = self.encoded_settings["path"].get()
         self._settings.get("PDF", {})["viewer"] = \
             self.encoded_settings["PDF"]["viewer"].get()
-        # self._settings.get("pop_ups", {})["method"] = \
-        #     self.encoded_settings["pop_ups"]["method"].get()
         del self._settings["setting_groups"]
 
 

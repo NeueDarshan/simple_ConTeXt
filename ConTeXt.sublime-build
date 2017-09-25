@@ -1,15 +1,23 @@
 {
-  "target": "simple_context_build_context",
+  "cmd":
+  [
+    "context",
+    "$file"
+  ],
   "selector": "text.tex.context",
-  "do_check": "maybe",
-  "do_main": true,
-
   "variants":
   [
     {
-      "name": "Syntax Check",
+      "name": "Use 'context' in settings",
+      "target": "simple_context_build_context",
+      "do_check": "maybe",
+      "do_main": true
+    },
+    {
+      "name": "Use 'context' in settings (check)",
+      "target": "simple_context_build_context",
       "do_check": true,
-      "do_main": false,
+      "do_main": false
     }
   ]
 }

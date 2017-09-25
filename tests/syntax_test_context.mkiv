@@ -5,15 +5,15 @@
 % ===== GENERAL CONTROL SEQUENCES =====
   \starttext
 % ^          punctuation.definition.backslash.context
-% ^^^^^^^^^^ support.function.general.context meta.other.control.word.context
+% ^^^^^^^^^^ meta.control-word.context support.function.context
 
   \controlwordwitharguments [a=b] {...} [c=d] {...}
 % ^                                                 punctuation.definition.backslash.context
-% ^^^^^^^^^^^^^^^^^^^^^^^^^                         support.function.general.context meta.other.control.word.context
+% ^^^^^^^^^^^^^^^^^^^^^^^^^                         meta.control-word.context support.function.context
 %                           ^                       punctuation.section.brackets.begin.context
 %                            ^                      variable.parameter.context
 %                             ^                     keyword.operator.assignment.context
-%                              ^                    meta.other.value.context
+%                              ^                    meta.value.context
 %                               ^                   punctuation.section.brackets.end.context
 %                           ^^^^^                   meta.brackets.context
 %                                 ^                 punctuation.section.braces.begin.context
@@ -22,7 +22,7 @@
 %                                       ^           punctuation.section.brackets.begin.context
 %                                        ^          variable.parameter.context
 %                                         ^         keyword.operator.assignment.context
-%                                          ^        meta.other.value.context
+%                                          ^        meta.value.context
 %                                           ^       punctuation.section.brackets.end.context
 %                                       ^^^^^       meta.brackets.context
 %                                             ^     punctuation.section.braces.begin.context
@@ -31,13 +31,13 @@
 
   \%
 % ^  punctuation.definition.backslash.context
-% ^^ constant.other.symbol.context - meta.other.control.word.context
+% ^^ constant.character.escape.context - meta.control-word.context
 
   \argumentsafterzerolinebreaks[k=v]
 %                              ^     punctuation.section.brackets.begin.context
 %                               ^    variable.parameter.context
 %                                ^   keyword.operator.assignment.context
-%                                 ^  meta.other.value.context
+%                                 ^  meta.value.context
 %                                  ^ punctuation.section.brackets.end.context
 %                              ^^^^^ meta.brackets.context
 
@@ -46,7 +46,7 @@
 %   ^     punctuation.section.brackets.begin.context
 %    ^    variable.parameter.context
 %     ^   keyword.operator.assignment.context
-%      ^  meta.other.value.context
+%      ^  meta.value.context
 %       ^ punctuation.section.brackets.end.context
 %   ^^^^^ meta.brackets.context
 
@@ -56,7 +56,7 @@
 %   ^     - punctuation.section.brackets.begin.context
 %    ^    - variable.parameter.context
 %     ^   - keyword.operator.assignment.context
-%      ^  - meta.other.value.context
+%      ^  - meta.value.context
 %       ^ - punctuation.section.brackets.end.context
 %   ^^^^^ - meta.brackets.context
 
@@ -67,19 +67,19 @@
 %        ^                            keyword.operator.assignment.context
 %         ^^                          constant.numeric.context
 %           ^^                        keyword.other.unit.context
-%         ^^^^                        meta.other.value.context
+%         ^^^^                        meta.value.context
 %             ^                       punctuation.separator.comma.context
 %               ^^^^                  variable.parameter.context
 %                   ^                 keyword.operator.assignment.context
 %                    ^                constant.numeric.context
 %                     ^^              keyword.other.unit.context
-%                    ^^^              meta.other.value.context
+%                    ^^^              meta.value.context
 %                       ^             punctuation.separator.comma.context
 %                         ^^^^        variable.parameter.context
 %                             ^       keyword.operator.assignment.context
 %                              ^^^    constant.numeric.context
 %                                 ^^  keyword.other.unit.context
-%                              ^^^^^  meta.other.value.context
+%                              ^^^^^  meta.value.context
 %                                   ^ punctuation.section.brackets.end.context
 %   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.brackets.context
 
@@ -139,18 +139,18 @@
 % ===== MATH =====
 Adding $1$, \m{2} and \math[three]{3} gives \mathematics{6}.
 %      ^                                                   punctuation.section.dollar.begin.context
-%       ^                                                  meta.environment.math.inline.context
+%       ^                                                  meta.environment.math.context
 %        ^                                                 punctuation.section.dollar.end.context
-%              ^                                           meta.environment.math.inline.context
-%                                  ^                       meta.environment.math.inline.context
-%                                                        ^ meta.environment.math.inline.context
+%              ^                                           meta.environment.math.context
+%                                  ^                       meta.environment.math.context
+%                                                        ^ meta.environment.math.context
 
 \startformula[packed] 123456 = xyz \stopformula
-%            ^^^^^^^^              meta.brackets.context - meta.environment.math.block.context
+%            ^^^^^^^^              meta.brackets.context - meta.environment.math.context
 %                     ^^^^^^       constant.numeric.context
-%                            ^     keyword.operator.math.context
-%                              ^^^ string.quoted.other.math.context
-%                     ^^^^^^^^^^^^ meta.environment.math.block.context
+%                            ^     keyword.operator.context
+%                              ^^^ variable.other.context
+%                     ^^^^^^^^^^^^ meta.environment.math.context
 
 
 % ===== VERBATIM =====
@@ -158,15 +158,15 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 %                     ^                                        punctuation.section.brackets.begin.context
 %                      ^^^^^^                                  variable.parameter.context
 %                            ^                                 keyword.operator.assignment.context
-%                             ^^^                              meta.other.value.context
+%                             ^^^                              meta.value.context
 %                                ^                             punctuation.section.brackets.end.context
 %                     ^^^^^^^^^^^^                             meta.brackets.context
 %                                 ^                            punctuation.section.braces.begin.context
-%                                  ^                           markup.raw.block.context - comment.line.percentage.context
+%                                  ^                           markup.raw.inline.context - comment.line.percentage.context
 %                                   ^                          punctuation.section.braces.end.context
 %                                 ^^^                          meta.braces.context
 %                                                       ^^     punctuation.section.angles.begin.context
-%                                                         ^^   markup.raw.block.context - variable.parameter.context
+%                                                         ^^   markup.raw.inline.context - variable.parameter.context
 %                                                           ^^ punctuation.section.angles.end.context
 %                                                       ^^^^^^ meta.angles.context
 
@@ -185,7 +185,7 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 \startbuffer
   ... \type{#1} % \anundefinedcontrolsequence
   and \type{%}  % invalid argument #0 commented out
-  % <- meta.other.buffer
+  % <- meta.environment.buffer.context
 \stopbuffer
 
 
@@ -221,25 +221,25 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
   %       ^                              punctuation.section.brackets.begin.context
   %        ^^^^^                         variable.parameter.context
   %             ^                        keyword.operator.assignment.context
-  %              ^^^^^^                  meta.other.value.context meta.other.title.context entity.name.headings.part.context
+  %              ^^^^^^                  meta.value.context meta.title.context entity.name.heading.part.context
   %                    ^                 punctuation.separator.comma.context
   %                      ^^^^^^^^^       variable.parameter.context
   %                               ^      keyword.operator.assignment.context
-  %                                ^^^^  meta.other.value.context meta.other.reference.context
+  %                                ^^^^  meta.value.context meta.reference.context
   %                                    ^ punctuation.section.brackets.end.context
   %       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ meta.brackets.context
   \startchapter[title=Chapter One]
-    %                 ^^^^^^^^^^^                                 meta.other.value.context meta.other.title.context entity.name.headings.chapter.context
+    %                 ^^^^^^^^^^^                                 meta.value.context meta.title.context entity.name.heading.chapter.context
     \startsection[title={Section I}]
-      %                 ^^^^^^^^^^^                               meta.other.value.context meta.other.title.context entity.name.headings.section.context
+      %                 ^^^^^^^^^^^                               meta.value.context meta.title.context entity.name.heading.section.context
       \startsubsection[title=Subsection A]
-        %                    ^^^^^^^^^^^^                         meta.other.value.context meta.other.title.context entity.name.headings.subsection.context
+        %                    ^^^^^^^^^^^^                         meta.value.context meta.title.context entity.name.heading.subsection.context
         \startsubsubsection[title=Subsubsection B]
-          %                       ^^^^^^^^^^^^^^^                 meta.other.value.context meta.other.title.context entity.name.headings.subsubsection.context
+          %                       ^^^^^^^^^^^^^^^                 meta.value.context meta.title.context entity.name.heading.sub2section.context
           \startsubsubsubsection[title=Subsubsubsection C]
-            %                          ^^^^^^^^^^^^^^^^^^         meta.other.value.context meta.other.title.context entity.name.headings.subsubsubsection.context
+            %                          ^^^^^^^^^^^^^^^^^^         meta.value.context meta.title.context entity.name.heading.sub3section.context
             \startsubsubsubsubsection[title=Subsubsubsubsection D]
-              %                             ^^^^^^^^^^^^^^^^^^^^^ meta.other.value.context meta.other.title.context entity.name.headings.subsubsubsubsection.context
+              %                             ^^^^^^^^^^^^^^^^^^^^^ meta.value.context meta.title.context entity.name.heading.sub4section.context
               Lorem ipsum.
             \stopsubsubsubsubsection
           \stopsubsubsubsection
@@ -250,17 +250,17 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 \stoppart
 
   \starttitle[title=Title One]
-    %               ^^^^^^^^^                                     meta.other.value.context meta.other.title.context entity.name.headings.chapter.context
+    %               ^^^^^^^^^                                     meta.value.context meta.title.context entity.name.heading.chapter.context
     \startsubject[title=Subject I]
-      %                 ^^^^^^^^^                                 meta.other.value.context meta.other.title.context entity.name.headings.section.context
+      %                 ^^^^^^^^^                                 meta.value.context meta.title.context entity.name.heading.section.context
       \startsubsubject[title=Subsubject A]
-        %                    ^^^^^^^^^^^^                         meta.other.value.context meta.other.title.context entity.name.headings.subsection.context
+        %                    ^^^^^^^^^^^^                         meta.value.context meta.title.context entity.name.heading.subsection.context
         \startsubsubsubject[title=Subsubsubject B]
-          %                       ^^^^^^^^^^^^^^^                 meta.other.value.context meta.other.title.context entity.name.headings.subsubsection.context
+          %                       ^^^^^^^^^^^^^^^                 meta.value.context meta.title.context entity.name.heading.sub2section.context
           \startsubsubsubsubject[title=Subsubsubsubject C]
-            %                          ^^^^^^^^^^^^^^^^^^         meta.other.value.context meta.other.title.context entity.name.headings.subsubsubsection.context
+            %                          ^^^^^^^^^^^^^^^^^^         meta.value.context meta.title.context entity.name.heading.sub3section.context
             \startsubsubsubsubsubject[title=Subsubsubsubsubject D]
-              %                             ^^^^^^^^^^^^^^^^^^^^^ meta.other.value.context meta.other.title.context entity.name.headings.subsubsubsubsection.context
+              %                             ^^^^^^^^^^^^^^^^^^^^^ meta.value.context meta.title.context entity.name.heading.sub4section.context
               Lorem ipsum.
             \stopsubsubsubsubsubject
           \stopsubsubsubsubject
@@ -270,37 +270,37 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
   \stoptitle
 
 \part[ref2]{Part 1}
-  %   ^^^^                                             meta.other.reference.context
+  %   ^^^^                                             meta.reference.context
   %  ^^^^^^                                            meta.brackets.context
-  %         ^^^^^^                                     meta.other.title.context entity.name.headings.part.context
+  %         ^^^^^^                                     meta.title.context entity.name.heading.part.context
 \part{Part 2}
-  %   ^^^^^^                                           meta.other.title.context entity.name.headings.part.context
+  %   ^^^^^^                                           meta.title.context entity.name.heading.part.context
   \chapter{Chapter One}
-    %      ^^^^^^^^^^^                                 meta.other.title.context entity.name.headings.chapter.context
+    %      ^^^^^^^^^^^                                 meta.title.context entity.name.heading.chapter.context
     \section{Section I}
-      %      ^^^^^^^^^                                 meta.other.title.context entity.name.headings.section.context
+      %      ^^^^^^^^^                                 meta.title.context entity.name.heading.section.context
       \subsection{Subsection A}
-        %         ^^^^^^^^^^^^                         meta.other.title.context entity.name.headings.subsection.context
+        %         ^^^^^^^^^^^^                         meta.title.context entity.name.heading.subsection.context
         \subsubsection{Subsubsection B}
-          %            ^^^^^^^^^^^^^^^                 meta.other.title.context entity.name.headings.subsubsection.context
+          %            ^^^^^^^^^^^^^^^                 meta.title.context entity.name.heading.sub2section.context
           \subsubsubsection{Subsubsubsection C}
-            %               ^^^^^^^^^^^^^^^^^^         meta.other.title.context entity.name.headings.subsubsubsection.context
+            %               ^^^^^^^^^^^^^^^^^^         meta.title.context entity.name.heading.sub3section.context
             \subsubsubsubsection{Subsubsubsubsection D}
-              %                  ^^^^^^^^^^^^^^^^^^^^^ meta.other.title.context entity.name.headings.subsubsubsubsection.context
+              %                  ^^^^^^^^^^^^^^^^^^^^^ meta.title.context entity.name.heading.sub4section.context
               Lorem ipsum.
 
   \title{Title One}
-    %    ^^^^^^^^^                                     meta.other.title.context entity.name.headings.chapter.context
+    %    ^^^^^^^^^                                     meta.title.context entity.name.heading.chapter.context
     \subject{Subject I}
-      %      ^^^^^^^^^                                 meta.other.title.context entity.name.headings.section.context
+      %      ^^^^^^^^^                                 meta.title.context entity.name.heading.section.context
       \subsubject{Subsubject A}
-        %         ^^^^^^^^^^^^                         meta.other.title.context entity.name.headings.subsection.context
+        %         ^^^^^^^^^^^^                         meta.title.context entity.name.heading.subsection.context
         \subsubsubject{Subsubsubject B}
-          %            ^^^^^^^^^^^^^^^                 meta.other.title.context entity.name.headings.subsubsection.context
+          %            ^^^^^^^^^^^^^^^                 meta.title.context entity.name.heading.sub2section.context
           \subsubsubsubject{Subsubsubsubject C}
-            %               ^^^^^^^^^^^^^^^^^^         meta.other.title.context entity.name.headings.subsubsubsection.context
+            %               ^^^^^^^^^^^^^^^^^^         meta.title.context entity.name.heading.sub3section.context
             \subsubsubsubsubject{Subsubsubsubsubject D}
-              %                  ^^^^^^^^^^^^^^^^^^^^^ meta.other.title.context entity.name.headings.subsubsubsubsection.context
+              %                  ^^^^^^^^^^^^^^^^^^^^^ meta.title.context entity.name.heading.sub4section.context
               Lorem ipsum.
 
 
@@ -338,4 +338,4 @@ aliquip ex ea commodo consequat.
 \stopquotation
 
 \stoptext
-% <- support.function.general.context
+% <- support.function.context

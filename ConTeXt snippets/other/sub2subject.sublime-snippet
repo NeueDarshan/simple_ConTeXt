@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\startsubsubsubject[title=${1:name}]
+
+$0
+
+\stopsubsubsubject
+]]></content>
+  <tabTrigger>sub3</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>start/stop subsubsubject</description>
+</snippet>

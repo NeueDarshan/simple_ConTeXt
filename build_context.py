@@ -5,6 +5,7 @@ import html
 from . import build_base
 from .scripts import utilities
 from .scripts import html_css
+from .scripts import scopes
 from .scripts import files
 from .scripts import log
 
@@ -25,6 +26,9 @@ PHANTOM_ERROR_TEMPLATE = """
 """
 
 
+#D Hmm \periods if we try to kill the \type{context} process, it doesn't always
+#D work. The relevant code is in \type{build_base.py}, the method
+#D \type{_base_run_stop} of the \type{SimpleContextBuildBaseCommand} class.
 class SimpleContextBuildContextCommand(
     build_base.SimpleContextBuildBaseCommand
 ):
@@ -63,7 +67,7 @@ class SimpleContextBuildContextCommand(
             )
 
     def is_visible(self):
-        return utilities.is_context(self._base_view)
+        return scopes.is_context(self._base_view)
 
     def run(self, *args, **kwargs):
         self.reload_settings()
@@ -126,6 +130,11 @@ class SimpleContextBuildContextCommand(
                 'full command "{}"'.format(" ".join(self.main_command))
             )
 
+    def handle_main(self, text):
+        self.log_data = log.parse(text, decode=False)
+        self.process_errors()
+        self.do_phantoms()
+
     def handler_end(self, return_codes, just_check=False):
         stop_time = time.time() - self.start_time
         if just_check:
@@ -178,11 +187,6 @@ class SimpleContextBuildContextCommand(
                     "check", "snippet > {}".format(line), gap=not i
                 )
             self._base_set_stopping()
-
-    def handle_main(self, text):
-        self.log_data = log.parse(text, decode=False)
-        self.process_errors()
-        self.do_phantoms()
 
     def process_errors(self):
         first = True

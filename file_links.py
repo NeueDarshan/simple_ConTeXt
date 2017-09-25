@@ -34,6 +34,7 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
     def reload_settings(self):
         utilities.reload_settings(self)
         self.load_css()
+        self.size = self.view.size()
         self.flags = \
             files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         try:
@@ -54,17 +55,23 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
             )
 
     def is_visible(self):
-        return utilities.is_context(self.view)
+        return scopes.is_context(self.view)
 
     def on_hover(self, point, hover_zone):
         if hover_zone != sublime.HOVER_TEXT or not self.is_visible():
             return
 
         self.reload_settings()
-        file = scopes.enclosing_block(self.view, point, scopes.FILE_NAME)
+        file = scopes.enclosing_block(
+            self.view, point, self.size, scopes.FILE_NAME
+        )
         if file:
             file_name = self.view.substr(sublime.Region(*file))
-            if not file_name:
+            if file_name:
+                file_name = file_name.strip()
+                if file_name.startswith("{") and file_name.endswith("}"):
+                    file_name = file_name[1:-1]
+            else:
                 return
         else:
             return

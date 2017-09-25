@@ -32,11 +32,11 @@ class InterfaceLoader:
         self.file = '<file><a href="file:{file}">{file}</a></file>'
 
     def load(self, *args, **kwargs):
-        raw_text, raw_extra = self.render(*args, **kwargs)
+        raw = self.render(*args, **kwargs)
         if kwargs.get("protect_space", False):
-            return [html_css.protect_space(s) for s in (raw_text, raw_extra)]
+            return [html_css.protect_space(s) for s in raw]
         else:
-            return raw_text, raw_extra
+            return raw
 
     def render(self, name, list_, **kwargs):
         self.kwargs = kwargs
@@ -66,16 +66,18 @@ class InterfaceLoader:
             parts.append("\n\n".join(sig))
 
         if self.kwargs.get("show_source_files", False) and files:
-            extra = [" ".join(self.file.format(file=k) for k in sorted(files))]
+            source = " ".join(self.file.format(file=k) for k in sorted(files))
         else:
-            extra = []
+            source = ""
         if self.kwargs.get("show_copy_pop_up", False):
-            extra.append(
+            copy = (
                 '<clipboard>copy pop-up text: <a href="copy:plain">(plain)'
                 '</a>, <a href="copy:html">(HTML)</a></clipboard>'
             )
+        else:
+            copy = ""
 
-        return "\n\n".join(parts), "\n\n".join(extra)
+        return ["\n\n".join(parts), source, copy]
 
     def render_aux(self, list_):
         cs = "\\" + self.name
@@ -250,6 +252,6 @@ class InterfaceLoader:
         start = self.guide(num=num)
         if key:
             len_ += len(key) - len(html_css.strip_tags(key))
-            return start + ("{:<%s} <e>=</e>" % len_).format(key)
+            return start + ("<k>{:<%s}</k> <e>=</e>" % len_).format(key)
         else:
             return start + (" " * (len_ + 2))

@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\startformula
+  \startalign[${1:options}]
+    $0
+  \stopalign
+\stopformula
+]]></content>
+  <tabTrigger>forma</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>display math aligned</description>
+</snippet>

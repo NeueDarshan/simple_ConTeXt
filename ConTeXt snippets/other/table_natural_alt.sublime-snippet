@@ -1,0 +1,11 @@
+<snippet>
+  <content><![CDATA[
+\startTABLE[${1:options}]$0
+  \NC a \NC b \NC\NR
+  \NC c \NC d \NC\NR
+\stopTABLE
+]]></content>
+  <tabTrigger>ntabl</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>natural table (concise)</description>
+</snippet>

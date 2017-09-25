@@ -46,18 +46,6 @@ def guess_type(obj):
                 return obj
 
 
-def is_scope(view, scope):
-    return view.match_selector(view.sel()[0].begin(), scope)
-
-
-def is_context(view):
-    return is_scope(view, "text.tex.context")
-
-
-def is_metapost(view):
-    return is_scope(view, "source.metapost")
-
-
 def iter_power_set(iter_):
     full = list(iter_)
     return itertools.chain.from_iterable(

@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+{\sl $1} $0
+]]></content>
+  <tabTrigger>sl</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>slanted</description>
+</snippet>

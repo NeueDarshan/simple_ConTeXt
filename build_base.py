@@ -70,10 +70,10 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
         else:
             self._base_command_options["env"] = os.environ
 
-    def _base_run(self, commands, begin=None, end=None):
+    def _base_run(self, commands, begin=None, end=None, syntax=True):
         if self._base_is_idle():
             self._base_set_running()
-            self._base_setup_output_view()
+            self._base_setup_output_view(syntax=syntax)
             self._base_run_start(commands, begin=begin, end=end)
         elif self._base_is_running():
             self._base_set_stopping()
@@ -124,7 +124,8 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
     def _base_run_start_aux_i(self, index, command):
         self._base_lock.acquire()
         runner, handler = command["command"], command["handler"]
-        os.chdir(self._base_dir)
+        if self._base_dir is not None:
+            os.chdir(self._base_dir)
         self._base_process = \
             subprocess.Popen(runner, **self._base_command_options)
         self._base_lock.release()
@@ -175,11 +176,14 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
         self._base_output_settings["output_cache"] = "\n"
         self._base_output_settings["has_output"] = True
 
+    def _base_add_to_output_raw(self, text):
+        self._base_output_view.run_command("append", {"characters": text})
+
     def _base_reset_output(self):
         self._base_output_settings["output_cache"] = ""
         self._base_output_settings["has_output"] = False
 
-    def _base_setup_output_view(self):
+    def _base_setup_output_view(self, syntax=True):
         if not hasattr(self, "_base_output_view"):
             self._base_output_view = self._base_window.create_output_panel(
                 self._base_output_panel_name
@@ -190,9 +194,14 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
         self._base_output_view.settings().set("spell_check", False)
         self._base_output_view.settings().set("word_wrap", False)
         self._base_output_view.settings().set("scroll_past_end", False)
-        self._base_output_view.assign_syntax(
-            "Packages/simple_ConTeXt/build results.sublime-syntax"
-        )
+        if syntax:
+            self._base_output_view.assign_syntax(
+                "Packages/simple_ConTeXt/build results.sublime-syntax"
+            )
+        else:
+            self._base_output_view.assign_syntax(
+                "Packages/Text/Plain text.tmLanguage"
+            )
         self._base_output_view = self._base_window.create_output_panel(
             self._base_output_panel_name
         )
