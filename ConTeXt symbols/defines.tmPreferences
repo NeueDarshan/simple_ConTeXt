@@ -4,14 +4,14 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>source.metapost meta.other.function.let</string>
+  <string>text.tex.context entity.name.function.other.context</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>
     <integer>1</integer>
     <key>symbolTransformation</key>
     <string>
-      s/\A(.*)\Z/$1 \[let\]/g;
+      s/\A\s*(.*?)\s*\Z/$1 \[…\]/g;
     </string>
   </dict>
 </dict>

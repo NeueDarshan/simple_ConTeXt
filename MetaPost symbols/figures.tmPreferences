@@ -4,14 +4,14 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>source.metapost meta.other.function.def</string>
+  <string>source.metapost entity.name.section.metapost</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>
     <integer>1</integer>
     <key>symbolTransformation</key>
     <string>
-      s/\A(.*)\Z/$1 \[def\]/g;
+      s/\A(.*)\Z/§ $1/g;
     </string>
   </dict>
 </dict>

@@ -4,11 +4,15 @@
   <key>name</key>
   <string>Symbol List</string>
   <key>scope</key>
-  <string>text.tex.context entity.name.function</string>
+  <string>text.tex.context entity.name.function.context</string>
   <key>settings</key>
   <dict>
     <key>showInSymbolList</key>
-    <integer>0</integer>
+    <integer>1</integer>
+    <key>symbolTransformation</key>
+    <string>
+      s/\A\\?(.*)\Z/$1 {…}/g;
+    </string>
   </dict>
 </dict>
 </plist>

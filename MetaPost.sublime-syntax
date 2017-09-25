@@ -186,7 +186,7 @@ contexts:
   environment.fig:
     - match: '\bbeginfig\b'
       scope: support.function.metapost
-    # push: argument.parens.figure.with-number*/
+      push: argument.parens.figure*/
 
   environment.group:
     - match: '\b(begin|end)group\b'
@@ -209,6 +209,19 @@ contexts:
       pop: true
     - include: scope:text.tex#main
 
+
+  argument.parens.figure/:
+    - match: '\('
+      scope: punctuation.section.parens.begin.metapost
+      set: argument.parens.figure.main/
+  argument.parens.figure*/:
+    - include: argument.parens.figure/
+    - include: generic.pop-if-no-nearby-parens/
+  argument.parens.figure.main/:
+    - meta_scope: meta.parens.metapost
+    - meta_content_scope: entity.name.section.metapost
+    - include: generic.pop-at-parens-end/
+    - include: constant.numeric
 
   argument.string-or-file-name/:
     - include: generic.gobble-whitespace
@@ -265,6 +278,19 @@ contexts:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - include: generic.pop/
 
+  generic.pop-if-no-nearby-parens/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop-if-no-parens/
+
   generic.pop-if-blank-line/:
     - match: '(?=^\s*$\n?)'
+      pop: true
+
+  generic.pop-if-no-parens/:
+    - match: '(?=[^\(])'
+      pop: true
+
+  generic.pop-at-parens-end/:
+    - match: '\)'
+      scope: punctuation.section.parens.end.context
       pop: true
