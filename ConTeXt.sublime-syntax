@@ -624,14 +624,14 @@ contexts:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - match: '(?=\\stopMPinclusions\b)'
+        - match: '(?=\\stopMPextensions\b)'
           pop: true
         - include: MetaFun.main
   MetaFun.main.MPextensions/:
     - match: ''
       set:
         - meta_content_scope: source.metapost.metafun.embedded.context
-        - match: '(?=\\stopMPextensions\b)'
+        - match: '(?=\\stopMPinclusions\b)'
           pop: true
         - include: MetaFun.main
   MetaFun.main.MPpositiongraphic/:
