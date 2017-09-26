@@ -155,6 +155,21 @@ contexts:
     - include: definition.end
     - include: definition.let
 
+  definition.def:
+    - match: '\b(var)?def\b'
+      scope: storage.type.metapost
+      push: [
+        definition.main/,
+        argument.name.definition*/,
+      ]
+
+  definition.main/:
+    - include: argument.equals/
+    - match: '\b(expr|suffix|of|text|primary)\b'
+      scope: storage.modifier.metapost
+    - match: '{{tokens}}'
+      scope: variable.parameter.metapost
+
   definition.end:
     - match: '\benddef\b'
       scope: storage.type.metapost
@@ -285,9 +300,11 @@ contexts:
   generic.pop-if-blank-line/:
     - match: '(?=^\s*$\n?)'
       pop: true
-
   generic.pop-if-no-parens/:
     - match: '(?=[^\(])'
+      pop: true
+  generic.pop/:
+    - match: ''
       pop: true
 
   generic.pop-at-parens-end/:

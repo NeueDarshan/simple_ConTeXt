@@ -1442,13 +1442,17 @@ contexts:
         0: meta.control-word.context keyword.control.conditional.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
 
+  #D The pattern \type{(\\)define[[:alpha:]]*} works remarkably well in almost
+  #D all cases. However it is not foolproof. For the moment, we use the below
+  #D work around for some known edge cases. If the number of edge cases grows
+  #D significantly, then we will need to reconsider this approach.
   control.word.generic:
     - match: '(\\)start[[:alpha:]]*'
       captures:
         0: meta.control-word.context meta.structure.start.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups*/
-    - match: '(\\)define[[:alpha:]]*'
+    - match: '(\\)define(?!dfont)[[:alpha:]]*'
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1468,7 +1472,7 @@ contexts:
         0: meta.control-word.context meta.structure.start.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.adjacent*/
-    - match: '(\\)define[[:alpha:]]*'
+    - match: '(\\)define(?!dfont)[[:alpha:]]*'
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1493,7 +1497,7 @@ contexts:
         0: meta.control-word.context meta.structure.start.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.math.adjacent*/
-  # - match: '(\\)define[[:alpha:]]*'
+  # - match: '(\\)define(?!dfont)[[:alpha:]]*'
   #   captures:
   #     0: meta.control-word.context support.function.context
   #     1: punctuation.definition.backslash.context
