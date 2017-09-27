@@ -28,12 +28,13 @@ contexts:
     - include: Lua
     - include: MetaFun
   # - include: JavaScript
+  # - include: catcode
     - include: markup
     - include: table
     - include: verbatim
-  # - include: catcode
     - include: heading
     - include: file
+    - include: link
     - include: process
     - include: definition
     - include: low-level
@@ -1309,6 +1310,19 @@ contexts:
       push: argument.group-or-name.file*/
 
 
+  link:
+    - match: '(\\)useURL\b'
+      captures:
+        0: meta.control-word.context support.function.context
+        1: punctuation.definition.backslash.context
+      push: [
+        argument.list*/,
+        argument.list*/,
+        argument.list.url*/,
+        argument.list*/,
+      ]
+
+
   process:
     - match: '(\\)(process(action|firstactioninset|allactionsinset)|rawprocessaction)\b'
       captures:
@@ -2129,6 +2143,19 @@ contexts:
     - include: generic.pop-at-list-end/
     - include: main
 
+  argument.list.url/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.url.main/
+  argument.list.url*/:
+    - include: argument.list.url/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.url.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: markup.underline.link
+    - include: generic.pop-at-list-end/
+    - include: main
+
   #D Special case, should do the job well enough.
   argument.list.with-integers-only/:
     - match: '(\[)\s*([[:digit:]]+)\s*(\])'
@@ -2147,7 +2174,7 @@ contexts:
       scope: punctuation.section.brackets.begin.context
       set:
         - meta_scope: meta.brackets.context meta.environment.argument.context
-        - match: '\b((?:metadata:)?title)\s*(=)'
+        - match: '\b(title)\s*(=)'
           captures:
             1: variable.parameter.context
             2: keyword.operator.assignment.context

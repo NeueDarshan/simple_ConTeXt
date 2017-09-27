@@ -2,6 +2,7 @@ import sublime
 import sublime_plugin
 import collections
 import threading
+import mdpopups
 import string
 import json
 import os
@@ -20,8 +21,8 @@ RUNNING = 1
 TEMPLATE = """
 <html>
     <style>
-        {style}
         {extra_style}
+        {style}
     </style>
     <body id="simple-ConTeXt-pop-up">
         <div class="outer">
@@ -31,6 +32,38 @@ TEMPLATE = """
         </div>
     </body>
 </html>
+"""
+
+EXTRA_STYLE = """
+html {{
+    --control-sequence-color: {cs_color};
+    --control-sequence-background: {cs_bg};
+    --control-sequence-style: {cs_style};
+
+    --slash-color: {slash_color};
+    --slash-background: {slash_bg};
+    --slash-style: {slash_style};
+
+    --numeric-color: {num_color};
+    --numeric-background: {num_bg};
+    --numeric-style: {num_style};
+
+    --key-color: {key_color};
+    --key-background: {key_bg};
+    --key-style: {key_style};
+
+    --equals-color: {eq_color};
+    --equals-background: {eq_bg};
+    --equals-style: {eq_style};
+
+    --delimiter-color: {del_color};
+    --delimiter-background: {del_bg};
+    --delimiter-style: {del_style};
+
+    --type-color: {type_color};
+    --type-background: {type_bg};
+    --type-style: {type_style};
+}}
 """
 
 
@@ -276,16 +309,48 @@ class SimpleContextMacroSignatureEventListener(
             )
         self.prev_pop_up_state = new_pop_up_state
         self.popup_name = name
-        #D One day we can try parse the current colour scheme and, based off
-        #D this, style elements of the pop||up. That's gonna be complicated.
-        #D For the moment, let's just make control sequences blue||ish (as they
-        #D are in many colour schemes) and call it a day.
+        self.get_extra_style()
         return TEMPLATE.format(
             body="<br><br>".join(
                 s for s in self.html_cache[self.name][name] if s
             ),
             style=self.style,
-            extra_style="div.popup c { color: var(--bluish); }"
+            extra_style=self.extra_style
+        )
+
+    def get_extra_style(self):
+        cs = mdpopups.scope2style(self.view, "support.function")
+        slash = mdpopups.scope2style(
+            self.view, "support.function punctuation.definition.backslash"
+        )
+        num = mdpopups.scope2style(self.view, "constant.numeric")
+        key = mdpopups.scope2style(self.view, "variable.parameter")
+        eq = mdpopups.scope2style(self.view, "keyword.operator.assignment")
+        del_ = mdpopups.scope2style(self.view, "punctuation.section")
+        type_ = mdpopups.scope2style(self.view, "storage.type")
+
+        self.extra_style = EXTRA_STYLE.format(
+            cs_color=cs.get("color"),
+            cs_bg=cs.get("background", "--background"),
+            cs_style=cs.get("style"),
+            slash_color=slash.get("color"),
+            slash_bg=slash.get("background", "--background"),
+            slash_style=slash.get("style"),
+            num_color=num.get("color"),
+            num_bg=num.get("background", "--background"),
+            num_style=num.get("style"),
+            key_color=key.get("color"),
+            key_bg=key.get("background", "--background"),
+            key_style=key.get("style"),
+            eq_color=eq.get("color"),
+            eq_bg=eq.get("background", "--background"),
+            eq_style=eq.get("style"),
+            del_color=del_.get("color"),
+            del_bg=del_.get("background", "--background"),
+            del_style=del_.get("style"),
+            type_color=type_.get("color"),
+            type_bg=type_.get("background", "--background"),
+            type_style=type_.get("style"),
         )
 
     def on_navigate(self, href):

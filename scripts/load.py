@@ -80,8 +80,11 @@ class InterfaceLoader:
         return ["\n\n".join(parts), source, copy]
 
     def render_aux(self, list_):
-        cs = "\\" + self.name
-        self._syntax = [" " * len(cs), "<c>{}</c>".format(cs), " " * len(cs)]
+        self._syntax = [
+            " " * (len(self.name) + 1),
+            "<l>\\</l><c>{}</c>".format(self.name),
+            " " * (len(self.name) + 1)
+        ]
         self._docstring = []
         self._n = 0
 
@@ -146,12 +149,14 @@ class InterfaceLoader:
 
         if self._inherits:
             if isinstance(self._inherits, list):
-                inherits = "<i>inherits:</i> " + ", ".join(
-                    "<c>\\{}</c>".format(i) for i in self._inherits
+                inherits = "<h>inherits:</h> " + ", ".join(
+                    "<l>\\</l><c>{}</c>".format(i) for i in self._inherits
                 )
             else:
-                inherits = \
-                    "<i>inherits:</i> " + "<c>\\{}</c>".format(self._inherits)
+                inherits = (
+                    "<h>inherits:</h> " +
+                    "<l>\\</l><c>{}</c>".format(self._inherits)
+                )
             if self._content:
                 self._docstring[-1] += "\n" + self.guide(num=False) + inherits
             else:

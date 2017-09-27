@@ -143,7 +143,7 @@ class InterfaceSaver:
                 obj.append(self.do_constant(child))
             elif self.tag_is(child, "inherit"):
                 obj.append(
-                    "<i>inherits:</i> <c>\\{}</c>".format(
+                    "<h>inherits:</h> <l>\\</l><c>{}</c>".format(
                         self.do_inherit(child)
                     )
                 )
@@ -258,7 +258,7 @@ class InterfaceSaver:
         prefix = self.transform(attrib.get("prefix", ""))
         method = self.method.get(attrib.get("method", "none"))
         if self.is_true(attrib.get("default")):
-            start, stop = "<d>", "</d>"
+            start, stop = "<v>", "</v>"
         else:
             start, stop = "", ""
         return (
@@ -315,7 +315,7 @@ class InterfaceSaver:
             elif self.tag_is(child, "resolve"):
                 content.append(self.do_resolve(child))
             elif self.tag_is(child, "inherit"):
-                content.append("<i>inherits:</i> <c>\\{}</c>".format(
+                content.append("<h>inherits:</h> <l>\\</l><c>{}</c>".format(
                     self.do_inherit(child)
                 ))
             else:
@@ -379,7 +379,7 @@ class InterfaceSaver:
     def render(self, mode, attrib):
         is_list = self.is_true(attrib.get("list"))
         delims = self.delimiters.get(attrib.get("delimiters", "default"), "[]")
-        punct = "<s>{}</s>"
+        punct = "<d>{}</d>"
         if delims:
             start, stop = punct.format(delims[0]), punct.format(delims[1])
         else:
@@ -399,7 +399,7 @@ class InterfaceSaver:
         elif mode == "template":
             return start + "|...|" + stop
         elif mode == "angles":
-            return "<s>{}</s>...<s>{}</s>".format(
+            return "<d>{}</d>...<d>{}</d>".format(
                 self.escape("<<"), self.escape(">>")
             )
         elif mode == "apply":
@@ -412,11 +412,11 @@ class InterfaceSaver:
             middle = "...,..." if is_list else "..."
             return punct.format("(") + middle + punct.format(")")
         elif mode == "csname":
-            return "<c>\\...</c>"
+            return "<l>\\</l><c>...</c>"
         elif mode in ["content", "text"]:
-            return "<s>{</s>...<s>}</s>"
+            return "<d>{</d>...<d>}</d>"
         elif mode == "delimiter":
-            return "<c>\\{}</c>".format(self.escape(attrib["name"]))
+            return "<l>\\</l><c>{}</c>".format(self.escape(attrib["name"]))
         else:
             msg = 'unexpected mode, mode: "{}", attrib: "{}"'
             if self.tolerant:
