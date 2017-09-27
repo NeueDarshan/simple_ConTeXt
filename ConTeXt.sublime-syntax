@@ -16,6 +16,7 @@ variables:
   verbatim: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
   variable: '[[:alpha:]]'
 
+
 contexts:
   prototype:
     - include: comment
@@ -139,11 +140,16 @@ contexts:
         1: punctuation.definition.backslash.context
       push: math.main.pop-if-stop-match-two/
 
-  #D It is advised to not use double dollar style display math \type{$$ ... $$}
-  #D directly in \ConTeXt; better is \type{\startformula ... \stopformula}.
-  #D (For one, this way \ConTeXt\ has a say in keeping the vertical spacing
-  #D nice.) But it can be done, so here it is. (On the other hand, single
-  #D dollar style inline math \type{$ ... $} is fine.)
+  #D Quoting from the \ConTeXt\ math manual:
+  #D
+  #D \startblockquote
+  #D   The inline method [\type{$...$}] is still valid, but for display math
+  #D   the \type{$$} method should not be used. This has to do with the fact
+  #D   that we want to control spacing in a consistent way.
+  #D \stopblockquote
+  #D
+  #D But you can still use the double dollar \type{$$ ... $$} method if you
+  #D insist, so here it is.
   math.display.double-dollar:
     - match: '\$\$'
       scope: punctuation.section.double-dollar.begin.context string.quoted.other.double-dollar.context  # meta.structure.start.context
@@ -1193,6 +1199,14 @@ contexts:
         - include: generic.gobble-whitespace-or-pop/
 
   heading.block:
+    #D Okay, \quote{document} isn't technically a \quote{section}, but it can
+    #D be nice to give it some similar functionality, e.g.\ showing up in the
+    #D symbol list. There's not really any harm in adding it in here.
+    - match: '(\\)startdocument\b'
+      captures:
+        0: meta.control-word.context meta.structure.start.context support.function.context
+        1: punctuation.definition.backslash.context
+      push: argument.list.document*/
     - match: '(\\)startpart\b'
       captures:
         0: meta.control-word.context meta.structure.start.context support.function.context
@@ -1531,6 +1545,30 @@ contexts:
     - include: scoping.group
   scoping.math:
     - include: scoping.group.math
+      #D Could add
+      #D
+      #D \starttyping
+      #D   - include: generic.pop-if-group-end/
+      #D \stoptyping
+      #D
+      #D in here. The idea is that we can have all the usual math support, and
+      #D {\em also} cope with situations like
+      #D
+      #D \starttyping
+      #D \unexpanded\def\startfoo
+      #D   {\startimath
+      #D    \dosomestuff}
+      #D
+      #D Some text not in math mode \periods
+      #D
+      #D \unexpanded\def\stopfoo
+      #D   {\dosomemorestuff
+      #D    \stopimath}
+      #D \stoptyping
+      #D
+      #D We could add the same capability to \Lua\ and to \MetaPost\ and so on.
+      #D Need to mull this over some more.
+
   scoping.Lua:
     - include: scoping.group.Lua
   scoping.verbatim:
@@ -2104,6 +2142,21 @@ contexts:
     - include: argument.list.with-integers-only/
     - include: generic.gobble-whitespace-or-pop/
 
+  argument.list.document*/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set:
+        - meta_scope: meta.brackets.context meta.environment.argument.context
+        - match: '\b((?:metadata:)?title)\s*(=)'
+          captures:
+            1: variable.parameter.context
+            2: keyword.operator.assignment.context
+          push:
+            - meta_content_scope: meta.value.context entity.name.section.document.context markup.heading.context
+            - include: argument.list.heading.common/
+        - include: argument.list.main/
+    - include: generic.pop-if-no-nearby-list/
+
   argument.list.part*/:
     - match: '\['
       scope: punctuation.section.brackets.begin.context
@@ -2439,7 +2492,9 @@ contexts:
     - include: argument.name.this-file/
     - include: generic.gobble-whitespace-or-pop/
 
-
+  generic.pop-if-group-end/:
+    - match: '(?=\})'
+      pop: true
   generic.pop-if-no-group/:
     - match: '(?=[^\{])'
       pop: true
