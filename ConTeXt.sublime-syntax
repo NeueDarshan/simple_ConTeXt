@@ -31,6 +31,7 @@ contexts:
   # - include: catcode
     - include: markup
     - include: table
+    - include: list
     - include: verbatim
     - include: heading
     - include: file
@@ -893,6 +894,27 @@ contexts:
         argument.group*/,
         argument.list.template*/,
         argument.group.with-integers*/,
+      ]
+
+
+  list:
+    - match: '(\\)item\b'
+      captures:
+        0: meta.control-word.context support.function.context
+        1: punctuation.definition.backslash.context
+      push: argument.list.reference*/
+    - match: '(\\)startitem\b'
+      captures:
+        0: meta.control-word.context meta.structure.start.context support.function.context
+        1: punctuation.definition.backslash.context
+      push: argument.list.reference*/
+    - match: '(\\)starthead\b'
+      captures:
+        0: meta.control-word.context meta.structure.start.context support.function.context
+        1: punctuation.definition.backslash.context
+      push: [
+        argument.group*/,
+        argument.list.reference*/,
       ]
 
 
@@ -2295,7 +2317,7 @@ contexts:
     - include: generic.pop-if-no-nearby-list/
   argument.list.reference.main/:
     - meta_scope: meta.brackets.context meta.environment.argument.context
-    - meta_content_scope: meta.reference.context
+    - meta_content_scope: entity.name.label.reference.context
     - include: generic.pop-at-list-end/
     - include: main
 
@@ -2632,7 +2654,7 @@ contexts:
         1: variable.parameter.context
         2: keyword.operator.assignment.context
       push:
-        - meta_content_scope: meta.value.context meta.reference.context
+        - meta_content_scope: meta.value.context entity.name.label.reference.context
         - include: generic.list.pop-at-end-of-assignment/
         - include: main
   # - match: '\b(title)\s*(=)'

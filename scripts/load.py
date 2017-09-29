@@ -1,6 +1,31 @@
 from . import html_css
 
 
+def format_template(n, align="<", min_=None):
+    if align == "^" and (not min_ or n > min_):
+        return " {text:%s%s}" % (align, n - 1)
+    else:
+        return "{text:%s%s}" % (align, n)
+
+
+def normal_format(text, n, align="<", min_=None):
+    template = format_template(n, align=align, min_=min_)
+    return template.format(text=text)
+
+
+def tagged_format(text, tag, n, align="<", min_=None):
+    init = format_template(n, align=align, min_=min_).format(text=text)
+    total = len(init)
+    left = total - len(init.lstrip())
+    right = total - len(init.rstrip())
+    template = (
+        (" " * left) + "<{tag}>" + init[left:total - right] + "</{tag}>" +
+        (" " * right)
+    )
+    # print(init, template)
+    return template.format(tag=tag)
+
+
 def nice_sorted(list_, reverse=False):
     list_ = sorted(
         [l for l in list_ if l is not None], key=html_css.strip_tags
@@ -128,12 +153,11 @@ class InterfaceLoader:
         if self._optional:
             for i in range(3):
                 self._syntax[i] += "<o>"
-        self._syntax[0] += self.template(self._len + 7).format(
-            "<n>{}</n>".format(self._n)
-        )
+        self._syntax[0] += \
+            tagged_format(self._n, "n", self._len, align="^")
         self._syntax[1] += self._rendering
-        self._syntax[2] += self.template(self._len, min=3).format(
-            "OPT" if self._optional else ""
+        self._syntax[2] += normal_format(
+            "OPT" if self._optional else "", self._len, align="^", min_=3
         )
         if self._optional:
             for i in range(3):
@@ -241,15 +265,9 @@ class InterfaceLoader:
             lines[-1] += " ".join(nice_sorted(v)) if isinstance(v, list) else v
         return "\n".join(lines)
 
-    def template(self, t, min=None):
-        if not min or t > min:
-            return " {:^%s}" % (t - 1)
-        else:
-            return "{:^%s}" % t
-
     def guide(self, num=True):
         if num:
-            return "<n>{:<2}</n>  ".format(self._n)
+            return tagged_format(self._n, "n", 4)
         else:
             return "    "
 
@@ -257,6 +275,6 @@ class InterfaceLoader:
         start = self.guide(num=num)
         if key:
             len_ += len(key) - len(html_css.strip_tags(key))
-            return start + ("<k>{:<%s}</k> <e>=</e>" % len_).format(key)
+            return start + tagged_format(key, "k", len_) + " <e>=</e>"
         else:
             return start + (" " * (len_ + 2))

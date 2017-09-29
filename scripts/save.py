@@ -386,13 +386,16 @@ class InterfaceSaver:
             start, stop = "", ""
 
         if mode == "keywords":
-            middle = "...,..." if is_list else "..."
+            middle = "...<m>,</m>..." if is_list else "..."
             return start + middle + stop
         elif mode == "assignments":
-            middle = "..,..<e>=</e>..,.." if is_list else "..<e>=</e>.."
+            middle = (
+                "..<m>,</m><k>..</k><e>=</e>..<m>,</m>.."
+                if is_list else "<k>..</k><e>=</e>.."
+            )
             return start + middle + stop
         elif mode == "triplet":
-            middle = "..,x:y:z,.." if is_list else "x:y:z"
+            middle = "..<m>,</m>x:y:z<m>,</m>.." if is_list else "x:y:z"
             return start + middle + stop
         elif mode == "index":
             return start + "..+...+.." + stop
@@ -404,12 +407,14 @@ class InterfaceSaver:
             )
         elif mode == "apply":
             if is_list:
-                middle = "..,..<e>{}</e>..,..".format(self.escape("=>"))
+                middle = "..<m>,</m><k>..</k><e>{}</e>..,..".format(
+                    self.escape("=>")
+                )
             else:
-                middle = "..<e>{}</e>..".format(self.escape("=>"))
+                middle = "<k>..</k><e>{}</e>..".format(self.escape("=>"))
             return start + middle + stop
         elif mode == "position":
-            middle = "...,..." if is_list else "..."
+            middle = "...<m>,</m>..." if is_list else "..."
             return punct.format("(") + middle + punct.format(")")
         elif mode == "csname":
             return "<l>\\</l><c>...</c>"

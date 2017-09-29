@@ -36,32 +36,36 @@ TEMPLATE = """
 
 EXTRA_STYLE = """
 html {{
-    --control-sequence-color: {cs_color};
+    --comma-background: {com_bg};
+    --comma-color: {com_color};
+    --comma-style: {com_style};
+
     --control-sequence-background: {cs_bg};
+    --control-sequence-color: {cs_color};
     --control-sequence-style: {cs_style};
 
-    --slash-color: {slash_color};
-    --slash-background: {slash_bg};
-    --slash-style: {slash_style};
-
-    --numeric-color: {num_color};
-    --numeric-background: {num_bg};
-    --numeric-style: {num_style};
-
-    --key-color: {key_color};
-    --key-background: {key_bg};
-    --key-style: {key_style};
-
-    --equals-color: {eq_color};
-    --equals-background: {eq_bg};
-    --equals-style: {eq_style};
-
-    --delimiter-color: {del_color};
     --delimiter-background: {del_bg};
+    --delimiter-color: {del_color};
     --delimiter-style: {del_style};
 
-    --type-color: {type_color};
+    --equals-background: {eq_bg};
+    --equals-color: {eq_color};
+    --equals-style: {eq_style};
+
+    --key-background: {key_bg};
+    --key-color: {key_color};
+    --key-style: {key_style};
+
+    --numeric-background: {num_bg};
+    --numeric-color: {num_color};
+    --numeric-style: {num_style};
+
+    --slash-background: {slash_bg};
+    --slash-color: {slash_color};
+    --slash-style: {slash_style};
+
     --type-background: {type_bg};
+    --type-color: {type_color};
     --type-style: {type_style};
 }}
 """
@@ -292,6 +296,7 @@ class SimpleContextMacroSignatureEventListener(
                     flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
                     on_navigate=self.on_navigate
                 )
+                return
             else:
                 self.view.hide_popup()
 
@@ -327,29 +332,33 @@ class SimpleContextMacroSignatureEventListener(
         key = mdpopups.scope2style(self.view, "variable.parameter")
         eq = mdpopups.scope2style(self.view, "keyword.operator.assignment")
         del_ = mdpopups.scope2style(self.view, "punctuation.section")
+        com = mdpopups.scope2style(self.view, "punctuation.separator.comma")
         type_ = mdpopups.scope2style(self.view, "storage.type")
 
         self.extra_style = EXTRA_STYLE.format(
-            cs_color=cs.get("color"),
+            com_bg=com.get("background", "--background"),
+            com_color=com.get("color"),
+            com_style=com.get("style"),
             cs_bg=cs.get("background", "--background"),
+            cs_color=cs.get("color"),
             cs_style=cs.get("style"),
-            slash_color=slash.get("color"),
-            slash_bg=slash.get("background", "--background"),
-            slash_style=slash.get("style"),
-            num_color=num.get("color"),
-            num_bg=num.get("background", "--background"),
-            num_style=num.get("style"),
-            key_color=key.get("color"),
-            key_bg=key.get("background", "--background"),
-            key_style=key.get("style"),
-            eq_color=eq.get("color"),
-            eq_bg=eq.get("background", "--background"),
-            eq_style=eq.get("style"),
-            del_color=del_.get("color"),
             del_bg=del_.get("background", "--background"),
+            del_color=del_.get("color"),
             del_style=del_.get("style"),
-            type_color=type_.get("color"),
+            eq_bg=eq.get("background", "--background"),
+            eq_color=eq.get("color"),
+            eq_style=eq.get("style"),
+            key_bg=key.get("background", "--background"),
+            key_color=key.get("color"),
+            key_style=key.get("style"),
+            num_bg=num.get("background", "--background"),
+            num_color=num.get("color"),
+            num_style=num.get("style"),
+            slash_bg=slash.get("background", "--background"),
+            slash_color=slash.get("color"),
+            slash_style=slash.get("style"),
             type_bg=type_.get("background", "--background"),
+            type_color=type_.get("color"),
             type_style=type_.get("style"),
         )
 
