@@ -43,7 +43,7 @@ class Choice:
         return " ".join(self.options)
 
 
-class SimpleContextSettingsController(sublime_plugin.WindowCommand):
+class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
     def reload_settings(self):
         utilities.reload_settings(self)
 
@@ -236,7 +236,7 @@ class SimpleContextSettingsController(sublime_plugin.WindowCommand):
         del self._settings["setting_groups"]
 
 
-class SimpleContextEditSettings(sublime_plugin.WindowCommand):
+class SimpleContextEditSettingsCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.args = {

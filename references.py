@@ -5,7 +5,7 @@ from .scripts import utilities
 from .scripts import scopes
 
 
-class SimpleContextReferenceInsert(sublime_plugin.TextCommand):
+class SimpleContextReferenceInsertCommand(sublime_plugin.TextCommand):
     def run(self, edit, reference="ref"):
         to_add = []
         for region in self.view.sel():
@@ -16,7 +16,7 @@ class SimpleContextReferenceInsert(sublime_plugin.TextCommand):
         self.view.sel().add_all(to_add)
 
 
-class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
+class SimpleContextReferenceSelectorCommand(sublime_plugin.WindowCommand):
     def reload_settings(self):
         utilities.reload_settings(self)
         self.references = collections.OrderedDict()
@@ -60,22 +60,25 @@ class SimpleContextReferenceSelector(sublime_plugin.WindowCommand):
             )
 
 
-class SimpleContextReferenceMacroEventListener(sublime_plugin.EventListener):
+class SimpleContextReferenceMacroEventListener(
+    sublime_plugin.ViewEventListener
+):
     def reload_settings(self):
         utilities.reload_settings(self)
 
-    def on_modified_async(self, view):
+    def is_visible(self):
+        return scopes.is_context(self.view)
+
+    def on_modified_async(self):
         self.reload_settings()
         if not self._references.get("on"):
             return
 
-        # end = view.sel()[0].end()
-        # cmd = scopes.last_block_in_region(
-        #     view,
-        #     end - 500,
-        #     end,
-        #     scopes.CONTROL_WORD,
-        #     skip=scopes.SKIP_ARGS_AND_SPACES
-        # )
-        # if cmd and view.match_selector(end - 1, scopes.BEGIN_BRACKET):
-        #     view.window().run_command("simple_context_reference_selector")
+        # for sel in self.view.sel():
+        #     # end = sel.end()
+        #     print(self.view.command_history(0))
+        #     # ctrl = scopes.left_enclosing_block(
+        #     #     self.view, sel.end() - 1, self.size, scopes.CONTROL_SEQ
+        #     # )
+        #     # if ctrl and self.view.match_selector(sel.end() - 1, scopes.BEGIN_BRACKET):
+        #     #     self.view.window().run_command("simple_context_reference_selector")

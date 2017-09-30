@@ -106,7 +106,7 @@ contexts:
   math.display.control:
     - match: '(\\)startformula\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         math.main.pop-if-stopformula/,
@@ -114,7 +114,7 @@ contexts:
       ]
     - match: '(\\)start(display|d)math\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: math.main.pop-if-stop-match-two/
     - match: '(\\)display(math|mathematics)\b'
@@ -138,7 +138,7 @@ contexts:
       push: argument.group.math.outer*/
     - match: '(\\)start(imath|mathmode)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: math.main.pop-if-stop-match-two/
 
@@ -273,7 +273,7 @@ contexts:
   math.control.intertext:
     - match: '(\\)start(intertext)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: main.pop-if-stop-match-two/
     - match: '(\\)(inter)?text\b'
@@ -287,7 +287,7 @@ contexts:
   math.control.cases:
     - match: '(\\)startcases\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         math.main.cases/,
@@ -336,7 +336,7 @@ contexts:
   Lua.block:
     - match: '(\\)start(luacode)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push:
         - meta_include_prototype: false
@@ -344,7 +344,7 @@ contexts:
         - include: Lua.main.pop-if-stop-match-two/
     - match: '(\\)start(lua)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push:
         - meta_content_scope: meta.environment.lua.minor.context source.lua.embedded.context
@@ -457,7 +457,7 @@ contexts:
   MetaFun.block:
     - match: '(\\)startuniqueMPgraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.uniqueMPgraphic/,
@@ -466,7 +466,7 @@ contexts:
       ]
     - match: '(\\)startuniqueMPpagegraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.uniqueMPpagegraphic/,
@@ -475,7 +475,7 @@ contexts:
       ]
     - match: '(\\)startuseMPgraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.useMPgraphic/,
@@ -484,7 +484,7 @@ contexts:
       ]
     - match: '(\\)startusableMPgraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.usableMPgraphic/,
@@ -493,7 +493,7 @@ contexts:
       ]
     - match: '(\\)startreusableMPgraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.reusableMPgraphic/,
@@ -502,7 +502,7 @@ contexts:
       ]
     - match: '(\\)startstaticMPfigure\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.staticMPfigure/,
@@ -510,7 +510,7 @@ contexts:
       ]
     - match: '(\\)startMPcode\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPcode/,
@@ -518,7 +518,7 @@ contexts:
       ]
     - match: '(\\)startMPdefinitions\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPdefinitions/,
@@ -526,7 +526,7 @@ contexts:
       ]
     - match: '(\\)startMPinclusions\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPinclusions/,
@@ -535,7 +535,7 @@ contexts:
       ]
     - match: '(\\)startMPpage\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPpage/,
@@ -543,7 +543,7 @@ contexts:
       ]
     - match: '(\\)startMPextensions\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPextensions/,
@@ -551,7 +551,7 @@ contexts:
       ]
     - match: '(\\)startMPpositiongraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPpositiongraphic/,
@@ -689,7 +689,7 @@ contexts:
   markup.quote.block:
     - match: '(\\)startquote\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.quote/,
@@ -698,7 +698,7 @@ contexts:
       ]
     - match: '(\\)startblockquote\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.blockquote/,
@@ -707,7 +707,7 @@ contexts:
       ]
     - match: '(\\)startquotation\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.quotation/,
@@ -716,7 +716,7 @@ contexts:
       ]
     - match: '(\\)startaside\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.aside/,
@@ -725,7 +725,7 @@ contexts:
       ]
     - match: '(\\)startspeech\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.speech/,
@@ -872,7 +872,7 @@ contexts:
   table:
     - match: '(\\)start(table|tabulate)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -905,12 +905,12 @@ contexts:
       push: argument.list.reference*/
     - match: '(\\)startitem\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list.reference*/
     - match: '(\\)starthead\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.group*/,
@@ -944,7 +944,7 @@ contexts:
   verbatim.block:
     - match: '(\\)start(typing)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main/,
@@ -952,7 +952,7 @@ contexts:
       ]
     - match: '(\\)startTEX\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.TEX/,
@@ -960,7 +960,7 @@ contexts:
       ]
     - match: '(\\)startLUA\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.LUA/,
@@ -968,7 +968,7 @@ contexts:
       ]
     - match: '(\\)startXML\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.XML/,
@@ -976,7 +976,7 @@ contexts:
       ]
     - match: '(\\)startPARSEDXML\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.PARSEDXML/,
@@ -984,7 +984,7 @@ contexts:
       ]
     - match: '(\\)startMP\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.MP/,
@@ -1037,7 +1037,7 @@ contexts:
   verbatim.buffer:
     - match: '(\\)startbuffer\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.buffer/,
@@ -1055,7 +1055,7 @@ contexts:
   verbatim.hiding:
     - match: '(\\)start(hiding)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: verbatim.hiding.main/
   verbatim.hiding.main/:
@@ -1227,12 +1227,12 @@ contexts:
     #D symbol list. There's not really any harm in adding it in here.
     - match: '(\\)startdocument\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list.document*/
     - match: '(\\)startpart\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1240,7 +1240,7 @@ contexts:
       ]
     - match: '(\\)start(chapter|title)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1248,7 +1248,7 @@ contexts:
       ]
     - match: '(\\)start(section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1256,7 +1256,7 @@ contexts:
       ]
     - match: '(\\)startsub(section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1264,7 +1264,7 @@ contexts:
       ]
     - match: '(\\)startsubsub(section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1272,7 +1272,7 @@ contexts:
       ]
     - match: '(\\)startsubsubsub(section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1280,7 +1280,7 @@ contexts:
       ]
     - match: '(\\)startsubsubsubsub(section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1321,7 +1321,7 @@ contexts:
       push: argument.list.file*/
     - match: '(\\)start(component|environment|product|project)\b'
       captures:
-        0: meta.control-word.context support.function.context
+        0: meta.control-word.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list-or-name.this-file*/
   file.input:
@@ -1499,7 +1499,7 @@ contexts:
   control.word.generic:
     - match: '(\\)start[[:alpha:]]*'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups*/
     - match: '(\\)define(?!dfont)[[:alpha:]]*'
@@ -1519,7 +1519,7 @@ contexts:
   control.word.generic.adjacent:
     - match: '(\\)start[[:alpha:]]*'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.adjacent*/
     - match: '(\\)define(?!dfont)[[:alpha:]]*'
@@ -1544,7 +1544,7 @@ contexts:
   control.word.generic.math.adjacent:
     - match: '(\\)start[[:alpha:]]*'
       captures:
-        0: meta.control-word.context meta.structure.start.context support.function.context
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.math.adjacent*/
   # - match: '(\\)define(?!dfont)[[:alpha:]]*'
@@ -1564,7 +1564,7 @@ contexts:
   control.word.generic.common:
     - match: '(\\)stop[[:alpha:]]*'
       captures:
-        0: meta.control-word.context meta.structure.stop.context support.function.context
+        0: meta.control-word.context meta.structure.stop.context keyword.control.context
         1: punctuation.definition.backslash.context
 
   control.symbol:

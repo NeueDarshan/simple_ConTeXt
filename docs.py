@@ -44,7 +44,7 @@ DOCS = [
 ]
 
 
-class SimpleContextFindDocs(sublime_plugin.WindowCommand):
+class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

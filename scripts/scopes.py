@@ -82,7 +82,7 @@ VALUE = "meta.value.context"
 
 ASSIGNMENT = ANY(KEY, EQUALS, VALUE)
 
-REFERENCE = "meta.reference.context"
+REFERENCE = "entity.name.label.reference.context"
 
 FILE_NAME = "meta.file-name.context"
 

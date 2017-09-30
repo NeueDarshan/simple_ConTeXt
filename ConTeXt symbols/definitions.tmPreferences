@@ -11,7 +11,7 @@
     <integer>1</integer>
     <key>symbolTransformation</key>
     <string>
-      s/\A\\?(.*)\Z/$1 {…}/g;
+      s/\A\\?(.*)\Z/↪ $1/g;
     </string>
   </dict>
 </dict>

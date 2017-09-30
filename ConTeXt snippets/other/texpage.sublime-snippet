@@ -6,5 +6,5 @@
 ]]></content>
   <tabTrigger>page</tabTrigger>
   <scope>text.tex.context - source</scope>
-  <description>start/stop TEX page</description>
+  <description>start/stop TeX page</description>
 </snippet>
