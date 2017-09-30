@@ -91,6 +91,9 @@ class LruCache:
     def __len__(self):
         return len(self.cache)
 
+    def clear(self):
+        self.cache.clear()
+
 
 class VirtualCommandDict:
     def __init__(
@@ -301,13 +304,12 @@ class SimpleContextMacroSignatureEventListener(
                 self.view.hide_popup()
 
     def get_popup_text(self, name):
-        if not hasattr(self, "prev_pop_up_state"):
-            self.prev_pop_up_state = ""
         new_pop_up_state = json.dumps(self._pop_ups, sort_keys=True)
-        if not (
-            new_pop_up_state == self.prev_pop_up_state and
-            name in self.html_cache[self.name]
-        ):
+        if not hasattr(self, "prev_pop_up_state"):
+            self.prev_pop_up_state = None
+        if new_pop_up_state != self.prev_pop_up_state:
+            self.html_cache[self.name].clear()
+        if name not in self.html_cache[self.name]:
             cmd = self.cache[self.name][name]
             self.html_cache[self.name][name] = self.loader.load(
                 name, cmd, protect_space=True, **self._pop_ups
