@@ -3,21 +3,23 @@
  *D Here are their meanings:
  *D
  *D \starttabulate[|rT|lp|]
- *D   \NC <c> \NC control sequence \type{\foo} \NC\NR
- *D   \NC <l> \NC the backslash in a control sequence \NC\NR
- *D   \NC <d> \NC delimiters, i.e.\ the brackets \type{[]} in \type{[...]};
- *D               also covers braces \type{{...}} and any other delimiters
- *D               \NC\NR
- *D   \NC <n> \NC number \NC\NR
- *D   \NC <k> \NC key, as in \type{key=value} \NC\NR
- *D   \NC <e> \NC equals, as in \type{key=value} \NC\NR
- *D   \NC <m> \NC comma, as in \type{key1=val1, key2=val2} \NC\NR
- *D   \NC <v> \NC default value \NC\NR
- *D   \NC <t> \NC type name, e.g.\ \type{CSNAME} means a control sequence
- *D               name \NC\NR
- *D   \NC <h> \NC inherits (heritage), styles the bit of text \quote{inherits:}
- *D               in \type{inherits: \foo} \NC\NR
- *D   \NC <o> \NC optional argument \NC\NR
+ *D   \NC <con> \NC control sequence \type{\foo} \NC\NR
+ *D   \NC <sco> \NC the backslash in a control sequence \NC\NR
+ *D   \NC <flo> \NC start/stop control sequence \type{\startfoo} \NC\NR
+ *D   \NC <sfl> \NC the backslash in a start/stop control sequence \NC\NR
+ *D   \NC <opt> \NC optional argument \NC\NR
+ *D   \NC <pun> \NC delimiters/punctuation, i.e.\ the brackets \type{[]} in
+ *D                 \type{[...]}; also covers braces \type{{...}} and any other
+ *D                 delimiters \NC\NR
+ *D   \NC <key> \NC key, as in \type{key=value} \NC\NR
+ *D   \NC <equ> \NC equals, as in \type{key=value} \NC\NR
+ *D   \NC <val> \NC default value \NC\NR
+ *D   \NC <num> \NC number \NC\NR
+ *D   \NC <typ> \NC type name, e.g.\ \type{CSNAME} means a control sequence
+ *D                 name \NC\NR
+ *D   \NC <com> \NC comma, as in \type{key1=val1, key2=val2} \NC\NR
+ *D   \NC <inh> \NC inherits (heritage), styles the bit of text \quote{inherits:}
+ *D                 in \type{inherits: \foo} \NC\NR
  *D \stoptabulate
  *D
  *D The approach we take to styling elements is (via the excellent
@@ -27,30 +29,33 @@
  *D tags in the natural way.
  *D
  *D \startitemize[columns, two, packed]
- *D   \startitem \type{--comma-background}             \stopitem
- *D   \startitem \type{--comma-color}                  \stopitem
- *D   \startitem \type{--comma-style}                  \stopitem
- *D   \startitem \type{--control-sequence-background} \stopitem
- *D   \startitem \type{--control-sequence-color}      \stopitem
- *D   \startitem \type{--control-sequence-style}      \stopitem
- *D   \startitem \type{--delimiter-background}        \stopitem
- *D   \startitem \type{--delimiter-color}             \stopitem
- *D   \startitem \type{--delimiter-style}             \stopitem
- *D   \startitem \type{--equals-background}           \stopitem
- *D   \startitem \type{--equals-color}                \stopitem
- *D   \startitem \type{--equals-style}                \stopitem
- *D   \startitem \type{--key-background}              \stopitem
- *D   \startitem \type{--key-color}                   \stopitem
- *D   \startitem \type{--key-style}                   \stopitem
- *D   \startitem \type{--numeric-background}          \stopitem
- *D   \startitem \type{--numeric-color}               \stopitem
- *D   \startitem \type{--numeric-style}               \stopitem
- *D   \startitem \type{--slash-background}            \stopitem
- *D   \startitem \type{--slash-color}                 \stopitem
- *D   \startitem \type{--slash-style}                 \stopitem
- *D   \startitem \type{--type-background}             \stopitem
- *D   \startitem \type{--type-color}                  \stopitem
- *D   \startitem \type{--type-style}                  \stopitem
+ *D   \startitem \type{--control-sequence-style}                 \stopitem
+ *D   \startitem \type{--control-sequence-color}                 \stopitem
+ *D   \startitem \type{--control-sequence-background}            \stopitem
+ *D   \startitem \type{--slash-control-sequence-style}           \stopitem
+ *D   \startitem \type{--slash-control-sequence-color}           \stopitem
+ *D   \startitem \type{--slash-control-sequence-background}      \stopitem
+ *D   \startitem \type{--flow-control-sequence-style}            \stopitem
+ *D   \startitem \type{--flow-control-sequence-color}            \stopitem
+ *D   \startitem \type{--flow-control-sequence-background}       \stopitem
+ *D   \startitem \type{--slash-flow-control-sequence-style}      \stopitem
+ *D   \startitem \type{--slash-flow-control-sequence-color}      \stopitem
+ *D   \startitem \type{--slash-flow-control-sequence-background} \stopitem
+ *D   \startitem \type{--delimiter-style}                        \stopitem
+ *D   \startitem \type{--delimiter-color}                        \stopitem
+ *D   \startitem \type{--delimiter-background}                   \stopitem
+ *D   \startitem \type{--key-style}                              \stopitem
+ *D   \startitem \type{--key-color}                              \stopitem
+ *D   \startitem \type{--key-background}                         \stopitem
+ *D   \startitem \type{--equals-style}                           \stopitem
+ *D   \startitem \type{--equals-color}                           \stopitem
+ *D   \startitem \type{--equals-background}                      \stopitem
+ *D   \startitem \type{--numeric-style}                          \stopitem
+ *D   \startitem \type{--numeric-color}                          \stopitem
+ *D   \startitem \type{--numeric-background}                     \stopitem
+ *D   \startitem \type{--comma-style}                            \stopitem
+ *D   \startitem \type{--comma-color}                            \stopitem
+ *D   \startitem \type{--comma-background}                       \stopitem
  *D \stopitemize
  */
 
@@ -83,59 +88,68 @@ div.inner {
     margin: 0.1rem;
 }
 
-div.popup o {
-    font-style: italic;
-}
-
-div.popup v {
-    text-decoration: underline;
-}
-
-div.popup m {
-    font-style: var(--comma-style);
-    color: var(--comma-color);
-    background-color: var(--comma-background);
-}
-
-div.popup c {
+div.popup con {
     font-style: var(--control-sequence-style);
     color: var(--control-sequence-color);
     background-color: var(--control-sequence-background);
 }
 
-div.popup d {
+div.popup sco {
+    font-style: var(--slash-control-sequence-style);
+    color: var(--slash-control-sequence-color);
+    background-color: var(--slash-control-sequence-background);
+}
+
+div.popup flo {
+    font-style: var(--flow-control-sequence-style);
+    color: var(--flow-control-sequence-color);
+    background-color: var(--flow-control-sequence-background);
+}
+
+div.popup sfl {
+    font-style: var(--slash-flow-control-sequence-style);
+    color: var(--slash-flow-control-sequence-color);
+    background-color: var(--slash-flow-control-sequence-background);
+}
+
+div.popup opt {
+    font-style: italic;
+}
+
+div.popup inh {
+    font-style: italic;
+}
+
+div.popup pun {
     font-style: var(--delimiter-style);
     color: var(--delimiter-color);
     background-color: var(--delimiter-background);
 }
 
-div.popup e {
-    font-style: var(--equals-style);
-    color: var(--equals-color);
-    background-color: var(--equals-background);
-}
-
-div.popup k {
+div.popup key {
     font-style: var(--key-style);
     color: var(--key-color);
     background-color: var(--key-background);
 }
 
-div.popup n {
+div.popup equ {
+    font-style: var(--equals-style);
+    color: var(--equals-color);
+    background-color: var(--equals-background);
+}
+
+div.popup val {
+    text-decoration: underline;
+}
+
+div.popup num {
     font-style: var(--numeric-style);
     color: var(--numeric-color);
     background-color: var(--numeric-background);
 }
 
-div.popup l {
-    font-style: var(--slash-style);
-    color: var(--slash-color);
-    background-color: var(--slash-background);
+div.popup com {
+    font-style: var(--comma-style);
+    color: var(--comma-color);
+    background-color: var(--comma-background);
 }
-
-/* div.popup t {
- *     font-style: var(--type-style);
- *     color: var(--type-color);
- *     background-color: var(--type-background);
- * }
- */

@@ -7,6 +7,7 @@ import string
 import json
 import os
 from .scripts import utilities
+from .scripts import randomize
 from .scripts import html_css
 from .scripts import scopes
 from .scripts import files
@@ -36,42 +37,46 @@ TEMPLATE = """
 
 EXTRA_STYLE = """
 html {{
-    --comma-background: {com_bg};
-    --comma-color: {com_color};
-    --comma-style: {com_style};
+    --control-sequence-style: {con_style};
+    --control-sequence-color: {con_color};
+    --control-sequence-background: {con_background};
 
-    --control-sequence-background: {cs_bg};
-    --control-sequence-color: {cs_color};
-    --control-sequence-style: {cs_style};
+    --slash-control-sequence-style: {sco_style};
+    --slash-control-sequence-color: {sco_color};
+    --slash-control-sequence-background: {sco_background};
 
-    --delimiter-background: {del_bg};
-    --delimiter-color: {del_color};
-    --delimiter-style: {del_style};
+    --flow-control-sequence-style: {flo_style};
+    --flow-control-sequence-color: {flo_color};
+    --flow-control-sequence-background: {flo_background};
 
-    --equals-background: {eq_bg};
-    --equals-color: {eq_color};
-    --equals-style: {eq_style};
+    --slash-flow-control-sequence-style: {sfl_style};
+    --slash-flow-control-sequence-color: {sfl_color};
+    --slash-flow-control-sequence-background: {sfl_background};
 
-    --key-background: {key_bg};
-    --key-color: {key_color};
+    --delimiter-style: {pun_style};
+    --delimiter-color: {pun_color};
+    --delimiter-background: {pun_background};
+
     --key-style: {key_style};
+    --key-color: {key_color};
+    --key-background: {key_background};
 
-    --numeric-background: {num_bg};
-    --numeric-color: {num_color};
+    --equals-style: {equ_style};
+    --equals-color: {equ_color};
+    --equals-background: {equ_background};
+
     --numeric-style: {num_style};
+    --numeric-color: {num_color};
+    --numeric-background: {num_background};
 
-    --slash-background: {slash_bg};
-    --slash-color: {slash_color};
-    --slash-style: {slash_style};
-
-    --type-background: {type_bg};
-    --type-color: {type_color};
-    --type-style: {type_style};
+    --comma-style: {com_style};
+    --comma-color: {com_color};
+    --comma-background: {com_background};
 }}
 """
 
 
-class LruCache:
+class LeastRecentlyUsedCache:
     def __init__(self, max_size=100):
         self.max_size = max_size
         self.cache = collections.OrderedDict()
@@ -95,41 +100,98 @@ class LruCache:
         self.cache.clear()
 
 
+class FuzzyOrderedDict:
+    def __init__(self, iterable=[], max_size=100):
+        self.max_size = max_size
+        self.cache = collections.deque(iterable, max_size)
+
+    def add_left(self, *args):
+        if len(args) == 1:
+            self._add_left(*args)
+        elif len(args) == 2:
+            self._add_left([args])
+
+    def _add_left(self, args):
+        for k, v in reversed(args):
+            self.cache.appendleft([k, v])
+
+    def fuzzy_add_right(self, *args):
+        if len(args) == 1:
+            self._fuzzy_add_right(*args)
+        elif len(args) == 2:
+            self._fuzzy_add_right([args])
+
+    def _fuzzy_add_right(self, args):
+        max_len = self.cache.maxlen
+        cur_len = len(self.cache)
+        add_len = len(args)
+        add_amt = min(add_len, max_len - cur_len)
+
+        for k, v in args[:add_amt]:
+            self.cache.append((k, v))
+
+        indices = set()
+        for k, v in reversed(args[add_amt:]):
+            i = max_len - 1 - randomize.poly_biased_randint(
+                0, max_len - 1, ignore=indices, power=3
+            )
+            self.cache[i] = (k, v)
+            indices.add(i)
+
+    def __iter__(self):
+        return iter(self.cache)
+
+    def __contains__(self, key):
+        return key in [k for k, v in self]
+
+    def __getitem__(self, key):
+        for k, v in self:
+            if key == k:
+                return v
+        else:
+            raise KeyError
+
+    def __len__(self):
+        return len(self.cache)
+
+    def __str__(self):
+        return str(self.cache)
+
+
 class VirtualCommandDict:
     def __init__(
-        self, dir_, cmds="_commands.json", max_size=100, local_size=10
+        self, dir_, max_size=100, local_size=10, cmds="_commands.json"
     ):
         self.dir = dir_
         self.missing = sorted(f for f in os.listdir(self.dir) if f != cmds)
         with open(os.path.join(self.dir, cmds)) as f:
-            self.keys = set(json.load(f))
-        self.max_size = max_size
+            self.cmds = set(json.load(f))
         self.local_size = local_size
-        self.cache = collections.OrderedDict()
+        self.cache = FuzzyOrderedDict(max_size=max_size)
 
     def __setitem__(self, key, value):
-        self.keys.add(key)
-        self.cache[key] = value
-        self.cache.move_to_end(key, last=False)
-        while len(self.cache) > self.max_size:
-            self.cache.popitem(last=True)
+        self.cmds.add(key)
+        self.cache.add_left(key, value)
 
     def __getitem__(self, key):
-        if key in self.keys:
+        if key in self.cmds:
             if key in self.cache:
                 return self.cache[key]
             else:
                 name = min(f for f in self.missing if key <= f)
                 with open(os.path.join(self.dir, name)) as f:
                     data = json.load(f)
-                while len(self.cache) + self.local_size > self.max_size:
-                    self.cache.popitem(last=True)
-                for k in utilities.safe_random_sample(
-                    list(data), self.local_size
-                ):
-                    self.keys.add(k)
-                    self.cache[k] = data[k]
-                    self.cache.move_to_end(k, last=True)
+
+                sample = [
+                    (k, data[k])
+                    for k in randomize.safe_random_sample(
+                        list(data), self.local_size
+                    )
+                ]
+                self.cache.fuzzy_add_right(sample)
+                for k, v in sample:
+                    self.cmds.add(k)
+
                 self[key] = data[key]
                 return self[key]
         else:
@@ -139,10 +201,10 @@ class VirtualCommandDict:
         return len(self.cache)
 
     def __contains__(self, key):
-        return key in self.keys
+        return key in self.cmds
 
-    def get_keys(self):
-        return sorted(self.keys)
+    def get_cmds(self):
+        return sorted(self.cmds)
 
 
 class SimpleContextMacroSignatureEventListener(
@@ -226,7 +288,7 @@ class SimpleContextMacroSignatureEventListener(
         self.cache[self.name] = VirtualCommandDict(
             self.interface_path, max_size=500, local_size=25
         )
-        self.html_cache[self.name] = LruCache(max_size=500)
+        self.html_cache[self.name] = LeastRecentlyUsedCache(max_size=500)
 
     def is_visible(self):
         return scopes.is_context(self.view)
@@ -242,7 +304,7 @@ class SimpleContextMacroSignatureEventListener(
             ):
                 return [
                     ["\\" + ctrl, ""]
-                    for ctrl in self.cache[self.name].get_keys()
+                    for ctrl in self.cache[self.name].get_cmds()
                 ]
 
     def on_hover(self, point, hover_zone):
@@ -326,42 +388,48 @@ class SimpleContextMacroSignatureEventListener(
         )
 
     def get_extra_style(self):
-        cs = mdpopups.scope2style(self.view, "support.function")
-        slash = mdpopups.scope2style(
+        con = mdpopups.scope2style(self.view, "support.function")
+        sco = mdpopups.scope2style(
             self.view, "support.function punctuation.definition.backslash"
         )
-        num = mdpopups.scope2style(self.view, "constant.numeric")
+        flo = mdpopups.scope2style(self.view, "keyword.control")
+        sfl = mdpopups.scope2style(
+            self.view, "keyword.control punctuation.definition.backslash"
+        )
+        pun = mdpopups.scope2style(self.view, "punctuation.section")
         key = mdpopups.scope2style(self.view, "variable.parameter")
-        eq = mdpopups.scope2style(self.view, "keyword.operator.assignment")
-        del_ = mdpopups.scope2style(self.view, "punctuation.section")
+        equ = mdpopups.scope2style(self.view, "keyword.operator.assignment")
+        num = mdpopups.scope2style(self.view, "constant.numeric")
         com = mdpopups.scope2style(self.view, "punctuation.separator.comma")
-        type_ = mdpopups.scope2style(self.view, "storage.type")
 
         self.extra_style = EXTRA_STYLE.format(
-            com_bg=com.get("background", "--background"),
-            com_color=com.get("color"),
-            com_style=com.get("style"),
-            cs_bg=cs.get("background", "--background"),
-            cs_color=cs.get("color"),
-            cs_style=cs.get("style"),
-            del_bg=del_.get("background", "--background"),
-            del_color=del_.get("color"),
-            del_style=del_.get("style"),
-            eq_bg=eq.get("background", "--background"),
-            eq_color=eq.get("color"),
-            eq_style=eq.get("style"),
-            key_bg=key.get("background", "--background"),
-            key_color=key.get("color"),
+            con_style=con.get("style"),
+            con_color=con.get("color"),
+            con_background=con.get("background", "--background"),
+            sco_style=sco.get("style"),
+            sco_color=sco.get("color"),
+            sco_background=sco.get("background", "--background"),
+            flo_style=flo.get("style"),
+            flo_color=flo.get("color"),
+            flo_background=flo.get("background", "--background"),
+            sfl_style=sfl.get("style"),
+            sfl_color=sfl.get("color"),
+            sfl_background=sfl.get("background", "--background"),
+            pun_style=pun.get("style"),
+            pun_color=pun.get("color"),
+            pun_background=pun.get("background", "--background"),
             key_style=key.get("style"),
-            num_bg=num.get("background", "--background"),
-            num_color=num.get("color"),
+            key_color=key.get("color"),
+            key_background=key.get("background", "--background"),
+            equ_style=equ.get("style"),
+            equ_color=equ.get("color"),
+            equ_background=equ.get("background", "--background"),
             num_style=num.get("style"),
-            slash_bg=slash.get("background", "--background"),
-            slash_color=slash.get("color"),
-            slash_style=slash.get("style"),
-            type_bg=type_.get("background", "--background"),
-            type_color=type_.get("color"),
-            type_style=type_.get("style"),
+            num_color=num.get("color"),
+            num_background=num.get("background", "--background"),
+            com_style=com.get("style"),
+            com_color=com.get("color"),
+            com_background=com.get("background", "--background"),
         )
 
     def on_navigate(self, href):

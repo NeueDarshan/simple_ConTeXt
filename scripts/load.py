@@ -107,7 +107,7 @@ class InterfaceLoader:
     def render_aux(self, list_):
         self._syntax = [
             " " * (len(self.name) + 1),
-            "<l>\\</l><c>{}</c>".format(self.name),
+            html_css.control_sequence(self.name),
             " " * (len(self.name) + 1)
         ]
         self._docstring = []
@@ -152,16 +152,16 @@ class InterfaceLoader:
     def do_syntax(self):
         if self._optional:
             for i in range(3):
-                self._syntax[i] += "<o>"
+                self._syntax[i] += "<opt>"
         self._syntax[0] += \
-            tagged_format(self._n, "n", self._len, align="^")
+            tagged_format(self._n, "num", self._len, align="^")
         self._syntax[1] += self._rendering
         self._syntax[2] += normal_format(
             "OPT" if self._optional else "", self._len, align="^", min_=3
         )
         if self._optional:
             for i in range(3):
-                self._syntax[i] += "</o>"
+                self._syntax[i] += "</opt>"
 
     def do_docstring(self):
         if isinstance(self._content, str):
@@ -173,13 +173,13 @@ class InterfaceLoader:
 
         if self._inherits:
             if isinstance(self._inherits, list):
-                inherits = "<h>inherits:</h> " + ", ".join(
-                    "<l>\\</l><c>{}</c>".format(i) for i in self._inherits
+                inherits = "<inh>inherits:</inh> " + ", ".join(
+                    html_css.control_sequence(i) for i in self._inherits
                 )
             else:
                 inherits = (
-                    "<h>inherits:</h> " +
-                    "<l>\\</l><c>{}</c>".format(self._inherits)
+                    "<inh>inherits:</inh> " +
+                    html_css.control_sequence(self._inherits)
                 )
             if self._content:
                 self._docstring[-1] += "\n" + self.guide(num=False) + inherits
@@ -267,7 +267,7 @@ class InterfaceLoader:
 
     def guide(self, num=True):
         if num:
-            return tagged_format(self._n, "n", 4)
+            return tagged_format(self._n, "num", 4)
         else:
             return "    "
 
@@ -275,6 +275,6 @@ class InterfaceLoader:
         start = self.guide(num=num)
         if key:
             len_ += len(key) - len(html_css.strip_tags(key))
-            return start + tagged_format(key, "k", len_) + " <e>=</e>"
+            return start + tagged_format(key, "key", len_) + " <equ>=</equ>"
         else:
             return start + (" " * (len_ + 2))

@@ -1,13 +1,5 @@
 import sublime
 import itertools
-import random
-
-
-def safe_random_sample(data, size):
-    if size < len(data):
-        return random.sample(data, size)
-    else:
-        return data
 
 
 def remove_duplicates(list_):

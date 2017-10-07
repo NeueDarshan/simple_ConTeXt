@@ -31,12 +31,16 @@ class SimpleContextReferenceSelectorCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         return scopes.is_context(self.window.active_view())
 
-    def run(self):
+    def run(self, on_select="insert"):
         self.reload_settings()
-        self.ref_init_point = self.window.active_view().sel()[0].end()
+        self.init_sel = [s for s in self.window.active_view().sel()]
+        references = {
+            "insert": self.select_reference,
+            "do_nothing": self.do_nothing,
+        }
         self.window.show_quick_panel(
             list(self.references.keys()),
-            self.select_reference,
+            references.get(on_select, self.do_nothing),
             on_highlight=self.highlight_reference
         )
 
@@ -47,6 +51,13 @@ class SimpleContextReferenceSelectorCommand(sublime_plugin.WindowCommand):
             view.sel().clear()
             view.sel().add(region)
             view.show(region)
+
+    def do_nothing(self, index):
+        sel = self.window.active_view().sel()
+        sel.clear()
+        for region in self.init_sel:
+            sel.add(region)
+            return
 
     def select_reference(self, index):
         view = self.window.active_view()

@@ -1,6 +1,30 @@
 import re
 
 
+MODULE = r"use(lua|tex)?module"
+
+CONDITIONAL_A = \
+    r"[a-zA-Z]*doif[a-zA-Z]*(else)?|[a-zA-Z]*doif(else)?[[a-zA-Z]]*"
+
+CONDITIONAL_B = \
+    r"if[[:alpha:]]*|[[:alpha:]]*(true|false)|loop|repeat|then|or|else|fi"
+
+
+def control_sequence(text):
+    try:
+        if (
+            text.startswith("start") or text.startswith("stop") or
+            re.match(MODULE, text) or re.match(CONDITIONAL_A, text) or
+            re.match(CONDITIONAL_B, text)
+        ):
+            return "<sfl>\\</sfl><flo>{}</flo>".format(text)
+        else:
+            return "<sco>\\</sco><con>{}</con>".format(text)
+    except AttributeError as e:
+        print("err", text)
+        raise e
+
+
 def unescape(text):
     return text.replace("&gt;", ">").replace("&lt;", "<").replace(
         "&nbsp;", " ").replace("<br>", "\n")

@@ -4,6 +4,7 @@ import html
 import copy
 import os
 from . import utilities
+from . import html_css
 from . import files
 
 
@@ -143,9 +144,8 @@ class InterfaceSaver:
                 obj.append(self.do_constant(child))
             elif self.tag_is(child, "inherit"):
                 obj.append(
-                    "<h>inherits:</h> <l>\\</l><c>{}</c>".format(
-                        self.do_inherit(child)
-                    )
+                    "<inh>inherits:</inh> " +
+                    html_css.control_sequence(self.do_inherit(child))
                 )
             elif self.tag_is(child, "keywords"):
                 obj.append(self.do_keywords(child))
@@ -258,7 +258,7 @@ class InterfaceSaver:
         prefix = self.transform(attrib.get("prefix", ""))
         method = self.method.get(attrib.get("method", "none"))
         if self.is_true(attrib.get("default")):
-            start, stop = "<v>", "</v>"
+            start, stop = "<val>", "</val>"
         else:
             start, stop = "", ""
         return (
@@ -315,9 +315,10 @@ class InterfaceSaver:
             elif self.tag_is(child, "resolve"):
                 content.append(self.do_resolve(child))
             elif self.tag_is(child, "inherit"):
-                content.append("<h>inherits:</h> <l>\\</l><c>{}</c>".format(
-                    self.do_inherit(child)
-                ))
+                content.append(
+                    "<inh>inherits:</inh> " +
+                    html_css.control_sequence(self.do_inherit(child))
+                )
             else:
                 message = 'unexpected tag, attrib: "{}", tag: "{}"'
                 raise Exception(message.format(child.attrib, child.tag))
@@ -363,7 +364,7 @@ class InterfaceSaver:
 
     def do_generic(self, type_, render, attrib):
         return {
-            "con": "<t>{}</t>".format(self.escape(type_)),
+            "con": "<typ>{}</typ>".format(self.escape(type_)),
             "inh": None,
             "opt": self.is_true(attrib.get("optional")),
             "ren": self.render(render, attrib),
@@ -379,49 +380,50 @@ class InterfaceSaver:
     def render(self, mode, attrib):
         is_list = self.is_true(attrib.get("list"))
         delims = self.delimiters.get(attrib.get("delimiters", "default"), "[]")
-        punct = "<d>{}</d>"
+        punct = "<pun>{}</pun>"
         if delims:
             start, stop = punct.format(delims[0]), punct.format(delims[1])
         else:
             start, stop = "", ""
 
         if mode == "keywords":
-            middle = "...<m>,</m>..." if is_list else "..."
+            middle = "...<com>,</com>..." if is_list else "..."
             return start + middle + stop
         elif mode == "assignments":
             middle = (
-                "..<m>,</m><k>..</k><e>=</e>..<m>,</m>.."
-                if is_list else "<k>..</k><e>=</e>.."
+                "..<com>,</com><key>..</key><equ>=</equ>..<com>,</com>.."
+                if is_list else "<key>..</key><equ>=</equ>.."
             )
             return start + middle + stop
         elif mode == "triplet":
-            middle = "..<m>,</m>x:y:z<m>,</m>.." if is_list else "x:y:z"
+            middle = \
+                "..<com>,</com>x:y:z<com>,</com>.." if is_list else "x:y:z"
             return start + middle + stop
         elif mode == "index":
             return start + "..+...+.." + stop
         elif mode == "template":
             return start + "|...|" + stop
         elif mode == "angles":
-            return "<d>{}</d>...<d>{}</d>".format(
+            return "<pun>{}</pun>...<pun>{}</pun>".format(
                 self.escape("<<"), self.escape(">>")
             )
         elif mode == "apply":
             if is_list:
-                middle = "..<m>,</m><k>..</k><e>{}</e>..,..".format(
-                    self.escape("=>")
-                )
+                temp = "..<com>,</com><key>..</key><equ>{}</equ>..,.."
+                middle = temp.format(self.escape("=>"))
             else:
-                middle = "<k>..</k><e>{}</e>..".format(self.escape("=>"))
+                middle = \
+                    "<key>..</key><equ>{}</equ>..".format(self.escape("=>"))
             return start + middle + stop
         elif mode == "position":
-            middle = "...<m>,</m>..." if is_list else "..."
+            middle = "...<com>,</com>..." if is_list else "..."
             return punct.format("(") + middle + punct.format(")")
         elif mode == "csname":
-            return "<l>\\</l><c>...</c>"
+            return html_css.control_sequence("...")
         elif mode in ["content", "text"]:
-            return "<d>{</d>...<d>}</d>"
+            return "<pun>{</pun>...<pun>}</pun>"
         elif mode == "delimiter":
-            return "<l>\\</l><c>{}</c>".format(self.escape(attrib["name"]))
+            return html_css.control_sequence(self.escape(attrib["name"]))
         else:
             msg = 'unexpected mode, mode: "{}", attrib: "{}"'
             if self.tolerant:
@@ -459,7 +461,7 @@ class InterfaceSaver:
         if text == "cd:sign":
             return f("[+-]")
         elif text.startswith("cd:"):
-            return "<t>" + f(text[3:].upper()) + "</t>"
+            return "<typ>" + f(text[3:].upper()) + "</typ>"
         else:
             return f(text)
 
