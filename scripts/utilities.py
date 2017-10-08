@@ -1,5 +1,7 @@
 import sublime
 import itertools
+import collections
+from . import randomize
 
 
 def remove_duplicates(list_):
@@ -130,3 +132,86 @@ def process_options(name, options, input_, base):
             cmd = [name]
 
     return cmd
+
+
+class LeastRecentlyUsedCache:
+    def __init__(self, max_size=100):
+        self.max_size = max_size
+        self.cache = collections.OrderedDict()
+
+    def __setitem__(self, key, value):
+        self.cache[key] = value
+        self.cache.move_to_end(key, last=False)
+        while len(self.cache) > self.max_size:
+            self.cache.popitem(last=True)
+
+    def __getitem__(self, key):
+        return self.cache[key]
+
+    def __contains__(self, key):
+        return key in self.cache
+
+    def __len__(self):
+        return len(self.cache)
+
+    def clear(self):
+        self.cache.clear()
+
+
+class FuzzyOrderedDict:
+    def __init__(self, iterable=[], max_size=100):
+        self.max_size = max_size
+        self.cache = collections.deque(iterable, max_size)
+
+    def add_left(self, *args):
+        if len(args) == 1:
+            self._add_left(*args)
+        elif len(args) == 2:
+            self._add_left([args])
+
+    def _add_left(self, args):
+        for k, v in reversed(args):
+            self.cache.appendleft([k, v])
+
+    def fuzzy_add_right(self, *args):
+        if len(args) == 1:
+            self._fuzzy_add_right(*args)
+        elif len(args) == 2:
+            self._fuzzy_add_right([args])
+
+    def _fuzzy_add_right(self, args):
+        max_len = self.cache.maxlen
+        cur_len = len(self.cache)
+        add_len = len(args)
+        add_amt = min(add_len, max_len - cur_len)
+
+        for k, v in args[:add_amt]:
+            self.cache.append((k, v))
+
+        indices = set()
+        for k, v in reversed(args[add_amt:]):
+            i = max_len - 1 - randomize.poly_biased_randint(
+                0, max_len - 1, ignore=indices, power=3
+            )
+            self.cache[i] = (k, v)
+            indices.add(i)
+
+    def __iter__(self):
+        return iter(self.cache)
+
+    def __contains__(self, key):
+        return key in [k for k, v in self]
+
+    def __getitem__(self, key):
+        for k, v in self:
+            if key == k:
+                return v
+        else:
+            raise KeyError
+
+    def __len__(self):
+        return len(self.cache)
+
+    def __str__(self):
+        return str(self.cache)
+

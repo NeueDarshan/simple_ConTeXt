@@ -1,6 +1,5 @@
 import sublime
 import sublime_plugin
-import collections
 import threading
 import mdpopups
 import string
@@ -11,7 +10,6 @@ from .scripts import randomize
 from .scripts import html_css
 from .scripts import scopes
 from .scripts import files
-from .scripts import save
 from .scripts import load
 
 
@@ -76,88 +74,6 @@ html {{
 """
 
 
-class LeastRecentlyUsedCache:
-    def __init__(self, max_size=100):
-        self.max_size = max_size
-        self.cache = collections.OrderedDict()
-
-    def __setitem__(self, key, value):
-        self.cache[key] = value
-        self.cache.move_to_end(key, last=False)
-        while len(self.cache) > self.max_size:
-            self.cache.popitem(last=True)
-
-    def __getitem__(self, key):
-        return self.cache[key]
-
-    def __contains__(self, key):
-        return key in self.cache
-
-    def __len__(self):
-        return len(self.cache)
-
-    def clear(self):
-        self.cache.clear()
-
-
-class FuzzyOrderedDict:
-    def __init__(self, iterable=[], max_size=100):
-        self.max_size = max_size
-        self.cache = collections.deque(iterable, max_size)
-
-    def add_left(self, *args):
-        if len(args) == 1:
-            self._add_left(*args)
-        elif len(args) == 2:
-            self._add_left([args])
-
-    def _add_left(self, args):
-        for k, v in reversed(args):
-            self.cache.appendleft([k, v])
-
-    def fuzzy_add_right(self, *args):
-        if len(args) == 1:
-            self._fuzzy_add_right(*args)
-        elif len(args) == 2:
-            self._fuzzy_add_right([args])
-
-    def _fuzzy_add_right(self, args):
-        max_len = self.cache.maxlen
-        cur_len = len(self.cache)
-        add_len = len(args)
-        add_amt = min(add_len, max_len - cur_len)
-
-        for k, v in args[:add_amt]:
-            self.cache.append((k, v))
-
-        indices = set()
-        for k, v in reversed(args[add_amt:]):
-            i = max_len - 1 - randomize.poly_biased_randint(
-                0, max_len - 1, ignore=indices, power=3
-            )
-            self.cache[i] = (k, v)
-            indices.add(i)
-
-    def __iter__(self):
-        return iter(self.cache)
-
-    def __contains__(self, key):
-        return key in [k for k, v in self]
-
-    def __getitem__(self, key):
-        for k, v in self:
-            if key == k:
-                return v
-        else:
-            raise KeyError
-
-    def __len__(self):
-        return len(self.cache)
-
-    def __str__(self):
-        return str(self.cache)
-
-
 class VirtualCommandDict:
     def __init__(
         self, dir_, max_size=100, local_size=10, cmds="_commands.json"
@@ -167,7 +83,7 @@ class VirtualCommandDict:
         with open(os.path.join(self.dir, cmds)) as f:
             self.cmds = set(json.load(f))
         self.local_size = local_size
-        self.cache = FuzzyOrderedDict(max_size=max_size)
+        self.cache = utilities.FuzzyOrderedDict(max_size=max_size)
 
     def __setitem__(self, key, value):
         self.cmds.add(key)
@@ -230,6 +146,7 @@ class SimpleContextMacroSignatureEventListener(
             files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         self.load_css()
         self.name = files.file_as_slug(self._path)
+        self.size = self.view.size()
         if (
             self.state == IDLE and
             self.is_visible() and
@@ -238,19 +155,30 @@ class SimpleContextMacroSignatureEventListener(
             self.state = RUNNING
             thread = threading.Thread(target=self.reload_settings_aux)
             thread.start()
-        self.size = self.view.size()
 
     def reload_settings_aux(self):
         self.interface_path = os.path.join(
             sublime.packages_path(), "simple_ConTeXt", "interface", self.name
         )
-        if not os.path.exists(self.interface_path):
-            os.makedirs(os.path.join(self.interface_path))
-        commands = os.path.join(self.interface_path, "_commands.json")
-        if not os.path.exists(commands):
-            self.save_interface()
+        self.view.window().run_command(
+            "simple_context_regenerate_interface_files",
+            {
+                "paths": [self._path],
+                "each": False,
+                "threaded": True,
+                "overwrite": False,
+            }
+        )
         self.load_commands()
         self.state = IDLE
+
+    #D Hmm\periods
+    # def on_post_window_command(self, window, command_name, args):
+    #     if (
+    #         window == self.view.window() and
+    #         command_name == "simple_context_regenerate_interface_files"
+    #     ):
+    #         self.load_commands()
 
     def load_css(self):
         if not hasattr(self, "style"):
@@ -260,35 +188,13 @@ class SimpleContextMacroSignatureEventListener(
                 )
             )
 
-    def save_interface(self):
-        saver = save.InterfaceSaver(flags=self.flags)
-        saver.save(self._path, modules=True, tolerant=True)
-        cmds = saver.encode()
-        cache, key, size = {}, None, 0
-        for name in sorted(cmds):
-            key = name
-            val = cmds[key]
-            size += len(str(val))
-            cache[key] = val
-            if size > self.file_min:
-                file = os.path.join(self.interface_path, "{}.json".format(key))
-                with open(file, encoding="utf-8", mode="w") as f:
-                    json.dump(cache, f)
-                cache.clear()
-                size = 0
-        if cache:
-            file = os.path.join(self.interface_path, "{}.json".format(key))
-            with open(file, encoding="utf-8", mode="w") as f:
-                json.dump(cache, f)
-        file = os.path.join(self.interface_path, "_commands.json")
-        with open(file, encoding="utf-8", mode="w") as f:
-            json.dump(sorted(cmds), f)
-
     def load_commands(self):
-        self.cache[self.name] = VirtualCommandDict(
-            self.interface_path, max_size=500, local_size=25
-        )
-        self.html_cache[self.name] = LeastRecentlyUsedCache(max_size=500)
+        if os.path.exists(os.path.join(self.interface_path, "_commands.json")):
+            self.cache[self.name] = VirtualCommandDict(
+                self.interface_path, max_size=500, local_size=25
+            )
+            self.html_cache[self.name] = \
+                utilities.LeastRecentlyUsedCache(max_size=500)
 
     def is_visible(self):
         return scopes.is_context(self.view)
