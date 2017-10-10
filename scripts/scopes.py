@@ -86,6 +86,12 @@ REFERENCE = "entity.name.label.reference.context"
 
 FILE_NAME = "meta.file-name.context"
 
+DEFINE_MAIN = "entity.name.function.context"
+
+DEFINE_OTHER = "entity.name.function.other.context"
+
+DEFINE = OR(DEFINE_MAIN, DEFINE_OTHER)
+
 
 def skip_while_match(view, begin, end, scope):
     point = begin

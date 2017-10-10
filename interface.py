@@ -64,7 +64,6 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             self.run_aux_iii(path, dir_)
 
         self.state = IDLE
-        return 12
 
     def run_aux_ii(self, path, dir_):
         if os.path.exists(dir_):

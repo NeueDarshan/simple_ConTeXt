@@ -15,11 +15,11 @@ contexts:
 
   main:
     - include: constant
-    - include: scope:source.metapost#punctuation
     - include: type
     - include: scope:source.metapost#keyword
     - include: internal-parameter
     - include: operator
+    - include: scope:source.metapost#punctuation
     - include: function
     - include: scope:source.metapost#definition
     - include: environment

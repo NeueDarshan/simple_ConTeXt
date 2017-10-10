@@ -88,6 +88,19 @@ div.inner {
     margin: 0.1rem;
 }
 
+div.popup opt {
+    font-style: italic;
+}
+
+div.popup inh {
+    font-style: italic;
+}
+
+div.popup val {
+    font-weight: bold;
+    /* text-decoration: underline; */
+}
+
 div.popup con {
     font-style: var(--control-sequence-style);
     color: var(--control-sequence-color);
@@ -112,14 +125,6 @@ div.popup sfl {
     background-color: var(--slash-flow-control-sequence-background);
 }
 
-div.popup opt {
-    font-style: italic;
-}
-
-div.popup inh {
-    font-style: italic;
-}
-
 div.popup pun {
     font-style: var(--delimiter-style);
     color: var(--delimiter-color);
@@ -136,10 +141,6 @@ div.popup equ {
     font-style: var(--equals-style);
     color: var(--equals-color);
     background-color: var(--equals-background);
-}
-
-div.popup val {
-    text-decoration: underline;
 }
 
 div.popup num {

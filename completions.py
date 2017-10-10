@@ -157,28 +157,24 @@ class SimpleContextMacroSignatureEventListener(
             thread.start()
 
     def reload_settings_aux(self):
-        self.interface_path = os.path.join(
-            sublime.packages_path(), "simple_ConTeXt", "interface", self.name
-        )
         self.view.window().run_command(
             "simple_context_regenerate_interface_files",
             {
                 "paths": [self._path],
                 "each": False,
-                "threaded": True,
+                "threaded": False,
                 "overwrite": False,
             }
         )
-        self.load_commands()
+        self.load_commands(
+            os.path.join(
+                sublime.packages_path(),
+                "simple_ConTeXt",
+                "interface",
+                self.name
+            )
+        )
         self.state = IDLE
-
-    #D Hmm\periods
-    # def on_post_window_command(self, window, command_name, args):
-    #     if (
-    #         window == self.view.window() and
-    #         command_name == "simple_context_regenerate_interface_files"
-    #     ):
-    #         self.load_commands()
 
     def load_css(self):
         if not hasattr(self, "style"):
@@ -188,13 +184,14 @@ class SimpleContextMacroSignatureEventListener(
                 )
             )
 
-    def load_commands(self):
-        if os.path.exists(os.path.join(self.interface_path, "_commands.json")):
-            self.cache[self.name] = VirtualCommandDict(
-                self.interface_path, max_size=500, local_size=25
-            )
+    def load_commands(self, path):
+        try:
+            self.cache[self.name] = \
+                VirtualCommandDict(path, max_size=500, local_size=25)
             self.html_cache[self.name] = \
                 utilities.LeastRecentlyUsedCache(max_size=500)
+        except FileNotFoundError:
+            pass
 
     def is_visible(self):
         return scopes.is_context(self.view)
@@ -284,13 +281,13 @@ class SimpleContextMacroSignatureEventListener(
             )
         self.prev_pop_up_state = new_pop_up_state
         self.popup_name = name
-        self.get_extra_style()
+
         return TEMPLATE.format(
             body="<br><br>".join(
                 s for s in self.html_cache[self.name][name] if s
             ),
             style=self.style,
-            extra_style=self.extra_style
+            extra_style=self.get_extra_style(),
         )
 
     def get_extra_style(self):
@@ -308,7 +305,7 @@ class SimpleContextMacroSignatureEventListener(
         num = mdpopups.scope2style(self.view, "constant.numeric")
         com = mdpopups.scope2style(self.view, "punctuation.separator.comma")
 
-        self.extra_style = EXTRA_STYLE.format(
+        return EXTRA_STYLE.format(
             con_style=con.get("style"),
             con_color=con.get("color"),
             con_background=con.get("background", "--background"),

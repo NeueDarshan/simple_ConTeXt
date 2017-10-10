@@ -17,11 +17,11 @@ contexts:
 
   main:
     - include: constant
-    - include: punctuation
     - include: type
     - include: keyword
     - include: internal-parameter
     - include: operator
+    - include: punctuation
     - include: function
     - include: definition
     - include: environment
