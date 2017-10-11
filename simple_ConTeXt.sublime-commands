@@ -21,7 +21,7 @@
     "command": "simple_context_regenerate_interface_files",
     "args":
     {
-      "each": true,
+      "do_all": true,
       "overwrite": true,
       "threaded": true,
     },

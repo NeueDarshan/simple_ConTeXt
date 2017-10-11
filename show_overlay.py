@@ -23,6 +23,13 @@ def definition_clean(text):
         return text
 
 
+class SimpleContextInsertTextCommand(sublime_plugin.TextCommand):
+    def run(self, edit, text=""):
+        offset = 0
+        for region in self.view.sel():
+            offset += self.view.insert(edit, region.begin() + offset, text)
+
+
 class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,28 +55,60 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
 
     #D For our use, we give a descriptive name as a \type{scope}. But you can
     #D override this by providing a \type{scope_raw} instead.
-    def run(self, scope="reference", scope_raw=None, on_choose=None):
+    def run(
+        self,
+        scope="reference",
+        scope_raw=None,
+        on_choose=None,
+        selected_index=0
+    ):
         self.reload_settings()
         self.orig_sel = [(region.a, region.b) for region in self.view.sel()]
         self.on_choose = on_choose
         self.matches = sorted(
-            self.view.find_by_selector(
-                scope_raw if scope_raw is not None else
-                self.scopes.get(scope, scopes.REFERENCE)
-            ),
+            [
+                region for region in self.view.find_by_selector(
+                    scope_raw if scope_raw is not None else
+                    self.scopes.get(scope, scopes.REFERENCE)
+                )
+                if region is not None
+            ],
             key=lambda region: region.begin(),
         )
         clean = self.clean.get(scope, general_clean)
+
+        if selected_index == "closest":
+            sel = self.view.sel()
+            if len(sel) > 0:
+                middle_reg = sel[len(sel) // 2]
+                selected_index = min(
+                    [i for i in range(len(self.matches))],
+                    key=lambda i: abs(
+                        self.matches[i].begin() - middle_reg.begin()
+                    )
+                )
+
         self.window.show_quick_panel(
             [clean(self.view.substr(region)) for region in self.matches],
             self.on_done,
-            on_highlight=self.on_highlight
+            on_highlight=self.on_highlight,
+            selected_index=selected_index,
         )
 
     def on_done(self, index):
-        #D Consult \type{self.on_choose} \periods
         if 0 <= index < len(self.matches):
-            self.set_selection(self.matches[index])
+            region = self.matches[index]
+            if self.on_choose == "insert":
+                text = self.view.substr(region)
+                self.set_selection(
+                    *[sublime.Region(*tup) for tup in self.orig_sel]
+                )
+                self.view.window().run_command(
+                    "simple_context_insert_text", {"text": text}
+                )
+            else:
+                self.set_selection(region)
+
         else:
             self.set_selection(
                 *[sublime.Region(*tup) for tup in self.orig_sel]
@@ -92,8 +131,9 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
     #D Work||around for a known Sublime Text bug, where caret position doesn't
     #D always refresh properly.
     def bug_work_around(self):
-        bug = [s for s in self.view.sel()]
         self.view.add_regions(
-            "bug", bug, "bug", "dot", sublime.HIDDEN | sublime.PERSISTENT
+            "simple_context_bug",
+            self.view.sel(),
+            flags=sublime.HIDDEN | sublime.PERSISTENT
         )
-        self.view.erase_regions("bug")
+        self.view.erase_regions("simple_context_bug")

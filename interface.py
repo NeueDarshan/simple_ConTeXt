@@ -28,7 +28,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
     def run(
         self,
         paths=[],
-        each=False,
+        do_all=False,
         threaded=True,
         overwrite=False,
         file_min=20000,
@@ -39,7 +39,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             self.state = RUNNING
 
             def f():
-                self.run_aux(self._paths if each else paths, overwrite)
+                self.run_aux(self._paths if do_all else paths, overwrite)
             if threaded:
                 thread = threading.Thread(target=f)
                 thread.start()

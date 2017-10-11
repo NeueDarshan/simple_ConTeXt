@@ -160,10 +160,10 @@ class SimpleContextMacroSignatureEventListener(
         self.view.window().run_command(
             "simple_context_regenerate_interface_files",
             {
+                "do_all": False,
                 "paths": [self._path],
-                "each": False,
-                "threaded": False,
                 "overwrite": False,
+                "threaded": False,
             }
         )
         self.load_commands(

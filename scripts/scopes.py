@@ -3,6 +3,7 @@ def is_scope(view, scope):
     if len(sel) > 0:
         return view.match_selector(sel[0].begin(), scope)
     else:
+        #D If in doubt, let's return \type{True}
         return True
 
 
@@ -18,6 +19,7 @@ def is_lua(view):
     return is_scope(view, "source.lua")
 
 
+#D Does order matter for scope matching? If so, then we need to rethink these.
 def AND(a, b):
     return ALL(a, b)
 
@@ -90,11 +92,11 @@ REFERENCE = "entity.name.label.reference.context"
 
 FILE_NAME = "meta.file-name.context"
 
-DEFINE_MAIN = "entity.name.function.context"
+DEFINE_TEX = "entity.name.function.context"
 
-DEFINE_OTHER = "entity.name.function.other.context"
+DEFINE_CONTEXT = "entity.name.function.other.context"
 
-DEFINE = OR(DEFINE_MAIN, DEFINE_OTHER)
+DEFINE = OR(DEFINE_TEX, DEFINE_CONTEXT)
 
 DOCUMENT = "entity.name.section.document.context"
 
@@ -146,7 +148,8 @@ def enclosing_block(view, point, end, scope):
 
 
 #D Like \type{enclosing_block}, but checks that \type{point} is the
-#D right||boundary of the eventual block. If not, signal an error.
+#D right||boundary of the eventual block. If not, signal an error with
+#D \type{None}.
 def left_enclosing_block(view, point, end, scope):
     block = enclosing_block(view, point, end, scope)
     if block and not view.match_selector(point + 1, scope):
@@ -210,7 +213,6 @@ def last_block_in_region(view, begin, end, scope, skip=SKIP_ANYTHING):
         skipper(view, stop)
     ):
         stop -= 1
-        empty = False
 
     start = stop
     while start > begin and view.match_selector(start, scope):
