@@ -1,5 +1,9 @@
 def is_scope(view, scope):
-    return view.match_selector(view.sel()[0].begin(), scope)
+    sel = view.sel()
+    if len(sel) > 0:
+        return view.match_selector(sel[0].begin(), scope)
+    else:
+        return True
 
 
 def is_context(view):
@@ -91,6 +95,28 @@ DEFINE_MAIN = "entity.name.function.context"
 DEFINE_OTHER = "entity.name.function.other.context"
 
 DEFINE = OR(DEFINE_MAIN, DEFINE_OTHER)
+
+DOCUMENT = "entity.name.section.document.context"
+
+OTHER = "entity.name.section.other.context"
+
+CHAPTER = "entity.name.section.chapter.context"
+
+PART = "entity.name.section.part.context"
+
+SECTION = "entity.name.section.section.context"
+
+SUBSECTION = "entity.name.section.subsection.context"
+
+SUB2SECTION = "entity.name.section.sub2section.context"
+
+SUB3SECTION = "entity.name.section.sub3section.context"
+
+SUB4SECTION = "entity.name.section.sub4section.context"
+
+HEADING = ANY(
+    CHAPTER, PART, SECTION, SUBSECTION, SUB2SECTION, SUB3SECTION, SUB4SECTION
+)
 
 
 def skip_while_match(view, begin, end, scope):
