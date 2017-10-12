@@ -163,7 +163,6 @@ class SimpleContextMacroSignatureEventListener(
                 "do_all": False,
                 "paths": [self._path],
                 "overwrite": False,
-                "threaded": False,
             }
         )
         self.load_commands(

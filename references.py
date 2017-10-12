@@ -60,4 +60,10 @@ class SimpleContextReferenceEventListener(
 
     def is_reference_command(self, begin, end):
         name = self.view.substr(sublime.Region(begin, end))
-        return re.match(BUILT_IN_REFERENCERS, name)
+        user_regex = self._references.get("command_regex")
+        if re.match(BUILT_IN_REFERENCERS, name):
+            return True
+        elif user_regex and re.match(user_regex, name):
+            return True
+        else:
+            return False

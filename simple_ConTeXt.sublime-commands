@@ -27,7 +27,6 @@
     {
       "do_all": true,
       "overwrite": true,
-      "threaded": true,
     },
   },
 ]
