@@ -56,7 +56,7 @@ def clean_output(text):
         r"resolvers\s*[>|]\s*trees\s*[>|]\s*analyzing\s*'home:texmf'",
         "",
         text
-    )
+    ).strip()
 
 
 def parse_checker(text, tolerant=True):

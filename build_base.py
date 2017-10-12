@@ -28,6 +28,8 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
 
         self._base_set_idle()
         self._base_lock = threading.Lock()
+        self._base_flags = \
+            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
     def _base_set_init_default(self, key, default):
         if key in self._base_kwargs:
@@ -55,8 +57,6 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
         except AttributeError:
             self._base_dir, self._base_input = None, None
 
-        self._base_flags = \
-            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         self._base_command_options = {
             "creationflags": self._base_flags,
             "stdin": subprocess.PIPE,

@@ -77,23 +77,46 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
         )
         clean = self.clean.get(scope, general_clean)
 
-        if selected_index == "closest":
+        if selected_index in ["closest", "previous", "next"]:
             sel = self.view.sel()
-            if len(sel) > 0:
-                middle_reg = sel[len(sel) // 2]
-                selected_index = min(
-                    [i for i in range(len(self.matches))],
-                    key=lambda i: abs(
-                        self.matches[i].begin() - middle_reg.begin()
-                    )
+            num_matches = len(self.matches)
+            num_regions = len(sel)
+            if num_regions > 0 and num_matches > 0:
+                middle_region = sel[num_regions // 2]
+                #D Include the \type{[0]} to avoid taking \type{max} on an
+                #D empty sequence
+                index = max(
+                    [0] + [
+                        i for i in range(num_matches)
+                        if self.filter(
+                            self.matches[i].begin() - middle_region.begin(),
+                            selected_index,
+                        )
+                    ],
+                    key=self.key_function(middle_region),
                 )
+            else:
+                index = 0
+        else:
+            index = selected_index
 
         self.window.show_quick_panel(
             [clean(self.view.substr(region)) for region in self.matches],
             self.on_done,
             on_highlight=self.on_highlight,
-            selected_index=selected_index,
+            selected_index=index,
         )
+
+    def filter(self, delta, mode):
+        if mode == "closest":
+            return True
+        elif mode == "previous":
+            return delta <= 0
+        elif mode == "next":
+            return delta >= 0
+
+    def key_function(self, region):
+        return lambda i: -abs(region.begin() - self.matches[i].begin())
 
     def on_done(self, index):
         if 0 <= index < len(self.matches):
