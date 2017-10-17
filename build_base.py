@@ -7,6 +7,9 @@ from .scripts import utilities
 from .scripts import files
 
 
+ERROR_CODE = 1
+
+
 class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         self._base_kwargs = kwargs
@@ -126,17 +129,21 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
         runner, handler = command["command"], command["handler"]
         if self._base_dir is not None:
             os.chdir(self._base_dir)
-        self._base_process = \
-            subprocess.Popen(runner, **self._base_command_options)
-        self._base_lock.release()
+        try:
+            self._base_process = \
+                subprocess.Popen(runner, **self._base_command_options)
+            self._base_lock.release()
 
-        result = self._base_process.communicate()
-        self._base_return_codes[index] = self._base_process.returncode
+            result = self._base_process.communicate()
+            self._base_return_codes[index] = self._base_process.returncode
 
-        self._base_lock.acquire()
-        if not self._base_is_stopping():
-            handler(files.decode_bytes(result[0]))
-        self._base_lock.release()
+            self._base_lock.acquire()
+            if not self._base_is_stopping():
+                handler(files.decode_bytes(result[0]))
+            self._base_lock.release()
+        except OSError:
+            self._base_lock.release()
+            self._base_return_codes[index] = ERROR_CODE
 
     def _base_run_stop(self):
         self._base_add_to_output(

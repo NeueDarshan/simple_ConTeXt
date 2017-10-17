@@ -5,7 +5,7 @@ from .scripts import utilities
 from .scripts import scopes
 
 
-BUILT_IN_REFERENCERS = r"(about|in|at)"
+BUILT_IN_REFERENCERS = r"\A(about|in|at)\Z"
 
 
 class SimpleContextReferenceEventListener(
@@ -63,7 +63,7 @@ class SimpleContextReferenceEventListener(
         user_regex = self._references.get("command_regex")
         if re.match(BUILT_IN_REFERENCERS, name):
             return True
-        elif user_regex and re.match(user_regex, name):
+        elif user_regex and re.match(r"\A" + user_regex + r"\Z", name):
             return True
         else:
             return False
