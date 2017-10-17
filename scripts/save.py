@@ -11,6 +11,14 @@ from . import files
 NAMESPACE = {"cd": "http://www.pragma-ade.com/commands"}
 
 
+class UnexpectedTagError(Exception):
+    pass
+
+
+class UnexpectedModeError(Exception):
+    pass
+
+
 class InterfaceSaver:
     def __init__(self, flags=0):
         self.method = {
@@ -51,7 +59,7 @@ class InterfaceSaver:
             self.path, "i-common-definitions.xml", flags=self.flags
         )
         if not f:
-            raise Exception('unable to locate "i-common-definitions.xml"')
+            raise OSError('unable to locate "i-common-definitions.xml"')
         try:
             with open(f, encoding="utf-8") as x:
                 root = self.parse(x)
@@ -59,29 +67,31 @@ class InterfaceSaver:
                 if self.tag_is(child, "interfacefile"):
                     self.load_definitions_aux_i(child.attrib.get("filename"))
                 else:
-                    raise Exception('unexpected tag "{}"'.format(child.tag))
-        except (FileNotFoundError, ET.ParseError, UnicodeDecodeError) as e:
+                    raise UnexpectedTagError(
+                        'unexpected tag "{}"'.format(child.tag)
+                    )
+        except (OSError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
             if self.tolerant:
                 print(msg)
             else:
-                raise Exception(msg)
+                raise type(e)(msg)
 
     def load_definitions_aux_i(self, filename):
         f = files.locate(self.path, filename, flags=self.flags)
         if not f:
-            raise Exception('unable to locate "{}"'.format(filename))
+            raise OSError('unable to locate "{}"'.format(filename))
         try:
             with open(f, encoding="utf-8") as x:
                 root = self.parse(x)
             for child in root:
                 self.do_define(child)
-        except (FileNotFoundError, ET.ParseError, UnicodeDecodeError) as e:
+        except (OSError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
             if self.tolerant:
                 print(msg)
             else:
-                raise Exception(msg)
+                raise type(e)(msg)
 
     def load_commands(self, modules=True):
         self.to_load = set()
@@ -123,18 +133,16 @@ class InterfaceSaver:
                     elif self.tag_is(child, "define"):
                         self.do_define(child)
                     else:
-                        raise Exception(
+                        raise UnexpectedTagError(
                             'in file "{}", unexpected tag "{}"'
                             .format(f, child.tag)
                         )
-            except (
-                FileNotFoundError, ET.ParseError, UnicodeDecodeError
-            ) as e:
+            except (OSError, ET.ParseError, UnicodeDecodeError) as e:
                 msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
                 if self.tolerant:
                     print(msg)
                 else:
-                    raise Exception(msg)
+                    raise type(e)(msg)
 
     def do_define(self, node):
         name = node.attrib["name"]
@@ -153,7 +161,9 @@ class InterfaceSaver:
                 obj.append(self.do_assignments(child))
             else:
                 message = 'unexpected tag, attrib: "{}", tag: "{}"'
-                raise Exception(message.format(child.attrib, child.tag))
+                raise UnexpectedTagError(
+                    message.format(child.attrib, child.tag)
+                )
         self.add_def(name, self.flatten(obj))
 
     def do_command(self, node):
@@ -170,7 +180,7 @@ class InterfaceSaver:
                 template += "{}"
                 keys.append(child.attrib["value"])
             else:
-                raise Exception(
+                raise UnexpectedTagError(
                     'sequence: unexpected tag "{}"'.format(child.tag)
                 )
         if len(template) == 0:
@@ -187,7 +197,7 @@ class InterfaceSaver:
                 else:
                     keys.append(def_)
             else:
-                raise Exception(
+                raise UnexpectedTagError(
                     'sequence: unexpected tag "{}"'.format(instance.tag)
                 )
         if len(keys) == 0:
@@ -244,7 +254,9 @@ class InterfaceSaver:
             else:
                 message = \
                     'unexpected tag, name: "{}", attrib: "{}", tag: "{}"'
-                raise Exception(message.format(name, child.attrib, child.tag))
+                raise UnexpectedTagError(
+                    message.format(name, child.attrib, child.tag)
+                )
         self.add_cmd(
             name,
             {"con": self.flatten(content), "fil": node.attrib.get("file")}
@@ -280,7 +292,9 @@ class InterfaceSaver:
                 inherits.append(self.do_content(child))
             else:
                 message = 'unexpected tag, attrib: "{}", tag: "{}"'
-                raise Exception(message.format(child.attrib, child.tag))
+                raise UnexpectedTagError(
+                    message.format(child.attrib, child.tag)
+                )
         return {
             "con": self.flatten(content),
             "ren": self.render("keywords", node.attrib),
@@ -299,7 +313,9 @@ class InterfaceSaver:
                 inherits.append(self.do_inherit(child))
             else:
                 message = 'unexpected tag, attrib: "{}", tag: "{}"'
-                raise Exception(message.format(child.attrib, child.tag))
+                raise UnexpectedTagError(
+                    message.format(child.attrib, child.tag)
+                )
         return {
             "con": content if len(content) > 0 else None,
             "ren": self.render("assignments", node.attrib),
@@ -321,7 +337,9 @@ class InterfaceSaver:
                 )
             else:
                 message = 'unexpected tag, attrib: "{}", tag: "{}"'
-                raise Exception(message.format(child.attrib, child.tag))
+                raise UnexpectedTagError(
+                    message.format(child.attrib, child.tag)
+                )
         return self.flatten(content)
 
     def do_delimiter(self, node):
@@ -429,7 +447,7 @@ class InterfaceSaver:
             if self.tolerant:
                 print(msg.format(mode, attrib))
             else:
-                raise Exception(msg.format(mode, attrib))
+                raise UnexpectedModeError(msg.format(mode, attrib))
 
     def is_true(self, val):
         return val == "yes"

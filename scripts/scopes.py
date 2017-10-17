@@ -102,9 +102,9 @@ DOCUMENT = "entity.name.section.document.context"
 
 OTHER = "entity.name.section.other.context"
 
-CHAPTER = "entity.name.section.chapter.context"
-
 PART = "entity.name.section.part.context"
+
+CHAPTER = "entity.name.section.chapter.context"
 
 SECTION = "entity.name.section.section.context"
 
@@ -117,7 +117,8 @@ SUB3SECTION = "entity.name.section.sub3section.context"
 SUB4SECTION = "entity.name.section.sub4section.context"
 
 HEADING = ANY(
-    CHAPTER, PART, SECTION, SUBSECTION, SUB2SECTION, SUB3SECTION, SUB4SECTION
+    # DOCUMENT, OTHER,
+    PART, CHAPTER, SECTION, SUBSECTION, SUB2SECTION, SUB3SECTION, SUB4SECTION
 )
 
 

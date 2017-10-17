@@ -189,7 +189,7 @@ class SimpleContextMacroSignatureEventListener(
                 VirtualCommandDict(path, max_size=500, local_size=25)
             self.html_cache[self.name] = \
                 utilities.LeastRecentlyUsedCache(max_size=500)
-        except FileNotFoundError:
+        except OSError:
             pass
 
     def is_visible(self):

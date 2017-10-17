@@ -22,16 +22,19 @@ def locate(path, file, flags=0, methods=[None]):
         if method is None:
             environ = os.environ.copy()
             environ["PATH"] = add_path(environ["PATH"], path)
-            proc = subprocess.Popen(
-                ["mtxrun", "--locate", file],
-                creationflags=flags,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=environ
-            )
-            result = proc.communicate()
-            return clean_output(decode_bytes(result[0]))
+            try:
+                proc = subprocess.Popen(
+                    ["mtxrun", "--locate", file],
+                    creationflags=flags,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    env=environ
+                )
+                result = proc.communicate()
+                return clean_output(decode_bytes(result[0]))
+            except OSError:
+                return
         else:
             if os.path.sep in file:
                 dir_, name = os.path.split(file)

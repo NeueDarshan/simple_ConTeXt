@@ -253,8 +253,11 @@ contexts:
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
 
   math.variable:
+    #D I think \type{variable.other} makes the most sense logically. However,
+    #D in my experience few colour schemes style this scope. So let's use
+    #D \type{string} instead.
     - match: '{{variable}}+'
-      scope: variable.other.context
+      scope: string.unquoted.math.context
 
   #D In math mode, control sequences with arguments are tricky. Consider the
   #D following example.

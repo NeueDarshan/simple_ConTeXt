@@ -19,6 +19,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.state = IDLE
+        self.first_error = True
 
     def reload_settings(self):
         utilities.reload_settings(self)
@@ -79,7 +80,13 @@ class SimpleContextRegenerateInterfaceFilesCommand(
 
         commands = os.path.join(dir_, "_commands.json")
         if not os.path.exists(commands):
-            self.run_aux_iv(path, dir_)
+            try:
+                self.run_aux_iv(path, dir_)
+            except OSError as e:
+                if self.first_error:
+                    self.first_error = False
+                    text = 'failed to load interface, encountered error: "{}"'
+                    print(text.format(e))
 
     def run_aux_iv(self, path, dir_):
         saver = save.InterfaceSaver(flags=self.flags)

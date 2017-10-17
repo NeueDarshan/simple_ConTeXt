@@ -11,7 +11,7 @@
     <integer>1</integer>
     <key>symbolTransformation</key>
     <string>
-      s/\A\s*(.*?)\s*\Z/¶ $1/g;
+      s/\A\s*(\{\s*(.*?)\s*\}|(.*?))\s*\Z/¶ $2$3/g;
     </string>
   </dict>
 </dict>
