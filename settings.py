@@ -160,17 +160,17 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
             self.save()
             self.run_panel_choice()
 
-    def on_done(self, string):
+    def on_done(self, text):
         deep_dict.set_safe(
             self.encoded_settings,
             self.location,
-            utilities.guess_type(string)
+            utilities.guess_type(text)
         )
         self.location.pop()
         self.save()
         self.run_panel()
 
-    def on_change(self, string):
+    def on_change(self, text):
         pass
 
     def on_cancel(self):
