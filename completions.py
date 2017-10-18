@@ -248,8 +248,11 @@ class SimpleContextMacroSignatureEventListener(
             return
 
         for sel in self.view.sel():
+            end = sel.end()
+            if end < self.size:
+                end -= 1
             ctrl = scopes.left_enclosing_block(
-                self.view, sel.end() - 1, self.size, scopes.CONTROL_SEQ
+                self.view, end, self.size, scopes.CONTROL_SEQ
             )
             if not ctrl:
                 self.view.hide_popup()

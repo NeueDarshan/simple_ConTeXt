@@ -1,42 +1,42 @@
 [
-  {
-    "caption": "Preferences",
-    "mnemonic": "n",
-    "id": "preferences",
-    "children":
-    [
-      {
-        "caption": "Package Settings",
-        "mnemonic": "P",
-        "id": "package-settings",
-        "children":
-        [
-          {
-            "caption": "simple_ConTeXt",
-            "children":
-            [
-              {
-                "caption": "README",
-                "command": "open_file",
-                "args":
-                {
-                  "file": "${packages}/simple_ConTeXt/README.md"
-                },
-              },
-              {"caption": "-"},
-              {
-                "command": "edit_settings",
-                "args":
-                {
-                  "base_file": "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings",
-                  "default": "{\n\t$0\n}\n"
-                },
-                "caption": "Settings"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+	{
+		"caption": "Preferences",
+		"mnemonic": "n",
+		"id": "preferences",
+		"children":
+		[
+			{
+				"caption": "Package Settings",
+				"mnemonic": "P",
+				"id": "package-settings",
+				"children":
+				[
+					{
+						"caption": "simple_ConTeXt",
+						"children":
+						[
+							{
+								"caption": "README",
+								"command": "open_file",
+								"args":
+								{
+									"file": "${packages}/simple_ConTeXt/README.md"
+								},
+							},
+							{"caption": "-"},
+							{
+								"command": "edit_settings",
+								"args":
+								{
+									"base_file": "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings",
+									"default": "{\n\t$0\n}\n"
+								},
+								"caption": "Settings"
+							}
+						]
+					}
+				]
+			}
+		]
+	}
 ]
