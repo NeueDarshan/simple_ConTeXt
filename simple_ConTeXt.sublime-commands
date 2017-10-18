@@ -1,32 +1,32 @@
 [
-  {
-    "caption": "Preferences: simple_ConTeXt Settings",
-    "command": "simple_context_edit_settings",
-  },
-  {
-    "caption": "simple_ConTeXt: View/change the settings",
-    "command": "simple_context_settings_controller",
-  },
-  {
-    "caption": "simple_ConTeXt: Open TeX/ConTeXt documentation",
-    "command": "simple_context_find_docs",
-  },
-  {
-    "caption": "simple_ConTeXt: Run a ConTeXt script",
-    "command": "simple_context_run_script",
-  },
-  // in the future (?):
-  // {
-  //   "caption": "simple_ConTeXt: Format ConTeXt file",
-  //   "command": "simple_context_format",
-  // },
-  {
-    "caption": "simple_ConTeXt: Regenerate interface files",
-    "command": "simple_context_regenerate_interface_files",
-    "args":
-    {
-      "do_all": true,
-      "overwrite": true,
-    },
-  },
+	{
+		"caption": "Preferences: simple_ConTeXt Settings",
+		"command": "simple_context_edit_settings",
+	},
+	{
+		"caption": "simple_ConTeXt: View/change the settings",
+		"command": "simple_context_settings_controller",
+	},
+	{
+		"caption": "simple_ConTeXt: Open TeX/ConTeXt documentation",
+		"command": "simple_context_find_docs",
+	},
+	{
+		"caption": "simple_ConTeXt: Run a ConTeXt script",
+		"command": "simple_context_run_script",
+	},
+	// in the future (?):
+	// {
+	//   "caption": "simple_ConTeXt: Format ConTeXt file",
+	//   "command": "simple_context_format",
+	// },
+	{
+		"caption": "simple_ConTeXt: Regenerate interface files",
+		"command": "simple_context_regenerate_interface_files",
+		"args":
+		{
+			"do_all": true,
+			"overwrite": true,
+		},
+	},
 ]

@@ -103,14 +103,27 @@ class SimpleContextBuildContextCommand(
             )
         )
 
+    #D We want to count \type{1} and \type{True} as \quote{yes}, \type{0} as
+    #D \quote{maybe}, and \type{-1} and \type{False} as \quote{no}. In order to
+    #D accomplish this, we have to watch out for the behaviour that
+    #D \type{True == 1} and \type{False == 0}.
     def setting_is_yes(self, obj):
-        return obj in [1, "yes", "always", True]
+        if isinstance(obj, bool):
+            return obj is True
+        else:
+            return obj in [1, "yes", "always"]
 
     def setting_is_maybe(self, obj):
-        return obj in [0, "maybe", "possibly", "depends"]
+        if isinstance(obj, bool):
+            return False
+        else:
+            return obj in [0, "maybe", "possibly", "depends"]
 
     def setting_is_no(self, obj):
-        return obj in [-1, "no", "never", False]
+        if isinstance(obj, bool):
+            return obj is False
+        else:
+            return obj in [-1, "no", "never"]
 
     def handler_begin(self, just_check=False):
         self.start_time = time.time()
@@ -138,6 +151,11 @@ class SimpleContextBuildContextCommand(
     def handler_end(self, return_codes, just_check=False):
         stop_time = time.time() - self.start_time
         if just_check:
+            state = "success" if return_codes[-1] == 0 else "failure"
+            message = ", ".join([
+                state, "finished in {:.1f}s".format(stop_time)
+            ])
+            self.add_to_output("stopping", message, gap=True)
             return
 
         if return_codes[-1] == 0:

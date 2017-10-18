@@ -127,6 +127,7 @@ class SimpleContextBuildBaseCommand(sublime_plugin.WindowCommand):
     def _base_run_start_aux_i(self, index, command):
         self._base_lock.acquire()
         runner, handler = command["command"], command["handler"]
+        print("running {}".format(" ".join(runner)))
         if self._base_dir is not None:
             os.chdir(self._base_dir)
         try:

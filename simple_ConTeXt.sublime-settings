@@ -1,101 +1,101 @@
 {
-  "PDF_viewers":
-  {
-    "evince": "evince",
-    "sumatra": "sumatraPDF",
-    "skim": "skim",
-  },
-  "paths":
-  {
-    "default": "/path-to-context-binaries",
-  },
-  "setting_groups":
-  {
-    "verbose_builder_off":
-    {
-      "builder":
-      {
-        "options":
-        {
-          "show_errors_in_builder": false,
-          "show_full_command_in_builder": false,
-          "show_pages_shipped_in_builder": false,
-          "show_path_in_builder": false,
-          "show_warnings_in_builder": false,
-        }
-      }
-    },
-    "verbose_builder_on":
-    {
-      "builder":
-      {
-        "options":
-        {
-          "show_errors_in_builder": true,
-          "show_full_command_in_builder": true,
-          "show_pages_shipped_in_builder": true,
-          "show_path_in_builder": true,
-          "show_warnings_in_builder": true,
-        },
-      },
-    },
-  },
-  "settings":
-  {
-    "PDF":
-    {
-      "viewer": "evince",
-      "open_after_build": true,
-    },
-    "builder":
-    {
-      "check":
-      {
-        "check_syntax_before_build": true,
-        "stop_build_if_check_fails": true,
-      },
-      "program":
-      {
-        "name": "context",
-        "options":
-        {
-          "autogenerate": true,
-          "jit": true,
-          "mode":
-          {
-            "draft": false,
-            "final": false,
-          },
-          "paranoid": false,
-          "synctex": 1,
-        },
-      },
-      "options":
-      {
-        "show_errors_in_builder": true,
-        "show_full_command_in_builder": true,
-        "show_pages_shipped_in_builder": true,
-        "show_path_in_builder": true,
-        "show_warnings_in_builder": true,
-        "compact_output": true,
-      },
-    },
-    "path": "default",
-    "pop_ups":
-    {
-      "line_break": 60,
-      "methods":
-      {
-        "on_hover": true,
-        "auto_complete": true,
-      },
-      "show_copy_pop_up": false,
-      "show_source_files": false,
-    },
-    "references":
-    {
-      "on": true,
-      "command_regex": null,
-    },
-  },
+	"PDF_viewers":
+	{
+		"evince": "evince",
+		"sumatra": "sumatraPDF",
+		"skim": "skim",
+	},
+	"paths":
+	{
+		"default": "/path-to-context-program",
+	},
+	"setting_groups":
+	{
+		"verbose_builder_off":
+		{
+			"builder":
+			{
+				"options":
+				{
+					"show_errors_in_builder": false,
+					"show_full_command_in_builder": false,
+					"show_pages_shipped_in_builder": false,
+					"show_path_in_builder": false,
+					"show_warnings_in_builder": false,
+				}
+			}
+		},
+		"verbose_builder_on":
+		{
+			"builder":
+			{
+				"options":
+				{
+					"show_errors_in_builder": true,
+					"show_full_command_in_builder": true,
+					"show_pages_shipped_in_builder": true,
+					"show_path_in_builder": true,
+					"show_warnings_in_builder": true,
+				},
+			},
+		},
+	},
+	"settings":
+	{
+		"PDF":
+		{
+			"viewer": "evince",
+			"open_after_build": true,
+		},
+		"builder":
+		{
+			"check":
+			{
+				"check_syntax_before_build": true,
+				"stop_build_if_check_fails": true,
+			},
+			"program":
+			{
+				"name": "context",
+				"options":
+				{
+					"autogenerate": true,
+					"jit": true,
+					"mode":
+					{
+						"draft": false,
+						"final": false,
+					},
+					"paranoid": false,
+					"synctex": 1,
+				},
+			},
+			"options":
+			{
+				"show_errors_in_builder": true,
+				"show_full_command_in_builder": true,
+				"show_pages_shipped_in_builder": true,
+				"show_path_in_builder": true,
+				"show_warnings_in_builder": true,
+				"compact_output": true,
+			},
+		},
+		"path": "default",
+		"pop_ups":
+		{
+			"line_break": 65,
+			"methods":
+			{
+				"on_hover": true,
+				"auto_complete": true,
+			},
+			"show_copy_pop_up": false,
+			"show_source_files": false,
+		},
+		"references":
+		{
+			"on": true,
+			"command_regex": null,
+		},
+	},
 }

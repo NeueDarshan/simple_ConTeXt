@@ -82,25 +82,21 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
             value = here[key]
             self.location.append(key)
 
-            #D This is nice for quickly toggling booleans. On the other hand,
-            #D as a consequence of having this behaviour, you can't change a
-            #D \type{bool} into e.g.\ a string. Oh, another thing to watch out
-            #D for when playing around with this code: in Python, \type{bool}s
-            #D are a subclass of \type{int}. For example,
-            #D \type{isinstance(True, int)} returns \type{True}.
-
-            # if isinstance(value, bool):
-            #     deep_dict.set_safe(
-            #         self.encoded_settings, self.location, not value
-            #     )
-            #     self.location.pop()
-            #     self.save()
-            #     self.run_panel()
-            # elif isinstance(value, (int, float, str)) or value is None:
-
-            if isinstance(value, (int, float, str, bool)) or value is None:
+            #D It's nice to be able to quickly toggle booleans, but we also
+            #D want the option to change a boolean into, say, a string. So we
+            #D do this compromise.
+            if isinstance(value, bool):
                 self.window.show_input_panel(
-                    "new value",
+                    "new value:",
+                    str(not value),
+                    self.on_done,
+                    self.on_change,
+                    self.on_cancel,
+                )
+
+            elif isinstance(value, (int, float, str)) or value is None:
+                self.window.show_input_panel(
+                    "new value:",
                     str(value),
                     self.on_done,
                     self.on_change,

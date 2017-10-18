@@ -37,7 +37,7 @@ div.error span.message {
 
 div.error a {
     text-decoration: inherit;
-    border-radius: 0 0.2rem 0.2rem 0;
+    border-radius: 0rem 0.2rem 0.2rem 0rem;
     bottom: 0.05rem;
     font-weight: bold;
     padding: 0.35rem 0.7rem 0.45rem 0.8rem;
