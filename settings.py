@@ -15,34 +15,6 @@ def simplify(obj):
         return str(obj)
 
 
-class Choice:
-    def __init__(self, options, choice=0):
-        self.options = sorted(options)
-        self.set(choice)
-
-    def set(self, choice):
-        if isinstance(choice, int):
-            self.choice = choice
-        else:
-            try:
-                self.choice = self.options.index(choice)
-            except ValueError:
-                self.choice = 0
-
-    def get(self):
-        return self.options[self.choice]
-
-    def to_list(self, string=False):
-        choice = self.get()
-        if string:
-            return [[k, str(k == choice)] for k in self.options]
-        else:
-            return [[k, k == choice] for k in self.options]
-
-    def __str__(self):
-        return " ".join(self.options)
-
-
 class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
     def reload_settings(self):
         utilities.reload_settings(self)
@@ -103,7 +75,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
                     self.on_cancel,
                 )
 
-            elif isinstance(value, Choice):
+            elif isinstance(value, utilities.Choice):
                 self.run_panel_choice()
 
             else:
@@ -162,9 +134,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, text):
         deep_dict.set_safe(
-            self.encoded_settings,
-            self.location,
-            utilities.guess_type(text)
+            self.encoded_settings, self.location, utilities.guess_type(text)
         )
         self.location.pop()
         self.save()
@@ -186,7 +156,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
                 [k, "[✓]" if k == self.last_scheme else "[ ]"]
                 for k in sorted(self.current_level())
             ]
-        elif isinstance(self.current_level(), Choice):
+        elif isinstance(self.current_level(), utilities.Choice):
             main = self.current_level().to_list(string=True)
         else:
             main = [
@@ -194,9 +164,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
                 for k in sorted(self.current_level())
             ]
         if len(self.location) > 0:
-            return [
-                ["..", "in /{}/".format("/".join(self.location))]
-            ] + main
+            return [["..", "in /{}/".format("/".join(self.location))]] + main
         else:
             return main
 
@@ -216,13 +184,13 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
 
     def encode_settings(self):
         self.encoded_settings = self._settings
-        self.encoded_settings["path"] = Choice(
-            self._paths, choice=self._settings.get("path")
-        )
-        self.encoded_settings.setdefault("PDF", {})["viewer"] = Choice(
+        self.encoded_settings["path"] = \
+            utilities.Choice(self._paths, choice=self._settings.get("path"))
+        viewer = utilities.Choice(
             self._PDF_viewers,
             choice=self._settings.get("PDF", {}).get("viewer")
         )
+        self.encoded_settings.setdefault("PDF", {})["viewer"] = viewer
         self.encoded_settings["setting_groups"] = self._setting_groups
 
     def decode_settings(self):

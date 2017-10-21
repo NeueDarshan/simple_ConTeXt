@@ -134,6 +134,34 @@ def process_options(name, options, input_, base):
     return cmd
 
 
+class Choice:
+    def __init__(self, options, choice=0):
+        self.options = sorted(options)
+        self.set(choice)
+
+    def set(self, choice):
+        if isinstance(choice, int):
+            self.choice = choice
+        else:
+            try:
+                self.choice = self.options.index(choice)
+            except ValueError:
+                self.choice = 0
+
+    def get(self):
+        return self.options[self.choice]
+
+    def to_list(self, string=False):
+        choice = self.get()
+        if string:
+            return [[k, str(k == choice)] for k in self.options]
+        else:
+            return [[k, k == choice] for k in self.options]
+
+    def __str__(self):
+        return " ".join(self.options)
+
+
 class LeastRecentlyUsedCache:
     def __init__(self, max_size=100):
         self.max_size = max_size

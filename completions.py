@@ -1,7 +1,6 @@
 import sublime
 import sublime_plugin
 import threading
-import mdpopups
 import string
 import json
 import os
@@ -293,47 +292,47 @@ class SimpleContextMacroSignatureEventListener(
         )
 
     def get_extra_style(self):
-        con = mdpopups.scope2style(self.view, "support.function")
-        sco = mdpopups.scope2style(
-            self.view, "support.function punctuation.definition.backslash"
+        con = self.view.style_for_scope("support.function")
+        sco = self.view.style_for_scope(
+            "support.function punctuation.definition.backslash"
         )
-        flo = mdpopups.scope2style(self.view, "keyword.control")
-        sfl = mdpopups.scope2style(
-            self.view, "keyword.control punctuation.definition.backslash"
+        flo = self.view.style_for_scope("keyword.control")
+        sfl = self.view.style_for_scope(
+            "keyword.control punctuation.definition.backslash"
         )
-        pun = mdpopups.scope2style(self.view, "punctuation.section")
-        key = mdpopups.scope2style(self.view, "variable.parameter")
-        equ = mdpopups.scope2style(self.view, "keyword.operator.assignment")
-        num = mdpopups.scope2style(self.view, "constant.numeric")
-        com = mdpopups.scope2style(self.view, "punctuation.separator.comma")
+        pun = self.view.style_for_scope("punctuation.section")
+        key = self.view.style_for_scope("variable.parameter")
+        equ = self.view.style_for_scope("keyword.operator.assignment")
+        num = self.view.style_for_scope("constant.numeric")
+        com = self.view.style_for_scope("punctuation.separator.comma")
 
         return EXTRA_STYLE.format(
-            con_style=con.get("style"),
-            con_color=con.get("color"),
+            con_style="italic" if con.get("italic") else "",
+            con_color=con.get("foreground"),
             con_background=con.get("background", "--background"),
-            sco_style=sco.get("style"),
-            sco_color=sco.get("color"),
+            sco_style="italic" if sco.get("style") else "",
+            sco_color=sco.get("foreground"),
             sco_background=sco.get("background", "--background"),
-            flo_style=flo.get("style"),
-            flo_color=flo.get("color"),
+            flo_style="italic" if flo.get("style") else "",
+            flo_color=flo.get("foreground"),
             flo_background=flo.get("background", "--background"),
-            sfl_style=sfl.get("style"),
-            sfl_color=sfl.get("color"),
+            sfl_style="italic" if sfl.get("style") else "",
+            sfl_color=sfl.get("foreground"),
             sfl_background=sfl.get("background", "--background"),
-            pun_style=pun.get("style"),
-            pun_color=pun.get("color"),
+            pun_style="italic" if pun.get("style") else "",
+            pun_color=pun.get("foreground"),
             pun_background=pun.get("background", "--background"),
-            key_style=key.get("style"),
-            key_color=key.get("color"),
+            key_style="italic" if key.get("style") else "",
+            key_color=key.get("foreground"),
             key_background=key.get("background", "--background"),
-            equ_style=equ.get("style"),
-            equ_color=equ.get("color"),
+            equ_style="italic" if equ.get("style") else "",
+            equ_color=equ.get("foreground"),
             equ_background=equ.get("background", "--background"),
-            num_style=num.get("style"),
-            num_color=num.get("color"),
+            num_style="italic" if num.get("style") else "",
+            num_color=num.get("foreground"),
             num_background=num.get("background", "--background"),
-            com_style=com.get("style"),
-            com_color=com.get("color"),
+            com_style="italic" if com.get("style") else "",
+            com_color=com.get("foreground"),
             com_background=com.get("background", "--background"),
         )
 

@@ -8,9 +8,7 @@ from .scripts import scopes
 BUILT_IN_REFERENCERS = r"\A(about|in|at)\Z"
 
 
-class SimpleContextReferenceEventListener(
-    sublime_plugin.ViewEventListener
-):
+class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
     def reload_settings(self):
         utilities.reload_settings(self)
 
@@ -46,7 +44,7 @@ class SimpleContextReferenceEventListener(
                 self.view.window().run_command(
                     "simple_context_show_overlay",
                     {
-                        "scope": "reference",
+                        "selector": "reference",
                         "on_choose": "insert",
                         "selected_index": "closest",
                     }
