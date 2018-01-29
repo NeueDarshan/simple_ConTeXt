@@ -1,25 +1,12 @@
 {
-	"cmd":
-	[
-		"texlua",
-		"$file"
-	],
-	"file_regex": "^(?:lua:)?[\t ](...*?):([0-9]*):?([0-9]*)",
+	"target": "simple_context_exec_wrapper",
 	"selector": "source.lua",
-	"variants":
-	[
-		{
-			"name": "Use 'luatex' in settings",
-			"target": "simple_context_build_lua"
-		},
-		{
-			"name": "Use 'luatex' in settings (raw)",
-			"target": "simple_context_build_lua",
-			"output": "raw"
-		},
-		// {
-		// 	"name": "Use 'luatex' in settings (wrapper)",
-		// 	"target": "simple_context_build_lua_alt"
-		// }
-	]
+	"cmd": ["texlua", "$file"],
+	"env": {"PATH": "$simple_context_prefixed_path"},
+	"cancel": {"kill": true},
+	/* In error messages, Lua mentions the absolute file name truncated to a
+	 * certain length. So matching the (possibly) truncated name is a bad idea.
+	 * Instead we go in for this workaround, where we match the file name only.
+	 */
+	"file_regex": "^(?:lua:)?.*$simple_context_path_sep(.*\\.lua):([0-9]+):?\\s*(.*)"
 }

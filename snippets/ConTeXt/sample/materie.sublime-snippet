@@ -53,5 +53,5 @@ Byl.
 ]]></content>
   <tabTrigger>materie</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
-  <description>materie</description>
+  <description>sample</description>
 </snippet>

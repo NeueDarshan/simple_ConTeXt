@@ -1,7 +1,9 @@
 import sublime
 import sublime_plugin
+
 import subprocess
 import threading
+
 from .scripts import utilities
 from .scripts import files
 
@@ -28,6 +30,7 @@ DOCS = [
     ["MathML", "mmlprime"],
     ["MetaPost: A User's Manual", "mpman"],
     ["MkIV Hybrid Technology", "hybrid"],
+    ["Nodes", "nodes"],
     ["README", "mreadme"],
     ["Rules", "rules-mkiv"],
     ["Simple Spreadsheets", "spreadsheets-mkiv"],
@@ -44,32 +47,47 @@ DOCS = [
 ]
 
 
+#D Needs some work.
 class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def reload_settings(self):
+    def reload_settings(self, force_reload_docs=False):
         utilities.reload_settings(self)
         self.viewer = self._PDF.get("viewer")
         self.flags = \
             files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
-        self.docs = DOCS
+        if force_reload_docs:
+            self.reload_docs()
+        else:
+            if not hasattr(self, "docs"):
+                self.reload_docs()
+
+    def reload_docs(self):
+        self.docs = []
+        for name, file in DOCS:
+            path = files.locate(
+                self._path, "{}.pdf".format(file), flags=self.flags
+            )
+            if path:
+                self.docs.append([name, file, path])
 
     def run(self):
-        self.reload_settings()
+        self.reload_settings(force_reload_docs=True)
         thread = threading.Thread(target=self.run_panel)
         thread.start()
 
     def run_panel(self, selected_index=0):
         self.window.show_quick_panel(
-            self.docs + [["...", "search for other files"]],
+            [tup[:2] for tup in self.docs] +
+            [["...", "search for other files"]],
             self.run_handle,
             selected_index=selected_index
         )
 
     def run_handle(self, index):
         if 0 <= index < len(self.docs):
-            self.open_doc(self.docs[index][1])
+            self.open_doc(self.docs[index][2])
         elif index == len(self.docs):
             self.window.show_input_panel(
                 "name", "", self.on_done, self.on_change, self.on_cancel,
@@ -84,14 +102,5 @@ class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
     def on_cancel(self):
         self.run_panel(selected_index=len(self.docs))
 
-    def open_doc(self, name):
-        file = \
-            files.locate(self._path, "{}.pdf".format(name), flags=self.flags)
-        if self.viewer and file:
-            subprocess.Popen([self.viewer, file], creationflags=self.flags)
-        else:
-            msg = (
-                'Unable to locate file "{}.pdf".\n\nSearched in the TeX '
-                'tree containing "{}".'
-            )
-            sublime.error_message(msg.format(name, self._path))
+    def open_doc(self, file):
+        subprocess.Popen([self.viewer, file], creationflags=self.flags)

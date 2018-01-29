@@ -18,15 +18,14 @@
  *D   \NC <typ> \NC type name, e.g.\ \type{CSNAME} means a control sequence
  *D                 name \NC\NR
  *D   \NC <com> \NC comma, as in \type{key1=val1, key2=val2} \NC\NR
- *D   \NC <inh> \NC inherits (heritage), styles the bit of text \quote{inherits:}
- *D                 in \type{inherits: \foo} \NC\NR
+ *D   \NC <inh> \NC inherits (heritage), styles the bit of text
+ *D                 \quote{inherits:} in \type{inherits: \foo} \NC\NR
  *D \stoptabulate
  *D
- *D The approach we take to styling elements is (via the excellent
- *D \type{mdpopups}) to provide the following additional CSS variables for use
- *D in this file. You can then choose to use them for whatever purpose you
- *D wish; what we shall do by default is use them to style the aforementioned
- *D tags in the natural way.
+ *D The approach we take to styling elements is to provide the following
+ *D additional CSS variables for use in this file. You can then choose to use
+ *D them for whatever purpose you wish; what we shall do by default is use them
+ *D to style the aforementioned tags in the natural way.
  *D
  *D \startitemize[columns, two, packed]
  *D   \startitem \type{--control-sequence-style}                 \stopitem

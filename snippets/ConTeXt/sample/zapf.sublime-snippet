@@ -11,5 +11,5 @@ screen, will make everything automatic from now on.
 ]]></content>
   <tabTrigger>zapf</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
-  <description>zapf</description>
+  <description>sample</description>
 </snippet>

@@ -1,9 +1,11 @@
 import sublime
 import sublime_plugin
+
 import subprocess
 import threading
 import time
 import os
+
 from .scripts import utilities
 from .scripts import files
 
@@ -25,7 +27,7 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
             "stderr": subprocess.STDOUT
         }
         self.state = IDLE
-        self.previous_script = "context ..."
+        self.previous_script = "context --version"
 
     def reload_settings(self):
         utilities.reload_settings(self)
@@ -54,11 +56,20 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, text):
         self.start_time = time.time()
-        thread = threading.Thread(target=lambda: self.on_done_aux(text))
+        view = self.window.active_view()
+        variables = self.window.extract_variables()
+        path = os.path.dirname(view.file_name()) if view else None
+        thread = threading.Thread(
+            target=lambda: self.on_done_aux(text, variables, path=path)
+        )
         thread.start()
 
-    def on_done_aux(self, text):
-        process = subprocess.Popen(text.split(), **self.options)
+    def on_done_aux(self, text, variables, path=None):
+        if path and os.path.exists(path):
+            os.chdir(path)
+
+        cmd = sublime.expand_variables(text.split(), variables)
+        process = subprocess.Popen(cmd, **self.options)
         result = process.communicate()
         output = files.clean_output(files.decode_bytes(result[0]))
         self.show_output()

@@ -1,7 +1,9 @@
 import sublime
 import sublime_plugin
+
 import collections
 import re
+
 from .scripts import utilities
 from .scripts import scopes
 
@@ -214,7 +216,7 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
         active_selectors_raw=[],
         on_choose=None,
         prefix=True,
-        selected_index=0
+        selected_index="closest"
     ):
         self.reload_settings()
         if not self.view:
@@ -238,13 +240,14 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
         for k, v in sorted(temp.items(), key=lambda tup: tup[0]):
             self.selectors[k] = v
 
-        self.last_choice = selected_index
+        self.selected_index = selected_index
         self.run_panel()
 
     def run_panel(self, selected_index=None):
         self.update_data()
+        self.check_history()
         self.window.show_quick_panel(
-            ["Choose scopes:"] + self.get_data(),
+            self.get_data() + ["Choose scopes:"],
             self.run_handle,
             on_highlight=self.on_highlight,
             selected_index=(
@@ -276,8 +279,38 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
                 )
         self.data = sorted(data, key=lambda tup: tup[0])
 
+    def check_history(self):
+        self.last_choice = 0
+        if self.selected_index in ["closest", "previous", "next"]:
+            sel = self.view.sel()
+            num_matches = len(self.data)
+            num_regions = len(sel)
+            if num_regions > 0 and num_matches > 0:
+                middle_region = sel[num_regions // 2]
+                sequence = [
+                    i for i in range(num_matches) if self.filter(
+                        self.data[i][0] - middle_region.begin(),
+                        self.selected_index,
+                    )
+                ]
+                if len(sequence) > 0:
+                    self.last_choice += \
+                        max(sequence, key=self.key_function(middle_region))
+        else:
+            self.last_choice += self.selected_index
+
+    def filter(self, delta, mode):
+        if mode == "closest":
+            return True
+        elif mode == "previous":
+            return delta <= 0
+        elif mode == "next":
+            return delta >= 0
+
+    def key_function(self, region):
+        return lambda i: -abs(self.data[i][0] - region.begin())
+
     def on_highlight(self, index):
-        index -= 1
         if 0 <= index < len(self.data):
             tup = self.data[index][:2]
             self.view.run_command(
@@ -288,11 +321,11 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
         self.reload_view()
         if not self.view:
             return
-        if index == 0:
+        len_ = len(self.data) - 1
+        if index >= len_:
             self.run_panel_choose(selected_index=0)
         else:
-            index -= 1
-            if 0 <= index < len(self.data):
+            if 0 <= index < len_:
                 tup = self.data[index][:2]
                 if self.on_choose == "insert":
                     text = self.view.substr(sublime.Region(*tup))
@@ -328,7 +361,7 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
 
     def run_handle_choose(self, index):
         if index == 0:
-            self.run_panel(selected_index=0)
+            self.run_panel()
         else:
             self.last_choice = index
             index -= 1

@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+save ${1:p}; pair ${1:p}; $1 := ${2:origin};$0
+]]></content>
+  <tabTrigger>pairs</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>save pair</description>
+</snippet>

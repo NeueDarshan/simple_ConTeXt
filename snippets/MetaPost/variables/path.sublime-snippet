@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+path ${1:p}; $1 := ${2:fullcircle};$0
+]]></content>
+  <tabTrigger>path</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>path</description>
+</snippet>

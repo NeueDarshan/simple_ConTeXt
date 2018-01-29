@@ -3,8 +3,8 @@ def is_scope(view, scope):
     if len(sel) > 0:
         return view.match_selector(sel[0].begin(), scope)
     else:
-        #D If in doubt, let's return \type{True}
-        return True
+        #D If in doubt, let's return \type{False}
+        return False
 
 
 def is_context(view):

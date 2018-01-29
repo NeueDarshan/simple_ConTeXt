@@ -1,7 +1,12 @@
 import sublime
+
 import itertools
 import collections
+import re
+import os
+
 from . import randomize
+from . import files
 
 
 def remove_duplicates(list_):
@@ -86,52 +91,86 @@ def reload_settings(self):
     self._check = self._builder.get("check", {})
 
 
-def process_options(name, options, input_, base):
+def get_variables(self):
+    variables = self.window.extract_variables()
+
+    variables["simple_context_path_sep"] = re.escape(os.path.sep)
+
+    env = os.environ.copy()
+    if self._path and os.path.exists(self._path):
+        variables["simple_context_prefixed_path"] = \
+            files.add_path(env["PATH"], self._path)
+    else:
+        variables["simple_context_prefixed_path"] = env["PATH"]
+
+    name = self._PDF.get("viewer")
+    viewer = self._PDF_viewers.get(name)
+    variables["simple_context_pdf_viewer"] = viewer if viewer else ""
+
+    return variables
+
+
+def expand_variables(self, args, variables):
+    result = _expand_variables(self, args, variables)
+    return sublime.expand_variables(result, variables)
+
+
+def _expand_variables(self, args, variables):
+    if isinstance(args, dict):
+        return {
+            k: _expand_variables(self, v, variables) for k, v in args.items()
+        }
+    elif isinstance(args, list):
+        result = []
+        for x in args:
+            if x == "$simple_context_insert_options":
+                result += process_options(
+                    self._program.get("options", {}), variables
+                )
+            else:
+                result.append(_expand_variables(self, x, variables))
+        return result
+    else:
+        return args
+
+
+def process_options(options, variables):
     if isinstance(options, str):
-        if input_:
-            cmd = [name] + options.split(" ") + [input_]
-        else:
-            cmd = [name] + options.split(" ")
+        return options.split()
 
     elif isinstance(options, dict):
-        cmd = [name]
-        if options.get("result"):
-            if base:
-                cmd.append(
-                    "--result={}".format(sublime.expand_variables(
-                        options["result"], {"name": base}
-                    ))
+        result = []
+        if "result" in options:
+            result.append(
+                "--result={}".format(
+                    expand_variables(options["result"], variables)
                 )
+            )
             del options["result"]
+
         for opt, val in options.items():
             if opt == "mode":
                 if any(v for k, v in val.items()):
                     pretty_val = ",".join(k for k, v in val.items() if v)
-                    cmd.append("--{}={}".format(opt, pretty_val))
+                    result.append("--{}={}".format(opt, pretty_val))
             elif isinstance(val, dict):
                 pretty_val = " ".join(
                     "{}={}".format(k, v) for k, v in val.items()
                 )
-                cmd.append("--{}={}".format(opt, pretty_val))
+                result.append("--{}={}".format(opt, pretty_val))
             elif isinstance(val, bool):
                 if val:
-                    cmd.append("--{}".format(opt))
+                    result.append("--{}".format(opt))
             else:
                 if opt == "script":
-                    cmd.insert(1, "--{}".format(opt))
-                    cmd.insert(2, "{}".format(val))
+                    result.insert(1, "--{}".format(opt))
+                    result.insert(2, "{}".format(val))
                 else:
-                    cmd.append("--{}={}".format(opt, val))
-        if input_:
-            cmd.append(input_)
+                    result.append("--{}={}".format(opt, val))
+        return result
 
     else:
-        if input_:
-            cmd = [name, input_]
-        else:
-            cmd = [name]
-
-    return cmd
+        return []
 
 
 class Choice:
@@ -242,4 +281,3 @@ class FuzzyOrderedDict:
 
     def __str__(self):
         return str(self.cache)
-

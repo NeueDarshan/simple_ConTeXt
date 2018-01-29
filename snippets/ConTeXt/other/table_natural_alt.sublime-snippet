@@ -5,7 +5,7 @@
   \NC c \NC d \NC\NR
 \stopTABLE
 ]]></content>
-  <tabTrigger>ntabl</tabTrigger>
+  <tabTrigger>tabln</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
   <description>natural table (concise)</description>
 </snippet>

@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+save ${1:p}; picture $1; $1 := ${2:currentpicture};$0
+]]></content>
+  <tabTrigger>pics</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>save picture</description>
+</snippet>

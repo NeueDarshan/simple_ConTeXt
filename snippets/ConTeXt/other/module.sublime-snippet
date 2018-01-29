@@ -1,0 +1,21 @@
+<snippet>
+  <content><![CDATA[
+%D \module
+%D   [     file=$TM_FILENAME,
+%D      version=${1:YYYY.MM.DD},
+%D        title=${2:title},
+%D     subtitle=${3:subtitle},
+%D       author=${4:${TM_FULLNAME}},
+%D         date=\currentdate,
+%D    copyright=${5:copyright}]
+
+\startmodule ${6:${TM_FILENAME/^([mpstx]\-)?(.*)\.([^.]+)$/\2/}}
+
+$0
+
+\stopmodule
+]]></content>
+  <tabTrigger>mod</tabTrigger>
+  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <description>module</description>
+</snippet>

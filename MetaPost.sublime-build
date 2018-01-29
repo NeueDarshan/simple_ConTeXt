@@ -1,24 +1,18 @@
 {
-	"cmd":
-	[
-		"mpost",
-		"$file"
-	],
+	"target": "simple_context_exec_wrapper",
 	"selector": "source.metapost",
-	"variants":
-	[
+	"cmd": ["mpost", "$file"],
+	"env": {"PATH": "$simple_context_prefixed_path"},
+	"cancel": {"kill": true},
+	"file_regex": "^Preloading the plain mem file, version .*\\).*\\((.*\\.mp)",
+	"line_regex": "^l\\.([0-9]+)",
+	"variants": [
 		{
-			"name": "Use 'mpost' in settings",
-			"target": "simple_context_build_metapost"
-		},
-		{
-			"name": "Use 'context' in settings (MetaFun)",
-			"target": "simple_context_build_metapost",
-			"cmd":
-			[
-				"context",
-				"$file"
-			]
+			"name": "use ConTeXt and MetaFun",
+			"cmd": ["context", "$file"],
+			"cancel": {"kill": true},
+			"file_regex": "^\\((.*\\.mp)",
+			"line_regex": "^l\\.([0-9]+)"
 		}
 	]
 }

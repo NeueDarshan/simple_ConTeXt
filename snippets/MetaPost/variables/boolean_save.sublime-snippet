@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+save ${1:b}; boolean $1; $1 := ${2:false};$0
+]]></content>
+  <tabTrigger>bools</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>save boolean</description>
+</snippet>

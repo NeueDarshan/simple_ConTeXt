@@ -63,41 +63,36 @@ def clean_output(text):
 
 
 def parse_checker(text, tolerant=True):
-    text = re.sub(r"<cr>\s*<lf>", "\n", text)
-    text = re.sub(r"<(lf|cr)>", "\n", text)
+    text = clean_output(text).replace(" <cr> " + " <lf> ", " <lf> ").replace(
+        " <cr> ", " <lf> ").replace(" <lf> ", "\n")
+    if text == "no error":
+        return {"passed": True}
+    elif text == "no file":
+        return {"passed": tolerant}
+
     parts = text.split("  ", maxsplit=2)
-    if len(parts) < 2:
-        return {"passed": tolerant, "main": text.rstrip()}
-    elif len(parts) < 3:
-        return {
-            "passed": tolerant, "head": parts[0], "main": parts[1].rstrip()
-        }
-    else:
-        try:
-            line, head, tail = parts
-            if head == "no error":
-                return {"passed": True, "head": head}
-            else:
-                other_line = re.search(r"\(see line ([0-9]+)\)\s*\Z", tail)
-                if other_line:
-                    return {
-                        "passed": False,
-                        "head": "lines {}--{} > {}".format(
-                            int(other_line.group(1)), int(line), head
-                        ),
-                        "main": tail[:other_line.start()].rstrip()
-                    }
-                else:
-                    return {
-                        "passed": False,
-                        "head": "line {} > {}".format(1 + int(line), head),
-                        "main": tail.rstrip()
-                    }
-        except:
+    if len(parts) == 3:
+        line_stop, head, main = parts
+        match = re.search(r"\(see line ([0-9]+)\)\Z", main)
+        if match:
+            line_start = match.group(1)
+            main = main[:match.start()]
             return {
-                "passed": tolerant,
-                "main": text
+                "passed": False,
+                "head": head,
+                "main": main,
+                "start": line_start,
+                "stop": line_stop,
             }
+        else:
+            return {
+                "passed": False,
+                "head": head,
+                "main": main,
+                "stop": line_stop,
+            }
+    else:
+        return {"passed": tolerant}
 
 
 def add_path(old, new):

@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+pair ${1:p}; $1 := ${2:origin};$0
+]]></content>
+  <tabTrigger>pair</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>pair</description>
+</snippet>

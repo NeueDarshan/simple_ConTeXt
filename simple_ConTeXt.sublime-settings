@@ -56,7 +56,6 @@
 			},
 			"program":
 			{
-				"name": "context",
 				"options":
 				{
 					"autogenerate": true,

@@ -11,7 +11,7 @@ file_extensions:
 scope: text.tex.context
 first_line_match: '^\s*(%.*?macros\s*=\s*mk([vx]i)|\\(start(text|document)|usemodule|setup[[:alpha:]]+))\b'
 variables:
-  key: '[[:alpha:][:digit:].\-\+_:;!\?<>&/]'
+  key: '[[:alpha:][:digit:].\-\+_:;!\?<>@&/]'
   setup: '{{key}}'
   verbatim: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
   variable: '[[:alpha:]]'
@@ -238,14 +238,18 @@ contexts:
   #D throughout the whole document. Hmm.
   math.number:
     - include: generic.real
-  # - match: '(\\)infty\b'
-  #   captures:
-  #     0: meta.control-word.context constant.other.math.context
-  #     1: punctuation.definition.backslash.context
+    - match: '[∞π]'
+      scope: constant.other.math.context
+    - match: '(\\)(infty|pi)\b'
+      captures:
+        0: meta.control-word.context constant.other.math.context
+        1: punctuation.definition.backslash.context
 
   #D We can make these lists more complete as time goes on.
   math.operator:
     - match: '([\+\-/\^_=<>])'
+      scope: keyword.operator.context
+    - match: '[∈]'
       scope: keyword.operator.context
     - match: '(\\)([lg]eq?|ll|gg)\b'
       captures:
@@ -256,7 +260,7 @@ contexts:
     #D I think \type{variable.other} makes the most sense logically. However,
     #D in my experience few colour schemes style this scope. So let's use
     #D \type{string} instead.
-    - match: '{{variable}}+'
+    - match: '{{variable}}'
       scope: string.unquoted.math.context
 
   #D In math mode, control sequences with arguments are tricky. Consider the
@@ -979,9 +983,20 @@ contexts:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.verbatim*/
+      #D Assume that these commands are following the convention of using
+      #D uppercase for verbatim.
+    - match: '(\\)(inline|type)[[:upper:]]+\b'
+      captures:
+        0: meta.control-word.context support.function.context
+        1: punctuation.definition.backslash.context
+      push: [
+        argument.group.verbatim*/,
+        argument.list*/,
+      ]
 
   #D Should we embed the appropriate syntaxes inside \type{TEX}, \type{LUA},
-  #D etc.? Hmm.
+  #D etc.? Hmm. On a technical note, embedding syntaxes is tricky, so it's a
+  #D lot easier to just mark them up as verbatim and call it a day.
   verbatim.block:
     - match: '(\\)start(typing)\b'
       captures:
@@ -1031,6 +1046,17 @@ contexts:
         verbatim.main.MP/,
         argument.list*/,
       ]
+    #D Similar to the inline capture we can use this to handle a generic
+    #D verbatim environment. Again, assumes that you use uppercase for verbatim
+    #D and nothing else.
+    - match: '(\\)start([[:upper:]]+)\b'
+      captures:
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        1: punctuation.definition.backslash.context
+      push: [
+        verbatim.main.wildcard/,
+        argument.list*/,
+      ]
 
   verbatim.main/:
     - match: ''
@@ -1074,6 +1100,14 @@ contexts:
         - meta_content_scope: markup.raw.block.context
         - match: '(?=\\stopMP\b)'
           pop: true
+  #D We can't use the empty match trick here: if we do, then we forget what the
+  #D name of the environment is. So, we have to accept that we'll wrongly markup
+  #D the optional argument, if given, as \type{markup.raw.block.context}.
+  verbatim.main.wildcard/:
+    - meta_include_prototype: false
+    - meta_content_scope: markup.raw.block.context
+    - match: '(?=\\stop\2\b)'
+      pop: true
 
   verbatim.buffer:
     - match: '(\\)startbuffer\b'
@@ -2610,8 +2644,8 @@ contexts:
     - include: generic.pop-if-no-nearby-list-or-group/
 
   argument.list-or-group.math:
-  # - include: argument.list.math
-    - include: argument.list
+    - include: argument.list.math
+  # - include: argument.list
     - include: argument.group.math
   argument.lists-or-groups.math*/:
     - include: argument.list-or-group.math

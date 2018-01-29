@@ -16,5 +16,5 @@ experiments.
 ]]></content>
   <tabTrigger>knuth</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
-  <description>knuth</description>
+  <description>sample</description>
 </snippet>

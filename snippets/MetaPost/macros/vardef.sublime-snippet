@@ -1,10 +1,10 @@
 <snippet>
   <content><![CDATA[
-vardef ${1:name}(${2:expr arg1, arg2, ...}) =
+vardef ${1:name}(${2:expr arg_a, arg_b, ...}) =
   ${0:% ...}
 enddef;
 ]]></content>
-  <tabTrigger>vardef</tabTrigger>
+  <tabTrigger>defv</tabTrigger>
   <scope>source.metapost</scope>
   <description>macro vardef</description>
 </snippet>

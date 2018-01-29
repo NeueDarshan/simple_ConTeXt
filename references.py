@@ -1,6 +1,8 @@
 import sublime
 import sublime_plugin
+
 import re
+
 from .scripts import utilities
 from .scripts import scopes
 

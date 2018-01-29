@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+transform ${1:t}; $1 := ${2:identity};$0
+]]></content>
+  <tabTrigger>tran</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>transform</description>
+</snippet>

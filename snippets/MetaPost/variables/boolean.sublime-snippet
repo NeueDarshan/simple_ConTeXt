@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+boolean ${1:b}; $1 := ${2:false};$0
+]]></content>
+  <tabTrigger>bool</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>boolean</description>
+</snippet>

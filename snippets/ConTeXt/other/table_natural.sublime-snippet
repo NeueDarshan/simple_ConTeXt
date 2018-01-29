@@ -11,7 +11,7 @@
   \eTR
 \eTABLE
 ]]></content>
-  <tabTrigger>ntab</tabTrigger>
+  <tabTrigger>tabn</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
   <description>natural table</description>
 </snippet>

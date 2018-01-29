@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+rgbcolor ${1:c}; $1 := ${2:(0,0,0)};$0
+]]></content>
+  <tabTrigger>rgb</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>rgbcolor</description>
+</snippet>

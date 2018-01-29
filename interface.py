@@ -1,8 +1,10 @@
 import sublime
 import sublime_plugin
+
 import threading
 import json
 import os
+
 from .scripts import utilities
 from .scripts import files
 from .scripts import save
@@ -41,6 +43,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
 
             def f():
                 self.run_aux(self._paths if do_all else paths, overwrite)
+
             if threaded:
                 thread = threading.Thread(target=f)
                 thread.start()

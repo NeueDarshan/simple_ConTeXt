@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+string ${1:s}; $1 := ${2:"..."};$0
+]]></content>
+  <tabTrigger>str</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>string</description>
+</snippet>

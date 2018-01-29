@@ -7,5 +7,5 @@ make the script shine!
 ]]></content>
   <tabTrigger>khatt</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
-  <description>khatt</description>
+  <description>sample</description>
 </snippet>

@@ -1,0 +1,8 @@
+<snippet>
+  <content><![CDATA[
+cmykcolor ${1:c}; $1 := ${2:(0,0,0,0)};$0
+]]></content>
+  <tabTrigger>cmyk</tabTrigger>
+  <scope>source.metapost</scope>
+  <description>cmykcolor</description>
+</snippet>

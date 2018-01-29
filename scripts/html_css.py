@@ -14,8 +14,9 @@ def control_sequence(text):
     try:
         if (
             text.startswith("start") or text.startswith("stop") or
-            re.match(MODULE, text) or re.match(CONDITIONAL_A, text) or
-            re.match(CONDITIONAL_B, text)
+            re.search(r"\A" + MODULE + r"\Z", text) or
+            re.search(r"\A" + CONDITIONAL_A + r"\Z", text) or
+            re.search(r"\A" + CONDITIONAL_B + r"\Z", text)
         ):
             return "<sfl>\\</sfl><flo>{}</flo>".format(text)
         else:

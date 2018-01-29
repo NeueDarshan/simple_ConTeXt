@@ -13,5 +13,5 @@ the goats.
 ]]></content>
   <tabTrigger>tufte</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
-  <description>tufte</description>
+  <description>sample</description>
 </snippet>

@@ -1,9 +1,11 @@
 import sublime
 import sublime_plugin
+
 import threading
 import string
 import json
 import os
+
 from .scripts import utilities
 from .scripts import randomize
 from .scripts import html_css
@@ -134,16 +136,12 @@ class SimpleContextMacroSignatureEventListener(
         self.state = IDLE
         self.file_min = 20000
         self.param_char = string.ascii_letters  # + string.whitespace
-        exts = ["tex"] + [
-            "mk{}".format(s) for s in ["ii", "iv", "vi", "ix", "xi"]
-        ]
-        self.extensions = [".{}".format(s) for s in exts]
+        self.extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
 
     def reload_settings(self):
         utilities.reload_settings(self)
         self.flags = \
             files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
-        self.load_css()
         self.name = files.file_as_slug(self._path)
         self.size = self.view.size()
         if (
@@ -175,12 +173,11 @@ class SimpleContextMacroSignatureEventListener(
         self.state = IDLE
 
     def load_css(self):
-        if not hasattr(self, "style"):
-            self.style = html_css.strip_css_comments(
-                sublime.load_resource(
-                    "Packages/simple_ConTeXt/css/pop_up.css"
-                )
+        self.style = html_css.strip_css_comments(
+            sublime.load_resource(
+                "Packages/simple_ConTeXt/css/pop_up.css"
             )
+        )
 
     def load_commands(self, path):
         try:
@@ -228,7 +225,7 @@ class SimpleContextMacroSignatureEventListener(
         if name in self.cache.get(self.name, {}):
             self.view.show_popup(
                 self.get_popup_text(name),
-                location=ctrl[0],
+                location=ctrl[0] - 1,
                 max_width=600,
                 flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY,
                 on_navigate=self.on_navigate
@@ -260,7 +257,7 @@ class SimpleContextMacroSignatureEventListener(
             if name in self.cache.get(self.name, {}):
                 self.view.show_popup(
                     self.get_popup_text(name),
-                    location=ctrl[0],
+                    location=ctrl[0] - 1,
                     max_width=600,
                     flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
                     on_navigate=self.on_navigate
@@ -283,6 +280,7 @@ class SimpleContextMacroSignatureEventListener(
         self.prev_pop_up_state = new_pop_up_state
         self.popup_name = name
 
+        self.load_css()
         return TEMPLATE.format(
             body="<br><br>".join(
                 s for s in self.html_cache[self.name][name] if s

@@ -22,5 +22,5 @@ contad si son catorce, y está hecho.
 ]]></content>
   <tabTrigger>quevedo</tabTrigger>
   <scope>text.tex.context - (meta.environment.math, source)</scope>
-  <description>quevedo</description>
+  <description>sample</description>
 </snippet>

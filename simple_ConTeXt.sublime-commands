@@ -15,7 +15,7 @@
 		"caption": "simple_ConTeXt: Run a ConTeXt script",
 		"command": "simple_context_run_script",
 	},
-	// in the future (?):
+	// one day:
 	// {
 	//   "caption": "simple_ConTeXt: Format ConTeXt file",
 	//   "command": "simple_context_format",

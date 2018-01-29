@@ -1,6 +1,6 @@
 <snippet>
   <content><![CDATA[
-def ${1:name}(${2:expr arg1, arg2, ...}) =
+def ${1:name}(${2:expr arg_a, arg_b, ...}) =
   ${0:% ...}
 enddef;
 ]]></content>
