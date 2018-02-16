@@ -64,11 +64,14 @@ class ExecMainSubprocess:
             if isinstance(cmd, str):
                 cmd = cmd.split()
 
-            env = seq.get("env", os.environ.copy())
+            env = os.environ.copy()
+            extra_env = seq.get("env")
+            if extra_env:
+                for k, v in extra_env.items():
+                    env[k] = v
             output = seq.get("output")
 
-            print('Running "{}"'.format(" ".join(cmd)))
-
+            print('Running: {}'.format(" ".join(cmd)))
             thread = threading.Thread(
                 target=lambda: self.run_command(
                     cmd,

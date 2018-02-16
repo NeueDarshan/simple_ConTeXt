@@ -36,7 +36,7 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
             environ["PATH"] = files.add_path(environ["PATH"], self._path)
             self.options["env"] = environ
         else:
-            self.options["env"] = os.environ
+            self.options["env"] = os.environ.copy()
 
     def run(self, user_input=None):
         self.reload_settings()
@@ -58,7 +58,11 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
         self.start_time = time.time()
         view = self.window.active_view()
         variables = self.window.extract_variables()
-        path = os.path.dirname(view.file_name()) if view else None
+        if view:
+            name = view.file_name()
+            path = os.path.dirname(view.file_name()) if name else None
+        else:
+            path = None
         thread = threading.Thread(
             target=lambda: self.on_done_aux(text, variables, path=path)
         )
@@ -69,6 +73,7 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
             os.chdir(path)
 
         cmd = sublime.expand_variables(text.split(), variables)
+        print('Running: {}'.format(" ".join(cmd)))
         process = subprocess.Popen(cmd, **self.options)
         result = process.communicate()
         output = files.clean_output(files.decode_bytes(result[0]))
