@@ -179,6 +179,11 @@ class InterfaceSaver:
         sequence = self.find(node, "sequence")
         name = node.attrib["name"]
 
+        #D Should we try to handle control symbols? Let's ignore them at the
+        #D moment.
+        if not name.isalpha():
+            return
+
         template = ""
         keys = []
         for child in sequence:
