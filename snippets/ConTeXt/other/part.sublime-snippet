@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\startpart[title=${1:name}]
+
+$0
+
+\stoppart
+]]></content>
+  <tabTrigger>part</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>start/stop part</description>
+</snippet>

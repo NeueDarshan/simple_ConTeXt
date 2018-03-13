@@ -1,0 +1,12 @@
+<snippet>
+  <content><![CDATA[
+\startchapter[title=${1:name}]
+
+$0
+
+\stopchapter
+]]></content>
+  <tabTrigger>chap</tabTrigger>
+  <scope>text.tex.context - source</scope>
+  <description>start/stop chapter</description>
+</snippet>

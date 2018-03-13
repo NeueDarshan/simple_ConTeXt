@@ -91,7 +91,7 @@ class InterfaceLoader:
             parts.append("\n\n".join(sig))
 
         if self.kwargs.get("show_source_files", False) and files:
-            source = " ".join(self.file.format(file=k) for k in sorted(files))
+            source = " ".join(self.file_format(k) for k in sorted(files))
         else:
             source = ""
         if self.kwargs.get("show_copy_pop_up", False):
@@ -103,6 +103,12 @@ class InterfaceLoader:
             copy = ""
 
         return ["\n\n".join(parts), source, copy]
+
+    def file_format(self, f):
+        if f is None:
+            return "<file><a>TeX primitive</a></file>"
+        else:
+            return self.file.format(file=f)
 
     def render_aux(self, list_):
         self._syntax = [

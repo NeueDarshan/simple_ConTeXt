@@ -11,10 +11,17 @@ from . import files
 
 NAMESPACE = {"cd": "http://www.pragma-ade.com/commands"}
 
+UGLY_DEF_LOOKUP = {
+    "instance-mathovertextextensible": "instance-mathoverextensible",
+    "instance-mathundertextextensible": "instance-mathunderextensible"
+}
+
+
+class DefinitionNotFoundError(Exception):
+    pass
 
 class UnexpectedTagError(Exception):
     pass
-
 
 class UnexpectedModeError(Exception):
     pass
@@ -213,7 +220,10 @@ class InterfaceSaver:
 
     def do_command_aux(self, name, node):
         attrib = node.attrib
+        #D We should signal primitives in a better way. For now they are
+        #D implicitly signalled by setting file equal to \type{None}.
         file = attrib.get("file")
+
         if attrib.get("type") == "environment":
             begin = self.clean_name(attrib.get("begin", "start") + name)
             end = self.clean_name(attrib.get("end", "stop") + name)
@@ -450,6 +460,9 @@ class InterfaceSaver:
             else:
                 raise UnexpectedModeError(msg.format(mode, attrib))
 
+    # def signal_primitive(self):
+    #     pass
+
     def is_true(self, val):
         return val == "yes"
 
@@ -542,7 +555,13 @@ class InterfaceSaver:
         self.defs[name] = obj
 
     def get_def(self, name):
-        return self.defs[name]
+        if name in self.defs:
+            return self.defs[name]
+        for key, val in UGLY_DEF_LOOKUP.items():
+            if name == key:
+                return self.get_def(val)
+        message = "unexpected resolve, could not find '{}'"
+        raise DefinitionNotFoundError(message.format(name))
 
     def add_cmd(self, name, obj):
         if name in self.cmds:
