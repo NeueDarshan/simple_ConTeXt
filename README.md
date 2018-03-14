@@ -110,7 +110,7 @@ For MetaPost, there are two variants. Firstly, just use the version of `mpost` t
 
 # Misc
 
-Completions should play well with others, e.g. the completions provided by the [Unicode​Completion][unicode-​completion] package. (Although Unicode​Completion is intended for LaTeX, I still find it useful for ConTeXt as many of the command names are the same.)
+Completions should play well with others, e.g. the completions provided by the [Unicode​Completion][unicode-completion] package. (Although Unicode​Completion is intended for LaTeX, I still find it useful for ConTeXt as many of the command names are the same.)
 
 [context-introduction]: http://wiki.contextgarden.net/What_is_ConTeXt
 [package-control]:      https://packagecontrol.io
