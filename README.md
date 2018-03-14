@@ -20,7 +20,7 @@ Currently the features are:
 
 Install via [package control][package-control], under the name `simple_ConTeXt`. Afterwards, there are some optional things to set up.
 
-  - Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings` in the command palette or `Preferences/Package Settings/simple_ConTeXt/Settings` in the menu bar. Under the `paths` key, put in a key-value entry for the ConTeXt installation on your machine: the key is a name for that installation, and the value should be the path to the context binaries. For example, if you have `context` installed under `/home/user-name/.local/context/` and the actual context binary is at `/home/user-name/.local/context/tex/texmf-linux-64/bin/context` then you should have
+  - Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings` in the command palette or `Preferences/Package Settings/simple_ConTeXt/Settings` in the menu bar. Under the `paths` key, put in a key-value entry for the ConTeXt installation on your machine: the key is a name for that installation, and the value should be the path to the context binaries. For example, if you have a ConTeXt distribution installed at `/home/user-name/.local/context/` and the actual context binary is located at `/home/user-name/.local/context/tex/texmf-linux-64/bin/context`, then you should have
 
     ```JSON
     {
