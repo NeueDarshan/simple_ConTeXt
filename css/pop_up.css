@@ -22,40 +22,10 @@
  *D                 \quote{inherits:} in \type{inherits: \foo} \NC\NR
  *D \stoptabulate
  *D
- *D The approach we take to styling elements is to provide the following
- *D additional CSS variables for use in this file. You can then choose to use
- *D them for whatever purpose you wish; what we shall do by default is use them
- *D to style the aforementioned tags in the natural way.
- *D
- *D \startitemize[columns, two, packed]
- *D   \startitem \type{--control-sequence-style}                 \stopitem
- *D   \startitem \type{--control-sequence-color}                 \stopitem
- *D   \startitem \type{--control-sequence-background}            \stopitem
- *D   \startitem \type{--slash-control-sequence-style}           \stopitem
- *D   \startitem \type{--slash-control-sequence-color}           \stopitem
- *D   \startitem \type{--slash-control-sequence-background}      \stopitem
- *D   \startitem \type{--flow-control-sequence-style}            \stopitem
- *D   \startitem \type{--flow-control-sequence-color}            \stopitem
- *D   \startitem \type{--flow-control-sequence-background}       \stopitem
- *D   \startitem \type{--slash-flow-control-sequence-style}      \stopitem
- *D   \startitem \type{--slash-flow-control-sequence-color}      \stopitem
- *D   \startitem \type{--slash-flow-control-sequence-background} \stopitem
- *D   \startitem \type{--delimiter-style}                        \stopitem
- *D   \startitem \type{--delimiter-color}                        \stopitem
- *D   \startitem \type{--delimiter-background}                   \stopitem
- *D   \startitem \type{--key-style}                              \stopitem
- *D   \startitem \type{--key-color}                              \stopitem
- *D   \startitem \type{--key-background}                         \stopitem
- *D   \startitem \type{--equals-style}                           \stopitem
- *D   \startitem \type{--equals-color}                           \stopitem
- *D   \startitem \type{--equals-background}                      \stopitem
- *D   \startitem \type{--numeric-style}                          \stopitem
- *D   \startitem \type{--numeric-color}                          \stopitem
- *D   \startitem \type{--numeric-background}                     \stopitem
- *D   \startitem \type{--comma-style}                            \stopitem
- *D   \startitem \type{--comma-color}                            \stopitem
- *D   \startitem \type{--comma-background}                       \stopitem
- *D \stopitemize
+ *D The approach we take to styling elements is to provide some additional CSS
+ *D variables for use in this file. You can then choose to use them for
+ *D whatever purpose you wish; what we shall do by default is use them to style
+ *D the various tags in the natural way.
  */
 
 html {
@@ -101,54 +71,105 @@ div.popup val {
 
 div.popup con {
     font-style: var(--control-sequence-style);
+    font-weight: var(--control-sequence-weight);
     color: var(--control-sequence-color);
     background-color: var(--control-sequence-background);
 }
 
 div.popup sco {
     font-style: var(--slash-control-sequence-style);
+    font-weight: var(--slash-control-sequence-weight);
     color: var(--slash-control-sequence-color);
     background-color: var(--slash-control-sequence-background);
 }
 
 div.popup flo {
     font-style: var(--flow-control-sequence-style);
+    font-weight: var(--flow-control-sequence-weight);
     color: var(--flow-control-sequence-color);
     background-color: var(--flow-control-sequence-background);
 }
 
 div.popup sfl {
     font-style: var(--slash-flow-control-sequence-style);
+    font-weight: var(--slash-flow-control-sequence-weight);
     color: var(--slash-flow-control-sequence-color);
     background-color: var(--slash-flow-control-sequence-background);
 }
 
+div.popup mod {
+    font-style: var(--modifier-control-sequence-style);
+    font-weight: var(--modifier-control-sequence-weight);
+    color: var(--modifier-control-sequence-color);
+    background-color: var(--modifier-control-sequence-background);
+}
+
+div.popup smo {
+    font-style: var(--slash-modifier-control-sequence-style);
+    font-weight: var(--slash-modifier-control-sequence-weight);
+    color: var(--slash-modifier-control-sequence-color);
+    background-color: var(--slash-modifier-control-sequence-background);
+}
+
+div.popup sto {
+    font-style: var(--storage-control-sequence-style);
+    font-weight: var(--storage-control-sequence-weight);
+    color: var(--storage-control-sequence-color);
+    background-color: var(--storage-control-sequence-background);
+}
+
+div.popup sst {
+    font-style: var(--slash-storage-control-sequence-style);
+    font-weight: var(--slash-storage-control-sequence-weight);
+    color: var(--slash-storage-control-sequence-color);
+    background-color: var(--slash-storage-control-sequence-background);
+}
+
+div.popup lan {
+    font-style: var(--language-control-sequence-style);
+    font-weight: var(--language-control-sequence-weight);
+    color: var(--language-control-sequence-color);
+    background-color: var(--language-control-sequence-background);
+}
+
+div.popup sla {
+    font-style: var(--slash-language-control-sequence-style);
+    font-weight: var(--slash-language-control-sequence-weight);
+    color: var(--slash-language-control-sequence-color);
+    background-color: var(--slash-language-control-sequence-background);
+}
+
 div.popup pun {
     font-style: var(--delimiter-style);
+    font-weight: var(--delimiter-weight);
     color: var(--delimiter-color);
     background-color: var(--delimiter-background);
 }
 
 div.popup key {
     font-style: var(--key-style);
+    font-weight: var(--key-weight);
     color: var(--key-color);
     background-color: var(--key-background);
 }
 
 div.popup equ {
     font-style: var(--equals-style);
+    font-weight: var(--equals-weight);
     color: var(--equals-color);
     background-color: var(--equals-background);
 }
 
 div.popup num {
     font-style: var(--numeric-style);
+    font-weight: var(--numeric-weight);
     color: var(--numeric-color);
     background-color: var(--numeric-background);
 }
 
 div.popup com {
     font-style: var(--comma-style);
+    font-weight: var(--comma-weight);
     color: var(--comma-color);
     background-color: var(--comma-background);
 }

@@ -91,7 +91,12 @@ class InterfaceLoader:
             parts.append("\n\n".join(sig))
 
         if self.kwargs.get("show_source_files", False) and files:
-            source = " ".join(self.file_format(k) for k in sorted(files))
+            prim = [f for f in files if f is None]
+            rest = [f for f in files if f is not None]
+            source = " ".join(
+                [self.file_format(k) for k in sorted(rest)] +
+                [self.file_format(k) for k in prim]
+            )
         else:
             source = ""
         if self.kwargs.get("show_copy_pop_up", False):

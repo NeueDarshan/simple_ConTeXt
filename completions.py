@@ -34,45 +34,46 @@ TEMPLATE = """
 </html>
 """
 
-EXTRA_STYLE = """
-html {{
-    --control-sequence-style: {con_style};
-    --control-sequence-color: {con_color};
-    --control-sequence-background: {con_background};
 
-    --slash-control-sequence-style: {sco_style};
-    --slash-control-sequence-color: {sco_color};
-    --slash-control-sequence-background: {sco_background};
+def extra_style():
+    result = []
+    suffixes = ["style", "weight", "color", "background"]
+    data = {
+        "con": "",
+        "flo": "flow",
+        "mod": "modifier",
+        "sto": "storage",
+        "lan": "language",
+    }
+    aux = {
+        "pun": "delimiter",
+        "key": "key",
+        "equ": "equals",
+        "num": "numeric",
+        "com": "comma"
+    }
 
-    --flow-control-sequence-style: {flo_style};
-    --flow-control-sequence-color: {flo_color};
-    --flow-control-sequence-background: {flo_background};
+    for tag, pre in data.items():
+        for suf in suffixes:
+            for opt in ["", "slash"]:
+                result.append(
+                    "--%s%scontrol-sequence-%s: {%s_%s};" % (
+                        opt + "-" if opt else "",
+                        pre + "-" if pre else "",
+                        suf,
+                        "s{:.2}".format(tag) if opt else tag,
+                        suf
+                    )
+                )
 
-    --slash-flow-control-sequence-style: {sfl_style};
-    --slash-flow-control-sequence-color: {sfl_color};
-    --slash-flow-control-sequence-background: {sfl_background};
+    for tag, pre in aux.items():
+        for suf in suffixes:
+            result.append("--%s-%s: {%s_%s};" % (pre, suf, tag, suf))
 
-    --delimiter-style: {pun_style};
-    --delimiter-color: {pun_color};
-    --delimiter-background: {pun_background};
+    return "html {{%s}}" % "\n".join(result)
 
-    --key-style: {key_style};
-    --key-color: {key_color};
-    --key-background: {key_background};
 
-    --equals-style: {equ_style};
-    --equals-color: {equ_color};
-    --equals-background: {equ_background};
-
-    --numeric-style: {num_style};
-    --numeric-color: {num_color};
-    --numeric-background: {num_background};
-
-    --comma-style: {com_style};
-    --comma-color: {com_color};
-    --comma-background: {com_background};
-}}
-"""
+EXTRA_STYLE = extra_style()
 
 
 class VirtualCommandDict:
@@ -290,49 +291,42 @@ class SimpleContextMacroSignatureEventListener(
         )
 
     def get_extra_style(self):
-        con = self.view.style_for_scope("support.function")
-        sco = self.view.style_for_scope(
-            "support.function punctuation.definition.backslash"
-        )
-        flo = self.view.style_for_scope("keyword.control")
-        sfl = self.view.style_for_scope(
-            "keyword.control punctuation.definition.backslash"
-        )
+        con, sco = self.styles_for_scope("support.function")
+        flo, sfl = self.styles_for_scope("keyword.control")
+        mod, smo = self.styles_for_scope("storage.modifier")
+        sto, sst = self.styles_for_scope("storage.type")
+        lan, sla = self.styles_for_scope("constant.language")
+
         pun = self.view.style_for_scope("punctuation.section")
         key = self.view.style_for_scope("variable.parameter")
         equ = self.view.style_for_scope("keyword.operator.assignment")
         num = self.view.style_for_scope("constant.numeric")
         com = self.view.style_for_scope("punctuation.separator.comma")
 
-        return EXTRA_STYLE.format(
-            con_style="italic" if con.get("italic") else "",
-            con_color=con.get("foreground"),
-            con_background=con.get("background", "--background"),
-            sco_style="italic" if sco.get("style") else "",
-            sco_color=sco.get("foreground"),
-            sco_background=sco.get("background", "--background"),
-            flo_style="italic" if flo.get("style") else "",
-            flo_color=flo.get("foreground"),
-            flo_background=flo.get("background", "--background"),
-            sfl_style="italic" if sfl.get("style") else "",
-            sfl_color=sfl.get("foreground"),
-            sfl_background=sfl.get("background", "--background"),
-            pun_style="italic" if pun.get("style") else "",
-            pun_color=pun.get("foreground"),
-            pun_background=pun.get("background", "--background"),
-            key_style="italic" if key.get("style") else "",
-            key_color=key.get("foreground"),
-            key_background=key.get("background", "--background"),
-            equ_style="italic" if equ.get("style") else "",
-            equ_color=equ.get("foreground"),
-            equ_background=equ.get("background", "--background"),
-            num_style="italic" if num.get("style") else "",
-            num_color=num.get("foreground"),
-            num_background=num.get("background", "--background"),
-            com_style="italic" if com.get("style") else "",
-            com_color=com.get("foreground"),
-            com_background=com.get("background", "--background"),
+        styles = {
+            "con": con, "sco": sco, "flo": flo, "sfl": sfl, "mod": mod,
+            "smo": smo, "sto": sto, "sst": sst, "lan": lan, "sla": sla,
+            "pun": pun, "key": key, "equ": equ, "num": num, "com": com,
+        }
+        opts = {}
+        for s, d in styles.items():
+            opts["{}_style".format(s)] = "italic" if d.get("italic") else ""
+            opts["{}_weight".format(s)] = "bold" if d.get("bold") else ""
+            opts["{}_color".format(s)] = d.get("foreground")
+            opts["{}_background".format(s)] = \
+                d.get("background", "--background")
+
+        return EXTRA_STYLE.format(**opts)
+
+    def style_for_scope_punc(self, text):
+        return self.view.style_for_scope(
+            "{} punctuation.definition.backslash".format(text)
         )
+
+    def styles_for_scope(self, text):
+        return [
+            self.view.style_for_scope(text), self.style_for_scope_punc(text)
+        ]
 
     def on_navigate(self, href):
         type_, content = href[:4], href[5:]

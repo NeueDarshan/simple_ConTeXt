@@ -1,26 +1,57 @@
 import re
 
 
-MODULE = r"use(lua|tex)?module"
+#D Ugly thing \periods\ I don't know what the best approach would be here. This
+#D is a decent approximation anyhow.
+#D
+#D I suppose the best approach would be to refactor \type{completions.py}, so
+#D that when a pop||up is requested we consult the exact style used at that
+#D point via the ST API.
+CASES = [
+    {  # keyword.control
+        "tags": ("flo", "sfl"),
+        "f": lambda text:
+            text.startswith("start") or
+            text.startswith("stop") or
+            text in ["loop", "repeat", "then", "or", "else", "fi"] or
+            any(re.search(r"\A" + regex + r"\Z", text) for regex in [
+                CONTROL_COND_A, CONTROL_COND_B, CONTROL_MODULE
+            ])
+    },
+    {  # storage.type
+        "tags": ("sto", "sst"),
+        "f": lambda text: re.match(r"[xge]?def|g?let", text)
+    },
+    {  # constant.language
+        "tags": ("lan", "sla"),
+        "f": lambda text: text in ["relax"]
+    },
+    {  # storage.modifier
+        "tags": ("mod", "smo"),
+        "f": lambda text: text in ["global", "immediate", "the"]
+    },
+    {  # support.function
+        "tags": ("con", "sco"),
+        "f": lambda _: True
+    },
+]
 
-CONDITIONAL_A = \
-    r"[a-zA-Z]*doif[a-zA-Z]*(else)?|[a-zA-Z]*doif(else)?[[a-zA-Z]]*"
+CONTROL_COND_A = \
+    r"[a-zA-Z]*doif[a-zA-Z]*(else)?|[a-zA-Z]*doif(else)?[a-zA-Z]*"
 
-CONDITIONAL_B = \
-    r"if[[:alpha:]]*|[[:alpha:]]*(true|false)|loop|repeat|then|or|else|fi"
+CONTROL_COND_B = r"if[a-zA-Z]*|[a-zA-Z]*(true|false)"
+
+CONTROL_MODULE = r"use(lua|tex)?module"
 
 
 def control_sequence(text):
     try:
-        if (
-            text.startswith("start") or text.startswith("stop") or
-            re.search(r"\A" + MODULE + r"\Z", text) or
-            re.search(r"\A" + CONDITIONAL_A + r"\Z", text) or
-            re.search(r"\A" + CONDITIONAL_B + r"\Z", text)
-        ):
-            return "<sfl>\\</sfl><flo>{}</flo>".format(text)
-        else:
-            return "<sco>\\</sco><con>{}</con>".format(text)
+        for case in CASES:
+            if case["f"](text):
+                tags = case["tags"]
+                temp = "<{a}>\\</{a}><{b}>%s</{b}>"
+                return temp.format(a=tags[1], b=tags[0]) % text
+        return ""
     except AttributeError as e:
         print("err", text)
         raise e
