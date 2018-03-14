@@ -4,7 +4,7 @@ This [Sublime Text][sublime-text] 3 package provides some support for working wi
 
 I started this project for my personal use, because I wanted some quality of life features for writing ConTeXt documents in Sublime Text. Since there were no packages that fit the bill, I started to write my own. Over time I felt that the result was looking pretty good, so I put it out into the world for the hopeful benefit of other ConTeXt users.
 
-That said, I can only test that things work on my machine, so some bugs are to be expected. Furthermore I only have so much spare time to work on it, and it's a hobby project. Don't expect a super polished experience!
+That said, I can only test that things work on my machine, so some bugs are to be expected. Furthermore I only have so much spare time to work on it, and it's a hobby project. Don't expect a robust, polished experience!
 
 Currently the features are:
   - syntax file(s)
@@ -19,7 +19,7 @@ Currently the features are:
 
 Install via [package control][package-control], under the name `simple_ConTeXt`. Afterwards, there are some optional things to set up.
 
-  - Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings` in the command palette or `Preferences/Package Settings/simple_ConTeXt/Settings` in the menu bar. Under the `paths` key, put in a key-value entry for the ConTeXt installation on your machine: the key can be whatever string you like, and the value should be the path to the context binaries. For example:
+  - Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings` in the command palette or `Preferences/Package Settings/simple_ConTeXt/Settings` in the menu bar. Under the `paths` key, put in a key-value entry for the ConTeXt installation on your machine: the key is a name for that installation, and the value should be the path to the context binaries. For example, if you have `context` installed under `/home/user-name/.local/context/` and the actual context binary is at `/home/user-name/.local/context/tex/texmf-linux-64/bin/context` then you should have
 
     ```JSON
     {
@@ -28,6 +28,8 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
       }
     }
     ```
+
+    If you have multiple versions of ConTeXt installed (e.g. a couple different TeX Live versions and the ConTeXt Standalone) then you can put a name-path entry for each one, and they can happily coexist in simple ConTeXt.
 
     For opening PDFs after building a ConTeXt file, and opening the manuals, the `PDF_viewers` entry is consulted. Similarly to the previous, the keys can be any string, but each value should be the name of a PDF viewer program. (In the case of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
 
@@ -44,7 +46,7 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
     }
     ```
 
- - Consider adding the following to your key bindings: it will (for ConTeXt files only) replace the binding for the local symbol list (<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom variation of it. The idea is to make it easier to navigate between headings, definitions, references, and file inclusions (`\input` and the like).
+ - Consider adding the following to your key bindings: it will (for ConTeXt files only) replace the binding for the local symbol list (<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom variation of it. The idea is to make it easier to navigate/filter between headings, definitions, references, and so on.
 
     ```JSON
     {
@@ -64,6 +66,8 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
     }
     ```
 
+    Otherwise, the default local symbol list contains all these things with suitable prefixes.
+
  - Consider adding the following to your ConTeXt syntax specific settings:
 
     ```JSON
@@ -74,6 +78,25 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
     ```
 
     This should do a pretty decent job at limiting spell check to the appropriate places only (e.g. not in maths or code blocks).
+
+  - If you use the excellent [BracketHighlighter][bracket-highlighter] package, then adding the following to the BracketHighlighter settings will provide some rudimentary support for ConTeXt start/stop commands.
+
+    ```JSON
+    {
+      "user_brackets": [
+        {
+          "name": "contextenv",
+          "open": "(\\\\start[a-zA-Z]*)",
+          "close": "(\\\\stop[a-zA-Z]*)",
+          "style": "tag",
+          "scope_exclude": ["-meta.structure"],
+          "language_filter": "whitelist",
+          "language_list": ["ConTeXt"],
+          "enabled": true
+        }
+      ]
+    }
+    ```
 
 # Builders
 
@@ -90,4 +113,5 @@ Completions should play well with others, e.g. the completions provided by the [
 [context-introduction]: http://wiki.contextgarden.net/What_is_ConTeXt
 [package-control]:      https://packagecontrol.io
 [sublime-text]:         https://www.sublimetext.com
-[unicode-​completion]:   https://github.com/randy3k/UnicodeCompletion
+[unicode-completion]:   https://github.com/randy3k/UnicodeCompletion
+[bracket-highlighter]:  https://github.com/facelessuser/BracketHighlighter

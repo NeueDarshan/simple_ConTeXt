@@ -95,7 +95,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
         saver = save.InterfaceSaver(flags=self.flags)
         print("simple_ConTeXt: generating interface files...")
         saver.save(path, modules=True, tolerant=True)
-        print("simple_ConTeXt: finished generating interface files")
+        print("simple_ConTeXt: ...finished generating interface files")
         cmds = saver.encode()
         cache, key, size = {}, None, 0
         for name in sorted(cmds):
