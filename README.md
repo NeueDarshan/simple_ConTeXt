@@ -7,6 +7,7 @@ I started this project for my personal use, because I wanted some quality of lif
 That said, I can only test that things work on my machine, so some bugs are to be expected. Furthermore I only have so much spare time to work on it, and it's a hobby project. Don't expect a robust, polished experience!
 
 Currently the features are:
+
   - syntax file(s)
   - builder(s)
   - command auto-completions
@@ -33,7 +34,7 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
 
     For opening PDFs after building a ConTeXt file, and opening the manuals, the `PDF_viewers` entry is consulted. Similarly to the previous, the keys can be any string, but each value should be the name of a PDF viewer program. (In the case of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
 
- - Add the following entry to your general Sublime Text (ST) settings, in order to get automatic completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
+  - Add the following entry to your general Sublime Text (ST) settings, in order to get automatic completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
 
     ```JSON
     {
@@ -46,7 +47,7 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
     }
     ```
 
- - Consider adding the following to your key bindings: it will (for ConTeXt files only) replace the binding for the local symbol list (<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom variation of it. The idea is to make it easier to navigate/filter between headings, definitions, references, and so on.
+  - Consider adding the following to your key bindings: it will (for ConTeXt files only) replace the binding for the local symbol list (<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom variation of it. The idea is to make it easier to navigate/filter between headings, definitions, references, and so on.
 
     ```JSON
     {
@@ -68,7 +69,7 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
 
     Otherwise, the default local symbol list contains all these things with suitable prefixes.
 
- - Consider adding the following to your ConTeXt syntax specific settings:
+  - Consider adding the following to your ConTeXt syntax specific settings:
 
     ```JSON
     {
@@ -101,6 +102,7 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
 # Builders
 
 The main builder is of course the ConTeXt one, that is a wrapper around the `context` binary. But, as it's easy to do so, there are a couple others:
+
   - Lua (using LuaTeX as a Lua interpreter);
   - MetaPost.
 
