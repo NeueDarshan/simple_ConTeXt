@@ -86,7 +86,7 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
     {
       "user_brackets": [
         {
-          "name": "contextenv",
+          "name": "context_env",
           "open": "(\\\\start[a-zA-Z]*)",
           "close": "(\\\\stop[a-zA-Z]*)",
           "style": "tag",

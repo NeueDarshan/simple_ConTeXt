@@ -3,12 +3,12 @@
 % <- source.metapost
 
   prologues := 3;
-% ^^^^^^^^^       constant.language.metapost
+% ^^^^^^^^^       variable.language.metapost
 %           ^^    keyword.operator.metapost
 %              ^  constant.numeric.metapost
 %               ^ punctuation.terminator.semicolon.metapost
   outputtemplate := "%j-%c.mps";
-% ^^^^^^^^^^^^^^                 constant.language.metapost
+% ^^^^^^^^^^^^^^                 variable.language.metapost
 %                ^^              keyword.operator.metapost
 %                   ^            punctuation.definition.string.begin.metapost
 %                    ^^          constant.other.placeholder.metapost
@@ -22,9 +22,9 @@
 % ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ comment.line.percentage.metapost
 
   beginfig(1);
-% ^^^^^^^^     entity.name.other.fig.metapost
+% ^^^^^^^^     support.function.metapost
 %         ^    punctuation.section.parens.begin.metapost
-%          ^   constant.numeric.metapost meta.other.numeric.fig.metapost
+%          ^   entity.name.section.metapost constant.numeric.metapost
 %           ^  punctuation.section.parens.end.metapost
 %         ^^^  meta.parens.metapost
 %            ^ punctuation.terminator.semicolon.metapost
@@ -116,7 +116,7 @@
   %                             ^^^                                                                                                              keyword.operator.metapost
   %                                  ^                                                                                                           constant.numeric.metapost
   %                                    ^                                                                                                         constant.numeric.metapost
-  %                                        ^^^                                                                                                   support.function.general.metapost
+  %                                        ^^^                                                                                                   support.function.metapost
   %                                            ^^                                                                                                constant.numeric.metapost
   %                                               ^^                                                                                             keyword.operator.metapost
   %                                                  ^^                                                                                          constant.language.metapost
@@ -143,7 +143,7 @@
   %                                                                                                                                ^             constant.numeric.metapost
   %                                                                                                                                  ^           constant.numeric.metapost
   %                                                                                                                                    ^^        keyword.operator.metapost
-  %                                                                                                                                       ^^^^^  support.function.general.metapost
+  %                                                                                                                                       ^^^^^  support.function.metapost
   %                                                                                                                                            ^ punctuation.terminator.semicolon.metapost
 
     % draw g scaled 1cm dashed evenly withcolor red;
@@ -152,11 +152,11 @@
     % dotlabel("p", p);
 
     begingroup;
-  % ^^^^^^^^^^  entity.name.other.group.metapost
+  % ^^^^^^^^^^  support.function.metapost
   %           ^ punctuation.terminator.semicolon.metapost
       interim labeloffset := 1cm;
     % ^^^^^^^                     storage.modifier.metapost
-    %         ^^^^^^^^^^^         constant.language.metapost
+    %         ^^^^^^^^^^^         variable.language.metapost
     %                     ^^      keyword.operator.metapost
     %                        ^    constant.numeric.metapost
     %                         ^^  keyword.other.unit.metapost
@@ -174,36 +174,36 @@
       picture pic;
       pic := thelabel.top(
         btex
-      % ^^^^ entity.name.other.tex.metapost
+      % ^^^^ support.function.metapost
           $\displaystyle \sum_{n=1}^{\infty} n = -\frac{1}{12}$
       % <- text.tex.embedded.metapost
         etex,
-      % ^^^^ entity.name.other.tex.metapost
+      % ^^^^ support.function.metapost
         p
       );
 
       unfill bbox pic;
       draw pic withcolor blue;
     endgroup;
-  % ^^^^^^^^  entity.name.other.group.metapost
+  % ^^^^^^^^  support.function.metapost
   %         ^ punctuation.terminator.semicolon.metapost
 
     def circle expr theta = (cosd(theta), sind(theta)) enddef
-  % ^^^                                                       storage.type.function.general.metapost
-  %     ^^^^^^                                                entity.name.function.metapost meta.other.function.def.metapost
-  %            ^^^^                                           storage.type.metapost
+  % ^^^                                                       storage.type.metapost
+  %     ^^^^^^                                                entity.name.function.metapost
+  %            ^^^^                                           storage.modifier.metapost
   %                 ^^^^^                                     variable.parameter.metapost
-  %                       ^                                   keyword.operator.metapost
-  %                                                    ^^^^^^ storage.type.function.general.metapost
+  %                       ^                                   keyword.operator.assignment.metapost
+  %                                                    ^^^^^^ storage.type.metapost
 
     path q;
     q := origin for i=0,90,10: .. circle(i) endfor;
-  %             ^^^                                keyword.control.metapost
-  %                                         ^^^^^^ keyword.control.metapost
+  %             ^^^                                keyword.control.conditional.metapost
+  %                                         ^^^^^^ keyword.control.conditional.metapost
 
   endfig;
-% ^^^^^^  entity.name.other.fig.metapost
+% ^^^^^^  support.function.metapost
 %       ^ punctuation.terminator.semicolon.metapost
 
   end
-% ^^^ entity.name.other.end.metapost
+% ^^^ support.function.metapost

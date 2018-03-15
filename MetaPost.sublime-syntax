@@ -41,11 +41,11 @@ contexts:
     - include: constant.language
 
   constant.numeric:
-    - match: '([[:digit:]]*\.[[:digit:]]+)((bp|cc|cm|dd|pc|in|mm|pt)\b)?'
+    - match: '([[:digit:]]*\.[[:digit:]]+)(?:(bp|cc|cm|dd|pc|in|mm|pt)\b)?'
       captures:
         '1': constant.numeric.metapost
         '2': keyword.other.unit.metapost
-    - match: '([[:digit:]]+)((bp|cc|cm|dd|pc|in|mm|pt)\b)?'
+    - match: '([[:digit:]]+)(?:(bp|cc|cm|dd|pc|in|mm|pt)\b)?'
       captures:
         '1': constant.numeric.metapost
         '2': keyword.other.unit.metapost
@@ -67,11 +67,11 @@ contexts:
       pop: true
     - match: '%%'
       scope: constant.character.escape.percentage.metapost
-    - match: '%(j|[[:digit:]]?[cymdHM]|)'
+    - match: '%(?:j|[[:digit:]]?[cymdHM]|)'
       scope: constant.other.placeholder.metapost
 
   constant.language:
-    - match: '\b(beveled|black|blue|butt|cyan|ditto|down|EOF|eps(ilon)?|evenly|false|green|(full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(pen|picture)|blankpicture|magenta|origin|pen(circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|white|withdots|yellow)\b'
+    - match: '\b(?:beveled|black|blue|butt|cyan|ditto|down|EOF|eps(?:ilon)?|evenly|false|green|(?:full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(?:pen|picture)|blankpicture|magenta|origin|pen(?:circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|white|withdots|yellow)\b'
       scope: constant.language.metapost
 
 
@@ -83,9 +83,9 @@ contexts:
 
 
   type:
-    - match: '\b(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)\b'
+    - match: '\b(?:boolean|(?:rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)\b'
       scope: storage.type.metapost
-    - match: '\b(save|interim|newinternal|outer)\b'
+    - match: '\b(?:save|interim|newinternal|outer)\b'
       scope: storage.modifier.metapost
 
 
@@ -93,12 +93,12 @@ contexts:
     - include: keyword.control
 
   keyword.control:
-    - match: '\b(if|else(if)?|fi|for(suffixes|ever)?|within|(up|down)to|step|until|exit(if|unless)|endfor)\b'
+    - match: '\b(?:if|else(?:if)?|fi|for(?:suffixes|ever)?|within|(?:up|down)to|step|until|exit(?:if|unless)|endfor)\b'
       scope: keyword.control.conditional.metapost
 
 
   internal-parameter:
-    - match: '\b(ah(angle|length)|background|bboxmargin|charcode|current(pen|picture)|cuttings|day|default(colormodel|font|pen|scale)|dotlabeldiam|extra_(begin|end)fig|hour|hppp|jobname|join_radius|labeloffset|line(cap|join)|minute|miterlimit|month|mpprocset|number(precision|system)|output(filename|format|formatoptions|template)|pausing|prologues|restoreclipcolor|showstopping|time|tolerance|tracing(capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)\b'
+    - match: '\b(?:ah(?:angle|length)|background|bboxmargin|charcode|current(?:pen|picture)|cuttings|day|default(?:colormodel|font|pen|scale)|dotlabeldiam|extra_(?:begin|end)fig|hour|hppp|jobname|join_radius|labeloffset|line(?:cap|join)|minute|miterlimit|month|mpprocset|number(?:precision|system)|output(?:filename|format|formatoptions|template)|pausing|prologues|restoreclipcolor|showstopping|time|tolerance|tracing(?:capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)\b'
       scope: variable.language.metapost
 
 
@@ -107,13 +107,13 @@ contexts:
     - include: operator.symbol
 
   operator.word:
-    - match: '\b(and|atleast|controls|curl|cut(after|before|ends)|dashed|div|dotprod|glyph|infont|intersection(point|times)|mod|not|of|or|off|on|reflectedabout|rotated(around)?|scaled|shifted|slanted|softjoin|tension|to|transformed|with((cmyk|grey|out|rgb)?color|gray|greyscale|(pre|post)script|pen)|[xyz]scaled)\b'
+    - match: '\b(?:and|atleast|controls|curl|cut(?:after|before|ends)|dashed|div|dotprod|glyph|infont|intersection(?:point|times)|mod|not|of|or|off|on|reflectedabout|rotated(?:around)?|scaled|shifted|slanted|softjoin|tension|to|transformed|with(?:(?:cmyk|grey|out|rgb)?color|gray|greyscale|(?:pre|post)script|pen)|[xyz]scaled)\b'
       scope: keyword.operator.word.metapost
 
   operator.symbol:
     - match: '[\.\-]{2,3}'
       scope: keyword.operator.metapost
-    - match: '([:<>]?=|<>|\+\-\+|[*+]{2}|[<>&*/+-])'
+    - match: '(?:[:<>]?=|<>|\+\-\+|[*+]{2}|[<>&*/+-])'
       scope: keyword.operator.metapost
 
 
@@ -135,13 +135,13 @@ contexts:
       push: argument.string-or-file-name*/
 
   function.labels:
-    - match: '\b(thelabel|(dot)?labels?)(\.(top|[ul]?(lft|rt)|bot))?\b'
+    - match: '\b(?:thelabel|(?:dot)?labels?)(?:\.(?:top|[ul]?(?:lft|rt)|bot))?\b'
       scope: support.function.metapost
 
   function.generic:
-    - match: '\b(abs|addto|also|angle|arclength|arctime|ASCII|byte|batchmode|bbox|(sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|decimal|decr|dir|direction(point|time)?|doublepath|draw(arrow|dblarrow|dot|fill|options)?|err(help|message)|(scroll|(error|non)stop)mode|filenametemplate|fill(draw)?|filled|flex|floor|fontmap(file|line)|fontsize|hex|hide|image|incr|interpath|inverse|known|length|loggingall|makepath|makepen|max|message|mexp|min|mlog|(normal|uniform)deviate|oct|odd|pickup|penoffset|point|(post|pre)control|readfrom|reverse|round|scantokens|setbounds|shipout|show(dependencies|token|variable)?|special|sqrt|str|stroked|sub(path|string)|superellipse|tensepath|textual|turningnumber|(top|bot|lft|rt)|tracing(all|none)|un(draw(dot|fill)?|fill(draw)?)|unitvector|unknown|[ul][rl]corner|write|(black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)\b'
+    - match: '\b(?:abs|addto|also|angle|arclength|arctime|ASCII|byte|batchmode|bbox|(?:sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|decimal|decr|dir|direction(?:point|time)?|doublepath|draw(?:arrow|dblarrow|dot|fill|options)?|err(?:help|message)|(?:scroll|(?:error|non)stop)mode|filenametemplate|fill(?:draw)?|filled|flex|floor|fontmap(?:file|line)|fontsize|hex|hide|image|incr|interpath|inverse|known|length|loggingall|makepath|makepen|max|message|mexp|min|mlog|(?:normal|uniform)deviate|oct|odd|pickup|penoffset|point|(?:post|pre)control|readfrom|reverse|round|scantokens|setbounds|shipout|show(?:dependencies|token|variable)?|special|sqrt|str|stroked|sub(?:path|string)|superellipse|tensepath|textual|turningnumber|(?:top|bot|lft|rt)|tracing(?:all|none)|un(?:draw(?:dot|fill)?|fill(?:draw)?)|unitvector|unknown|[ul][rl]corner|write|(?:black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)\b'
       scope: support.function.metapost
-    - match: '\b(cycle|whatever)\b'
+    - match: '\b(?:cycle|whatever)\b'
       scope: support.function.metapost
 
   function.parameter:
@@ -156,7 +156,7 @@ contexts:
     - include: definition.let
 
   definition.def:
-    - match: '\b(var)?def\b'
+    - match: '\b(?:var)?def\b'
       scope: storage.type.metapost
       push: [
         definition.main/,
@@ -165,7 +165,7 @@ contexts:
 
   definition.main/:
     - include: argument.equals/
-    - match: '\b(expr|suffix|of|text|primary)\b'
+    - match: '\b(?:expr|suffix|of|text|primary)\b'
       scope: storage.modifier.metapost
     - match: '{{tokens}}'
       scope: variable.parameter.metapost
@@ -184,7 +184,7 @@ contexts:
       ]
 
   definition.binarydef:
-    - match: '\b(primary|secondary|tertiary)def\b'
+    - match: '\b(?:primary|secondary|tertiary)def\b'
       scope: storage.type.metapost
       push: [
         argument.equals*/,
@@ -204,16 +204,16 @@ contexts:
       push: argument.parens.figure*/
 
   environment.group:
-    - match: '\b(begin|end)group\b'
+    - match: '\b(?:begin|end)group\b'
       scope: support.function.metapost
     - match: '\bendfig\b'
       scope: support.function.metapost
-    - match: '\b(end(input)?|bye)\b'
+    - match: '\b(?:end(?:input)?|bye)\b'
       scope: support.function.metapost
 
 
   TeX:
-    - match: '\b(b|verbatim)tex\b'
+    - match: '\b(?:b|verbatim)tex\b'
       scope: support.function.metapost
       push: TeX.main/
     - match: '\betex\b'
@@ -309,5 +309,5 @@ contexts:
 
   generic.pop-at-parens-end/:
     - match: '\)'
-      scope: punctuation.section.parens.end.context
+      scope: punctuation.section.parens.end.metapost
       pop: true
