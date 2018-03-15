@@ -86,7 +86,7 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
     {
       "user_brackets": [
         {
-          "name": "context_env",
+          "name": "contextenv",
           "open": "(\\\\start[a-zA-Z]*)",
           "close": "(\\\\stop[a-zA-Z]*)",
           "style": "tag",
@@ -103,45 +103,49 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
 
     ```JSON
     {
-      "name": "metapost_def",
-      "open": "(\\b(?:var|(?:prim|second|terti)ary)?def\\b)",
-      "close": "(\\benddef\\b)",
-      "style": "default",
-      "scope_exclude": ["string", "comment"],
-      "language_filter": "whitelist",
-      "language_list": ["MetaPost", "MetaFun"],
-      "enabled": true
-    },
-    {
-      "name": "metapost_env",
-      "open": "(\\bbegin(?:fig|group)\\b)",
-      "close": "(\\bend(?:fig|group)\\b)",
-      "style": "default",
-      "scope_exclude": ["string", "comment"],
-      "language_filter": "whitelist",
-      "language_list": ["MetaPost", "MetaFun"],
-      "enabled": true
-    },
-    {
-      "name": "metapost_ctrl",
-      "open": "(\\bif\\b)",
-      "close": "(\\bfi\\b)",
-      "style": "default",
-      "scope_exclude": ["string", "comment"],
-      "language_filter": "whitelist",
-      "language_list": ["MetaPost", "MetaFun"],
-      "enabled": true
-    },
-    {
-      "name": "metapost_loop",
-      "open": "(\\bfor(?:suffixes|ever)?\\b)",
-      "close": "(\\bendfor\\b)",
-      "style": "default",
-      "scope_exclude": ["string", "comment"],
-      "language_filter": "whitelist",
-      "language_list": ["MetaPost", "MetaFun"],
-      "enabled": true
-    },
+      "user_brackets": [
+        {
+          "name": "metapost_def",
+          "open": "(\\b(?:var|(?:prim|second|terti)ary)?def\\b)",
+          "close": "(\\benddef\\b)",
+          "style": "default",
+          "scope_exclude": ["string", "comment"],
+          "language_filter": "whitelist",
+          "language_list": ["MetaPost", "MetaFun"],
+          "enabled": true
+        },
+        {
+          "name": "metapost_env",
+          "open": "(\\bbegin(?:fig|group)\\b)",
+          "close": "(\\bend(?:fig|group)\\b)",
+          "style": "default",
+          "scope_exclude": ["string", "comment"],
+          "language_filter": "whitelist",
+          "language_list": ["MetaPost", "MetaFun"],
+          "enabled": true
+        },
+        {
+          "name": "metapost_ctrl",
+          "open": "(\\bif\\b)",
+          "close": "(\\bfi\\b)",
+          "style": "default",
+          "scope_exclude": ["string", "comment"],
+          "language_filter": "whitelist",
+          "language_list": ["MetaPost", "MetaFun"],
+          "enabled": true
+        },
+        {
+          "name": "metapost_loop",
+          "open": "(\\bfor(?:suffixes|ever)?\\b)",
+          "close": "(\\bendfor\\b)",
+          "style": "default",
+          "scope_exclude": ["string", "comment"],
+          "language_filter": "whitelist",
+          "language_list": ["MetaPost", "MetaFun"],
+          "enabled": true
+        }
+      ]
+    }
     ```
 
 # Builders
