@@ -7,7 +7,7 @@ file_extensions:
   - mpiv
 scope: source.metapost
 variables:
-  tokens: '(?:[[:alpha:]_]+|[\:\<\=\>\|]+|[\#\&\@\$]+|[\/\*\\]+|[\+\-]+|[\!\?]+|[\^\~]+|[\{\}]+|\[+|\]+)'
+  tokens: '(?:[[:alpha:]_]+|[\:\<\=\>\|]+|[\#\&\@\$]+|[\/\*\\]+|[\+\-]+|[\!\?]+|[\^\~]+|[\{\}]+|\[+|\]+|\.{2,})'
 
 
 contexts:
@@ -71,7 +71,7 @@ contexts:
       scope: constant.other.placeholder.metapost
 
   constant.language:
-    - match: '\b(beveled|black|blue|butt|ditto|down|EOF|eps(ilon)?|evenly|false|green|(full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(pen|picture)|blankpicture|origin|pen(circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|white|withdots)\b'
+    - match: '\b(beveled|black|blue|butt|cyan|ditto|down|EOF|eps(ilon)?|evenly|false|green|(full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(pen|picture)|blankpicture|magenta|origin|pen(circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|white|withdots|yellow)\b'
       scope: constant.language.metapost
 
 
@@ -85,7 +85,7 @@ contexts:
   type:
     - match: '\b(boolean|(rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)\b'
       scope: storage.type.metapost
-    - match: '\b(save|interim|newinternal)\b'
+    - match: '\b(save|interim|newinternal|outer)\b'
       scope: storage.modifier.metapost
 
 

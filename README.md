@@ -86,7 +86,7 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
     {
       "user_brackets": [
         {
-          "name": "contextenv",
+          "name": "context_env",
           "open": "(\\\\start[a-zA-Z]*)",
           "close": "(\\\\stop[a-zA-Z]*)",
           "style": "tag",
@@ -99,14 +99,60 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
     }
     ```
 
+    In a similar way, here is an example of some rudimentary MetaPost support for BracketHighlighter.
+
+    ```JSON
+    {
+      "name": "metapost_def",
+      "open": "(\\b(?:var|(?:prim|second|terti)ary)?def\\b)",
+      "close": "(\\benddef\\b)",
+      "style": "default",
+      "scope_exclude": ["string", "comment"],
+      "language_filter": "whitelist",
+      "language_list": ["MetaPost", "MetaFun"],
+      "enabled": true
+    },
+    {
+      "name": "metapost_env",
+      "open": "(\\bbegin(?:fig|group)\\b)",
+      "close": "(\\bend(?:fig|group)\\b)",
+      "style": "default",
+      "scope_exclude": ["string", "comment"],
+      "language_filter": "whitelist",
+      "language_list": ["MetaPost", "MetaFun"],
+      "enabled": true
+    },
+    {
+      "name": "metapost_ctrl",
+      "open": "(\\bif\\b)",
+      "close": "(\\bfi\\b)",
+      "style": "default",
+      "scope_exclude": ["string", "comment"],
+      "language_filter": "whitelist",
+      "language_list": ["MetaPost", "MetaFun"],
+      "enabled": true
+    },
+    {
+      "name": "metapost_loop",
+      "open": "(\\bfor(?:suffixes|ever)?\\b)",
+      "close": "(\\bendfor\\b)",
+      "style": "default",
+      "scope_exclude": ["string", "comment"],
+      "language_filter": "whitelist",
+      "language_list": ["MetaPost", "MetaFun"],
+      "enabled": true
+    },
+    ```
+
 # Builders
 
-The main builder is of course the ConTeXt one, that is a wrapper around the `context` binary. But, as it's easy to do so, there are a couple others:
+The main builder is of course the ConTeXt one, that is a wrapper around the `context` binary. In order to find `context` it consults the path specified in the settings.
+
+As it's easy to do so, there are a couple other builders:
 
   - Lua (using LuaTeX as a Lua interpreter);
-  - MetaPost.
 
-For MetaPost, there are two variants. Firstly, just use the version of `mpost` that ships with a ConTeXt installation. Alternatively, use `context` itself: when called on a MetaPost file, it will compile it (using the MetaFun format) into a PDF.
+  - MetaPost. There are two variants: firstly, just use the version of `mpost` that ships with the ConTeXt installation. Alternatively, use `context` itself: when called on a MetaPost file, it will compile it (using the MetaFun format) into a PDF.
 
 # Misc
 
