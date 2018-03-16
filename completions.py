@@ -107,7 +107,7 @@ class VirtualCommandDict:
                     )
                 ]
                 self.cache.fuzzy_add_right(sample)
-                for k, v in sample:
+                for k, _ in sample:
                     self.cmds.add(k)
 
                 self[key] = data[key]
@@ -199,7 +199,7 @@ class SimpleContextMacroSignatureEventListener(
 
         for location in locations:
             if scopes.enclosing_block(
-                self.view, location - 1, self.size, scopes.FULL_CONTROL_SEQ
+                self.view, location-1, scopes.FULL_CONTROL_SEQ, end=self.size
             ):
                 return [
                     ["\\" + ctrl, ""]
@@ -218,7 +218,7 @@ class SimpleContextMacroSignatureEventListener(
             return
 
         ctrl = scopes.enclosing_block(
-            self.view, point, self.size, scopes.CONTROL_WORD
+            self.view, point, scopes.CONTROL_WORD, end=self.size
         )
         if not ctrl:
             return
@@ -249,7 +249,7 @@ class SimpleContextMacroSignatureEventListener(
             if end < self.size:
                 end -= 1
             ctrl = scopes.left_enclosing_block(
-                self.view, end, self.size, scopes.CONTROL_SEQ
+                self.view, end, scopes.CONTROL_SEQ, end=self.size
             )
             if not ctrl:
                 self.view.hide_popup()

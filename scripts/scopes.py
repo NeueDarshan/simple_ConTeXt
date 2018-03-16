@@ -122,24 +122,30 @@ HEADING = ANY(
 )
 
 
-def skip_while_match(view, begin, end, scope):
+def skip_while_match(view, begin, scope, end=None):
     point = begin
+    if end is None:
+        end = view.size()
     while point < end and view.match_selector(point, scope):
         point += 1
     return point
 
 
-def skip_while_space(view, begin, end):
+def skip_while_space(view, begin, end=None):
     point = begin
+    if end is None:
+        end = view.size()
     while point < end and view.substr(point).isspace():
         point += 1
     return point
 
 
-def enclosing_block(view, point, end, scope):
+def enclosing_block(view, point, scope, end=None):
     start = stop = point
     while start > 0 and view.match_selector(start, scope):
         start -= 1
+    if end is None:
+        end = view.size()
     while stop < end and view.match_selector(stop, scope):
         stop += 1
     if start < stop:
@@ -151,27 +157,33 @@ def enclosing_block(view, point, end, scope):
 #D Like \type{enclosing_block}, but checks that \type{point} is the
 #D right||boundary of the eventual block. If not, signal an error with
 #D \type{None}.
-def left_enclosing_block(view, point, end, scope):
-    block = enclosing_block(view, point, end, scope)
+def left_enclosing_block(view, point, scope, end=None):
+    if end is None:
+        end = view.size()
+    block = enclosing_block(view, point, scope, end=end)
     if block and not view.match_selector(point + 1, scope):
         return block
     else:
         return
 
 
-def block_contains_scope(view, begin, end, scope):
+def block_contains_scope(view, begin, scope, end=None):
+    if end is None:
+        end = view.size()
     return any(
         view.match_selector(point, scope) for point in range(begin, end)
     )
 
 
-def all_blocks_in_region(view, begin, end, scope):
+def all_blocks_in_region(view, begin, scope, end=None):
     matches = []
+    if end is None:
+        end = view.size()
     for point in range(begin, end):
         if view.match_selector(point, scope):
             matches.append(point)
     return sorted(
-        set(enclosing_block(view, match, scope) for match in matches)
+        set(enclosing_block(view, match, scope, end=end) for match in matches)
     )
 
 
@@ -203,8 +215,10 @@ SKIPPERS = {
 }
 
 
-def last_block_in_region(view, begin, end, scope, skip=SKIP_ANYTHING):
+def last_block_in_region(view, begin, scope, end=None, skip=SKIP_ANYTHING):
     skipper = SKIPPERS.get(skip, do_skip_anything)
+    if end is None:
+        end = view.size()
     stop = end
     empty = True
 

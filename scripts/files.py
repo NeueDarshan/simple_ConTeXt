@@ -38,13 +38,13 @@ def locate(path, file, flags=0, methods=[None]):
         else:
             if os.path.sep in file:
                 dir_, name = os.path.split(file)
-                for root, dirs, files in os.walk(
+                for root, _, files in os.walk(
                     os.path.normpath(os.path.join(method, dir_))
                 ):
                     if name in files:
                         return os.path.normpath(os.path.join(root, name))
             else:
-                for root, dirs, files in os.walk(os.path.normpath(method)):
+                for root, _, files in os.walk(os.path.normpath(method)):
                     if file in files:
                         return os.path.normpath(os.path.join(root, file))
 

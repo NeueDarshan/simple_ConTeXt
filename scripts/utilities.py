@@ -125,7 +125,7 @@ def _expand_variables(self, args, variables):
         for x in args:
             if x == "$simple_context_insert_options":
                 result += process_options(
-                    self._program.get("options", {}), variables
+                    self, self._program.get("options", {}), variables
                 )
             else:
                 result.append(_expand_variables(self, x, variables))
@@ -134,7 +134,7 @@ def _expand_variables(self, args, variables):
         return args
 
 
-def process_options(options, variables):
+def process_options(self, options, variables):
     if isinstance(options, str):
         return options.split()
 
@@ -143,7 +143,7 @@ def process_options(options, variables):
         if "result" in options:
             result.append(
                 "--result={}".format(
-                    expand_variables(options["result"], variables)
+                    expand_variables(self, options["result"], variables)
                 )
             )
             del options["result"]

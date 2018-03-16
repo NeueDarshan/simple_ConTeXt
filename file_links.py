@@ -65,7 +65,7 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
 
         self.reload_settings()
         file = scopes.enclosing_block(
-            self.view, point, self.size, scopes.FILE_NAME
+            self.view, point, scopes.FILE_NAME, end=self.size
         )
         if file:
             file_name = self.view.substr(sublime.Region(*file))

@@ -31,8 +31,8 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
         ctrl = scopes.last_block_in_region(
             self.view,
             0,
-            region.begin(),
             scopes.CONTROL_SEQ,
+            end=region.begin(),
             skip=scopes.SKIP_ARGS_AND_SPACES
         )
         if ctrl:

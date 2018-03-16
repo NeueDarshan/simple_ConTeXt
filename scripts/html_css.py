@@ -1,6 +1,13 @@
 import re
 
 
+CONTROL_COND_A = \
+    r"[a-zA-Z]*doif[a-zA-Z]*(else)?|[a-zA-Z]*doif(else)?[a-zA-Z]*"
+
+CONTROL_COND_B = r"if[a-zA-Z]*|[a-zA-Z]*(true|false)"
+
+CONTROL_MODULE = r"use(lua|tex)?module"
+
 #D Ugly thing \periods\ I don't know what the best approach would be here. This
 #D is a decent approximation anyhow.
 #D
@@ -35,13 +42,6 @@ CASES = [
         "f": lambda _: True
     },
 ]
-
-CONTROL_COND_A = \
-    r"[a-zA-Z]*doif[a-zA-Z]*(else)?|[a-zA-Z]*doif(else)?[a-zA-Z]*"
-
-CONTROL_COND_B = r"if[a-zA-Z]*|[a-zA-Z]*(true|false)"
-
-CONTROL_MODULE = r"use(lua|tex)?module"
 
 
 def control_sequence(text):
