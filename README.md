@@ -1,3 +1,16 @@
+# Contents
+
+- [Introduction](#Introduction)
+- [Installation/Setup](#InstallationSetup)
+  - [Builder](#Builder)
+  - [PDFs](#PDFs)
+  - [Auto-Completion](#Auto-Completion)
+  - [Symbol List](#Symbol-List)
+  - [Spell Checking](#Spell-Checking)
+  - [Bracket Highlighter](#Bracket-Highlighter)
+- [Builders](#Builders)
+- [Misc](#Misc)
+
 # Introduction
 
 This [Sublime Text][sublime-text] 3 package provides some support for working with the [ConTeXt][context-introduction] program.
@@ -40,7 +53,7 @@ For opening PDFs after building a ConTeXt file, and opening the manuals, the `PD
 
 ## Auto-Completion
 
-- Add the following entry to your general Sublime Text (ST) settings, in order to get automatic completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
+Add the following entry to your general Sublime Text (ST) settings, in order to get automatic completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
 
   ```JSON
   {
