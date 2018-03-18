@@ -104,6 +104,8 @@ def get_variables(self):
     name = self._PDF.get("viewer")
     viewer = self._PDF_viewers.get(name)
     variables["simple_context_pdf_viewer"] = viewer if viewer else ""
+    variables["simple_context_open_pdf_after_build"] = \
+        str(bool(self._PDF.get("open_after_build")))
 
     return variables
 
