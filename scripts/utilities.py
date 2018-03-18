@@ -128,6 +128,8 @@ def _expand_variables(self, args, variables):
             else:
                 result.append(_expand_variables(self, x, variables))
         return result
+    elif args == "$simple_context_open_pdf_after_build":
+        return bool(self._PDF.get("open_after_build"))
     return args
 
 

@@ -9,7 +9,8 @@
 		},
 		{
 			"cmd": ["$simple_context_pdf_viewer", "$file_base_name.pdf"],
-			"output": "pdf"
+			"output": "pdf",
+			"run_when": "$simple_context_open_pdf_after_build"
 		}
 	],
 	"cancel": {"kill": true}

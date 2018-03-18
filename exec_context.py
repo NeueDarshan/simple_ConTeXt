@@ -51,40 +51,48 @@ class ExecMainSubprocess:
         self.proceed()
 
     def proceed(self):
-        with self.lock:
-            if not self.sequence:
-                self.quit()
-                return
+        self.lock.acquire()
+        if not self.sequence:
+            self.quit()
+            return
 
-            seq = self.sequence.pop()
-            cmd = seq.get("cmd")
-            if not cmd:
-                self.proceed()
-                return
-            if isinstance(cmd, str):
-                cmd = cmd.split()
+        seq = self.sequence.pop()
+        run_when = seq.get("run_when")
+        if run_when is not None and not run_when:
+            self.lock.release()
+            self.proceed()
+            return
 
-            env = os.environ.copy()
-            extra_env = seq.get("env")
-            if extra_env:
-                for k, v in extra_env.items():
-                    env[k] = v
-            output = seq.get("output")
+        cmd = seq.get("cmd")
+        if not cmd:
+            self.lock.release()
+            self.proceed()
+            return
+        if isinstance(cmd, str):
+            cmd = cmd.split()
 
-            print('Running: {}'.format(" ".join(cmd)))
-            thread = threading.Thread(
-                target=lambda: self.run_command(
-                    cmd,
-                    {
-                        "env": env,
-                        "creationflags": self.flags,
-                        "stdin": subprocess.PIPE,
-                        "stdout": subprocess.PIPE,
-                        "stderr": subprocess.STDOUT,
-                    },
-                    output
-                )
+        env = os.environ.copy()
+        extra_env = seq.get("env")
+        if extra_env:
+            for k, v in extra_env.items():
+                env[k] = v
+        output = seq.get("output")
+
+        print('Running: {}'.format(" ".join(cmd)))
+        thread = threading.Thread(
+            target=lambda: self.run_command(
+                cmd,
+                {
+                    "env": env,
+                    "creationflags": self.flags,
+                    "stdin": subprocess.PIPE,
+                    "stdout": subprocess.PIPE,
+                    "stderr": subprocess.STDOUT,
+                },
+                output
             )
+        )
+        self.lock.release()
         thread.start()
 
     def run_command(self, cmd, opts, output):
