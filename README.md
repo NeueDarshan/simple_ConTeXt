@@ -1,15 +1,15 @@
 # Contents
 
-- [Introduction](#Introduction)
-- [Installation/Setup](#InstallationSetup)
-  - [Builder](#Builder)
-  - [PDFs](#PDFs)
-  - [Auto-Completion](#Auto-Completion)
-  - [Symbol List](#Symbol-List)
-  - [Spell Checking](#Spell-Checking)
-  - [Bracket Highlighter](#Bracket-Highlighter)
-- [Builders](#Builders)
-- [Misc](#Misc)
+- [Introduction](#introduction)
+- [Installation/Setup](#installationsetup)
+  - [Builder](#builder)
+  - [PDFs](#pdfs)
+  - [Auto-Completion](#auto-completion)
+  - [Symbol List](#symbol-list)
+  - [Spell Checking](#spell-checking)
+  - [Bracket Highlighter](#bracket-highlighter)
+- [Builders](#builders)
+- [Misc](#misc)
 
 # Introduction
 
