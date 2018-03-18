@@ -2,11 +2,16 @@ import re
 
 
 CONTROL_COND_A = \
-    r"[a-zA-Z]*doif[a-zA-Z]*(else)?|[a-zA-Z]*doif(else)?[a-zA-Z]*"
+    r"[a-zA-Z]*doif[a-zA-Z]*(?:else)?|[a-zA-Z]*doif(?:else)?[a-zA-Z]*"
 
-CONTROL_COND_B = r"if[a-zA-Z]*|[a-zA-Z]*(true|false)"
+CONTROL_COND_B = r"if[a-zA-Z]*|[a-zA-Z]*(?:true|false)"
 
-CONTROL_MODULE = r"use(lua|tex)?module"
+CONTROL_MODULE = r"use(?:lua|tex)?module"
+
+
+def match_exact(regex, text):
+    return re.match(r"(?:{})\Z".format(regex), text)
+
 
 #D Ugly thing \periods\ I don't know what the best approach would be here. This
 #D is a decent approximation anyhow.
@@ -21,13 +26,13 @@ CASES = [
             text.startswith("start") or
             text.startswith("stop") or
             text in ["loop", "repeat", "then", "or", "else", "fi"] or
-            any(re.search(r"\A" + regex + r"\Z", text) for regex in [
+            any(match_exact(regex, text) for regex in [
                 CONTROL_COND_A, CONTROL_COND_B, CONTROL_MODULE
             ])
     },
     {  # storage.type
         "tags": ("sto", "sst"),
-        "f": lambda text: re.match(r"[xge]?def|g?let", text)
+        "f": lambda text: match_exact(r"[xge]?def|g?let|define", text)
     },
     {  # constant.language
         "tags": ("lan", "sla"),
@@ -35,7 +40,7 @@ CASES = [
     },
     {  # storage.modifier
         "tags": ("mod", "smo"),
-        "f": lambda text: text in ["global", "immediate", "the"]
+        "f": lambda text: text in ["global", "immediate", "the", "outer"]
     },
     {  # support.function
         "tags": ("con", "sco"),

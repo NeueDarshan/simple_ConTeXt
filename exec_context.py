@@ -256,8 +256,7 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
     def is_enabled(self, kill=False, **kwargs):
         if kill:
             return (self.proc is not None) and self.proc.poll()
-        else:
-            return True
+        return True
 
     def show_output(self):
         self.window.run_command("show_panel", {"panel": "output.ConTeXt"})
