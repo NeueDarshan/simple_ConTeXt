@@ -1,10 +1,10 @@
-import sublime
-import sublime_plugin
-
 import subprocess
 import threading
 import time
 import os
+
+import sublime
+import sublime_plugin
 
 from .scripts import utilities
 from .scripts import files

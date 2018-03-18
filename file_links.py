@@ -1,7 +1,7 @@
+import os
+
 import sublime
 import sublime_plugin
-
-import os
 
 from .scripts import utilities
 from .scripts import html_css
@@ -64,11 +64,11 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
             return
 
         self.reload_settings()
-        file = scopes.enclosing_block(
+        file_ = scopes.enclosing_block(
             self.view, point, scopes.FILE_NAME, end=self.size
         )
-        if file:
-            file_name = self.view.substr(sublime.Region(*file))
+        if file_:
+            file_name = self.view.substr(sublime.Region(*file_))
             if file_name:
                 file_name = file_name.strip()
                 if file_name.startswith("{") and file_name.endswith("}"):
@@ -80,7 +80,7 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
 
         self.view.show_popup(
             TEMPLATE.format(file=file_name, style=self.style),
-            location=file[0],
+            location=file_[0],
             flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY,
             on_navigate=self.on_navigate,
             on_hide=self.on_hide
@@ -95,15 +95,15 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
                     methods.append(path)
             methods.append(os.path.normpath(os.path.join(self.base_dir, "..")))
 
-            file = files.fuzzy_locate(
+            file_ = files.fuzzy_locate(
                 self._path,
                 href,
                 flags=self.flags,
                 extensions=self.extensions,
                 methods=reversed(methods)
             )
-            if file and os.path.exists(file):
-                self.view.window().open_file(file)
+            if file_ and os.path.exists(file_):
+                self.view.window().open_file(file_)
                 return
 
         other = files.fuzzy_locate(

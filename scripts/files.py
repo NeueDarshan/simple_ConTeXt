@@ -7,24 +7,25 @@ import os
 CREATE_NO_WINDOW = 0x08000000
 
 
-def fuzzy_locate(path, file, flags=0, methods=[None], extensions=[""]):
+def fuzzy_locate(path, file_, flags=0, methods=[None], extensions=[""]):
     for method in methods:
         for ext in extensions:
             text = locate(
-                path, "{}{}".format(file, ext), flags=flags, methods=[method]
+                path, "{}{}".format(file_, ext), flags=flags, methods=[method]
             )
             if text:
                 return text
+    return None
 
 
-def locate(path, file, flags=0, methods=[None]):
+def locate(path, file_, flags=0, methods=[None]):
     for method in methods:
         if method is None:
             environ = os.environ.copy()
             environ["PATH"] = add_path(environ["PATH"], path)
             try:
                 proc = subprocess.Popen(
-                    ["mtxrun", "--locate", file],
+                    ["mtxrun", "--locate", file_],
                     creationflags=flags,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
@@ -34,10 +35,10 @@ def locate(path, file, flags=0, methods=[None]):
                 result = proc.communicate()
                 return clean_output(decode_bytes(result[0]))
             except OSError:
-                return
+                return None
         else:
-            if os.path.sep in file:
-                dir_, name = os.path.split(file)
+            if os.path.sep in file_:
+                dir_, name = os.path.split(file_)
                 for root, _, files in os.walk(
                     os.path.normpath(os.path.join(method, dir_))
                 ):
@@ -45,8 +46,9 @@ def locate(path, file, flags=0, methods=[None]):
                         return os.path.normpath(os.path.join(root, name))
             else:
                 for root, _, files in os.walk(os.path.normpath(method)):
-                    if file in files:
-                        return os.path.normpath(os.path.join(root, file))
+                    if file_ in files:
+                        return os.path.normpath(os.path.join(root, file_))
+    return None
 
 
 def decode_bytes(text):
@@ -84,15 +86,13 @@ def parse_checker(text, tolerant=True):
                 "start": line_start,
                 "stop": line_stop,
             }
-        else:
-            return {
-                "passed": False,
-                "head": head,
-                "main": main,
-                "stop": line_stop,
-            }
-    else:
-        return {"passed": tolerant}
+        return {
+            "passed": False,
+            "head": head,
+            "main": main,
+            "stop": line_stop,
+        }
+    return {"passed": tolerant}
 
 
 def add_path(old, new):
@@ -120,9 +120,9 @@ def file_as_slug(text):
     return slug
 
 
-def file_with_ext(file, ext):
-    return os.path.splitext(file)[0] + ext
+def file_with_ext(file_, ext):
+    return os.path.splitext(file_)[0] + ext
 
 
-def base_file(file):
-    return os.path.splitext(file)[0]
+def base_file(file_):
+    return os.path.splitext(file_)[0]

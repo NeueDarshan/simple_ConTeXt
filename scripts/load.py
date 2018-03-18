@@ -4,8 +4,7 @@ from . import html_css
 def format_template(n, align="<", min_=None):
     if align == "^" and (not min_ or n > min_):
         return " {text:%s%s}" % (align, n - 1)
-    else:
-        return "{text:%s%s}" % (align, n)
+    return "{text:%s%s}" % (align, n)
 
 
 def normal_format(text, n, align="<", min_=None):
@@ -46,8 +45,7 @@ def nice_sorted(list_, reverse=False):
             list(reversed(inherits)) + list(reversed(upper)) +
             list(reversed(mixed)) + list(reversed(lower))
         )
-    else:
-        return lower + mixed + upper + inherits
+    return lower + mixed + upper + inherits
 
 
 class InterfaceLoader:
@@ -60,8 +58,7 @@ class InterfaceLoader:
         raw = self.render(*args, **kwargs)
         if kwargs.get("protect_space", False):
             return [html_css.protect_space(s) for s in raw]
-        else:
-            return raw
+        return raw
 
     def render(self, name, list_, **kwargs):
         self.kwargs = kwargs
@@ -85,7 +82,7 @@ class InterfaceLoader:
 
             sig.append(self.syntax.format(syntax=syntax))
 
-            if len(docstring) > 0:
+            if docstring:
                 sig.append(self.docstring.format(docstring=docstring))
 
             parts.append("\n\n".join(sig))
@@ -112,8 +109,7 @@ class InterfaceLoader:
     def file_format(self, f):
         if f is None:
             return "<file><a>TeX primitive</a></file>"
-        else:
-            return self.file.format(file=f)
+        return self.file.format(file=f)
 
     def render_aux(self, list_):
         self._syntax = [
@@ -204,8 +200,7 @@ class InterfaceLoader:
         line_break = self.kwargs.get("line_break", 80)
         if isinstance(line_break, int):
             return self.docstring_list_break(line_break)
-        else:
-            return self.docstring_list_nobreak()
+        return self.docstring_list_nobreak()
 
     def docstring_list_break(self, line_break):
         content = nice_sorted(self._content.copy(), reverse=True)
@@ -240,8 +235,7 @@ class InterfaceLoader:
 
         if isinstance(line_break, int):
             return self.docstring_dict_break(len_, line_break)
-        else:
-            return self.docstring_dict_nobreak(len_)
+        return self.docstring_dict_nobreak(len_)
 
     def docstring_dict_break(self, len_, line_break):
         keys = nice_sorted(self._content, reverse=True)
@@ -279,13 +273,11 @@ class InterfaceLoader:
     def guide(self, num=True):
         if num:
             return tagged_format(self._n, "num", 4)
-        else:
-            return "    "
+        return "    "
 
     def assignments_guide(self, len_, key=None, num=True):
         start = self.guide(num=num)
         if key:
             len_ += len(key) - len(html_css.strip_tags(key))
             return start + tagged_format(key, "key", len_) + " <equ>=</equ>"
-        else:
-            return start + (" " * (len_ + 2))
+        return start + (" " * (len_ + 2))

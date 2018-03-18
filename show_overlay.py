@@ -1,8 +1,8 @@
-import sublime
-import sublime_plugin
-
 import collections
 import re
+
+import sublime
+import sublime_plugin
 
 from .scripts import utilities
 from .scripts import scopes
@@ -40,8 +40,7 @@ def general_clean(text):
     match = re.match(r"^\s*{\s*(.*?)\s*}\s*", text)
     if match:
         return match.group(1)
-    else:
-        return text.strip()
+    return text.strip()
 
 
 #D Strip leading slash from command name
@@ -49,8 +48,16 @@ def def_clean(text):
     text = general_clean(text)
     if text.startswith("\\"):
         return text[1:]
-    else:
-        return text
+    return text
+
+
+def filter_(delta, mode):
+    if mode == "previous":
+        return delta <= 0
+    elif mode == "next":
+        return delta >= 0
+    # "closest"
+    return True
 
 
 class SimpleContextInsertTextCommand(sublime_plugin.TextCommand):
@@ -111,8 +118,8 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
         elif selector in SELECTORS.keys():
             clean = def_clean if selector == "definition" else general_clean
             data = []
-            for prefix_str, space, selector in SELECTORS[selector]:
-                for region in self.view.find_by_selector(selector):
+            for prefix_str, space, sel in SELECTORS[selector]:
+                for region in self.view.find_by_selector(sel):
                     data.append(
                         (
                             region.begin(),
@@ -134,12 +141,12 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
             if num_regions > 0 and num_matches > 0:
                 middle_region = sel[num_regions // 2]
                 sequence = [
-                    i for i in range(num_matches) if self.filter(
+                    i for i in range(num_matches) if filter_(
                         self.matches[i][0] - middle_region.begin(),
                         selected_index,
                     )
                 ]
-                if len(sequence) > 0:
+                if sequence:
                     index = max(sequence, key=self.key_function(middle_region))
                 else:
                     index = 0
@@ -154,14 +161,6 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
             on_highlight=self.on_highlight,
             selected_index=index,
         )
-
-    def filter(self, delta, mode):
-        if mode == "closest":
-            return True
-        elif mode == "previous":
-            return delta <= 0
-        elif mode == "next":
-            return delta >= 0
 
     def key_function(self, region):
         return lambda i: -abs(self.matches[i][0] - region.begin())
@@ -288,24 +287,16 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
             if num_regions > 0 and num_matches > 0:
                 middle_region = sel[num_regions // 2]
                 sequence = [
-                    i for i in range(num_matches) if self.filter(
+                    i for i in range(num_matches) if filter_(
                         self.data[i][0] - middle_region.begin(),
                         self.selected_index,
                     )
                 ]
-                if len(sequence) > 0:
+                if sequence:
                     self.last_choice += \
                         max(sequence, key=self.key_function(middle_region))
         else:
             self.last_choice += self.selected_index
-
-    def filter(self, delta, mode):
-        if mode == "closest":
-            return True
-        elif mode == "previous":
-            return delta <= 0
-        elif mode == "next":
-            return delta >= 0
 
     def key_function(self, region):
         return lambda i: -abs(self.data[i][0] - region.begin())

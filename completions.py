@@ -1,10 +1,10 @@
-import sublime
-import sublime_plugin
-
 import threading
 import string
 import json
 import os
+
+import sublime
+import sublime_plugin
 
 from .scripts import utilities
 from .scripts import randomize
@@ -95,23 +95,22 @@ class VirtualCommandDict:
         if key in self.cmds:
             if key in self.cache:
                 return self.cache[key]
-            else:
-                name = min(f for f in self.missing if key <= f)
-                with open(os.path.join(self.dir, name)) as f:
-                    data = json.load(f)
+            name = min(f for f in self.missing if key <= f)
+            with open(os.path.join(self.dir, name)) as f:
+                data = json.load(f)
 
-                sample = [
-                    (k, data[k])
-                    for k in randomize.safe_random_sample(
-                        list(data), self.local_size
-                    )
-                ]
-                self.cache.fuzzy_add_right(sample)
-                for k, _ in sample:
-                    self.cmds.add(k)
+            sample = [
+                (k, data[k])
+                for k in randomize.safe_random_sample(
+                    list(data), self.local_size
+                )
+            ]
+            self.cache.fuzzy_add_right(sample)
+            for k, _ in sample:
+                self.cmds.add(k)
 
-                self[key] = data[key]
-                return self[key]
+            self[key] = data[key]
+            return self[key]
         else:
             raise KeyError
 
@@ -195,7 +194,7 @@ class SimpleContextMacroSignatureEventListener(
     def on_query_completions(self, prefix, locations):
         self.reload_settings()
         if self.state != IDLE or not self.is_visible():
-            return
+            return None
 
         for location in locations:
             if scopes.enclosing_block(
@@ -205,6 +204,7 @@ class SimpleContextMacroSignatureEventListener(
                     ["\\" + ctrl, ""]
                     for ctrl in self.cache[self.name].get_cmds()
                 ]
+        return None
 
     def on_hover(self, point, hover_zone):
         self.reload_settings()

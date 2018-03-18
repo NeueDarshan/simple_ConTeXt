@@ -4,8 +4,7 @@ import random
 def safe_random_sample(data, size):
     if size < len(data):
         return random.sample(data, size)
-    else:
-        return data
+    return data
 
 
 def poly_biased_random_sample(min_, max_, size, power=2):
@@ -17,8 +16,7 @@ def poly_biased_random_sample(min_, max_, size, power=2):
             if n not in sample:
                 sample.append(n)
         return sample
-    else:
-        return range(min_, max_ + 1)
+    return range(min_, max_ + 1)
 
 
 def poly_biased_randint(min_, max_, power=2, ignore=[]):

@@ -1,7 +1,7 @@
+import re
+
 import sublime
 import sublime_plugin
-
-import re
 
 from .scripts import utilities
 from .scripts import scopes
@@ -23,7 +23,7 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
             return
 
         sel = self.view.sel()
-        if len(sel) == 0:
+        if not sel:
             return
         else:
             region = sel[0]
@@ -65,5 +65,4 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
             return True
         elif user_regex and re.match(r"\A" + user_regex + r"\Z", name):
             return True
-        else:
-            return False
+        return False

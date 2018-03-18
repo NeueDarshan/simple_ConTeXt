@@ -1,9 +1,9 @@
-import sublime
-import sublime_plugin
-
 import threading
 import json
 import os
+
+import sublime
+import sublime_plugin
 
 from .scripts import utilities
 from .scripts import files
@@ -104,15 +104,15 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             size += len(str(val))
             cache[key] = val
             if size > self.file_min:
-                file = os.path.join(dir_, "{}.json".format(key))
-                with open(file, encoding="utf-8", mode="w") as f:
+                file_ = os.path.join(dir_, "{}.json".format(key))
+                with open(file_, encoding="utf-8", mode="w") as f:
                     json.dump(cache, f)
                 cache.clear()
                 size = 0
         if cache:
-            file = os.path.join(dir_, "{}.json".format(key))
-            with open(file, encoding="utf-8", mode="w") as f:
+            file_ = os.path.join(dir_, "{}.json".format(key))
+            with open(file_, encoding="utf-8", mode="w") as f:
                 json.dump(cache, f)
-        file = os.path.join(dir_, "_commands.json")
-        with open(file, encoding="utf-8", mode="w") as f:
+        file_ = os.path.join(dir_, "_commands.json")
+        with open(file_, encoding="utf-8", mode="w") as f:
             json.dump(sorted(cmds), f)

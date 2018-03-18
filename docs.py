@@ -1,8 +1,8 @@
-import sublime
-import sublime_plugin
-
 import subprocess
 import threading
+
+import sublime
+import sublime_plugin
 
 from .scripts import utilities
 from .scripts import files
@@ -49,9 +49,6 @@ DOCS = [
 
 #D Needs some work.
 class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     def reload_settings(self, force_reload_docs=False):
         utilities.reload_settings(self)
         self.viewer = self._PDF.get("viewer")
@@ -65,12 +62,12 @@ class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
 
     def reload_docs(self):
         self.docs = []
-        for name, file in DOCS:
+        for name, file_ in DOCS:
             path = files.locate(
-                self._path, "{}.pdf".format(file), flags=self.flags
+                self._path, "{}.pdf".format(file_), flags=self.flags
             )
             if path:
-                self.docs.append([name, file, path])
+                self.docs.append([name, file_, path])
 
     def run(self):
         self.reload_settings(force_reload_docs=True)
@@ -102,5 +99,5 @@ class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
     def on_cancel(self):
         self.run_panel(selected_index=len(self.docs))
 
-    def open_doc(self, file):
-        subprocess.Popen([self.viewer, file], creationflags=self.flags)
+    def open_doc(self, file_):
+        subprocess.Popen([self.viewer, file_], creationflags=self.flags)

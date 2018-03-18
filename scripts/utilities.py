@@ -1,9 +1,9 @@
-import sublime
-
 import itertools
 import collections
 import re
 import os
+
+import sublime
 
 from . import randomize
 from . import files
@@ -24,8 +24,7 @@ def type_as_str(obj):
         return "float"
     elif isinstance(obj, str):
         return "string"
-    else:
-        return str(type(obj))
+    return str(type(obj))
 
 
 def guess_type(obj):
@@ -41,8 +40,7 @@ def guess_type(obj):
                 return False
             elif str(obj).lower() in ["none", "null"]:
                 return None
-            else:
-                return obj
+            return obj
 
 
 def iter_power_set(iter_):
@@ -130,8 +128,7 @@ def _expand_variables(self, args, variables):
             else:
                 result.append(_expand_variables(self, x, variables))
         return result
-    else:
-        return args
+    return args
 
 
 def process_options(self, options, variables):
@@ -194,8 +191,7 @@ class Choice:
         choice = self.get()
         if string:
             return [[k, str(k == choice)] for k in self.options]
-        else:
-            return [[k, k == choice] for k in self.options]
+        return [[k, k == choice] for k in self.options]
 
     def __str__(self):
         return " ".join(self.options)
@@ -267,14 +263,13 @@ class FuzzyOrderedDict:
         return iter(self.cache)
 
     def __contains__(self, key):
-        return key in [k for k, v in self]
+        return key in [k for k, _ in self]
 
     def __getitem__(self, key):
         for k, v in self:
             if key == k:
                 return v
-        else:
-            raise KeyError
+        raise KeyError
 
     def __len__(self):
         return len(self.cache)

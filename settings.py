@@ -12,8 +12,7 @@ def simplify(obj):
         return " ".join(sorted(obj))
     elif isinstance(obj, list):
         return " ".join(tup[0] for tup in sorted(obj))
-    else:
-        return str(obj)
+    return str(obj)
 
 
 class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
@@ -152,7 +151,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
         return deep_dict.get_safe(self.encoded_settings, self.location)
 
     def flatten_current_level(self):
-        if len(self.location) > 0 and self.location[-1] == "setting_groups":
+        if self.location and self.location[-1] == "setting_groups":
             main = [
                 [k, "[✓]" if k == self.last_scheme else "[ ]"]
                 for k in sorted(self.current_level())
@@ -164,10 +163,9 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
                 [k, simplify(self.current_level()[k])]
                 for k in sorted(self.current_level())
             ]
-        if len(self.location) > 0:
+        if self.location:
             return [["..", "in /{}/".format("/".join(self.location))]] + main
-        else:
-            return main
+        return main
 
     def get_history(self):
         return self.history.get(len(self.location), 0)

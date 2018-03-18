@@ -6,8 +6,7 @@ import re
 def translate_class(text):
     if text == "mp":
         return "metapost"
-    else:
-        return text
+    return text
 
 
 def parse(data, code):
@@ -50,6 +49,7 @@ def syntax_1(text):
         class_, line, _, desc, sub_desc = error.groups()
         template = '  - line {}, {} error: {} \\{}\n'
         return template.format(line, translate_class(class_), desc, sub_desc)
+    return None
 
 
 def syntax_2(text):
@@ -62,6 +62,7 @@ def syntax_2(text):
         class_, line, _, desc = error.groups()
         template = '  - line {}, {} error: {}\n'
         return template.format(line, translate_class(class_), desc)
+    return None
 
 
 def syntax_3(text):
@@ -72,6 +73,7 @@ def syntax_3(text):
         class_, line, _, desc = error.groups()
         template = '  - line {}, {} error: {}\n'
         return template.format(line, translate_class(class_), desc)
+    return None
 
 
 def syntax_4(text):
@@ -82,3 +84,4 @@ def syntax_4(text):
         class_, line, _ = error.groups()
         template = '  - line {}, {} error\n'
         return template.format(line, translate_class(class_))
+    return None

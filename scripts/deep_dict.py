@@ -18,22 +18,20 @@ def iter_(dict_):
 
 
 def get(dict_, keys):
-    if len(keys) == 0:
+    if not keys:
         return dict_
     elif len(keys) == 1:
         return dict_[keys[0]]
-    else:
-        return get(dict_[keys[0]], keys[1:])
+    return get(dict_[keys[0]], keys[1:])
 
 
 def get_safe(dict_, keys):
-    if len(keys) == 0:
+    if not keys:
         return dict_
     elif len(keys) == 1:
         return dict_.get(keys[0])
-    else:
-        dict_.setdefault(keys[0], {})
-        return get_safe(dict_[keys[0]], keys[1:])
+    dict_.setdefault(keys[0], {})
+    return get_safe(dict_[keys[0]], keys[1:])
 
 
 def set_(dict_, keys, value):
@@ -53,9 +51,8 @@ def set_safe(dict_, keys, value):
 
 def in_(dict_, keys):
     if len(keys) <= 1:
-        return (keys[0] in dict_)
-    else:
-        return in_(dict_[keys[0]], keys[1:])
+        return keys[0] in dict_
+    return in_(dict_[keys[0]], keys[1:])
 
 
 def del_(dict_, keys):

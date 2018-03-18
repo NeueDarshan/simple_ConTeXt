@@ -1,11 +1,11 @@
-import sublime
-import sublime_plugin
-
 import subprocess
 import threading
 import time
 # import html
 import os
+
+import sublime
+import sublime_plugin
 
 from .scripts import utilities
 # from .scripts import html_css
@@ -52,7 +52,7 @@ class ExecMainSubprocess:
 
     def proceed(self):
         with self.lock:
-            if len(self.sequence) == 0:
+            if not self.sequence:
                 self.quit()
                 return
 
@@ -100,7 +100,7 @@ class ExecMainSubprocess:
             if output == "context":
                 self.output_context(result[0] if result else None, code)
             elif output == "pdf":
-                self.output_context_pdf(cmd[0] if len(cmd) > 0 else None)
+                self.output_context_pdf(cmd[0] if cmd else None)
 
         if code == 0:
             self.proceed()
@@ -150,10 +150,12 @@ class ExecMainSubprocess:
     def poll(self):
         if self.proc:
             return self.proc.poll() is None
+        return None
 
     def exit_code(self):
         if self.proc:
             return self.proc.poll()
+        return None
 
     def quit(self):
         self.root.add_to_output(
@@ -225,8 +227,8 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
             self.show_output()
 
         if not working_dir and self.view:
-            file = self.view.file_name()
-            working_dir = os.path.dirname(file)
+            file_ = self.view.file_name()
+            working_dir = os.path.dirname(file_)
         if working_dir:
             os.chdir(working_dir)
 

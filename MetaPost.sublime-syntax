@@ -49,7 +49,7 @@ contexts:
       captures:
         '1': constant.numeric.metapost
         '2': keyword.other.unit.metapost
-    - match: '\b(bp|cc|cm|dd|pc|in|mm|pt)\b'
+    - match: '\b(?:bp|cc|cm|dd|pc|in|mm|pt)\b'
       scope: keyword.other.unit.metapost
 
   constant.string:

@@ -1,10 +1,9 @@
 def is_scope(view, scope):
     sel = view.sel()
-    if len(sel) > 0:
+    if sel:
         return view.match_selector(sel[0].begin(), scope)
-    else:
-        #D If in doubt, let's return \type{False}
-        return False
+    #D If in doubt, let's return \type{False}
+    return False
 
 
 def is_context(view):
@@ -148,10 +147,10 @@ def enclosing_block(view, point, scope, end=None):
         end = view.size()
     while stop < end and view.match_selector(stop, scope):
         stop += 1
+
     if start < stop:
         return [start + 1, stop]
-    else:
-        return
+    return None
 
 
 #D Like \type{enclosing_block}, but checks that \type{point} is the
@@ -163,8 +162,7 @@ def left_enclosing_block(view, point, scope, end=None):
     block = enclosing_block(view, point, scope, end=end)
     if block and not view.match_selector(point + 1, scope):
         return block
-    else:
-        return
+    return None
 
 
 def block_contains_scope(view, begin, scope, end=None):
@@ -198,8 +196,7 @@ def do_skip_nothing(view, point):
 def do_skip_args_and_spaces(view, point):
     if view.substr(point).isspace() or view.match_selector(point, ARGUMENT):
         return True
-    else:
-        return False
+    return False
 
 
 SKIP_ANYTHING = 0
@@ -234,7 +231,6 @@ def last_block_in_region(view, begin, scope, end=None, skip=SKIP_ANYTHING):
         start -= 1
         empty = False
 
-    if not empty:
-        return [start + 1, stop + 1]
-    else:
-        return
+    if empty:
+        return None
+    return [start + 1, stop + 1]

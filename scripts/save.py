@@ -46,8 +46,8 @@ class InterfaceSaver:
         self.to_load = []
         self.flags = flags
 
-    def parse(self, file):
-        return ET.parse(file).getroot()
+    def parse(self, file_):
+        return ET.parse(file_).getroot()
 
     def save(self, path, modules=True, tolerant=True, namespace=NAMESPACE):
         self.path = path
@@ -58,18 +58,19 @@ class InterfaceSaver:
 
     def load_definitions(self):
         #D To handle resolves pointing to objects not yet defined, we simply do
-        #D two passes.
+        #D two passes. Of course, it would be better to handle the dependency
+        #D graph in one pass, but this is simpler and seems to be fast enough.
         self.load_definitions_aux()
         self.load_definitions_aux()
 
     def load_definitions_aux(self):
-        f = files.locate(
+        file_ = files.locate(
             self.path, "i-common-definitions.xml", flags=self.flags
         )
-        if not f:
+        if not file_:
             raise OSError('unable to locate "i-common-definitions.xml"')
         try:
-            with open(f, encoding="utf-8") as x:
+            with open(file_, encoding="utf-8") as x:
                 root = self.parse(x)
             for child in root:
                 if self.tag_is(child, "interfacefile"):
@@ -79,27 +80,25 @@ class InterfaceSaver:
                         'unexpected tag "{}"'.format(child.tag)
                     )
         except (OSError, ET.ParseError, UnicodeDecodeError) as e:
-            msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
+            msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
             if self.tolerant:
                 print(msg)
             else:
                 raise type(e)(msg)
 
     def load_definitions_aux_i(self, filename):
-        f = files.locate(self.path, filename, flags=self.flags)
-        if not f:
+        file_ = files.locate(self.path, filename, flags=self.flags)
+        if not file_:
             raise OSError('unable to locate "{}"'.format(filename))
         try:
-            with open(f, encoding="utf-8") as x:
+            with open(file_, encoding="utf-8") as x:
                 root = self.parse(x)
             for child in root:
                 self.do_define(child)
         except (OSError, ET.ParseError, UnicodeDecodeError) as e:
-            msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
-            if self.tolerant:
-                print(msg)
-            else:
-                raise type(e)(msg)
+            msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
+            if self.tolerant: print(msg)
+            else: raise type(e)(msg)
 
     def load_commands(self, modules=True):
         self.to_load = set()
@@ -107,33 +106,33 @@ class InterfaceSaver:
         main = files.locate(self.path, "i-context.xml", flags=self.flags)
         if main:
             dir_ = os.path.split(main)[0]
-            for f in os.listdir(dir_):
-                if self.load_commands_aux(f):
-                    self.to_load.add(os.path.join(dir_, f))
+            for file_ in os.listdir(dir_):
+                if self.load_commands_aux(file_):
+                    self.to_load.add(os.path.join(dir_, file_))
 
         if modules:
             #D Let's use \type{t-rst.xml} as a smoking gun.
             alt = files.locate(self.path, "t-rst.xml", flags=self.flags)
             if alt:
                 dir_ = os.path.split(alt)[0]
-                for f in os.listdir(dir_):
-                    if self.load_commands_aux(f):
-                        self.to_load.add(os.path.join(dir_, f))
+                for file_ in os.listdir(dir_):
+                    if self.load_commands_aux(file_):
+                        self.to_load.add(os.path.join(dir_, file_))
 
         self.load_commands_aux_i()
 
-    def load_commands_aux(self, s):
+    def load_commands_aux(self, file_):
         return all([
-            s.endswith(".xml"),
-            not s.startswith("i-common"),
-            not s.startswith("i-context"),
-            s != "context-en.xml"
+            file_.endswith(".xml"),
+            not file_.startswith("i-common"),
+            not file_.startswith("i-context"),
+            file_ != "context-en.xml"
         ])
 
     def load_commands_aux_i(self):
-        for f in self.to_load:
+        for file_ in self.to_load:
             try:
-                with open(f, encoding="utf-8") as x:
+                with open(file_, encoding="utf-8") as x:
                     root = self.parse(x)
                 for child in root:
                     if self.tag_is(child, "command"):
@@ -143,10 +142,10 @@ class InterfaceSaver:
                     else:
                         raise UnexpectedTagError(
                             'in file "{}", unexpected tag "{}"'
-                            .format(f, child.tag)
+                            .format(file_, child.tag)
                         )
             except (OSError, ET.ParseError, UnicodeDecodeError) as e:
-                msg = 'in file "{}", {} error: "{}"'.format(f, type(e), e)
+                msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
                 if self.tolerant:
                     print(msg)
                 else:
@@ -196,7 +195,7 @@ class InterfaceSaver:
                 raise UnexpectedTagError(
                     'sequence: unexpected tag "{}"'.format(child.tag)
                 )
-        if len(template) == 0:
+        if not template:
             template = "{}"
 
         for instance in instances:
@@ -213,7 +212,7 @@ class InterfaceSaver:
                 raise UnexpectedTagError(
                     'sequence: unexpected tag "{}"'.format(instance.tag)
                 )
-        if len(keys) == 0:
+        if not keys:
             keys.append(name)
 
         for key in set(keys):
@@ -225,9 +224,6 @@ class InterfaceSaver:
 
     def do_command_aux(self, name, node):
         attrib = node.attrib
-        #D We should signal primitives in a better way. For now they are
-        #D implicitly signalled by setting file equal to \type{None}.
-        file = attrib.get("file")
 
         if attrib.get("type") == "environment":
             begin = self.clean_name(attrib.get("begin", "start") + name)
@@ -240,7 +236,9 @@ class InterfaceSaver:
             else:
                 node_copy.append(self.tail_args_node(end))
             self.do_command_aux_i(begin, node_copy)
-            self.do_command_aux_i(end, self.empty_node(file))
+            #D We could signal primitives in a better way. For now they are
+            #D implicitly signalled by setting file equal to \type{None}.
+            self.do_command_aux_i(end, self.empty_node(attrib.get("file")))
         else:
             self.do_command_aux_i(self.clean_name(name), node)
 
@@ -333,7 +331,7 @@ class InterfaceSaver:
                     message.format(child.attrib, child.tag)
                 )
         return {
-            "con": content if len(content) > 0 else None,
+            "con": content if content else None,
             "ren": self.render("assignments", node.attrib),
             "inh": self.flatten(inherits),
             "opt": self.is_true(node.attrib.get("optional")),
@@ -462,6 +460,7 @@ class InterfaceSaver:
             msg = 'unexpected mode, mode: "{}", attrib: "{}"'
             if self.tolerant:
                 print(msg.format(mode, attrib))
+                return None
             else:
                 raise UnexpectedModeError(msg.format(mode, attrib))
 
@@ -472,26 +471,24 @@ class InterfaceSaver:
         return val == "yes"
 
     def flatten(self, obj):
-        if len(obj) == 0:
+        if not obj:
             return None
         elif len(obj) == 1:
             return obj[0]
-        else:
-            if all(
-                isinstance(e, str) or (
-                    isinstance(e, list) and all(isinstance(s, str) for s in e)
-                )
-                for e in obj
-            ):
-                res = []
-                for e in obj:
-                    if isinstance(e, str):
-                        res.append(e)
-                    else:
-                        res += e
-                return res
-            else:
-                return obj
+        if all(
+            isinstance(e, str) or (
+                isinstance(e, list) and all(isinstance(s, str) for s in e)
+            )
+            for e in obj
+        ):
+            res = []
+            for e in obj:
+                if isinstance(e, str):
+                    res.append(e)
+                else:
+                    res += e
+            return res
+        return obj
 
     def transform(self, text, escape=True):
         f = self.escape if escape else self.identity
@@ -499,8 +496,7 @@ class InterfaceSaver:
             return f("[+-]")
         elif text.startswith("cd:"):
             return "<typ>" + f(text[3:].upper()) + "</typ>"
-        else:
-            return f(text)
+        return f(text)
 
     def escape(self, text):
         return html.escape(text, quote=False)
@@ -511,11 +507,11 @@ class InterfaceSaver:
     def clean_name(self, text):
         return text.replace("​", "")  # remove zero||width whitespace
 
-    def empty_node(self, file):
+    def empty_node(self, file_):
         return ET.fromstring((
             '<cd:command xmlns:cd="http://www.pragma-ade.com/commands" '
             'file="{}" />'
-        ).format(file))
+        ).format(file_))
 
     def dots_node(self):
         return ET.fromstring(
