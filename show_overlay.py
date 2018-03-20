@@ -76,124 +76,124 @@ class SimpleContextShowSelectionCommand(sublime_plugin.TextCommand):
             self.view.show_at_center(sublime.Region(*middle_region))
 
 
-class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
-    def reload_settings(self):
-        utilities.reload_settings(self)
-        self.reload_view()
-
-    def reload_view(self):
-        self.view = self.window.active_view()
-
-    def is_visible(self):
-        return scopes.is_context(self.view)
-
-    #D For our use, we give a descriptive name as a \type{selector}. But you
-    #D can override this by providing a \type{selector_raw} instead.
-    def run(
-        self,
-        prefix=False,
-        selector="heading",
-        selector_raw=None,
-        on_choose=None,
-        selected_index="closest"
-    ):
-        self.reload_settings()
-        if not self.view:
-            return
-        self.orig_sel = [(region.a, region.b) for region in self.view.sel()]
-        self.on_choose = on_choose
-
-        if selector_raw is not None:
-            self.matches = sorted(
-                [
-                    (region.begin(), region.end())
-                    for region in self.view.find_by_selector(selector_raw)
-                ],
-                key=lambda tup: tup[0],
-            )
-            matches = [
-                general_clean(self.view.substr(sublime.Region(*tup)))
-                for tup in self.matches
-            ]
-        elif selector in SELECTORS.keys():
-            clean = def_clean if selector == "definition" else general_clean
-            data = []
-            for prefix_str, space, sel in SELECTORS[selector]:
-                for region in self.view.find_by_selector(sel):
-                    data.append(
-                        (
-                            region.begin(),
-                            region.end(),
-                            (prefix_str if prefix else "") + space +
-                            clean(self.view.substr(region))
-                        )
-                    )
-            data = sorted(data, key=lambda tup: tup[0])
-            self.matches = [tup[:2] for tup in data]
-            matches = [tup[2] for tup in data]
-        else:
-            return
-
-        if selected_index in ["closest", "previous", "next"]:
-            sel = self.view.sel()
-            num_matches = len(self.matches)
-            num_regions = len(sel)
-            if num_regions > 0 and num_matches > 0:
-                middle_region = sel[num_regions // 2]
-                sequence = [
-                    i for i in range(num_matches) if filter_(
-                        self.matches[i][0] - middle_region.begin(),
-                        selected_index,
-                    )
-                ]
-                if sequence:
-                    index = max(sequence, key=self.key_function(middle_region))
-                else:
-                    index = 0
-            else:
-                index = 0
-        else:
-            index = selected_index
-
-        self.window.show_quick_panel(
-            matches,
-            self.on_done,
-            on_highlight=self.on_highlight,
-            selected_index=index,
-        )
-
-    def key_function(self, region):
-        return lambda i: -abs(self.matches[i][0] - region.begin())
-
-    def on_done(self, index):
-        self.reload_view()
-        if not self.view:
-            return
-        if 0 <= index < len(self.matches):
-            tup = self.matches[index]
-            if self.on_choose == "insert":
-                text = self.view.substr(sublime.Region(*tup))
-                self.view.run_command(
-                    "simple_context_show_selection", {"regions": self.orig_sel}
-                )
-                self.view.run_command(
-                    "simple_context_insert_text", {"text": text}
-                )
-            else:
-                self.view.run_command(
-                    "simple_context_show_selection", {"regions": [tup]}
-                )
-        else:
-            self.view.run_command(
-                "simple_context_show_selection", {"regions": self.orig_sel}
-            )
-
-    def on_highlight(self, index):
-        if 0 <= index < len(self.matches):
-            tup = self.matches[index]
-            self.view.run_command(
-                "simple_context_show_selection", {"regions": [tup]}
-            )
+# class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
+#     def reload_settings(self):
+#         utilities.reload_settings(self)
+#         self.reload_view()
+#
+#     def reload_view(self):
+#         self.view = self.window.active_view()
+#
+#     def is_visible(self):
+#         return scopes.is_context(self.view)
+#
+#     #D For our use, we give a descriptive name as a \type{selector}. But you
+#     #D can override this by providing a \type{selector_raw} instead.
+#     def run(
+#         self,
+#         prefix=False,
+#         selector="heading",
+#         selector_raw=None,
+#         on_choose=None,
+#         selected_index="closest"
+#     ):
+#         self.reload_settings()
+#         if not self.view:
+#             return
+#         self.orig_sel = [(region.a, region.b) for region in self.view.sel()]
+#         self.on_choose = on_choose
+#
+#         if selector_raw is not None:
+#             self.matches = sorted(
+#                 [
+#                     (region.begin(), region.end())
+#                     for region in self.view.find_by_selector(selector_raw)
+#                 ],
+#                 key=lambda tup: tup[0],
+#             )
+#             matches = [
+#                 general_clean(self.view.substr(sublime.Region(*tup)))
+#                 for tup in self.matches
+#             ]
+#         elif selector in SELECTORS.keys():
+#             clean = def_clean if selector == "definition" else general_clean
+#             data = []
+#             for prefix_str, space, sel in SELECTORS[selector]:
+#                 for region in self.view.find_by_selector(sel):
+#                     data.append(
+#                         (
+#                             region.begin(),
+#                             region.end(),
+#                             (prefix_str if prefix else "") + space +
+#                             clean(self.view.substr(region))
+#                         )
+#                     )
+#             data = sorted(data, key=lambda tup: tup[0])
+#             self.matches = [tup[:2] for tup in data]
+#             matches = [tup[2] for tup in data]
+#         else:
+#             return
+#
+#         if selected_index in ["closest", "previous", "next"]:
+#             sel = self.view.sel()
+#             num_matches = len(self.matches)
+#             num_regions = len(sel)
+#             if num_regions > 0 and num_matches > 0:
+#                 middle_region = sel[num_regions // 2]
+#                 sequence = [
+#                     i for i in range(num_matches) if filter_(
+#                         self.matches[i][0] - middle_region.begin(),
+#                         selected_index,
+#                     )
+#                 ]
+#                 if sequence:
+#                     index = max(sequence, key=self.key_function(middle_region))
+#                 else:
+#                     index = 0
+#             else:
+#                 index = 0
+#         else:
+#             index = selected_index
+#
+#         self.window.show_quick_panel(
+#             matches,
+#             self.on_done,
+#             on_highlight=self.on_highlight,
+#             selected_index=index,
+#         )
+#
+#     def key_function(self, region):
+#         return lambda i: -abs(self.matches[i][0] - region.begin())
+#
+#     def on_done(self, index):
+#         self.reload_view()
+#         if not self.view:
+#             return
+#         if 0 <= index < len(self.matches):
+#             tup = self.matches[index]
+#             if self.on_choose == "insert":
+#                 text = self.view.substr(sublime.Region(*tup))
+#                 self.view.run_command(
+#                     "simple_context_show_selection", {"regions": self.orig_sel}
+#                 )
+#                 self.view.run_command(
+#                     "simple_context_insert_text", {"text": text}
+#                 )
+#             else:
+#                 self.view.run_command(
+#                     "simple_context_show_selection", {"regions": [tup]}
+#                 )
+#         else:
+#             self.view.run_command(
+#                 "simple_context_show_selection", {"regions": self.orig_sel}
+#             )
+#
+#     def on_highlight(self, index):
+#         if 0 <= index < len(self.matches):
+#             tup = self.matches[index]
+#             self.view.run_command(
+#                 "simple_context_show_selection", {"regions": [tup]}
+#             )
 
 
 class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
@@ -259,7 +259,6 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
         return [tup[2] for tup in self.data]
 
     def update_data(self):
-        self.data = {}
         selectors = []
         for k, v in self.selectors.items():
             if k in self.active_selectors:
@@ -312,29 +311,27 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
         self.reload_view()
         if not self.view:
             return
-        len_ = len(self.data) - 1
-        if index >= len_:
+        if index >= len(self.data):
             self.run_panel_choose(selected_index=0)
-        else:
-            if 0 <= index < len_:
-                tup = self.data[index][:2]
-                if self.on_choose == "insert":
-                    text = self.view.substr(sublime.Region(*tup))
-                    self.view.run_command(
-                        "simple_context_show_selection",
-                        {"regions": self.orig_sel}
-                    )
-                    self.view.run_command(
-                        "simple_context_insert_text", {"text": text}
-                    )
-                else:
-                    self.view.run_command(
-                        "simple_context_show_selection", {"regions": [tup]}
-                    )
+        elif 0 <= index:
+            tup = self.data[index][:2]
+            if self.on_choose == "insert":
+                text = self.view.substr(sublime.Region(*tup))
+                self.view.run_command(
+                    "simple_context_show_selection",
+                    {"regions": self.orig_sel}
+                )
+                self.view.run_command(
+                    "simple_context_insert_text", {"text": text}
+                )
             else:
                 self.view.run_command(
-                    "simple_context_show_selection", {"regions": self.orig_sel}
+                    "simple_context_show_selection", {"regions": [tup]}
                 )
+        else:
+            self.view.run_command(
+                "simple_context_show_selection", {"regions": self.orig_sel}
+            )
 
     def run_panel_choose(self, selected_index=None):
         self.window.show_quick_panel(

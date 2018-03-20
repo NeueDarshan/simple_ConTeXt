@@ -55,16 +55,16 @@ For opening PDFs after building a ConTeXt file, and opening the manuals, the `PD
 
 Add the following entry to your general Sublime Text (ST) settings, in order to get automatic completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
 
-  ```JSON
-  {
-    "auto_complete_triggers": [
-      {
-        "characters": "\\",
-        "selector": "text.tex.context"
-      }
-    ]
-  }
-  ```
+```JSON
+{
+  "auto_complete_triggers": [
+    {
+      "characters": "\\",
+      "selector": "text.tex.context"
+    }
+  ]
+}
+```
 
 ## Symbol List
 
