@@ -1,6 +1,7 @@
 import threading
 import string
 import json
+import time
 import os
 
 import sublime
@@ -124,6 +125,10 @@ class VirtualCommandDict:
         return sorted(self.cmds)
 
 
+def strip_prefix(text):
+    return "".join(text.split()[-1:])
+
+
 class SimpleContextMacroSignatureEventListener(
     sublime_plugin.ViewEventListener
 ):
@@ -137,6 +142,7 @@ class SimpleContextMacroSignatureEventListener(
         self.file_min = 20000
         self.param_char = string.ascii_letters  # + string.whitespace
         self.extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
+        self.last_ctrl_seq = None
 
     def reload_settings(self):
         utilities.reload_settings(self)
@@ -229,7 +235,7 @@ class SimpleContextMacroSignatureEventListener(
                 location=ctrl[0] - 1,
                 max_width=600,
                 flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY,
-                on_navigate=self.on_navigate
+                on_navigate=lambda href: self.on_navigate(href, name)
             )
         else:
             self.view.hide_popup()
@@ -261,7 +267,7 @@ class SimpleContextMacroSignatureEventListener(
                     location=ctrl[0] - 1,
                     max_width=600,
                     flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
-                    on_navigate=self.on_navigate
+                    on_navigate=lambda href: self.on_navigate(href, name)
                 )
                 return
             else:
@@ -328,10 +334,10 @@ class SimpleContextMacroSignatureEventListener(
             self.view.style_for_scope(text), self.style_for_scope_punc(text)
         ]
 
-    def on_navigate(self, href):
+    def on_navigate(self, href, name):
         type_, content = href[:4], href[5:]
         if type_ == "file":
-            self.on_navigate_file(content)
+            self.on_navigate_file(content, name)
         elif type_ == "copy":
             text = "<br><br>".join(
                 s for s in self.html_cache[self.name][self.popup_name][:-1]
@@ -342,10 +348,11 @@ class SimpleContextMacroSignatureEventListener(
             elif content == "plain":
                 self.copy(html_css.raw_print(text))
 
-    def on_navigate_file(self, name):
+    def on_navigate_file(self, name, command):
         main = files.locate(self._path, name, flags=self.flags)
         if main and os.path.exists(main):
-            self.view.window().open_file(main)
+            view = self.view.window().open_file(main)
+            self.try_jump_to_def(view, command)
         else:
             other = files.fuzzy_locate(
                 self._path, name, extensions=self.extensions, flags=self.flags
@@ -361,13 +368,34 @@ class SimpleContextMacroSignatureEventListener(
                 # if sublime.ok_cancel_dialog(msg):
                 #     self.view.window().open_file(other)
                 #D So instead let's just open the file.
-                self.view.window().open_file(other)
+                view = self.view.window().open_file(other)
+                self.try_jump_to_def(view, command)
             else:
                 msg = (
                     'Unable to locate file "{}".\n\nSearched in the TeX tree '
                     'containing "{}".'
                 )
                 sublime.error_message(msg.format(name, self._path))
+
+    def try_jump_to_def(self, view, command):
+        thread = threading.Thread(
+            target=lambda: self.try_jump_to_def_aux(view, command)
+        )
+        thread.start()
+
+    def try_jump_to_def_aux(self, view, name):
+        start_time = time.time()
+        while view.is_loading():
+            time.sleep(0.01)
+            if time.time() - start_time > 1:
+                return
+        symbols = {strip_prefix(text): pos for (pos, text) in view.symbols()}
+        if name in symbols:
+            region = symbols[name]
+            view.run_command(
+                "simple_context_show_selection",
+                {"regions": [(region.a, region.b)]}
+            )
 
     def copy(self, text):
         self.view.hide_popup()
