@@ -32,30 +32,18 @@ html {
     --inner-background-color: var(--background);
     --outer-background-color:
         color(var(--foreground) blend(var(--background) 20%));
+    margin: 0;
+    padding: 0;
 }
 
-html, body {
-    margin: 0rem;
-    padding: 0rem;
+body {
+    margin: 0.2rem;
+    padding: 0.2rem;
 }
 
-/*D We use this approach with an \quote{outer} and an \quote{inner} element to
- *D get a border around the pop||ups. There is probably a better way, but I'm
- *D not that fluent in CSS.
- */
-div.outer {
-    display: block;
-    background-color: var(--outer-background-color);
-    padding: 0.1rem;
-    margin: 0rem;
-}
+.outer { }
 
-div.inner {
-    display: block;
-    background-color: var(--inner-background-color);
-    padding: 0.5rem;
-    margin: 0.1rem;
-}
+.inner { }
 
 div.popup opt {
     font-style: italic;
@@ -70,106 +58,106 @@ div.popup val {
 }
 
 div.popup con {
+    background-color: var(--control-sequence-background);
+    color: var(--control-sequence-color);
     font-style: var(--control-sequence-style);
     font-weight: var(--control-sequence-weight);
-    color: var(--control-sequence-color);
-    background-color: var(--control-sequence-background);
 }
 
 div.popup sco {
+    background-color: var(--slash-control-sequence-background);
+    color: var(--slash-control-sequence-color);
     font-style: var(--slash-control-sequence-style);
     font-weight: var(--slash-control-sequence-weight);
-    color: var(--slash-control-sequence-color);
-    background-color: var(--slash-control-sequence-background);
 }
 
 div.popup flo {
+    background-color: var(--flow-control-sequence-background);
+    color: var(--flow-control-sequence-color);
     font-style: var(--flow-control-sequence-style);
     font-weight: var(--flow-control-sequence-weight);
-    color: var(--flow-control-sequence-color);
-    background-color: var(--flow-control-sequence-background);
 }
 
 div.popup sfl {
+    background-color: var(--slash-flow-control-sequence-background);
+    color: var(--slash-flow-control-sequence-color);
     font-style: var(--slash-flow-control-sequence-style);
     font-weight: var(--slash-flow-control-sequence-weight);
-    color: var(--slash-flow-control-sequence-color);
-    background-color: var(--slash-flow-control-sequence-background);
 }
 
 div.popup mod {
+    background-color: var(--modifier-control-sequence-background);
+    color: var(--modifier-control-sequence-color);
     font-style: var(--modifier-control-sequence-style);
     font-weight: var(--modifier-control-sequence-weight);
-    color: var(--modifier-control-sequence-color);
-    background-color: var(--modifier-control-sequence-background);
 }
 
 div.popup smo {
+    background-color: var(--slash-modifier-control-sequence-background);
+    color: var(--slash-modifier-control-sequence-color);
     font-style: var(--slash-modifier-control-sequence-style);
     font-weight: var(--slash-modifier-control-sequence-weight);
-    color: var(--slash-modifier-control-sequence-color);
-    background-color: var(--slash-modifier-control-sequence-background);
 }
 
 div.popup sto {
+    background-color: var(--storage-control-sequence-background);
+    color: var(--storage-control-sequence-color);
     font-style: var(--storage-control-sequence-style);
     font-weight: var(--storage-control-sequence-weight);
-    color: var(--storage-control-sequence-color);
-    background-color: var(--storage-control-sequence-background);
 }
 
 div.popup sst {
+    background-color: var(--slash-storage-control-sequence-background);
+    color: var(--slash-storage-control-sequence-color);
     font-style: var(--slash-storage-control-sequence-style);
     font-weight: var(--slash-storage-control-sequence-weight);
-    color: var(--slash-storage-control-sequence-color);
-    background-color: var(--slash-storage-control-sequence-background);
 }
 
 div.popup lan {
+    background-color: var(--language-control-sequence-background);
+    color: var(--language-control-sequence-color);
     font-style: var(--language-control-sequence-style);
     font-weight: var(--language-control-sequence-weight);
-    color: var(--language-control-sequence-color);
-    background-color: var(--language-control-sequence-background);
 }
 
 div.popup sla {
+    background-color: var(--slash-language-control-sequence-background);
+    color: var(--slash-language-control-sequence-color);
     font-style: var(--slash-language-control-sequence-style);
     font-weight: var(--slash-language-control-sequence-weight);
-    color: var(--slash-language-control-sequence-color);
-    background-color: var(--slash-language-control-sequence-background);
 }
 
 div.popup pun {
+    background-color: var(--delimiter-background);
+    color: var(--delimiter-color);
     font-style: var(--delimiter-style);
     font-weight: var(--delimiter-weight);
-    color: var(--delimiter-color);
-    background-color: var(--delimiter-background);
 }
 
 div.popup key {
+    background-color: var(--key-background);
+    color: var(--key-color);
     font-style: var(--key-style);
     font-weight: var(--key-weight);
-    color: var(--key-color);
-    background-color: var(--key-background);
 }
 
 div.popup equ {
+    background-color: var(--equals-background);
+    color: var(--equals-color);
     font-style: var(--equals-style);
     font-weight: var(--equals-weight);
-    color: var(--equals-color);
-    background-color: var(--equals-background);
 }
 
 div.popup num {
+    background-color: var(--numeric-background);
+    color: var(--numeric-color);
     font-style: var(--numeric-style);
     font-weight: var(--numeric-weight);
-    color: var(--numeric-color);
-    background-color: var(--numeric-background);
 }
 
 div.popup com {
+    background-color: var(--comma-background);
+    color: var(--comma-color);
     font-style: var(--comma-style);
     font-weight: var(--comma-weight);
-    color: var(--comma-color);
-    background-color: var(--comma-background);
 }

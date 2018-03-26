@@ -2,23 +2,15 @@ html {
     --inner-background-color: var(--background);
     --outer-background-color:
         color(var(--foreground) blend(var(--background) 20%));
+    margin: 0;
+    padding: 0;
 }
 
-html, body {
-    margin: 0rem;
-    padding: 0rem;
+body {
+    margin: 0.2rem;
+    padding: 0.2rem;
 }
 
-div.outer {
-    display: block;
-    background-color: var(--outer-background-color);
-    padding: 0.1rem;
-    margin: 0rem;
-}
+.outer { }
 
-div.inner {
-    display: block;
-    background-color: var(--inner-background-color);
-    padding: 0.5rem;
-    margin: 0.1rem;
-}
+.inner { }
