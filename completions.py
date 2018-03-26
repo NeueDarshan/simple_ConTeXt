@@ -213,6 +213,9 @@ class SimpleContextMacroSignatureEventListener(
         return None
 
     def on_hover(self, point, hover_zone):
+        if not self.is_visible():
+            return
+
         self.reload_settings()
         if (
             self.state != IDLE or

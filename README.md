@@ -13,11 +13,18 @@
 
 # Introduction
 
-This [Sublime Text][sublime-text] 3 package provides some support for working with the [ConTeXt][context-introduction] program.
+This [Sublime Text][sublime-text] 3 package provides some support for working
+with the [ConTeXt][context-introduction] program.
 
-I started this project for my personal use, because I wanted some quality of life features for writing ConTeXt documents in Sublime Text. Since there were no packages that fit the bill, I started to write my own. Over time I felt that the result was looking pretty good, so I put it out into the world for the hopeful benefit of other ConTeXt users.
+I started this project for my personal use, because I wanted some quality of
+life features for writing ConTeXt documents in Sublime Text. Since there were no
+packages that fit the bill, I started to write my own. Over time I felt that the
+result was looking pretty good, so I put it out into the world for the hopeful
+benefit of other ConTeXt users.
 
-That said, I can only test that things work on my machine, so some bugs are to be expected. Furthermore I only have so much spare time to work on it, and it's a hobby project. Don't expect a robust, polished experience!
+That said, I can only test that things work on my machine, so some bugs are to
+be expected. Furthermore I only have so much spare time to work on it, and it's
+a hobby project. Don't expect a robust, polished experience!
 
 Currently the features are:
 
@@ -31,11 +38,19 @@ Currently the features are:
 
 # Installation/Setup
 
-Install via [package control][package-control], under the name `simple_ConTeXt`. Afterwards, there are some optional things to set up.
+Install via [package control][package-control], under the name `simple_ConTeXt`.
+Afterwards, there are some optional things to set up.
 
 ## Builder
 
-Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings` in the command palette or `Preferences/Package Settings/simple_ConTeXt/Settings` in the menu bar. Under the `paths` key, put in a key-value entry for the ConTeXt installation on your machine: the key is a name for that installation, and the value should be the path to the context binaries. For example, if you have a ConTeXt distribution installed at `/home/user-name/.local/context/` and the actual context binary is located at `/home/user-name/.local/context/tex/texmf-linux-64/bin/context`, then you should have
+Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings`
+in the command palette or `Preferences/Package Settings/simple_ConTeXt/Settings`
+in the menu bar. Under the `paths` key, put in a key-value entry for the ConTeXt
+installation on your machine: the key is a name for that installation, and the
+value should be the path to the context binaries. For example, if you have a
+ConTeXt distribution installed at `/home/user-name/.local/context/` and the
+actual context binary is located at `/home/user-name/.local/context/tex/texmf-
+linux-64/bin/context`, then you should have
 
 ```JSON
 {
@@ -45,15 +60,23 @@ Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings`
 }
 ```
 
-If you have multiple versions of ConTeXt installed (e.g. a couple different TeX Live versions and the ConTeXt Standalone) then you can put a name-path entry for each one, and they can happily coexist in simple ConTeXt.
+If you have multiple versions of ConTeXt installed (e.g. a couple different TeX
+Live versions and the ConTeXt Standalone) then you can put a name-path entry for
+each one, and they can happily coexist in simple ConTeXt.
 
 ## PDFs
 
-For opening PDFs after building a ConTeXt file, and opening the manuals, the `PDF_viewers` entry is consulted. Similarly to the previous, the keys can be any string, but each value should be the name of a PDF viewer program. (In the case of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
+For opening PDFs after building a ConTeXt file, and opening the manuals, the
+`PDF_viewers` entry is consulted. Similarly to the previous, the keys can be any
+string, but each value should be the name of a PDF viewer program. (In the case
+of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your
+environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
 
 ## Auto-Completion
 
-Add the following entry to your general Sublime Text (ST) settings, in order to get automatic completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
+Add the following entry to your general Sublime Text (ST) settings, in order to
+get automatic completions for ConTeXt commands on typing the initial backslash
+<kbd>\\</kbd>.
 
 ```JSON
 {
@@ -68,7 +91,11 @@ Add the following entry to your general Sublime Text (ST) settings, in order to 
 
 ## Symbol List
 
-Consider adding the following to your key bindings: it will (for ConTeXt files only) replace the binding for the local symbol list (<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom variation of it. The idea is to make it easier to navigate/filter between headings, definitions, references, and so on.
+Consider adding the following to your key bindings: it will (for ConTeXt files
+only) replace the binding for the local symbol list
+(<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom variation of it. The idea is to
+make it easier to navigate/filter between headings, definitions, references, and
+so on.
 
 ```JSON
 {
@@ -88,7 +115,8 @@ Consider adding the following to your key bindings: it will (for ConTeXt files o
 }
 ```
 
-Otherwise, the default local symbol list contains all these things with suitable prefixes.
+Otherwise, the default local symbol list contains all these things with suitable
+prefixes.
 
 ## Spell Checking
 
@@ -101,11 +129,14 @@ Consider adding the following to your ConTeXt syntax specific settings:
 }
 ```
 
-This should do a pretty decent job at limiting spell check to the appropriate places only (e.g. not in maths or code blocks).
+This should do a pretty decent job at limiting spell check to the appropriate
+places only (e.g. not in maths or code blocks).
 
 ## Bracket Highlighter
 
-If you use the excellent [BracketHighlighter][bracket-highlighter] package, then adding the following to the BracketHighlighter settings will provide some rudimentary support for ConTeXt start/stop commands.
+If you use the excellent [BracketHighlighter][bracket-highlighter] package, then
+adding the following to the BracketHighlighter settings will provide some
+rudimentary support for ConTeXt start/stop commands.
 
 ```JSON
 {
@@ -124,7 +155,8 @@ If you use the excellent [BracketHighlighter][bracket-highlighter] package, then
 }
 ```
 
-In a similar way, here is an example of some rudimentary MetaPost support for BracketHighlighter.
+In a similar way, here is an example of some rudimentary MetaPost support for
+BracketHighlighter.
 
 ```JSON
 {
@@ -175,17 +207,25 @@ In a similar way, here is an example of some rudimentary MetaPost support for Br
 
 # Builders
 
-The main builder is of course the ConTeXt one, that is a wrapper around the `context` binary. In order to find `context` it consults the path specified in the settings.
+The main builder is of course the ConTeXt one, that is a wrapper around the
+`context` binary. In order to find `context` it consults the path specified in
+the settings.
 
 As it's easy to do so, there are a couple other builders:
 
 - Lua (using LuaTeX as a Lua interpreter);
 
-- MetaPost. There are two variants: firstly, just use the version of `mpost` that ships with the ConTeXt installation. Alternatively, use `context` itself: when called on a MetaPost file, it will compile it (using the MetaFun format) into a PDF.
+- MetaPost. There are two variants: firstly, just use the version of `mpost`
+  that ships with the ConTeXt installation. Alternatively, use `context` itself:
+  when called on a MetaPost file, it will compile it (using the MetaFun format)
+  into a PDF.
 
 # Misc
 
-Completions should play well with others, e.g. the completions provided by the [UnicodeCompletion][unicode-completion] package. (Although UnicodeCompletion is intended for LaTeX, I still find it useful for ConTeXt as many of the command names are the same.)
+Completions should play well with others, e.g. the completions provided by the
+[UnicodeCompletion][unicode-completion] package. (Although UnicodeCompletion is
+intended for LaTeX, I still find it useful for ConTeXt as many of the command
+names are the same.)
 
 [context-introduction]: http://wiki.contextgarden.net/What_is_ConTeXt
 [package-control]:      https://packagecontrol.io
