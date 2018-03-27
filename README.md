@@ -1,4 +1,6 @@
-# Contents
+# Simple ConTeXt
+
+## Contents
 
 - [Introduction](#introduction)
 - [Installation/Setup](#installationsetup)
@@ -11,7 +13,7 @@
 - [Builders](#builders)
 - [Misc](#misc)
 
-# Introduction
+## Introduction
 
 This [Sublime Text][sublime-text] 3 package provides some support for working
 with the [ConTeXt][context-introduction] program.
@@ -36,12 +38,12 @@ Currently the features are:
 - Snippets.
 - Other bits and bobs.
 
-# Installation/Setup
+## Installation/Setup
 
 Install via [package control][package-control], under the name `simple_ConTeXt`.
 Afterwards, there are some optional things to set up.
 
-## Builder
+### Builder
 
 Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings`
 in the command palette or `Preferences/Package Settings/simple_ConTeXt/Settings`
@@ -64,7 +66,7 @@ If you have multiple versions of ConTeXt installed (e.g. a couple different TeX
 Live versions and the ConTeXt Standalone) then you can put a name-path entry for
 each one, and they can happily coexist in simple ConTeXt.
 
-## PDFs
+### PDFs
 
 For opening PDFs after building a ConTeXt file, and opening the manuals, the
 `PDF_viewers` entry is consulted. Similarly to the previous, the keys can be any
@@ -72,7 +74,7 @@ string, but each value should be the name of a PDF viewer program. (In the case
 of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your
 environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
 
-## Auto-Completion
+### Auto-Completion
 
 Add the following entry to your general Sublime Text (ST) settings, in order to
 get automatic completions for ConTeXt commands on typing the initial backslash
@@ -89,7 +91,7 @@ get automatic completions for ConTeXt commands on typing the initial backslash
 }
 ```
 
-## Symbol List
+### Symbol List
 
 Consider adding the following to your key bindings: it will (for ConTeXt files
 only) replace the binding for the local symbol list
@@ -118,7 +120,7 @@ so on.
 Otherwise, the default local symbol list contains all these things with suitable
 prefixes.
 
-## Spell Checking
+### Spell Checking
 
 Consider adding the following to your ConTeXt syntax specific settings:
 
@@ -132,7 +134,7 @@ Consider adding the following to your ConTeXt syntax specific settings:
 This should do a pretty decent job at limiting spell check to the appropriate
 places only (e.g. not in maths or code blocks).
 
-## Bracket Highlighter
+### Bracket Highlighter
 
 If you use the excellent [BracketHighlighter][bracket-highlighter] package, then
 adding the following to the BracketHighlighter settings will provide some
@@ -205,7 +207,7 @@ BracketHighlighter.
 }
 ```
 
-# Builders
+## Builders
 
 The main builder is of course the ConTeXt one, that is a wrapper around the
 `context` binary. In order to find `context` it consults the path specified in
@@ -220,7 +222,7 @@ As it's easy to do so, there are a couple other builders:
   when called on a MetaPost file, it will compile it (using the MetaFun format)
   into a PDF.
 
-# Misc
+## Misc
 
 Completions should play well with others, e.g. the completions provided by the
 [UnicodeCompletion][unicode-completion] package. (Although UnicodeCompletion is

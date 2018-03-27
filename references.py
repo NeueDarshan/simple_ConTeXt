@@ -7,7 +7,7 @@ from .scripts import utilities
 from .scripts import scopes
 
 
-BUILT_IN_REFERENCERS = r"\A(about|in|at)\Z"
+BUILT_IN_REFERENCERS = r"\A(about|in|at|from|over)\Z"
 
 
 class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):

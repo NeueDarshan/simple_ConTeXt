@@ -313,7 +313,7 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
             return
         if index >= len(self.data):
             self.run_panel_choose(selected_index=0)
-        elif 0 <= index:
+        elif index >= 0:
             tup = self.data[index][:2]
             if self.on_choose == "insert":
                 text = self.view.substr(sublime.Region(*tup))
