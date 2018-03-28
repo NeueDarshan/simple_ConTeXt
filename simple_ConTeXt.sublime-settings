@@ -47,7 +47,7 @@
 				"auto_complete": true,
 			},
 			"show_copy_pop_up": false,
-			"show_source_files": false,
+			"show_source_files": true,
 		},
 		"references":
 		{

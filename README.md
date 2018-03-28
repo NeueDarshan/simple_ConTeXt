@@ -12,6 +12,7 @@
   - [Bracket Highlighter](#bracket-highlighter)
 - [Builders](#builders)
 - [Misc](#misc)
+- [Future Features](#future-features)
 
 ## Introduction
 
@@ -157,56 +158,6 @@ rudimentary support for ConTeXt start/stop commands.
 }
 ```
 
-In a similar way, here is an example of some rudimentary MetaPost support for
-BracketHighlighter.
-
-```JSON
-{
-  "user_brackets": [
-    {
-      "name": "metapost_def",
-      "open": "(\\b(?:var|(?:prim|second|terti)ary)?def\\b)",
-      "close": "(\\benddef\\b)",
-      "style": "default",
-      "scope_exclude": ["string", "comment"],
-      "language_filter": "whitelist",
-      "language_list": ["MetaPost", "MetaFun"],
-      "enabled": true
-    },
-    {
-      "name": "metapost_env",
-      "open": "(\\bbegin(?:fig|group)\\b)",
-      "close": "(\\bend(?:fig|group)\\b)",
-      "style": "default",
-      "scope_exclude": ["string", "comment"],
-      "language_filter": "whitelist",
-      "language_list": ["MetaPost", "MetaFun"],
-      "enabled": true
-    },
-    {
-      "name": "metapost_ctrl",
-      "open": "(\\bif\\b)",
-      "close": "(\\bfi\\b)",
-      "style": "default",
-      "scope_exclude": ["string", "comment"],
-      "language_filter": "whitelist",
-      "language_list": ["MetaPost", "MetaFun"],
-      "enabled": true
-    },
-    {
-      "name": "metapost_loop",
-      "open": "(\\bfor(?:suffixes|ever)?\\b)",
-      "close": "(\\bendfor\\b)",
-      "style": "default",
-      "scope_exclude": ["string", "comment"],
-      "language_filter": "whitelist",
-      "language_list": ["MetaPost", "MetaFun"],
-      "enabled": true
-    }
-  ]
-}
-```
-
 ## Builders
 
 The main builder is of course the ConTeXt one, that is a wrapper around the
@@ -216,7 +167,6 @@ the settings.
 As it's easy to do so, there are a couple other builders:
 
 - Lua (using LuaTeX as a Lua interpreter);
-
 - MetaPost. There are two variants: firstly, just use the version of `mpost`
   that ships with the ConTeXt installation. Alternatively, use `context` itself:
   when called on a MetaPost file, it will compile it (using the MetaFun format)
@@ -228,6 +178,23 @@ Completions should play well with others, e.g. the completions provided by the
 [UnicodeCompletion][unicode-completion] package. (Although UnicodeCompletion is
 intended for LaTeX, I still find it useful for ConTeXt as many of the command
 names are the same.)
+
+## Future Features
+
+Features we would like to add some day.
+
+- SyncTeX support. (Forward and backward jump to PDF.)
+- Code formatter.
+- Fix up the documentation browser.
+- Checker/linter. (The checks provided by `mtxrun --script check` are quite
+  basic. Not sure what ConTeXt support `chktex` has.)
+- Citation handler. (We handle references well enough, similar support would be
+  nice for `\cite[...]`. I expect we would try to keep it simple, and I would
+  like to handle the `.lua`, `.xml` and `.bib` formats)
+- Handle syntax embedding better. Currently we have various embeddings that work
+  fairly well, but the code is ugly and error prone and comes with some
+  limitations.
+- Robust log parsing, esp. for reporting warnings/errors.
 
 [context-introduction]: http://wiki.contextgarden.net/What_is_ConTeXt
 [package-control]:      https://packagecontrol.io
