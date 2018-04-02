@@ -9,7 +9,9 @@ file_extensions:
   - mkix
   - mkxi
 scope: text.tex.context
-first_line_match: '^\s*(?:%.*?macros\s*=\s*mk(?:[vx]i)|\\(?:start(?:text|document)|usemodule|setup[[:alpha:]]+))\b'
+first_line_match:
+  "^\\s*(?:%.*?macros\\s*=\\s*mk(?:[vx]i)|\\\\(?:start(?:text|document)|\
+   usemodule|setup[[:alpha:]]+))\\b"
 variables:
   key: '[[:alpha:][:digit:].\-\+_:;!\?<>@&/]'
   setup: '{{key}}'
@@ -27,7 +29,7 @@ contexts:
     - include: math
     - include: Lua
     - include: MetaFun
-  # - include: JavaScript
+    # - include: JavaScript
     - include: catcode
     - include: markup
     - include: table
@@ -49,11 +51,11 @@ contexts:
     - include: math.cases.pop-at-newrow/
     - include: math.cases.pop-at-end/
     - include: main
-  #D The question is, how far to go with this kind of thing. The best possible
-  #D thing would be to duplicate this syntax file in its entirety, and then go
-  #D in and change a handful of places where we match control sequences.
-  #D Instead, we go for a somewhat crude compromise, by providing a stripped
-  #D down copy of the usual syntax, with the appropriate changes.
+  # The question is, how far to go with this kind of thing. The best possible
+  # thing would be to duplicate this syntax file in its entirety, and then go in
+  # and change a handful of places where we match control sequences. Instead, we
+  # go for a somewhat crude compromise, by providing a stripped down copy of the
+  # usual syntax, with the appropriate changes.
   main.protect:
     - meta_content_scope: meta.environment.protect.context
     - include: definition.protect
@@ -79,18 +81,18 @@ contexts:
         1: punctuation.definition.comment.context
 
 
-  #D In \ConTeXt\ there is some preprocessing available. One aspect of this is
-  #D allowing named parameters \type{#argument} in the source code, instead of
-  #D the usual \TeX\ syntax \type{#1}.
-  #D \startfootnote
-  #D   To activate this feature, you can add a line with the directive
-  #D   \type{macros=mkvi} or \type{macros=mkxi} at the top of your source file,
-  #D   or change the file extension to \type{mkvi} resp.\ \type{mkxi}. Then
-  #D   named arguments will be automatically translated into the usual \TeX\
-  #D   style before \TeX\ gets to see them.
-  #D \stopfootnote \space
-  #D Another aspect is presented here: using an XML||like syntax, you can run
-  #D snippets of \Lua\ \emph{before} the main \ConTeXt\ run.
+  # In \ConTeXt\ there is some preprocessing available. One aspect of this is
+  # allowing named parameters \type{#argument} in the source code, instead of
+  # the usual \TeX\ syntax \type{#1}.
+  # \startfootnote
+  #   To activate this feature, you can add a line with the directive
+  #   \type{macros=mkvi} or \type{macros=mkxi} at the top of your source file,
+  #   or change the file extension to \type{mkvi} resp.\ \type{mkxi}. Then
+  #   named arguments will be automatically translated into the usual \TeX\
+  #   style before \TeX\ gets to see them.
+  # \stopfootnote \space
+  # Another aspect is presented here: using an XML||like syntax, you can run
+  # snippets of \Lua\ \emph{before} the main \ConTeXt\ run.
   template:
     - match: '(<\?)(lua)\b'
       captures:
@@ -106,7 +108,7 @@ contexts:
         - include: template.Lua.functions
         - include: scope:source.lua
 
-  #D See the comments on \type{Lua.functions}
+  # See the comments on \type{Lua.functions}
   template.Lua.functions:
     - match: '\b(inject)\b'
       scope: support.function.library.lua
@@ -131,14 +133,18 @@ contexts:
       push: argument.list.reference*/
     - match: '(\\)startplaceformula\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list.maybe-reference*/
 
   math.display.control:
     - match: '(\\)startformula\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         math.main.pop-if-stopformula/,
@@ -146,7 +152,9 @@ contexts:
       ]
     - match: '(\\)start(display|d)math\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: math.main.pop-if-stop-match-two/
     - match: '(\\)display(?:math|mathematics)\b'
@@ -170,27 +178,34 @@ contexts:
       push: argument.group.math.outer*/
     - match: '(\\)start(?:imath|mathmode)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: math.main.pop-if-stop-match-two/
 
-  #D Quoting from the \ConTeXt\ math manual:
-  #D
-  #D \startblockquote
-  #D   The inline method [\type{$...$}] is still valid, but for display math
-  #D   the \type{$$} method should not be used. This has to do with the fact
-  #D   that we want to control spacing in a consistent way.
-  #D \stopblockquote
-  #D
-  #D But you can still use the double dollar \type{$$ ... $$} method if you
-  #D insist, so here it is.
+  # Quoting from the \ConTeXt\ math manual:
+  #
+  # \startblockquote
+  #   The inline method [\type{$...$}] is still valid, but for display math
+  #   the \type{$$} method should not be used. This has to do with the fact
+  #   that we want to control spacing in a consistent way.
+  # \stopblockquote
+  #
+  # But you can still use the double dollar \type{$$ ... $$} method if you
+  # insist, so here it is.
   math.display.double-dollar:
     - match: '\$\$'
-      scope: punctuation.section.double-dollar.begin.context string.quoted.other.double-dollar.context  # meta.structure.start.context
+      scope:
+        punctuation.section.double-dollar.begin.context
+        string.quoted.other.double-dollar.context
+      # meta.structure.start.context
       push: math.main.double-dollar/
   math.inline.dollar:
     - match: '\$'
-      scope: punctuation.section.dollar.begin.context string.quoted.other.dollar.context
+      scope:
+        punctuation.section.dollar.begin.context
+        string.quoted.other.dollar.context
       push: math.main.dollar/
 
   math.main:
@@ -204,13 +219,19 @@ contexts:
   math.main.dollar/:
     - meta_content_scope: meta.dollar.context meta.environment.math.context
     - match: '\$'
-      scope: punctuation.section.dollar.end.context string.quoted.other.dollar.context
+      scope:
+        punctuation.section.dollar.end.context
+        string.quoted.other.dollar.context
       pop: true
     - include: math.main
   math.main.double-dollar/:
-    - meta_content_scope: meta.double-dollar.context meta.environment.math.context
+    - meta_content_scope:
+        meta.double-dollar.context meta.environment.math.context
     - match: '\$\$'
-      scope: punctuation.section.double-dollar.end.context string.quoted.other.double-dollar.context  # meta.structure.stop.context
+      scope:
+        punctuation.section.double-dollar.end.context
+        string.quoted.other.double-dollar.context
+      # meta.structure.stop.context
       pop: true
     - include: math.main
   math.main.pop-if-stopformula/:
@@ -231,11 +252,11 @@ contexts:
     - include: math.cases.rows
     - include: math.main
 
-  #D Should we try to handle unicode entities? Should one write math in
-  #D unicode? It's nice for some things (such as writing \type{α} instead of
-  #D the more verbose \type{\alpha}), but you can lose semantic information
-  #D as well as the ability to easily tweak e.g.\ the spacing of \type{\int}
-  #D throughout the whole document. Hmm.
+  # Should we try to handle unicode entities? Should one write math in
+  # unicode? It's nice for some things (such as writing \type{α} instead of
+  # the more verbose \type{\alpha}), but you can lose semantic information
+  # as well as the ability to easily tweak e.g.\ the spacing of \type{\int}
+  # throughout the whole document. Hmm.
   math.number:
     - include: generic.real
     - match: '[∞π]'
@@ -245,7 +266,7 @@ contexts:
         0: meta.control-word.context constant.other.math.context
         1: punctuation.definition.backslash.context
 
-  #D We can make these lists more complete as time goes on.
+  # We can make these lists more complete as time goes on.
   math.operator:
     - match: '[\+\-/\^_=<>]'
       scope: keyword.operator.context
@@ -254,44 +275,46 @@ contexts:
     - match: '(\\)(?:[lg]eq?|ll|gg)\b'
       captures:
         0: meta.control-word.context keyword.operator.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
 
   math.variable:
-    #D I think \type{variable.other} makes the most sense logically. However,
-    #D in my experience few colour schemes style this scope. So let's use
-    #D \type{string} instead.
+    # I think \type{variable.other} makes the most sense logically. However,
+    # in my experience few colour schemes style this scope. So let's use
+    # \type{string} instead.
     - match: '{{variable}}'
       scope: string.unquoted.math.context
 
-  #D In math mode, control sequences with arguments are tricky. Consider the
-  #D following example.
-  #D
-  #D \startbuffer
-  #D \startformula
-  #D   \startalign
-  #D     \NC \sqrt[3]{2} \NC > 2                        \NR
-  #D     \NC [y]         \NC = \{ x \in X : x \sim y \} \NR
-  #D   \stopalign
-  #D \stopformula
-  #D \stopbuffer
-  #D
-  #D \typebuffer
-  #D
-  #D This produces the output:
-  #D
-  #D \getbuffer
-  #D
-  #D On the one hand we have \type<<\sqrt[3]{2}>>, where the square brackets
-  #D denote an optional argument. On the other we have \type<<\NC [y]>>, where
-  #D the square brackets are part of the mathematical notation, and have
-  #D nothing whatsoever to do with the control sequence \type<<\NC>>.
-  #D
-  #D If we use the same approach as in text mode, we will (wrongly) interpret
-  #D the \type<<[y]>> as an optional argument to \type<<\NC>>. To address these
-  #D kinds of problems, we implement a simple rule: \emph{no spaces allowed}
-  #D between a control sequence and its arguments in math mode.
-  #D
-  #D One other thing, let's forget about active characters in math mode.
+  # In math mode, control sequences with arguments are tricky. Consider the
+  # following example.
+  #
+  # \startbuffer
+  # \startformula
+  #   \startalign
+  #     \NC \sqrt[3]{2} \NC > 2                        \NR
+  #     \NC [y]         \NC = \{ x \in X : x \sim y \} \NR
+  #   \stopalign
+  # \stopformula
+  # \stopbuffer
+  #
+  # \typebuffer
+  #
+  # This produces the output:
+  #
+  # \getbuffer
+  #
+  # On the one hand we have \type<<\sqrt[3]{2}>>, where the square brackets
+  # denote an optional argument. On the other we have \type<<\NC [y]>>, where
+  # the square brackets are part of the mathematical notation, and have
+  # nothing whatsoever to do with the control sequence \type<<\NC>>.
+  #
+  # If we use the same approach as in text mode, we will (wrongly) interpret
+  # the \type<<[y]>> as an optional argument to \type<<\NC>>. To address these
+  # kinds of problems, we implement a simple rule: \emph{no spaces allowed}
+  # between a control sequence and its arguments in math mode.
+  #
+  # One other thing, let's forget about active characters in math mode.
   math.control:
     - include: Lua
     - include: math.control.cases
@@ -313,7 +336,9 @@ contexts:
   math.control.intertext:
     - match: '(\\)start(intertext)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: main.pop-if-stop-match-two/
     - match: '(\\)(?:inter)?text\b'
@@ -322,12 +347,14 @@ contexts:
         1: punctuation.definition.backslash.context
       push: argument.group.adjacent*/
 
-  #D Understanding math vs.\ text in \type{\startcases ... \stopcases} is a
-  #D nice feature to have. As the code is fairly clean so far, let's keep it.
+  # Understanding math vs.\ text in \type{\startcases ... \stopcases} is a
+  # nice feature to have. As the code is fairly clean so far, let's keep it.
   math.control.cases:
     - match: '(\\)startcases\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         math.main.cases/,
@@ -338,17 +365,23 @@ contexts:
     - match: '(\\)NC\b'
       captures:
         0: meta.control-word.context keyword.operator.alignment.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
       push:
         - match: '(\\)NC\b'
           captures:
             0: meta.control-word.context keyword.operator.alignment.context
-            1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+            1:
+              punctuation.definition.backslash.context
+              punctuation.definition.keyword.context
           set: main.cases/
         - match: '(\\)MC\b'
           captures:
             0: meta.control-word.context keyword.operator.alignment.context
-            1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+            1:
+              punctuation.definition.backslash.context
+              punctuation.definition.keyword.context
           set: math.main.cases/
         - include: math.main.cases/
 
@@ -359,16 +392,18 @@ contexts:
     - match: '(\\)NR\b'
       captures:
         0: meta.control-word.context keyword.operator.alignment.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
       set: argument.list.reference.adjacent*/
 
 
-  #D We try to keep track of catcode regimes in embedded \Lua. Of course, there
-  #D is only so much we can do without implementing \TeX\ within Sublime Text,
-  #D but for typical use cases we can do very well.
-  #D
-  #D What about the other namespaces \periods\ what is the situation with
-  #D \type{\usercode{...}} and \type{\startusercode ... \stopusercode}.
+  # We try to keep track of catcode regimes in embedded \Lua. Of course, there
+  # is only so much we can do without implementing \TeX\ within Sublime Text,
+  # but for typical use cases we can do very well.
+  #
+  # What about the other namespaces \periods\ what is the situation with
+  # \type{\usercode{...}} and \type{\startusercode ... \stopusercode}.
   Lua:
     - include: Lua.block
     - include: Lua.inline
@@ -376,18 +411,24 @@ contexts:
   Lua.block:
     - match: '(\\)start(luacode)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push:
         - meta_include_prototype: false
-        - meta_content_scope: meta.environment.lua.major.context source.lua.embedded.context
+        - meta_content_scope:
+            meta.environment.lua.major.context source.lua.embedded.context
         - include: Lua.main.pop-if-stop-match-two/
     - match: '(\\)start(lua)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push:
-        - meta_content_scope: meta.environment.lua.minor.context source.lua.embedded.context
+        - meta_content_scope:
+            meta.environment.lua.minor.context source.lua.embedded.context
         - include: Lua.main.pop-if-stop-match-two/
   Lua.inline:
     - match: '(\\)(?:late|direct)lua\b'
@@ -398,8 +439,11 @@ contexts:
         argument.group.Lua*/,
         argument.integer*/,
       ]
-    #D Hmm, a bit overkill? Should some of these permit an integer as well?
-    - match: '(\\)(?:luacode|(?:late|direct)lua(?:code)?|cld(?:command|context|loadfile|processfile)|ctx(?:command|directcommand|directlua|latecommand|latelua|lua|report|sprint|write))\b'
+    # Hmm, a bit overkill? Should some of these permit an integer as well?
+    - match:
+        "(\\\\)(?:luacode|(?:late|direct)lua(?:code)?|cld(?:command|context|\
+         loadfile|processfile)|ctx(?:command|directcommand|directlua|\
+         latecommand|latelua|lua|report|sprint|write))\\b"
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -415,41 +459,42 @@ contexts:
     - include: Lua.main
 
   Lua.control:
-    #D I suppose you can do \Lua\ nested inside \Lua\ if you really want
-    #D \periods.
+    # I suppose you can do \Lua\ nested inside \Lua\ if you really want
+    # \periods.
     - include: Lua
     - include: control.word.without-alignment
     - include: control.symbol
 
-  #D Functions that \ConTeXt\ adds at the \Lua\ end. Well, there are a huge
-  #D amount, but we can at least add some common ones.
-  #D
-  #D The \Lua\ \type{sublime.syntax} file that comes out of the box with
-  #D Sublime Text uses the pattern
-  #D % How can we nicely escape this string in \TeX? This ugly approach does
-  #D % the job.
-  #D \startluacode
-  #D   context.start()
-  #D   context.tt()
-  #D   context.pushcatcodes("verbatim")
-  #D   context(
-  #D     [===[(?<![^.]\string\.|:)\b(...)\b]===] ..
-  #D     [===[(?=[(\string \letterleftbrace"''\[])]===]
-  #D   )
-  #D   context.popcatcodes()
-  #D   context.stop()
-  #D \stopluacode
-  #D to match library functions, where the dots \type{...} are a place||holder
-  #D to be filled in with your function names. This approach has some flaws,
-  #D for example it fails to handle the perfectly reasonable code:
-  #D
-  #D \starttyping
-  #D   local cos, sin = math.cos, math.sin
-  #D \stoptyping
-  #D
-  #D What to do. Well, let's just use a naive approach for the time being.
+  # Functions that \ConTeXt\ adds at the \Lua\ end. Well, there are a huge
+  # amount, but we can at least add some common ones.
+  #
+  # The \Lua\ \type{sublime.syntax} file that comes out of the box with
+  # Sublime Text uses the pattern
+  # % How can we nicely escape this string in \TeX? This ugly approach does
+  # % the job.
+  # \startluacode
+  #   context.start()
+  #   context.tt()
+  #   context.pushcatcodes("verbatim")
+  #   context(
+  #     [===[(?<![^.]\string\.|:)\b(...)\b]===] ..
+  #     [===[(?=[(\string \letterleftbrace"''\[])]===]
+  #   )
+  #   context.popcatcodes()
+  #   context.stop()
+  # \stopluacode
+  # to match library functions, where the dots \type{...} are a place||holder
+  # to be filled in with your function names. This approach has some flaws,
+  # for example it fails to handle the perfectly reasonable code:
+  #
+  # \starttyping
+  #   local cos, sin = math.cos, math.sin
+  # \stoptyping
+  #
+  # What to do. Well, let's just use a naive approach for the time being.
   Lua.functions:
-    - match: '\b(?:context\.delayed\.[[:alpha:]]+|context\.[[:alpha:]]+|context)\b'
+    - match:
+        '\b(?:context\.delayed\.[[:alpha:]]+|context\.[[:alpha:]]+|context)\b'
       scope: support.function.library.lua
 
   Lua.comment.embed-friendly:
@@ -466,7 +511,8 @@ contexts:
     - include: MetaFun.use
 
   MetaFun.use:
-    - match: '(\\)(?:MPposition|reusableMP|(?:re)?useMP|uniqueMP(?:page)?)graphic\b'
+    - match:
+        '(\\)(?:MPposition|reusableMP|(?:re)?useMP|uniqueMP(?:page)?)graphic\b'
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -497,7 +543,9 @@ contexts:
   MetaFun.block:
     - match: '(\\)startuniqueMPgraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.uniqueMPgraphic/,
@@ -506,7 +554,9 @@ contexts:
       ]
     - match: '(\\)startuniqueMPpagegraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.uniqueMPpagegraphic/,
@@ -515,7 +565,9 @@ contexts:
       ]
     - match: '(\\)startuseMPgraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.useMPgraphic/,
@@ -524,7 +576,9 @@ contexts:
       ]
     - match: '(\\)startusableMPgraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.usableMPgraphic/,
@@ -533,7 +587,9 @@ contexts:
       ]
     - match: '(\\)startreusableMPgraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.reusableMPgraphic/,
@@ -542,7 +598,9 @@ contexts:
       ]
     - match: '(\\)startstaticMPfigure\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.staticMPfigure/,
@@ -550,7 +608,9 @@ contexts:
       ]
     - match: '(\\)startMPcode\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPcode/,
@@ -558,7 +618,9 @@ contexts:
       ]
     - match: '(\\)startMPdefinitions\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPdefinitions/,
@@ -566,7 +628,9 @@ contexts:
       ]
     - match: '(\\)startMPinclusions\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPinclusions/,
@@ -575,7 +639,9 @@ contexts:
       ]
     - match: '(\\)startMPpage\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPpage/,
@@ -583,7 +649,9 @@ contexts:
       ]
     - match: '(\\)startMPextensions\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPextensions/,
@@ -591,7 +659,9 @@ contexts:
       ]
     - match: '(\\)startMPpositiongraphic\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         MetaFun.main.MPpositiongraphic/,
@@ -599,8 +669,8 @@ contexts:
         argument.group*/,
       ]
 
-  #D The repetitive code that follows is ugly, but the best approach I've found
-  #D so far.
+  # The repetitive code that follows is ugly, but the best approach I've found
+  # so far.
   MetaFun.main:
     - include: MetaFun.TeX
     - include: MetaFun.control
@@ -704,10 +774,10 @@ contexts:
         - include: main
 
 
-  #D It would be nice for commands like \type{\em} to stand out from the crowd.
-  #D On the other hand, what scope can we logically apply to them besides the
-  #D usual \type{support.function}? I suppose the scopes (such as
-  #D \type{markup.italic}) will have to suffice.
+  # It would be nice for commands like \type{\em} to stand out from the crowd.
+  # On the other hand, what scope can we logically apply to them besides the
+  # usual \type{support.function}? I suppose the scopes (such as
+  # \type{markup.italic}) will have to suffice.
   markup:
     - include: markup.font
     - include: markup.quote
@@ -734,7 +804,9 @@ contexts:
   markup.quote.block:
     - match: '(\\)startquote\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.quote/,
@@ -743,7 +815,9 @@ contexts:
       ]
     - match: '(\\)startblockquote\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.blockquote/,
@@ -752,7 +826,9 @@ contexts:
       ]
     - match: '(\\)startquotation\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.quotation/,
@@ -761,7 +837,9 @@ contexts:
       ]
     - match: '(\\)startaside\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.aside/,
@@ -770,7 +848,9 @@ contexts:
       ]
     - match: '(\\)startspeech\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         markup.main.speech/,
@@ -814,32 +894,32 @@ contexts:
           pop: true
         - include: main
 
-  #D We can have toggles:
-  #D
-  #D \startitemize
-  #D   \startitem
-  #D     at the start of a group: \type{... {\em ...} ...},
-  #D   \stopitem \startitem
-  #D     in the middle of a group: \type{... {... \em ...} ...},
-  #D   \stopitem \startitem
-  #D     at the start of an implicit group:
-  #D     \type{\bTABLE\bTR\bTC \em ... \eTC\eTR\eTABLE}.
-  #D   \stopitem  \startitem
-  #D     in the middle of an implicit group:
-  #D     \type{\bTABLE\bTR\bTC ... \em ... \eTC\eTR\eTABLE}.
-  #D   \stopitem
-  #D \stopitemize
-  #D
-  #D We also have the commands \type{\emph} and co.\ which are chameleons, in
-  #D that they can be used as toggles \type{{\emph ...}} or delimited as
-  #D \type{\emph{...}}. And again we can have explicit grouping \type{{...}} or
-  #D implicit grouping \type{\start<...> ... \stop<...>}.
-  #D
-  #D The approach we take to handle all this variety is to keep it as simple as
-  #D possible, by making reasonable assumptions about common usage. So for
-  #D example, whilst \type{lorem {ipsum \em dolor} sit} is possible at the
-  #D \TeX\ level, we assume that you place the toggle at the start of the
-  #D group \type{lorem ipsum {\em dolor} sit}.
+  # We can have toggles:
+  #
+  # \startitemize
+  #   \startitem
+  #     at the start of a group: \type{... {\em ...} ...},
+  #   \stopitem \startitem
+  #     in the middle of a group: \type{... {... \em ...} ...},
+  #   \stopitem \startitem
+  #     at the start of an implicit group:
+  #     \type{\bTABLE\bTR\bTC \em ... \eTC\eTR\eTABLE}.
+  #   \stopitem  \startitem
+  #     in the middle of an implicit group:
+  #     \type{\bTABLE\bTR\bTC ... \em ... \eTC\eTR\eTABLE}.
+  #   \stopitem
+  # \stopitemize
+  #
+  # We also have the commands \type{\emph} and co.\ which are chameleons, in
+  # that they can be used as toggles \type{{\emph ...}} or delimited as
+  # \type{\emph{...}}. And again we can have explicit grouping \type{{...}} or
+  # implicit grouping \type{\start<...> ... \stop<...>}.
+  #
+  # The approach we take to handle all this variety is to keep it as simple as
+  # possible, by making reasonable assumptions about common usage. So for
+  # example, whilst \type{lorem {ipsum \em dolor} sit} is possible at the
+  # \TeX\ level, we assume that you place the toggle at the start of the
+  # group \type{lorem ipsum {\em dolor} sit}.
   markup.font:
     - include: markup.command
     - include: markup.toggle
@@ -917,7 +997,9 @@ contexts:
   table:
     - match: '(\\)start(?:table|tabulate)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -950,12 +1032,16 @@ contexts:
       push: argument.list.reference*/
     - match: '(\\)startitem\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list.reference*/
     - match: '(\\)starthead\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.group*/,
@@ -983,8 +1069,8 @@ contexts:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.verbatim*/
-      #D Assume that these commands are following the convention of using
-      #D uppercase for verbatim.
+      # Assume that these commands are following the convention of using
+      # uppercase for verbatim.
     - match: '(\\)(?:inline|type)[[:upper:]]+\b'
       captures:
         0: meta.control-word.context support.function.context
@@ -994,13 +1080,15 @@ contexts:
         argument.list*/,
       ]
 
-  #D Should we embed the appropriate syntaxes inside \type{TEX}, \type{LUA},
-  #D etc.? Hmm. On a technical note, embedding syntaxes is tricky, so it's a
-  #D lot easier to just mark them up as verbatim and call it a day.
+  # Should we embed the appropriate syntaxes inside \type{TEX}, \type{LUA},
+  # etc.? Hmm. On a technical note, embedding syntaxes is tricky, so it's a
+  # lot easier to just mark them up as verbatim and call it a day.
   verbatim.block:
     - match: '(\\)starttyping\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main/,
@@ -1008,7 +1096,9 @@ contexts:
       ]
     - match: '(\\)startTEX\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.TEX/,
@@ -1016,7 +1106,9 @@ contexts:
       ]
     - match: '(\\)startLUA\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.LUA/,
@@ -1024,7 +1116,9 @@ contexts:
       ]
     - match: '(\\)startXML\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.XML/,
@@ -1032,7 +1126,9 @@ contexts:
       ]
     - match: '(\\)startPARSEDXML\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.PARSEDXML/,
@@ -1040,23 +1136,29 @@ contexts:
       ]
     - match: '(\\)startMP\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.MP/,
         argument.list*/,
       ]
-    #D Similar to the inline capture we can use this to handle a generic
-    #D verbatim environment. Again, assumes that you use uppercase for verbatim
-    #D and nothing else.
-    - match: '(\\)start([[:upper:]]+)\b'
-      captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
-        1: punctuation.definition.backslash.context
-      push: [
-        verbatim.main.wildcard/,
-        argument.list*/,
-      ]
+    # Similar to the inline capture we can use this to handle a generic verbatim
+    # environment. Again, assumes that you use uppercase for verbatim and
+    # nothing else. I think the inline version is more acceptable because of the
+    # prefix that implies verbatim, whereas this is perhaps overgeneral.
+    #
+    # - match: '(\\)start([[:upper:]]+)\b'
+    #   captures:
+    #     0:
+    #       meta.control-word.context meta.structure.start.context
+    #       keyword.control.context
+    #     1: punctuation.definition.backslash.context
+    #   push: [
+    #     verbatim.main.wildcard/,
+    #     argument.list*/,
+    #   ]
 
   verbatim.main/:
     - match: ''
@@ -1100,9 +1202,9 @@ contexts:
         - meta_content_scope: markup.raw.block.context
         - match: '(?=\\stopMP\b)'
           pop: true
-  #D We can't use the empty match trick here: if we do, then we forget what the
-  #D name of the environment is. So, we have to accept that we'll wrongly markup
-  #D the optional argument, if given, as \type{markup.raw.block.context}.
+  # We can't use the empty match trick here: if we do, then we forget what the
+  # name of the environment is. So, we have to accept that we'll wrongly markup
+  # the optional argument, if given, as \type{markup.raw.block.context}.
   verbatim.main.wildcard/:
     - meta_include_prototype: false
     - meta_content_scope: markup.raw.block.context
@@ -1111,7 +1213,9 @@ contexts:
   verbatim.buffer:
     - match: '(\\)startbuffer\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         verbatim.main.buffer/,
@@ -1122,14 +1226,17 @@ contexts:
       set: verbatim.main.buffer.aux/
   verbatim.main.buffer.aux/:
     - meta_include_prototype: false
-    - meta_content_scope: meta.environment.buffer.context markup.raw.block.context
+    - meta_content_scope:
+        meta.environment.buffer.context markup.raw.block.context
     - match: '(?=\\stopbuffer\b)'
       pop: true
 
   verbatim.hiding:
     - match: '(\\)start(hiding)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: verbatim.hiding.main/
   verbatim.hiding.main/:
@@ -1137,9 +1244,9 @@ contexts:
     - include: generic.pop-if-stop-match-two/
 
 
-  #D Should we bother trying to handle \type{\unprotect ... \protect}, or
-  #D \type{\startasciimode ... \stopasciimode}? It would be nice to handle
-  #D \quote{protect} decently.
+  # Should we bother trying to handle \type{\unprotect ... \protect}, or
+  # \type{\startasciimode ... \stopasciimode}? It would be nice to handle
+  # \quote{protect} decently.
   catcode:
     - include: catcode.protect
   # - include: catcode.asciimode
@@ -1291,17 +1398,21 @@ contexts:
         - include: generic.gobble-whitespace-or-pop/
 
   heading.block:
-    #D Okay, \quote{document} isn't technically a \quote{section}, but it can
-    #D be nice to give it some similar functionality, e.g.\ showing up in the
-    #D symbol list. There's not really any harm in adding it in here.
+    # Okay, \quote{document} isn't technically a \quote{section}, but it can
+    # be nice to give it some similar functionality, e.g.\ showing up in the
+    # symbol list. There's not really any harm in adding it in here.
     - match: '(\\)startdocument\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list.document*/
     - match: '(\\)startpart\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1309,7 +1420,9 @@ contexts:
       ]
     - match: '(\\)start(?:chapter|title)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1317,7 +1430,9 @@ contexts:
       ]
     - match: '(\\)start(?:section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1325,7 +1440,9 @@ contexts:
       ]
     - match: '(\\)startsub(?:section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1333,7 +1450,9 @@ contexts:
       ]
     - match: '(\\)startsubsub(?:section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1341,7 +1460,9 @@ contexts:
       ]
     - match: '(\\)startsubsubsub(?:section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1349,7 +1470,9 @@ contexts:
       ]
     - match: '(\\)startsubsubsubsub(?:section|subject)\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: [
         argument.list*/,
@@ -1366,12 +1489,16 @@ contexts:
     - match: '(\\)useluamodule\b'
       captures:
         0: meta.control-word.context keyword.control.import.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
       push: argument.list*/
     - match: '(\\)use(?:tex)?module\b'
       captures:
         0: meta.control-word.context keyword.control.import.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
       push: [
         argument.list*/,
         argument.list*/,
@@ -1415,7 +1542,9 @@ contexts:
 
 
   process:
-    - match: '(\\)(?:process(?:action|firstactioninset|allactionsinset)|rawprocessaction)\b'
+    - match:
+        "(\\\\)(?:process(?:action|firstactioninset|allactionsinset)|\
+         rawprocessaction)\\b"
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1434,17 +1563,21 @@ contexts:
     - include: definition.define.protect
     - include: definition.parameter
 
-  #D See the comments on \type{template}.
+  # See the comments on \type{template}.
   definition.parameter:
     - match: '(?:\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})[[:digit:]]'
       scope: variable.parameter.context
-    - match: '(?:\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})(?:[[:alpha:]]+|\{[^\{\}]+\})'
+    - match:
+        "(?:\\#|\\#{2}|\\#{4}|\\#{8}|\\#{16}|\\#{32}|\\#{64})\
+         (?:[[:alpha:]]+|\\{[^\\{\\}]+\\})"
       scope: variable.parameter.preprocessor.context
 
   definition.texdef:
     - match: '(\\)starttexdefinition\b'
       captures:
-        0: meta.control-word.context meta.structure.start.context storage.type.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          storage.type.context
         1: punctuation.definition.backslash.context
       push: [
         argument.name*/,
@@ -1456,7 +1589,9 @@ contexts:
       ]
     - match: '(\\)stoptexdefinition\b'
       captures:
-        0: meta.control-word.context meta.structure.stop.context storage.type.context
+        0:
+          meta.control-word.context meta.structure.stop.context
+          storage.type.context
         1: punctuation.definition.backslash.context
   definition.define:
     - match: '(\\)define(?:expandable)?\b'
@@ -1477,9 +1612,9 @@ contexts:
         argument.list.with-integers-only*/,
       ]
 
-  #D In addition to supporting some high||level constructs, we also try to
-  #D handle some lower||level bits and bobs. It's a bit ad hoc in places, but
-  #D the results look pretty decent.
+  # In addition to supporting some high||level constructs, we also try to
+  # handle some lower||level bits and bobs. It's a bit ad hoc in places, but
+  # the results look pretty decent.
   low-level:
     - include: low-level.tex
     - include: low-level.modifier
@@ -1520,12 +1655,16 @@ contexts:
         argument.control-sequence.protect.definition*/,
       ]
   low-level.modifier:
-    - match: '(\\)(?:long|outer|global|unexpanded|immediate|the|normalprotected)\b'
+    - match:
+        '(\\)(?:long|outer|global|unexpanded|immediate|the|normalprotected)\b'
       captures:
         0: meta.control-word.context storage.modifier.context
         1: punctuation.definition.backslash.context
   low-level.type:
-    - match: '(\\)new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|write|marks|insert|language|fam(?:ily)?|help)\b'
+    - match:
+        "(\\\\)new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|\
+         box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|\
+         write|marks|insert|language|fam(?:ily)?|help)\\b"
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
@@ -1536,7 +1675,10 @@ contexts:
         1: punctuation.definition.backslash.context
       push: argument.control-sequence.definition*/
   low-level.type.protect:
-    - match: '(\\)new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|write|marks|insert|language|fam(?:ily)?|help)\b'
+    - match:
+        "(\\\\)new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|\
+         box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|\
+         write|marks|insert|language|fam(?:ily)?|help)\\b"
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
@@ -1547,7 +1689,23 @@ contexts:
         1: punctuation.definition.backslash.context
       push: argument.control-sequence.protect.definition*/
   low-level.constant:
-    - match: '(\\)(?:zerocount|minus(?:one|two)|plus(?:one|two|three|four|five|six|seven|eight|nine|ten|sixteen|hundred|twohundred|cxxvii|cxxviii|cclv|cclvi|thousand|tenthousand|twentythousand)|zeroskip|(?:zero|one|halfa?|onebase|scaled|thousand)point|points|(?:up|down|right|left)rotationangle|empty|relax|maxdimen|maxcount|(?:zero|one)muskip|muquad|(?:escape|begingroup|endgroup|mathshift|alignment|endofline|parameter|superscript|subscript|ignore|space|letter|other|active|comment|invalid)catcode|(?:bottomlevel|simple|hbox|adjustedhbox|vbox|vtop|align|noalign|output|math|discretionary|insert|vcenter|mathchoice|semisimple|mathshift|mathleft|vadjust)groupcode|(?:char|cat|num|dim|odd|vmode|hmode|mmode|inner|void|hbox|vbox|x|eof|true|false|case|defined|csname|fontchar)ifcode|(?:batch|nonstop|scroll|errorstop)modecode|(?:char|hlist|vlist|rule|insert|mark|adjust|ligature|discretionary|whatsit|math|glue|kern|penalty|unset|maths)nodecode|emptytoks|voidbox|(?:big|med|small)skipamount)\b'
+    - match:
+        "(\\\\)(?:zerocount|minus(?:one|two)|plus(?:one|two|three|four|five|\
+         six|seven|eight|nine|ten|sixteen|hundred|twohundred|cxxvii|cxxviii|\
+         cclv|cclvi|thousand|tenthousand|twentythousand)|zeroskip|\
+         (?:zero|one|halfa?|onebase|scaled|thousand)point|points|(?:up|down|\
+         right|left)rotationangle|empty|relax|maxdimen|maxcount|\
+         (?:zero|one)muskip|muquad|(?:escape|begingroup|endgroup|mathshift|\
+         alignment|endofline|parameter|superscript|subscript|ignore|space|\
+         letter|other|active|comment|invalid)catcode|(?:bottomlevel|simple|\
+         hbox|adjustedhbox|vbox|vtop|align|noalign|output|math|discretionary|\
+         insert|vcenter|mathchoice|semisimple|mathshift|mathleft|vadjust)\
+         groupcode|(?:char|cat|num|dim|odd|vmode|hmode|mmode|inner|void|hbox|\
+         vbox|x|eof|true|false|case|defined|csname|fontchar)ifcode|\
+         (?:batch|nonstop|scroll|errorstop)modecode|(?:char|hlist|vlist|rule|\
+         insert|mark|adjust|ligature|discretionary|whatsit|math|glue|kern|\
+         penalty|unset|maths)nodecode|emptytoks|voidbox|(?:big|med|small)\
+         skipamount)\\b"
       captures:
         0: meta.control-word.context constant.language.context
         1: punctuation.definition.backslash.context
@@ -1563,7 +1721,7 @@ contexts:
     - include: control.active-character
 
   control.word:
-    #D Let's always make alignment arguments adjacent.
+    # Let's always make alignment arguments adjacent.
     - include: control.word.alignment.adjacent
     - include: control.word.without-alignment
   control.word.protect:
@@ -1584,44 +1742,63 @@ contexts:
     - include: control.word.conditional.adjacent
     - include: control.word.generic.math.adjacent
 
-  #D What scope should alignment things have? I suppose \type{keyword} is the
-  #D best choice.
+  # What scope should alignment things have? I suppose \type{keyword} is the
+  # best choice.
   control.word.alignment.adjacent:
-    - match: '(\\)(?:NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R|CT)\b'
+    - match:
+        '(\\)(?:NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R|CT)\b'
       captures:
         0: meta.control-word.context keyword.operator.alignment.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
       push: argument.list.maybe-reference.adjacent*/
 
   control.word.conditional:
-    - match: '(\\)(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|[[:alpha:]]*doif(?:else)?[[:alpha:]]*)\b'
+    - match:
+        "(\\\\)(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
+         [[:alpha:]]*doif(?:else)?[[:alpha:]]*)\\b"
       captures:
         0: meta.control-word.context keyword.control.conditional.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
       push: argument.lists-or-groups*/
     - include: control.word.conditional.common
   control.word.protect.conditional:
-    - match: '(\\)(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|[[:alpha:]]*doif(?:else)?[[:alpha:]]*)\b'
+    - match:
+        "(\\\\)(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
+         [[:alpha:]]*doif(?:else)?[[:alpha:]]*)\\b"
       captures:
         0: meta.control-word.context keyword.control.conditional.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
       push: argument.lists-or-groups.protect*/
     - include: control.word.conditional.common
   control.word.conditional.adjacent:
-    - match: '(\\)(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|[[:alpha:]]*doif(?:else)?[[:alpha:]]*)\b'
+    - match:
+        "(\\\\)(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
+         [[:alpha:]]*doif(?:else)?[[:alpha:]]*)\\b"
       captures:
         0: meta.control-word.context keyword.control.conditional.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
       push: argument.lists-or-groups.adjacent*/
     - include: control.word.conditional.common
   control.word.conditional.common:
-    - match: '(\\)(?:if[[:alpha:]]*|[[:alpha:]]*(?:true|false)|loop|repeat|then|or|else|fi)\b'
+    - match:
+        "(\\\\)(?:if[[:alpha:]]*|[[:alpha:]]*(?:true|false)|loop|repeat|then|\
+         or|else|fi)\\b"
       captures:
         0: meta.control-word.context keyword.control.conditional.context
-        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
 
-  #D Experiment, I don't completely understand what naming conventions are used
-  #D in the \ConTeXt\ core. Perhaps these are reasonable definitions?
+  # Experiment, I don't completely understand what naming conventions are used
+  # in the \ConTeXt\ core. Perhaps these are reasonable definitions?
   control.word.protect.special:
     - match: '(\\)c![[:alpha:]_@?!]*'
       captures:
@@ -1633,17 +1810,21 @@ contexts:
         1: punctuation.definition.backslash.context
     - match: '(\\)s![[:alpha:]_@?!]*'
       captures:
-        0: meta.control-word.context string.quoted.other.control-word.context  # constant.language.context
+        0:
+          meta.control-word.context string.quoted.other.control-word.context
+        # constant.language.context
         1: punctuation.definition.backslash.context
 
-  #D The pattern \type{(\\)define[[:alpha:]]*} works remarkably well in almost
-  #D all cases. However it is not foolproof. For the moment, we use the below
-  #D work around for some known edge cases. If the number of edge cases grows
-  #D significantly, then we will need to reconsider this approach.
+  # The pattern \type{(\\)define[[:alpha:]]*} works remarkably well in almost
+  # all cases. However it is not foolproof. For the moment, we use the below
+  # work around for some known edge cases. If the number of edge cases grows
+  # significantly, then we will need to reconsider this approach.
   control.word.generic:
     - match: '(\\)start[[:alpha:]]*'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups*/
     - match: '(\\)define(?!dfont\b)[[:alpha:]]*'
@@ -1663,7 +1844,9 @@ contexts:
   control.word.protect.generic:
     - match: '(\\)start[[:alpha:]_@?!]*'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.protect*/
     - match: '(\\)define(?!dfont)[[:alpha:]_@?!]*'
@@ -1683,7 +1866,9 @@ contexts:
   control.word.generic.adjacent:
     - match: '(\\)start[[:alpha:]]*'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.adjacent*/
     - match: '(\\)define(?!dfont)[[:alpha:]]*'
@@ -1700,25 +1885,27 @@ contexts:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.adjacent*/
-  #D Hmm, how should we handle arguments? The context
-  #D \type{argument.lists-or-groups.math.adjacent*/} goes for a compromise:
-  #D groups are in math mode, while lists are in text mode. Alternatively, in
-  #D lists we can have assignments as in text||mode but everything else in math
-  #D mode. I think this is the better option overall.
+  # Hmm, how should we handle arguments? The context
+  # \type{argument.lists-or-groups.math.adjacent*/} goes for a compromise:
+  # groups are in math mode, while lists are in text mode. Alternatively, in
+  # lists we can have assignments as in text||mode but everything else in math
+  # mode. I think this is the better option overall.
   control.word.generic.math.adjacent:
     - match: '(\\)start[[:alpha:]]*'
       captures:
-        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.math.adjacent*/
-  # - match: '(\\)define(?!dfont)[[:alpha:]]*'
-  #   captures:
-  #     0: meta.control-word.context support.function.context
-  #     1: punctuation.definition.backslash.context
-  #   push: [
-  #     argument.lists-or-groups.math.adjacent*/,
-  #     argument.list.definition.adjacent*/,
-  #   ]
+    # - match: '(\\)define(?!dfont)[[:alpha:]]*'
+    #   captures:
+    #     0: meta.control-word.context support.function.context
+    #     1: punctuation.definition.backslash.context
+    #   push: [
+    #     argument.lists-or-groups.math.adjacent*/,
+    #     argument.list.definition.adjacent*/,
+    #   ]
     - include: control.word.generic.common
     - match: '(\\)[[:alpha:]]+'
       captures:
@@ -1728,12 +1915,16 @@ contexts:
   control.word.generic.common:
     - match: '(\\)stop[[:alpha:]]*'
       captures:
-        0: meta.control-word.context meta.structure.stop.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.stop.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
   control.word.generic.protect.common:
     - match: '(\\)stop[[:alpha:]_@?!]*'
       captures:
-        0: meta.control-word.context meta.structure.stop.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.stop.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
 
   control.symbol:
@@ -1752,29 +1943,30 @@ contexts:
     - include: scoping.group.protect
   scoping.math:
     - include: scoping.group.math
-      #D Could add
-      #D
-      #D \starttyping
-      #D   - include: generic.pop-if-group-end/
-      #D \stoptyping
-      #D
-      #D in here. The idea is that we can have all the usual math support, and
-      #D {\em also} cope with situations like
-      #D
-      #D \starttyping
-      #D \unexpanded\def\startfoo
-      #D   {\startimath
-      #D    \dosomestuff}
-      #D
-      #D Some text not in math mode \periods
-      #D
-      #D \unexpanded\def\stopfoo
-      #D   {\dosomemorestuff
-      #D    \stopimath}
-      #D \stoptyping
-      #D
-      #D We could add the same capability to \Lua\ and to \MetaPost\ and so on.
-      #D Need to mull this over some more.
+    - include: generic.pop-if-group-end/
+    # Could add
+    #
+    # \starttyping
+    #   - include: generic.pop-if-group-end/
+    # \stoptyping
+    #
+    # in here. The idea is that we can have all the usual math support, and
+    # {\em also} cope with situations like
+    #
+    # \starttyping
+    # \unexpanded\def\startfoo
+    #   {\startimath
+    #    \dosomestuff}
+    #
+    # Some text not in math mode \periods
+    #
+    # \unexpanded\def\stopfoo
+    #   {\dosomemorestuff
+    #    \stopimath}
+    # \stoptyping
+    #
+    # We could add the same capability to \Lua\ and to \MetaPost\ and so on.
+    # Need to mull this over some more.
 
   scoping.Lua:
     - include: scoping.group.Lua
@@ -1865,14 +2057,18 @@ contexts:
         3: punctuation.definition.backslash.context
       push: scoping.group.slanted.main/
   scoping.group.bold-italic:
-    - match: '(\{)\s*((\\)(?:(?:small)?(?:bolditalic|italicbold)|bi(?:xx|[xabcd])?))\b'
+    - match:
+        "(\\{)\\s*((\\\\)(?:(?:small)?(?:bolditalic|italicbold)|\
+         bi(?:xx|[xabcd])?))\\b"
       captures:
         1: punctuation.section.braces.begin.context
         2: meta.control-word.context support.function.context
         3: punctuation.definition.backslash.context
       push: scoping.group.bold-italic.main/
   scoping.group.bold-slanted:
-    - match: '(\{)\s*((\\)(?:(?:small)?(?:boldslanted|slantedbold)|bs(?:xx|[xabcd])?))\b'
+    - match:
+        "(\\{)\\s*((\\\\)(?:(?:small)?(?:boldslanted|slantedbold)|\
+         bs(?:xx|[xabcd])?))\\b"
       captures:
         1: punctuation.section.braces.begin.context
         2: meta.control-word.context support.function.context
@@ -1918,15 +2114,18 @@ contexts:
     - include: argument.group.main/
   scoping.group.bold-italic.main/:
     - meta_scope: meta.braces.context
-    - meta_content_scope: markup.italic.italic.context markup.bold.boldface.context
+    - meta_content_scope:
+        markup.italic.italic.context markup.bold.boldface.context
     - include: argument.group.main/
   scoping.group.bold-slanted.main/:
     - meta_scope: meta.braces.context
-    - meta_content_scope: markup.italic.slanted.context markup.bold.boldface.context
+    - meta_content_scope:
+        markup.italic.slanted.context markup.bold.boldface.context
     - include: argument.group.main/
   scoping.group.sans-bold.main/:
     - meta_scope: meta.braces.context
-    - meta_content_scope: markup.bold.boldface.context  # markup.sans-serif.context ?
+    - meta_content_scope: markup.bold.boldface.context
+    # markup.sans-serif.context ?
     - include: argument.group.main/
   scoping.group.typewriter.main/:
     - meta_scope: meta.braces.context
@@ -2024,7 +2223,7 @@ contexts:
     - include: generic.integer
     - include: argument.group.main/
 
-  #D Special case, should do the job well enough.
+  # Special case, should do the job well enough.
   argument.group.with-integers-only/:
     - match: '(\{)\s*([[:digit:]]+)\s*(\})'
       captures:
@@ -2077,7 +2276,8 @@ contexts:
       set: argument.group.Lua.main.aux/
   argument.group.Lua.main.aux/:
     - meta_scope: meta.braces.context meta.environment.argument.context
-    - meta_content_scope: source.lua.embedded.context meta.environment.lua.minor.context
+    - meta_content_scope:
+        source.lua.embedded.context meta.environment.lua.minor.context
     - include: generic.pop-at-group-end/
     - include: scoping.Lua
     - include: Lua.main
@@ -2113,7 +2313,9 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context meta.environment.argument.context
-        - meta_content_scope: meta.title.context entity.name.section.part.context markup.heading.context
+        - meta_content_scope:
+            meta.title.context entity.name.section.part.context
+            markup.heading.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
   argument.group.chapter*/:
@@ -2121,7 +2323,9 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context meta.environment.argument.context
-        - meta_content_scope: meta.title.context entity.name.section.chapter.context markup.heading.context
+        - meta_content_scope:
+            meta.title.context entity.name.section.chapter.context
+            markup.heading.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
   argument.group.section*/:
@@ -2129,7 +2333,9 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context meta.environment.argument.context
-        - meta_content_scope: meta.title.context entity.name.section.section.context markup.heading.context
+        - meta_content_scope:
+            meta.title.context entity.name.section.section.context
+            markup.heading.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
   argument.group.subsection*/:
@@ -2137,7 +2343,9 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context meta.environment.argument.context
-        - meta_content_scope: meta.title.context entity.name.section.subsection.context markup.heading.context
+        - meta_content_scope:
+            meta.title.context entity.name.section.subsection.context
+            markup.heading.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
   argument.group.sub2section*/:
@@ -2145,7 +2353,9 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context meta.environment.argument.context
-        - meta_content_scope: meta.title.context entity.name.section.sub2section.context markup.heading.context
+        - meta_content_scope:
+            meta.title.context entity.name.section.sub2section.context
+            markup.heading.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
   argument.group.sub3section*/:
@@ -2153,7 +2363,9 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context meta.environment.argument.context
-        - meta_content_scope: meta.title.context entity.name.section.sub3section.context markup.heading.context
+        - meta_content_scope:
+            meta.title.context entity.name.section.sub3section.context
+            markup.heading.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
   argument.group.sub4section*/:
@@ -2161,7 +2373,9 @@ contexts:
       scope: punctuation.section.braces.begin.context
       set:
         - meta_scope: meta.braces.context meta.environment.argument.context
-        - meta_content_scope: meta.title.context entity.name.section.sub4section.context markup.heading.context
+        - meta_content_scope:
+            meta.title.context entity.name.section.sub4section.context
+            markup.heading.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
 
@@ -2229,11 +2443,13 @@ contexts:
     - include: argument.group.main/
   argument.group.bold-italic.main/:
     - meta_scope: meta.braces.context meta.environment.argument.context
-    - meta_content_scope: markup.italic.italic.context markup.bold.boldface.context
+    - meta_content_scope:
+        markup.italic.italic.context markup.bold.boldface.context
     - include: argument.group.main/
   argument.group.bold-slanted.main/:
     - meta_scope: meta.braces.context meta.environment.argument.context
-    - meta_content_scope: markup.italic.slanted.context markup.bold.boldface.context
+    - meta_content_scope:
+        markup.italic.slanted.context markup.bold.boldface.context
     - include: argument.group.main/
   argument.group.sans-bold.main/:
     - meta_scope: meta.braces.context meta.environment.argument.context
@@ -2316,7 +2532,7 @@ contexts:
     - meta_scope: meta.brackets.context meta.environment.argument.context
     - include: generic.pop-at-list-end/
     - include: generic.list.processors
-  # - include: generic.dimension
+    # - include: generic.dimension
     - include: main
 
   argument.list.math:
@@ -2409,7 +2625,7 @@ contexts:
     - include: generic.pop-at-list-end/
     - include: main
 
-  #D Special case, should do the job well enough.
+  # Special case, should do the job well enough.
   argument.list.with-integers-only/:
     - match: '(\[)\s*([[:digit:]]+)\s*(\])'
       captures:
@@ -2432,7 +2648,9 @@ contexts:
             1: variable.parameter.context
             2: keyword.operator.assignment.context
           push:
-            - meta_content_scope: meta.value.context entity.name.section.document.context markup.heading.context
+            - meta_content_scope:
+                meta.value.context entity.name.section.
+                document.context markup.heading.context
             - include: argument.list.heading.common/
         - include: argument.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -2447,7 +2665,9 @@ contexts:
             1: variable.parameter.context
             2: keyword.operator.assignment.context
           push:
-            - meta_content_scope: meta.value.context meta.title.context entity.name.section.part.context markup.heading.context
+            - meta_content_scope:
+                meta.value.context meta.title.context
+                entity.name.section.part.context markup.heading.context
             - include: argument.list.heading.common/
         - include: argument.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -2461,7 +2681,9 @@ contexts:
             1: variable.parameter.context
             2: keyword.operator.assignment.context
           push:
-            - meta_content_scope: meta.value.context meta.title.context entity.name.section.chapter.context markup.heading.context
+            - meta_content_scope:
+                meta.value.context meta.title.context
+                entity.name.section.chapter.context markup.heading.context
             - include: argument.list.heading.common/
         - include: argument.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -2475,7 +2697,9 @@ contexts:
             1: variable.parameter.context
             2: keyword.operator.assignment.context
           push:
-            - meta_content_scope: meta.value.context meta.title.context entity.name.section.section.context markup.heading.context
+            - meta_content_scope:
+                meta.value.context meta.title.context
+                entity.name.section.section.context markup.heading.context
             - include: argument.list.heading.common/
         - include: argument.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -2489,7 +2713,9 @@ contexts:
             1: variable.parameter.context
             2: keyword.operator.assignment.context
           push:
-            - meta_content_scope: meta.value.context meta.title.context entity.name.section.subsection.context markup.heading.context
+            - meta_content_scope:
+                meta.value.context meta.title.context
+                entity.name.section.subsection.context markup.heading.context
             - include: argument.list.heading.common/
         - include: argument.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -2503,7 +2729,9 @@ contexts:
             1: variable.parameter.context
             2: keyword.operator.assignment.context
           push:
-            - meta_content_scope: meta.value.context meta.title.context entity.name.section.sub2section.context markup.heading.context
+            - meta_content_scope:
+                meta.value.context meta.title.context
+                entity.name.section.sub2section.context markup.heading.context
             - include: argument.list.heading.common/
         - include: argument.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -2517,7 +2745,9 @@ contexts:
             1: variable.parameter.context
             2: keyword.operator.assignment.context
           push:
-            - meta_content_scope: meta.value.context meta.title.context entity.name.section.sub3section.context markup.heading.context
+            - meta_content_scope:
+                meta.value.context meta.title.context
+                entity.name.section.sub3section.context markup.heading.context
             - include: argument.list.heading.common/
         - include: argument.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -2531,7 +2761,9 @@ contexts:
             1: variable.parameter.context
             2: keyword.operator.assignment.context
           push:
-            - meta_content_scope: meta.value.context meta.title.context entity.name.section.sub4section.context markup.heading.context
+            - meta_content_scope:
+                meta.value.context meta.title.context
+                entity.name.section.sub4section.context markup.heading.context
             - include: argument.list.heading.common/
         - include: argument.list.main/
     - include: generic.pop-if-no-nearby-list/
@@ -2594,7 +2826,7 @@ contexts:
     - match: ''
       set: argument.list.main/
 
-  #D We (ab)use some of the usual scopes.
+  # We (ab)use some of the usual scopes.
   argument.list.template.keys:
     - match: '\|'
       scope: punctuation.separator.column.context
@@ -2603,7 +2835,7 @@ contexts:
     - match: '[wp]'
       scope: variable.parameter.table.context
     # push: argument.parens.with-dimensions*/
-    #D The space is important, apparently.
+    # The space is important, apparently.
     - match: '([nNqQ])\s*([[:digit:]]+)\.([[:digit:]]+) '
       captures:
         1: variable.parameter.table.context
@@ -2644,7 +2876,7 @@ contexts:
 
   argument.list-or-group.math:
     - include: argument.list.math
-  # - include: argument.list
+    # - include: argument.list
     - include: argument.group.math
   argument.lists-or-groups.math*/:
     - include: argument.list-or-group.math
@@ -2703,10 +2935,10 @@ contexts:
     - include: argument.delim.verbatim/
     - include: generic.gobble-whitespace-or-pop/
 
-  #D We shall assume that if we see something like \type{\def\csname ...} that
-  #D some \TeX\ trickery is taking place with e.g.\ \type{\expandafter}.
-  #D Therefore, we do {\em not} count this as a (re)definition of
-  #D \type{\csname}. Similarly for some other common \TeX\ primitives.
+  # We shall assume that if we see something like \type{\def\csname ...} that
+  # some \TeX\ trickery is taking place with e.g.\ \type{\expandafter}.
+  # Therefore, we do {\em not} count this as a (re)definition of
+  # \type{\csname}. Similarly for some other common \TeX\ primitives.
   argument.control-word.definition/:
     - match: '(?=\\(?:csname|expandafter|fi|recurselevel)\b)'
       pop: true
@@ -2775,7 +3007,9 @@ contexts:
       scope: storage.modifier.expanded.context
       pop: true
   argument.do-n-tuple/:
-    - match: '\b(?:single|double|triple|quadruple|quintuple|sixtuple)(?:argument|empty)\b'
+    - match:
+        "\\b(?:single|double|triple|quadruple|quintuple|sixtuple)
+         (?:argument|empty)\\b"
       scope: storage.modifier.n-tuple.context
       pop: true
   argument.name/:
@@ -2912,12 +3146,16 @@ contexts:
       scope: constant.numeric.context
       pop: true
   generic.dimension:
-    - match: '([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\b'
+    - match:
+        "([[:digit:]]+|[[:digit:]]*\\.[[:digit:]]+)\
+         (pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\\b"
       captures:
         1: constant.numeric.context
         2: keyword.other.unit.context
   generic.dimension/:
-    - match: '([[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)(pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\b'
+    - match:
+        "([[:digit:]]+|[[:digit:]]*\\.[[:digit:]]+)\
+         (pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\\b"
       captures:
         1: constant.numeric.context
         2: keyword.other.unit.context
@@ -2929,17 +3167,20 @@ contexts:
         1: variable.parameter.context
         2: keyword.operator.assignment.context
       push:
-        - meta_content_scope: meta.value.context entity.name.label.reference.context
+        - meta_content_scope:
+            meta.value.context entity.name.label.reference.context
         - include: generic.list.pop-at-end-of-assignment/
         - include: main
-  # - match: '\b(title)\s*(=)'
-  #   captures:
-  #     1: variable.parameter.context
-  #     2: keyword.operator.assignment.context
-  #   push:
-  #     - meta_content_scope: meta.value.context entity.name.section.other.context markup.heading.context meta.title.context
-  #     - include: generic.list.pop-at-end-of-assignment/
-  #     - include: main
+    # - match: '\b(title)\s*(=)'
+    #   captures:
+    #     1: variable.parameter.context
+    #     2: keyword.operator.assignment.context
+    #   push:
+    #     - meta_content_scope:
+    #         meta.value.context entity.name.section.other.context
+    #         markup.heading.context meta.title.context
+    #     - include: generic.list.pop-at-end-of-assignment/
+    #     - include: main
     - match: '({{key}}*)\s*(=)'
       captures:
         1: variable.parameter.context
@@ -2964,7 +3205,6 @@ contexts:
 
   generic.list.processors:
     - match: '({{key}}*)\s*(=>)'
-      #D Hmm, I suppose calling this an \quote{assignment} is reasonable.
       captures:
         1: variable.parameter.context
         2: keyword.operator.assignment.context

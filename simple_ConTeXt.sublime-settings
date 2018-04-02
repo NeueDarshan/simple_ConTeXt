@@ -1,57 +1,204 @@
 {
-	"PDF_viewers":
+	"program_locations":
 	{
-		"evince": "evince",
-		"sumatra": "sumatraPDF",
-		"skim": "skim",
+		"PDF_viewers":
+		{
+			/* If the PDF viewer is on your \type{PATH} environment variable
+			 * then you can just give its name; otherwise, you must specify its
+			 * full path. Some examples:
+			 */
+			"evince": "evince",
+			"sumatra": "sumatraPDF",
+			"skim": "skim",
+		},
+		"ConTeXt_paths":
+		{
+			/* The keys here are just names for a \ConTeXt{} installation, and
+			 * the value should be the path to the \type{context} binaries. For
+			 * example: if you have the \type{context} program located at
+			 * \type
+			 *   {/home/user-name/.local/context/tex/texmf-linux-64/bin/context}
+			 * (so the \ConTeXt{} installation tree's root is at
+			 * \type{/home/user-name/.local/context/}), then you should write
+			 * something like
+			 *
+			 * \starttyping
+			 *   {
+			 *     "program_locations": {
+			 *       "ConTeXt_paths": {
+			 *         "example": "/home/user-name/.local/context/tex/texmf-linux-64/bin"
+			 *       }
+			 *     }
+			 *   }
+			 * \stoptyping
+			 */
+			"example": "/example/path/to/context/program",
+		},
 	},
-	"paths":
-	{
-		"example": "/path-to-context-program",
-	},
+	/* Each entry in this dictionary has a name to refer to it by, and the
+	 * value should be a dictionary to merge and overwrite the current settings
+	 * with. For example, we could have the following.
+	 *
+	 * \starttyping
+	 *   "setting_groups": {
+	 *     "turn_references_on": {
+	 *       "references": {
+	 *         "on": true,
+	 *       },
+	 *     },
+	 *     "turn_references_off": {
+	 *       "references": {
+	 *         "on": false,
+	 *       },
+	 *     },
+	 *   }
+	 * \stoptyping
+	 *
+	 * Then, suppose we ran the command
+	 * \type{simple_ConTeXt: View/change the settings} in the command palette
+	 * and selected the option called \type{setting_groups}. We would see
+	 * options called \type{turn_references_on} and \type{turn_references_off},
+	 * and selecting either one of them would change the current settings to
+	 * turn references on|/|off respectively.
+	 */
 	"setting_groups":
 	{
 	},
-	"settings":
+	"current_settings":
 	{
 		"PDF":
 		{
+			/* The value for this \type{viewer} key should be one of the names
+			 * in the \type{program_locations ▶ PDF_viewers} dictionary.
+			 */
 			"viewer": "evince",
+			/* Technical note: the variable
+			 * \type{$simple_context_open_pdf_after_build} in the \ConTeXt{}
+			 * builder gets this value assigned to it.
+			 */
 			"open_after_build": true,
 		},
 		"builder":
 		{
-			"program":
+			/* These options will be passed along to the \type{context}
+			 * process. You can simply pass a string, like so.
+			 *
+			 * \starttyping
+			 *   "options_passed_to_ConTeXt": "--randomseed=42 --jit"
+			 * \stoptyping
+			 *
+			 * Alternatively, you can specify the options in a more structured
+			 * manner, and they will be translated into command line options
+			 * and then passed along to \type{context} in the same manner. The
+			 * previous example can be written in this style as follows.
+			 *
+			 * \starttyping
+			 *   "options_passed_to_ConTeXt": {
+			 *     "randomseed": 42,
+			 *     "jit": true,
+			 *   }
+			 * \stoptyping
+			 *
+			 * TODO: talk more about the structured approach, and improve the
+			 * actual implementation.
+			 */
+			"options_passed_to_ConTeXt":
 			{
-				"options":
+				"autogenerate": true,
+				"jit": false,
+			},
+			"behaviour":
+			{
+				/* The options are \type{true}, \type{"when_there_are_errors"}
+				 * and \type{false}. If \type{"show_panel_on_build"} is set to
+				 * \type{false} then this setting is ignored and the build
+				 * panel is never shown.
+				 */
+				"show_output_panel": true,
+				// TODO: implement these options.
+				"auto_build":
 				{
-					"autogenerate": true,
-					"jit": true,
-					"mode":
+					// Whether to rebuild on saving.
+					"after_save": false,
+					/* Whether to rebuild forever with a time delay given by
+					 * the \type{time_delay} option.
+					 */
+					"after_time_delay": false,
+					// Time delay in seconds.
+					"time_delay": 60,
+					/* Extra options to pass to the \type{context} process when
+					 * doing an auto||build. For example, to pass the option
+					 * \type{--mode=draft} you could do the following.
+					 *
+					 * \starttyping
+					 *   "extra_options_passed_to_ConTeXt": {
+					 *     "mode": {
+					 *       "draft": true,
+					 *     },
+					 *   }
+					 * \stoptyping
+					 */
+					"extra_options_passed_to_ConTeXt":
 					{
-						"draft": false,
-						"final": false,
 					},
-					"paranoid": false,
-					"synctex": 1,
 				},
+				/* Whether to change window focus back to Sublime Text after
+				 * opening the PDF file at the end of a successful build.
+				 * TODO: implement this.
+				 */
+				"return_focus_to_ST_after_open_PDF": true,
 			},
 		},
+		/* The value for this \type{path} key should be one of the names in the
+		 * \type{program_locations ▶ ConTeXt_paths} dictionary.
+		 */
 		"path": "example",
 		"pop_ups":
 		{
+			/* Options are either a numeric value (I find 65 to be a reasonable
+			 * default) or \type{null}|/|\type{false} which turns
+			 * line||breaking off entirely.
+			 */
 			"line_break": 65,
 			"methods":
 			{
+				/* Whether to show pop||ups when you hover over a command name
+				 * \tex{foo}.
+				 */
 				"on_hover": true,
-				"auto_complete": true,
+				/* Whether to show pop||ups when you type in a command name
+				 * \tex{foo}.
+				 */
+				"on_modified": true,
 			},
+			/* Whether to show an option to copy the contents of a pop||up into
+			 * the copy|/|paste clipboard. Occasionally useful.
+			 */
 			"show_copy_pop_up": false,
-			"show_source_files": true,
+			/* Whether to show the source file in a pop||up for a command
+			 * \tex{foo}. If so, the source file is a clickable link which will
+			 * take you to that file, and moreover to the exact definition site
+			 * (assuming we can find it).
+			 */
+			"show_source_files": false,
 		},
 		"references":
 		{
+			/* Whether to bring up the list of references upon typing in the
+			 * start of a reference command. For example, typing the sequence
+			 * \type{\in[} will trigger this.
+			 */
 			"on": true,
+			/* This is a less||than||elegant solution to a tricky problem. We
+			 * provide the reference functionality for the usual built||ins
+			 * (\tex{in}, \tex{at}, \tex{about}, \tex{from}, and \tex{over})
+			 * that do referencing. But then what if you use
+			 * \tex{definereferenceformat} to define, say, \tex{eqref} as a
+			 * \quote{referencer}: how can we distinguish between referencers
+			 * and normal commands? Well, any command whose name is matched by
+			 * this regex we will assume is a referencer. (Remember you need to
+			 * escape this string as we're in a JSON file.)
+			 */
 			"command_regex": "[a-zA-Z]*ref",
 		},
 	},

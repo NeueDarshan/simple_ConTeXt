@@ -33,7 +33,7 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
             0,
             scopes.CONTROL_SEQ,
             end=region.begin(),
-            skip=scopes.SKIP_ARGS_AND_SPACES
+            skip=scopes.SKIP_ARGS_AND_SPACES,
         )
         if ctrl:
             last_char = self.view.substr(max(0, region.end() - 1))
@@ -49,7 +49,7 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
                         "selector": "reference",
                         "on_choose": "insert",
                         "selected_index": "closest",
-                    }
+                    },
                 )
 
     def is_reference_start(self, text):

@@ -5,13 +5,13 @@
 		{
 			"cmd": ["context", "$simple_context_insert_options", "$file"],
 			"env": {"PATH": "$simple_context_prefixed_path"},
-			"output": "context"
+			"output": "context",
 		},
 		{
 			"cmd": ["$simple_context_pdf_viewer", "$file_base_name.pdf"],
 			"output": "pdf",
-			"run_when": "$simple_context_open_pdf_after_build"
-		}
+			"run_when": "$simple_context_open_pdf_after_build",
+		},
 	],
-	"cancel": {"kill": true}
+	"cancel": {"kill": true},
 }

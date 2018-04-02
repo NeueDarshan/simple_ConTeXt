@@ -20,7 +20,7 @@
 								"command": "open_file",
 								"args":
 								{
-									"file": "${packages}/simple_ConTeXt/README.md"
+									"file": "${packages}/simple_ConTeXt/README.md",
 								},
 							},
 							{"caption": "-"},
@@ -29,14 +29,14 @@
 								"args":
 								{
 									"base_file": "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings",
-									"default": "{\n\t$0\n}\n"
+									"default": "{\n\t$0\n}\n",
 								},
-								"caption": "Settings"
-							}
-						]
-					}
-				]
-			}
-		]
-	}
+								"caption": "Settings",
+							},
+						],
+					},
+				],
+			},
+		],
+	},
 ]

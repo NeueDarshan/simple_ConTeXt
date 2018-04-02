@@ -2,6 +2,8 @@
 
 ## Contents
 
+<!-- MarkdownTOC autolink="true" style="unordered" -->
+
 - [Introduction](#introduction)
 - [Installation/Setup](#installationsetup)
   - [Builder](#builder)
@@ -12,7 +14,10 @@
   - [Bracket Highlighter](#bracket-highlighter)
 - [Builders](#builders)
 - [Misc](#misc)
+- [Features To Work On](#features-to-work-on)
 - [Future Features](#future-features)
+
+<!-- /MarkdownTOC -->
 
 ## Introduction
 
@@ -35,9 +40,9 @@ Currently the features are:
 - Builder(s).
 - Command auto-completions.
 - Command pop-ups.
-- Handling of references. (Not citations at the moment.)
+- Handling of references. (Not citations.)
 - Snippets.
-- Other bits and bobs.
+- Other miscellany.
 
 ## Installation/Setup
 
@@ -47,18 +52,22 @@ Afterwards, there are some optional things to set up.
 ### Builder
 
 Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings`
-in the command palette or `Preferences/Package Settings/simple_ConTeXt/Settings`
-in the menu bar. Under the `paths` key, put in a key-value entry for the ConTeXt
-installation on your machine: the key is a name for that installation, and the
-value should be the path to the context binaries. For example, if you have a
-ConTeXt distribution installed at `/home/user-name/.local/context/` and the
-actual context binary is located at `/home/user-name/.local/context/tex/texmf-
-linux-64/bin/context`, then you should have
+in the command palette or
+`Preferences ▶ Package Settings ▶ simple_ConTeXt ▶ Settings` in the menu bar.
+Under the `paths` key, put in a key-value entry for the ConTeXt installation on
+your machine: the key is just a name for that installation, and the value should
+be the path to the `context` binaries. For example: if you have the `context`
+program located at
+`/home/user-name/.local/context/tex/texmf-linux-64/bin/context` (so the ConTeXt
+installation tree's root is at `/home/user-name/.local/context/`), then you
+should write something like
 
-```JSON
+```json
 {
-  "paths": {
-    "main": "/home/user-name/.local/context/tex/texmf-linux-64/bin"
+  "program_locations": {
+    "ConTeXt_paths": {
+      "example": "/home/user-name/.local/context/tex/texmf-linux-64/bin"
+    }
   }
 }
 ```
@@ -69,10 +78,13 @@ each one, and they can happily coexist in simple ConTeXt.
 
 ### PDFs
 
-For opening PDFs after building a ConTeXt file, and opening the manuals, the
-`PDF_viewers` entry is consulted. Similarly to the previous, the keys can be any
-string, but each value should be the name of a PDF viewer program. (In the case
-of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your
+For opening PDFs after building a ConTeXt file, and for opening the manuals, the
+`current_settings ▶ PDF ▶ viewer` entry is consulted. It should be the name of
+one of the keys in `program_locations ▶ PDF_viewers`.
+
+Similarly to the previous, the keys in `program_locations ▶ PDF_viewers` can be
+any string, but each value should be the name of a PDF viewer program. (In the
+case of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your
 environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
 
 ### Auto-Completion
@@ -81,7 +93,7 @@ Add the following entry to your general Sublime Text (ST) settings, in order to
 get automatic completions for ConTeXt commands on typing the initial backslash
 <kbd>\\</kbd>.
 
-```JSON
+```json
 {
   "auto_complete_triggers": [
     {
@@ -100,13 +112,13 @@ only) replace the binding for the local symbol list
 make it easier to navigate/filter between headings, definitions, references, and
 so on.
 
-```JSON
+```json
 {
   "keys": ["ctrl+r"],
   "command": "simple_context_show_combined_overlay",
   "args": {
     "selectors": ["definition", "file_name", "heading", "reference"],
-    "active_selectors": ["heading", "reference"]
+    "active_selectors": ["definition", "file_name", "heading", "reference"]
   },
   "context": [
     {
@@ -125,7 +137,7 @@ prefixes.
 
 Consider adding the following to your ConTeXt syntax specific settings:
 
-```JSON
+```json
 {
   "spell_check": true,
   "spelling_selector": "text.tex.context - (meta.control-word.context, meta.environment.math.context, meta.brackets.context, source, markup.raw, comment)"
@@ -141,7 +153,7 @@ If you use the excellent [BracketHighlighter][bracket-highlighter] package, then
 adding the following to the BracketHighlighter settings will provide some
 rudimentary support for ConTeXt start/stop commands.
 
-```JSON
+```json
 {
   "user_brackets": [
     {
@@ -149,7 +161,7 @@ rudimentary support for ConTeXt start/stop commands.
       "open": "(\\\\start[a-zA-Z]*)",
       "close": "(\\\\stop[a-zA-Z]*)",
       "style": "tag",
-      "scope_exclude": ["-meta.structure"],
+      "scope_exclude": ["- meta.structure"],
       "language_filter": "whitelist",
       "language_list": ["ConTeXt"],
       "enabled": true
@@ -179,22 +191,44 @@ Completions should play well with others, e.g. the completions provided by the
 intended for LaTeX, I still find it useful for ConTeXt as many of the command
 names are the same.)
 
+## Features To Work On
+
+Things that should be relatively easy to add at the moment.
+
+- Add option for return focus to ST after opening PDF on build.
+- Add option for showing output panel, with the choices:
+  - never,
+  - only if there are errors/warnings,
+  - always.
+- Review README.
+- Add auto-build functionality. It should have the ability to pass different
+  options to the auto-builder, e.g. `--flags=draft`. It should have options for
+  when to run:
+  - at one or both of:
+    - on save,
+    - at regular time intervals;
+  - never.
+
 ## Future Features
 
-Features we would like to add some day.
+Features we would like to have, but may be harder to implement.
 
 - SyncTeX support. (Forward and backward jump to PDF.)
 - Code formatter.
+- Extend the command auto-complete/pop-up system to allow for user-defined
+  commands. Easiest would probably be to define them in the `.xml` style that
+  the ConTeXt interface files use.
 - Fix up the documentation browser.
 - Checker/linter. (The checks provided by `mtxrun --script check` are quite
   basic. Not sure what ConTeXt support `chktex` has.)
 - Citation handler. (We handle references well enough, similar support would be
   nice for `\cite[...]`. I expect we would try to keep it simple, and I would
-  like to handle the `.lua`, `.xml` and `.bib` formats)
+  like to handle the `.lua`, `.xml` and `.bib` formats.)
 - Handle syntax embedding better. Currently we have various embeddings that work
   fairly well, but the code is ugly and error prone and comes with some
   limitations.
 - Robust log parsing, esp. for reporting warnings/errors.
+- Word count. (Could be nice to have, but lots of difficulties with it.)
 
 [context-introduction]: http://wiki.contextgarden.net/What_is_ConTeXt
 [package-control]:      https://packagecontrol.io

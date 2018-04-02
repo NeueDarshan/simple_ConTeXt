@@ -31,13 +31,26 @@ contexts:
 
 
   constant:
-    - match: '\b(?:Page(?:Offset|Depth|StateAvailable)?|(?:Top|Bottom|Back|Cut)Space|(?:Left|Right|Inner|Outer)(?:Edge|Margin)(?:Width|Distance)|(?:Top|Header|Footer|Bottom)(?:Height|Distance)|(?:Makeup|Text)(?:Height|Width)|(?:Print)?Paper(?:Height|Width)|LayoutColumn(?:s|Distance|Width)|(?:Top|BaseLine)Skip|(?:[HV]|BodyFont)Size|EmWidth|ExHeight|Field|LineHeight|On(?:Right|Odd)Page|InPageBody|(?:Real|Last)?PageNumber|NOf(?:Pages|Columns)|Current(?:Column|Layout|Width|Height)|Overlay(?:Box|Offset|Color|Depth|Height|Line(?:Color|Width)|Width)|Strut(?:Depth|Height)|Rule(?:Direction|Option|Width|Height|Depth|Thickness|Factor|Offset|Color)|shaded(?:up|down|left|right)?|fullsquare|(?:full|unit)diamond|[ul][lr]triangle|(?:unit|[btrl]|[ul][lr])circle|yellow)\b'
+    - match:
+        "\\b(?:Page(?:Offset|Depth|StateAvailable)?|(?:Top|Bottom|Back|Cut)\
+         Space|(?:Left|Right|Inner|Outer)(?:Edge|Margin)(?:Width|Distance)|\
+         (?:Top|Header|Footer|Bottom)(?:Height|Distance)|(?:Makeup|Text)\
+         (?:Height|Width)|(?:Print)?Paper(?:Height|Width)|LayoutColumn\
+         (?:s|Distance|Width)|(?:Top|BaseLine)Skip|(?:[HV]|BodyFont)Size|\
+         EmWidth|ExHeight|Field|LineHeight|On(?:Right|Odd)Page|InPageBody|\
+         (?:Real|Last)?PageNumber|NOf(?:Pages|Columns)|Current(?:Column|\
+         Layout|Width|Height)|Overlay(?:Box|Offset|Color|Depth|Height|\
+         Line(?:Color|Width)|Width)|Strut(?:Depth|Height)|Rule(?:Direction|\
+         Option|Width|Height|Depth|Thickness|Factor|Offset|Color)|\
+         shaded(?:up|down|left|right)?|fullsquare|(?:full|unit)diamond|\
+         [ul][lr]triangle|(?:unit|[btrl]|[ul][lr])circle|yellow)\\b"
       scope: constant.language.metapost.metafun
     - include: scope:source.metapost#constant
 
 
   type:
-    - match: '\b(?:new)(?:boolean|numeric|pair|path|pen|picture|string|transform)\b'
+    - match:
+        '\b(?:new)(?:boolean|numeric|pair|path|pen|picture|string|transform)\b'
       scope: storage.type.metapost.metafun
     - include: scope:source.metapost#type
 
@@ -49,7 +62,14 @@ contexts:
 
 
   operator:
-    - match: '\b(?:along|(?:bottom|left|[ul][rl]|right|top)?enlarged|blownup|cornered|crossed|curved|laddered|paralleled|punked|random(ized|shifted)|shadedinto|shortened|smoothed|softened|stretched|squeezed|superellipsed|[ul][rl]moved|uncolored|with(?:shade(?:transform|method|direction|vector|colors|step|fraction|factor|domain|center)?|fillcolor|transparency)|[xy]shifted|(?:[xy]|xy)sized|xyscaled)\b'
+    - match:
+        "\\b(?:along|(?:bottom|left|[ul][rl]|right|top)?enlarged|blownup|\
+         cornered|crossed|curved|laddered|paralleled|punked|\
+         random(ized|shifted)|shadedinto|shortened|smoothed|softened|\
+         stretched|squeezed|superellipsed|[ul][rl]moved|uncolored|\
+         with(?:shade(?:transform|method|direction|vector|colors|step|\
+         fraction|factor|domain|center)?|fillcolor|transparency)|[xy]shifted|\
+         (?:[xy]|xy)sized|xyscaled)\\b"
       scope: keyword.operator.word.metapost.metafun
     - include: scope:source.metapost#operator
 
@@ -62,14 +82,25 @@ contexts:
     - include: scope:source.metapost#function.parameter
 
   function.labels:
-    - match: '\b(?:(?:the)?textext|(?:thefree|free(?:dot)?)label|anchored)(?:\.(?:top|[ul]?(?:lft|rt)|bot|origin|raw))?\b'
+    - match:
+        "\\b(?:(?:the)?textext|(?:thefree|free(?:dot)?)label|anchored)\
+         (?:\\.(?:top|[ul]?(?:lft|rt)|bot|origin|raw))?\\b"
       scope: support.function.metapost.metafun
     - match: '\b(?:thelabel|(?:dot)?labels?)\.(?:origin|raw)\b'
       scope: support.function.metapost.metafun
     - include: scope:source.metapost#function.labels
 
   function.generic:
-    - match: '\b(?:addbackground|(?:cos|sin|cot|tan)|a(?:cos|sin|tan)|a?(?:cos|sin)h|(?:cot|tan)d|inv(?:cos|sin)|anglebetween|bb(?:width|height)|(?:bottom|top)boundary|boundingbox|cmyk|condition|(?:circular|linear)_shade|d{2,3}ecimal|defineshade|externalfigure|exp|graphictext|grayed|(?:inner|outer)boundingbox|inv(?:erted)?|(?:left|right|center|point)arrow|(?:left|right)boundary|loadfigure|ln|log|paired|re(?:(?:map(?:ped)?)?color|setcolormap|draw|fill)|register|roundedsquare|simplified|sqr|tensecircle|transparent|tripled|unspiked)\b'
+    - match:
+        "\\b(?:addbackground|(?:cos|sin|cot|tan)|a(?:cos|sin|tan)|a?(?:cos|\
+         sin)h|(?:cot|tan)d|inv(?:cos|sin)|anglebetween|bb(?:width|height)|\
+         (?:bottom|top)boundary|boundingbox|cmyk|condition|(?:circular|\
+         linear)_shade|d{2,3}ecimal|defineshade|externalfigure|exp|\
+         graphictext|grayed|(?:inner|outer)boundingbox|inv(?:erted)?|\
+         (?:left|right|center|point)arrow|(?:left|right)boundary|loadfigure|\
+         ln|log|paired|re(?:(?:map(?:ped)?)?color|setcolormap|draw|fill)|\
+         register|roundedsquare|simplified|sqr|tensecircle|transparent|\
+         tripled|unspiked)\\b"
       scope: support.function.metapost.metafun
     - include: scope:source.metapost#function.generic
 

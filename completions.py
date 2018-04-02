@@ -51,7 +51,7 @@ def extra_style():
         "key": "key",
         "equ": "equals",
         "num": "numeric",
-        "com": "comma"
+        "com": "comma",
     }
 
     for tag, pre in data.items():
@@ -63,7 +63,7 @@ def extra_style():
                         pre + "-" if pre else "",
                         suf,
                         "s{:.2}".format(tag) if opt else tag,
-                        suf
+                        suf,
                     )
                 )
 
@@ -77,9 +77,30 @@ def extra_style():
 EXTRA_STYLE = extra_style()
 
 
+def try_jump_to_def(view, command):
+    thread = \
+        threading.Thread(target=lambda: try_jump_to_def_aux(view, command))
+    thread.start()
+
+
+def try_jump_to_def_aux(view, name):
+    start_time = time.time()
+    while view.is_loading():
+        time.sleep(0.01)
+        if time.time() - start_time > 1:
+            return
+    symbols = {strip_prefix(text): pos for (pos, text) in view.symbols()}
+    if name in symbols:
+        region = symbols[name]
+        view.run_command(
+            "simple_context_show_selection",
+            {"regions": [(region.a, region.b)]},
+        )
+
+
 class VirtualCommandDict:
     def __init__(
-        self, dir_, max_size=100, local_size=10, cmds="_commands.json"
+        self, dir_, max_size=100, local_size=10, cmds="_commands.json",
     ):
         self.dir = dir_
         self.missing = sorted(f for f in os.listdir(self.dir) if f != cmds)
@@ -103,7 +124,7 @@ class VirtualCommandDict:
             sample = [
                 (k, data[k])
                 for k in randomize.safe_random_sample(
-                    list(data), self.local_size
+                    list(data), self.local_size,
                 )
             ]
             self.cache.fuzzy_add_right(sample)
@@ -166,14 +187,14 @@ class SimpleContextMacroSignatureEventListener(
                 "do_all": False,
                 "paths": [self._path],
                 "overwrite": False,
-            }
+            },
         )
         self.load_commands(
             os.path.join(
                 sublime.packages_path(),
                 "simple_ConTeXt",
                 "interface",
-                self.name
+                self.name,
             )
         )
         self.state = IDLE
@@ -204,7 +225,7 @@ class SimpleContextMacroSignatureEventListener(
 
         for location in locations:
             if scopes.enclosing_block(
-                self.view, location-1, scopes.FULL_CONTROL_SEQ, end=self.size
+                self.view, location-1, scopes.FULL_CONTROL_SEQ, end=self.size,
             ):
                 return [
                     ["\\" + ctrl, ""]
@@ -213,13 +234,12 @@ class SimpleContextMacroSignatureEventListener(
         return None
 
     def on_hover(self, point, hover_zone):
-        if not self.is_visible():
+        if not self.is_visible() or hover_zone != sublime.HOVER_TEXT:
             return
 
         self.reload_settings()
         if (
             self.state != IDLE or
-            hover_zone != sublime.HOVER_TEXT or
             not self._pop_ups.get("methods", {}).get("on_hover") or
             not self.is_visible()
         ):
@@ -227,7 +247,7 @@ class SimpleContextMacroSignatureEventListener(
             return
 
         ctrl = scopes.enclosing_block(
-            self.view, point, scopes.CONTROL_WORD, end=self.size
+            self.view, point, scopes.CONTROL_WORD, end=self.size,
         )
         if not ctrl:
             return
@@ -238,7 +258,7 @@ class SimpleContextMacroSignatureEventListener(
                 location=ctrl[0] - 1,
                 max_width=600,
                 flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY,
-                on_navigate=lambda href: self.on_navigate(href, name)
+                on_navigate=lambda href: self.on_navigate(href, name),
             )
         else:
             self.view.hide_popup()
@@ -248,7 +268,7 @@ class SimpleContextMacroSignatureEventListener(
         if (
             self.state != IDLE or
             not self.is_visible() or
-            not self._pop_ups.get("methods", {}).get("auto_complete")
+            not self._pop_ups.get("methods", {}).get("on_modified")
         ):
             self.view.hide_popup()
             return
@@ -270,7 +290,7 @@ class SimpleContextMacroSignatureEventListener(
                     location=ctrl[0] - 1,
                     max_width=600,
                     flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
-                    on_navigate=lambda href: self.on_navigate(href, name)
+                    on_navigate=lambda href: self.on_navigate(href, name),
                 )
                 return
             else:
@@ -334,7 +354,7 @@ class SimpleContextMacroSignatureEventListener(
 
     def styles_for_scope(self, text):
         return [
-            self.view.style_for_scope(text), self.style_for_scope_punc(text)
+            self.view.style_for_scope(text), self.style_for_scope_punc(text),
         ]
 
     def on_navigate(self, href, name):
@@ -355,50 +375,33 @@ class SimpleContextMacroSignatureEventListener(
         main = files.locate(self._path, name, flags=self.flags)
         if main and os.path.exists(main):
             view = self.view.window().open_file(main)
-            self.try_jump_to_def(view, command)
+            try_jump_to_def(view, command)
         else:
             other = files.fuzzy_locate(
-                self._path, name, extensions=self.extensions, flags=self.flags
+                self._path, name, extensions=self.extensions, flags=self.flags,
             )
             if other and os.path.exists(other):
-                #D For some reason, this is crashing Sublime Text on finishing
-                #D the dialogue \periods.
-                # msg = (
+                # For some reason, this is crashing Sublime Text on finishing
+                # the dialogue \periods.
+                #
+                # msg_ = (
                 #     'Unable to locate file "{}".\n\nSearched in the TeX tree '
                 #     'containing "{}".\n\nFound file "{}" with similar name, '
                 #     'open instead?'
-                # ).format(name, self._path, os.path.basename(other))
+                # )
+                # msg = msg_.format(name, self._path, os.path.basename(other))
                 # if sublime.ok_cancel_dialog(msg):
                 #     self.view.window().open_file(other)
-                #D So instead let's just open the file.
+                #
+                # So instead let's just open the file.
                 view = self.view.window().open_file(other)
-                self.try_jump_to_def(view, command)
+                try_jump_to_def(view, command)
             else:
                 msg = (
                     'Unable to locate file "{}".\n\nSearched in the TeX tree '
                     'containing "{}".'
                 )
                 sublime.error_message(msg.format(name, self._path))
-
-    def try_jump_to_def(self, view, command):
-        thread = threading.Thread(
-            target=lambda: self.try_jump_to_def_aux(view, command)
-        )
-        thread.start()
-
-    def try_jump_to_def_aux(self, view, name):
-        start_time = time.time()
-        while view.is_loading():
-            time.sleep(0.01)
-            if time.time() - start_time > 1:
-                return
-        symbols = {strip_prefix(text): pos for (pos, text) in view.symbols()}
-        if name in symbols:
-            region = symbols[name]
-            view.run_command(
-                "simple_context_show_selection",
-                {"regions": [(region.a, region.b)]}
-            )
 
     def copy(self, text):
         self.view.hide_popup()

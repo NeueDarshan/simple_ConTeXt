@@ -60,7 +60,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
 
         slug = files.file_as_slug(path)
         dir_ = os.path.join(
-            sublime.packages_path(), "simple_ConTeXt", "interface", slug
+            sublime.packages_path(), "simple_ConTeXt", "interface", slug,
         )
         if overwrite:
             self.run_aux_ii(path, dir_)

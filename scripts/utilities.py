@@ -70,9 +70,11 @@ def iter_i_merge_sorted(sorted_iters, key=first_of_one):
 def reload_settings(self):
     self._sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
-    self._paths = self._sublime_settings.get("paths", {})
-    self._PDF_viewers = self._sublime_settings.get("PDF_viewers", {})
-    self._settings = self._sublime_settings.get("settings", {})
+    self._program_locations = \
+        self._sublime_settings.get("program_locations", {})
+    self._paths = self._program_locations.get("ConTeXt_paths", {})
+    self._PDF_viewers = self._program_locations.get("PDF_viewers", {})
+    self._settings = self._sublime_settings.get("current_settings", {})
     self._setting_groups = self._sublime_settings.get("setting_groups", {})
 
     self._path = self._settings.get("path")
@@ -84,9 +86,8 @@ def reload_settings(self):
     self._references = self._settings.get("references", {})
 
     self._builder = self._settings.get("builder", {})
-    self._options = self._builder.get("options", {})
-    self._program = self._builder.get("program", {})
-    self._check = self._builder.get("check", {})
+    self._behaviour = self._builder.get("behaviour", {})
+    self._options = self._builder.get("options_passed_to_ConTeXt", {})
 
 
 def get_variables(self):
@@ -124,9 +125,7 @@ def _expand_variables(self, args, variables):
         result = []
         for x in args:
             if x == "$simple_context_insert_options":
-                result += process_options(
-                    self, self._program.get("options", {}), variables
-                )
+                result += process_options(self, self._options, variables)
             else:
                 result.append(_expand_variables(self, x, variables))
         return result
@@ -258,7 +257,7 @@ class FuzzyOrderedDict:
         indices = set()
         for k, v in reversed(args[add_amt:]):
             i = max_len - 1 - randomize.poly_biased_randint(
-                0, max_len - 1, ignore=indices, power=3
+                0, max_len - 1, ignore=indices, power=3,
             )
             self.cache[i] = (k, v)
             indices.add(i)

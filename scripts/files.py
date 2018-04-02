@@ -11,7 +11,7 @@ def fuzzy_locate(path, file_, flags=0, methods=[None], extensions=[""]):
     for method in methods:
         for ext in extensions:
             text = locate(
-                path, "{}{}".format(file_, ext), flags=flags, methods=[method]
+                path, "{}{}".format(file_, ext), flags=flags, methods=[method],
             )
             if text:
                 return text
@@ -30,7 +30,7 @@ def locate(path, file_, flags=0, methods=[None]):
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    env=environ
+                    env=environ,
                 )
                 result = proc.communicate()
                 return clean_output(decode_bytes(result[0]))
@@ -52,21 +52,22 @@ def locate(path, file_, flags=0, methods=[None]):
 
 
 def decode_bytes(text):
-    return text.decode(encoding="utf-8", errors="replace").replace(
-        "\r\n", "\n").replace("\r", "\n").strip()
+    text = text.decode(encoding="utf-8", errors="replace")
+    text = text.replace("\r\n", "\n").replace("\r", "\n").strip()
+    return text
 
 
 def clean_output(text):
     return re.sub(
         r"resolvers\s*[>|]\s*trees\s*[>|]\s*analyzing\s*'home:texmf'",
         "",
-        text
+        text,
     ).strip()
 
 
 def parse_checker(text, tolerant=True):
-    text = clean_output(text).replace(" <cr> " + " <lf> ", " <lf> ").replace(
-        " <cr> ", " <lf> ").replace(" <lf> ", "\n")
+    text = clean_output(text).replace(" <cr> " + " <lf> ", " <lf> ")
+    text = text.replace(" <cr> ", " <lf> ").replace(" <lf> ", "\n")
     if text == "no error":
         return {"passed": True}
     elif text == "no file":
@@ -87,10 +88,7 @@ def parse_checker(text, tolerant=True):
                 "stop": line_stop,
             }
         return {
-            "passed": False,
-            "head": head,
-            "main": main,
-            "stop": line_stop,
+            "passed": False, "head": head, "main": main, "stop": line_stop,
         }
     return {"passed": tolerant}
 

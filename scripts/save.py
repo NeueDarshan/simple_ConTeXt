@@ -13,7 +13,7 @@ NAMESPACE = {"cd": "http://www.pragma-ade.com/commands"}
 
 UGLY_DEF_LOOKUP = {
     "instance-mathovertextextensible": "instance-mathoverextensible",
-    "instance-mathundertextextensible": "instance-mathunderextensible"
+    "instance-mathundertextextensible": "instance-mathunderextensible",
 }
 
 
@@ -57,15 +57,15 @@ class InterfaceSaver:
         self.load_commands(modules=modules)
 
     def load_definitions(self):
-        #D To handle resolves pointing to objects not yet defined, we simply do
-        #D two passes. Of course, it would be better to handle the dependency
-        #D graph in one pass, but this is simpler and seems to be fast enough.
+        # To handle resolves pointing to objects not yet defined, we simply do
+        # two passes. Of course, it would be better to handle the dependency
+        # graph in one pass, but this is simpler and seems to be fast enough.
         self.load_definitions_aux()
         self.load_definitions_aux()
 
     def load_definitions_aux(self):
         file_ = files.locate(
-            self.path, "i-common-definitions.xml", flags=self.flags
+            self.path, "i-common-definitions.xml", flags=self.flags,
         )
         if not file_:
             raise OSError('unable to locate "i-common-definitions.xml"')
@@ -111,7 +111,7 @@ class InterfaceSaver:
                     self.to_load.add(os.path.join(dir_, file_))
 
         if modules:
-            #D Let's use \type{t-rst.xml} as a smoking gun.
+            # Let's use \type{t-rst.xml} as a smoking gun.
             alt = files.locate(self.path, "t-rst.xml", flags=self.flags)
             if alt:
                 dir_ = os.path.split(alt)[0]
@@ -126,7 +126,7 @@ class InterfaceSaver:
             file_.endswith(".xml"),
             not file_.startswith("i-common"),
             not file_.startswith("i-context"),
-            file_ != "context-en.xml"
+            file_ != "context-en.xml",
         ])
 
     def load_commands_aux_i(self):
@@ -141,8 +141,9 @@ class InterfaceSaver:
                         self.do_define(child)
                     else:
                         raise UnexpectedTagError(
-                            'in file "{}", unexpected tag "{}"'
-                            .format(file_, child.tag)
+                            'in file "{}", unexpected tag "{}"'.format(
+                                file_, child.tag,
+                            )
                         )
             except (OSError, ET.ParseError, UnicodeDecodeError) as e:
                 msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
@@ -178,8 +179,8 @@ class InterfaceSaver:
         sequence = self.find(node, "sequence")
         name = node.attrib["name"]
 
-        #D Should we try to handle control symbols? Let's ignore them at the
-        #D moment.
+        # Should we try to handle control symbols? Let's ignore them at the
+        # moment.
         if not name.isalpha():
             return
 
@@ -236,8 +237,8 @@ class InterfaceSaver:
             else:
                 node_copy.append(self.tail_args_node(end))
             self.do_command_aux_i(begin, node_copy)
-            #D We could signal primitives in a better way. For now they are
-            #D implicitly signalled by setting file equal to \type{None}.
+            # We could signal primitives in a better way. For now they are
+            # implicitly signalled by setting file equal to \type{None}.
             self.do_command_aux_i(end, self.empty_node(attrib.get("file")))
         else:
             self.do_command_aux_i(self.clean_name(name), node)
@@ -251,7 +252,7 @@ class InterfaceSaver:
             "content": self.do_content,
             "csname": self.do_csname,
             "delimiter": self.do_delimiter,
-            #D This one is an addition of ours for convenience.
+            # This one is an addition of ours for convenience.
             "dotsdelimiter": self.do_dots_delimiter,
             "index": self.do_index,
             "keywords": self.do_keywords,
@@ -259,7 +260,7 @@ class InterfaceSaver:
             "resolve": self.do_resolve,
             "template": self.do_template,
             "text": self.do_text,
-            "triplet": self.do_triplet
+            "triplet": self.do_triplet,
         }
         content = []
         for child in arguments:
@@ -273,7 +274,7 @@ class InterfaceSaver:
                 )
         self.add_cmd(
             name,
-            {"con": self.flatten(content), "fil": node.attrib.get("file")}
+            {"con": self.flatten(content), "fil": node.attrib.get("file")},
         )
 
     def do_constant(self, node):
@@ -591,7 +592,7 @@ class InterfaceSaver:
         while not done:
             done = True
             for pair in itertools.permutations(
-                [(n, entry) for n, entry in enumerate(var_copy)], 2
+                [(n, entry) for n, entry in enumerate(var_copy)], 2,
             ):
                 i, master = pair[0]
                 j, other = pair[1]

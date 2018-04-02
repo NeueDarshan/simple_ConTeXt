@@ -7,7 +7,9 @@ file_extensions:
   - mpiv
 scope: source.metapost
 variables:
-  tokens: '(?:[[:alpha:]_]+|[\:\<\=\>\|]+|[\#\&\@\$]+|[\/\*\\]+|[\+\-]+|[\!\?]+|[\^\~]+|[\{\}]+|\[+|\]+|\.{2,})'
+  tokens:
+    "(?:[[:alpha:]_]+|[\\:\\<\\=\\>\\|]+|[\\#\\&\\@\\$]+|[\\/\\*\\\\]+|\
+     [\\+\\-]+|[\\!\\?]+|[\\^\\~]+|[\\{\\}]+|\\[+|\\]+|\\.{2,})"
 
 
 contexts:
@@ -71,7 +73,12 @@ contexts:
       scope: constant.other.placeholder.metapost
 
   constant.language:
-    - match: '\b(?:beveled|black|blue|butt|cyan|ditto|down|EOF|eps(?:ilon)?|evenly|false|green|(?:full|half|quarter)circle|identity|infinity|left|mitered|mpversion|null(?:pen|picture)|blankpicture|magenta|origin|pen(?:circle|square|razor|speck)|pi|red|right|rounded|squared|true|unitsquare|up|white|withdots|yellow)\b'
+    - match:
+        "\\b(?:beveled|black|blue|butt|cyan|ditto|down|EOF|eps(?:ilon)?|\
+         evenly|false|green|(?:full|half|quarter)circle|identity|infinity|\
+         left|mitered|mpversion|null(?:pen|picture)|blankpicture|magenta|\
+         origin|pen(?:circle|square|razor|speck)|pi|red|right|rounded|squared|\
+         true|unitsquare|up|white|withdots|yellow)\\b"
       scope: constant.language.metapost
 
 
@@ -83,7 +90,9 @@ contexts:
 
 
   type:
-    - match: '\b(?:boolean|(?:rgb|cmyk)?color|numeric|pair|path|pen|picture|string|transform)\b'
+    - match:
+        "\\b(?:boolean|(?:rgb|cmyk)?color|numeric|pair|path|pen|picture|\
+         string|transform)\\b"
       scope: storage.type.metapost
     - match: '\b(?:save|interim|newinternal|outer)\b'
       scope: storage.modifier.metapost
@@ -93,12 +102,23 @@ contexts:
     - include: keyword.control
 
   keyword.control:
-    - match: '\b(?:if|else(?:if)?|fi|for(?:suffixes|ever)?|within|(?:up|down)to|step|until|exit(?:if|unless)|endfor)\b'
+    - match:
+        "\\b(?:if|else(?:if)?|fi|for(?:suffixes|ever)?|within|(?:up|down)to|\
+         step|until|exit(?:if|unless)|endfor)\\b"
       scope: keyword.control.conditional.metapost
 
 
   internal-parameter:
-    - match: '\b(?:ah(?:angle|length)|background|bboxmargin|charcode|current(?:pen|picture)|cuttings|day|default(?:colormodel|font|pen|scale)|dotlabeldiam|extra_(?:begin|end)fig|hour|hppp|jobname|join_radius|labeloffset|line(?:cap|join)|minute|miterlimit|month|mpprocset|number(?:precision|system)|output(?:filename|format|formatoptions|template)|pausing|prologues|restoreclipcolor|showstopping|time|tolerance|tracing(?:capsules|choices|commands|equations|lostchars|macros|online|output|restores|specs|stats|titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)\b'
+    - match:
+        "\\b(?:ah(?:angle|length)|background|bboxmargin|charcode|\
+         current(?:pen|picture)|cuttings|day|default(?:colormodel|font|pen|\
+         scale)|dotlabeldiam|extra_(?:begin|end)fig|hour|hppp|jobname|\
+         join_radius|labeloffset|line(?:cap|join)|minute|miterlimit|month|\
+         mpprocset|number(?:precision|system)|output(?:filename|format|\
+         formatoptions|template)|pausing|prologues|restoreclipcolor|\
+         showstopping|time|tolerance|tracing(?:capsules|choices|commands|\
+         equations|lostchars|macros|online|output|restores|specs|stats|\
+         titles)|troffmode|truecorners|vppp|warningcheck|year|randomseed)\\b"
       scope: variable.language.metapost
 
 
@@ -107,7 +127,12 @@ contexts:
     - include: operator.symbol
 
   operator.word:
-    - match: '\b(?:and|atleast|controls|curl|cut(?:after|before|ends)|dashed|div|dotprod|glyph|infont|intersection(?:point|times)|mod|not|of|or|off|on|reflectedabout|rotated(?:around)?|scaled|shifted|slanted|softjoin|tension|to|transformed|with(?:(?:cmyk|grey|out|rgb)?color|gray|greyscale|(?:pre|post)script|pen)|[xyz]scaled)\b'
+    - match:
+        "\\b(?:and|atleast|controls|curl|cut(?:after|before|ends)|dashed|\
+         div|dotprod|glyph|infont|intersection(?:point|times)|mod|not|of|or|\
+         off|on|reflectedabout|rotated(?:around)?|scaled|shifted|slanted|\
+         softjoin|tension|to|transformed|with(?:(?:cmyk|grey|out|rgb)?color|\
+         gray|greyscale|(?:pre|post)script|pen)|[xyz]scaled)\\b"
       scope: keyword.operator.word.metapost
 
   operator.symbol:
@@ -127,7 +152,7 @@ contexts:
   function.dashpattern:
     - match: '\bdashpattern\b'
       scope: support.function.metapost
-    # push: argument.parens.with-on-off*/
+      # push: argument.parens.with-on-off*/
 
   function.input:
     - match: '\binput\b'
@@ -135,11 +160,28 @@ contexts:
       push: argument.string-or-file-name*/
 
   function.labels:
-    - match: '\b(?:thelabel|(?:dot)?labels?)(?:\.(?:top|[ul]?(?:lft|rt)|bot))?\b'
+    - match:
+        '\b(?:thelabel|(?:dot)?labels?)(?:\.(?:top|[ul]?(?:lft|rt)|bot))?\b'
       scope: support.function.metapost
 
   function.generic:
-    - match: '\b(?:abs|addto|also|angle|arclength|arctime|ASCII|byte|batchmode|bbox|(?:sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|decimal|decr|dir|direction(?:point|time)?|doublepath|draw(?:arrow|dblarrow|dot|fill|options)?|err(?:help|message)|(?:scroll|(?:error|non)stop)mode|filenametemplate|fill(?:draw)?|filled|flex|floor|fontmap(?:file|line)|fontsize|hex|hide|image|incr|interpath|inverse|known|length|loggingall|makepath|makepen|max|message|mexp|min|mlog|(?:normal|uniform)deviate|oct|odd|pickup|penoffset|point|(?:post|pre)control|readfrom|reverse|round|scantokens|setbounds|shipout|show(?:dependencies|token|variable)?|special|sqrt|str|stroked|sub(?:path|string)|superellipse|tensepath|textual|turningnumber|(?:top|bot|lft|rt)|tracing(?:all|none)|un(?:draw(?:dot|fill)?|fill(?:draw)?)|unitvector|unknown|[ul][rl]corner|write|(?:black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|pen|red|text|[xy]{1,2})part)\b'
+    - match:
+        "\\b(?:abs|addto|also|angle|arclength|arctime|ASCII|byte|batchmode|\
+         bbox|(?:sin|cos)d|bounded|buildcycle|ceiling|center|char|clip|\
+         clipped|closefrom|colormodel|contour|counterclockwise|cutdraw|\
+         decimal|decr|dir|direction(?:point|time)?|doublepath|draw(?:arrow|\
+         dblarrow|dot|fill|options)?|err(?:help|message)|(?:scroll|(?:error|\
+         non)stop)mode|filenametemplate|fill(?:draw)?|filled|flex|floor|\
+         fontmap(?:file|line)|fontsize|hex|hide|image|incr|interpath|inverse|\
+         known|length|loggingall|makepath|makepen|max|message|mexp|min|mlog|\
+         (?:normal|uniform)deviate|oct|odd|pickup|penoffset|point|\
+         (?:post|pre)control|readfrom|reverse|round|scantokens|setbounds|\
+         shipout|show(?:dependencies|token|variable)?|special|sqrt|str|\
+         stroked|sub(?:path|string)|superellipse|tensepath|textual|\
+         turningnumber|(?:top|bot|lft|rt)|tracing(?:all|none)|un(?:draw(?:dot|\
+         fill)?|fill(?:draw)?)|unitvector|unknown|[ul][rl]corner|write|\
+         (?:black|blue|color|cyan|dash|font|green|grey|magenta|yellow|path|\
+         pen|red|text|[xy]{1,2})part)\\b"
       scope: support.function.metapost
     - match: '\b(?:cycle|whatever)\b'
       scope: support.function.metapost

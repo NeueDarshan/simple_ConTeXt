@@ -78,7 +78,7 @@ class ExecMainSubprocess:
                 env[k] = v
         output = seq.get("output")
 
-        print('Running: {}'.format(" ".join(cmd)))
+        print("Running: {}".format(" ".join(cmd)))
         thread = threading.Thread(
             target=lambda: self.run_command(
                 cmd,
@@ -89,7 +89,7 @@ class ExecMainSubprocess:
                     "stdout": subprocess.PIPE,
                     "stderr": subprocess.STDOUT,
                 },
-                output
+                output,
             )
         )
         self.lock.release()
@@ -116,11 +116,15 @@ class ExecMainSubprocess:
             self.quit()
 
     def output_context(self, data, code):
+        if not self.root:
+            return
         self.root.add_to_output(
             log.parse(data, code),
             scroll_to_end=True,
-            force=True
+            force=True,
         )
+        if code != 0 and self.root.show_output_on_errors:
+            self.root.show_output()
 
     def output_context_pdf(self, cmd):
         text = "opening pdf with {}\n".format(cmd) if cmd else "opening pdf\n"
@@ -138,11 +142,11 @@ class ExecMainSubprocess:
                         creationflags=self.flags,
                     )
                 else:
-                    #D Doing \type{process.kill()} doesn't seem to work as it
-                    #D should. Not sure why, maybe something to do with calls
-                    #D to \type{context} invoking child processes, and then
-                    #D killing the parent process not affecting the children.
-                    #D Hmm \periods
+                    # Doing \type{process.kill()} doesn't seem to work as it
+                    # should. Not sure why, maybe something to do with calls to
+                    # \type{context} invoking child processes, and then killing
+                    # the parent process not affecting the children.
+                    # Hmm\periods
                     self.proc.kill()
 
             self.killed = True
@@ -166,6 +170,8 @@ class ExecMainSubprocess:
         return None
 
     def quit(self):
+        if not self.root:
+            return
         self.root.add_to_output(
             "[Finished in {:.1f}s]\n".format(time.time() - self.start_time)
         )
@@ -210,9 +216,14 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
             self.hide_phantoms()
             return
 
-        #D Building whilst a build is already in progress cancels it.
-        if kill or self.proc is not None:
+        if kill:
             self.kill_proc()
+            return
+
+        # Building whilst a build is already in progress does nothing. If you
+        # wish to cancel it, use the proper Sublime Text way of doing that:
+        # \type{Ctrl+Shift+C} is bound to cancel build by default.
+        if self.proc is not None:
             return
 
         self.proc = None
@@ -225,14 +236,24 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
             word_wrap=word_wrap,
             working_dir=working_dir,
             file_regex=file_regex,
-            line_regex=line_regex
+            line_regex=line_regex,
         )
         if not self.quiet:
             sublime.status_message("Building")
 
         self.hide_phantoms()
-        if self.show_panel_on_build:
+        if (
+            self.show_panel_on_build and
+            self._behaviour.get("show_output_panel") is True
+        ):
             self.show_output()
+            self.show_output_on_errors = False
+        else:
+            # We can be (very) forgiving to spelling errors, as the other
+            # options than \type{"when_there_are_errors"} are just \type{True}
+            # and \type{False}.
+            self.show_output_on_errors = \
+                isinstance(self._behaviour.get("show_output_panel"))
 
         if not working_dir and self.view:
             file_ = self.view.file_name()
@@ -242,7 +263,7 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
 
         if cmd_seq:
             sequence = utilities.expand_variables(
-                self, cmd_seq, utilities.get_variables(self)
+                self, cmd_seq, utilities.get_variables(self),
             )
 
             try:
@@ -282,7 +303,7 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
         word_wrap=True,
         working_dir="",
         file_regex="",
-        line_regex=""
+        line_regex="",
     ):
         if not hasattr(self, "output_view"):
             self.output_view = self.window.create_output_panel("ConTeXt")

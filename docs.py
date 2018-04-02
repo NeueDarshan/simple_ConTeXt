@@ -47,7 +47,7 @@ DOCS = [
 ]
 
 
-#D Needs some work.
+# Needs some work.
 class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
     def reload_settings(self, force_reload_docs=False):
         utilities.reload_settings(self)
@@ -64,7 +64,7 @@ class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
         self.docs = []
         for name, file_ in DOCS:
             path = files.locate(
-                self._path, "{}.pdf".format(file_), flags=self.flags
+                self._path, "{}.pdf".format(file_), flags=self.flags,
             )
             if path:
                 self.docs.append([name, file_, path])
@@ -79,7 +79,7 @@ class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
             [tup[:2] for tup in self.docs] +
             [["...", "search for other files"]],
             self.run_handle,
-            selected_index=selected_index
+            selected_index=selected_index,
         )
 
     def run_handle(self, index):

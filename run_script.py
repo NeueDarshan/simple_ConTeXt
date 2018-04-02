@@ -24,7 +24,7 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
             "creationflags": flags,
             "stdin": subprocess.PIPE,
             "stdout": subprocess.PIPE,
-            "stderr": subprocess.STDOUT
+            "stderr": subprocess.STDOUT,
         }
         self.state = IDLE
         self.previous_script = "context --version"
@@ -93,7 +93,7 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
 
     def show_output(self):
         self.window.run_command(
-            "show_panel", {"panel": "output.ConTeXt_script"}
+            "show_panel", {"panel": "output.ConTeXt_script"},
         )
 
     def add_to_output(self, text):

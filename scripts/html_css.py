@@ -13,12 +13,12 @@ def match_exact(regex, text):
     return re.match(r"(?:{})\Z".format(regex), text)
 
 
-#D Ugly thing \periods\ I don't know what the best approach would be here. This
-#D is a decent approximation anyhow.
-#D
-#D I suppose the best approach would be to refactor \type{completions.py}, so
-#D that when a pop||up is requested we consult the exact style used at that
-#D point via the ST API.
+# Ugly thing \periods\ I don't know what the best approach would be here. This
+# is a decent approximation anyhow.
+#
+# I suppose the best approach would be to refactor \type{completions.py}, so
+# that when a pop||up is requested we consult the exact style used at that
+# point via the ST API.
 CASES = [
     {  # keyword.control
         "tags": ("flo", "sfl"),
@@ -27,24 +27,24 @@ CASES = [
             text.startswith("stop") or
             text in ["loop", "repeat", "then", "or", "else", "fi"] or
             any(match_exact(regex, text) for regex in [
-                CONTROL_COND_A, CONTROL_COND_B, CONTROL_MODULE
-            ])
+                CONTROL_COND_A, CONTROL_COND_B, CONTROL_MODULE,
+            ]),
     },
     {  # storage.type
         "tags": ("sto", "sst"),
-        "f": lambda text: match_exact(r"[xge]?def|g?let|define", text)
+        "f": lambda text: match_exact(r"[xge]?def|g?let|define", text),
     },
     {  # constant.language
         "tags": ("lan", "sla"),
-        "f": lambda text: text in ["relax"]
+        "f": lambda text: text in ["relax"],
     },
     {  # storage.modifier
         "tags": ("mod", "smo"),
-        "f": lambda text: text in ["global", "immediate", "the", "outer"]
+        "f": lambda text: text in ["global", "immediate", "the", "outer"],
     },
     {  # support.function
         "tags": ("con", "sco"),
-        "f": lambda _: True
+        "f": lambda _: True,
     },
 ]
 
@@ -63,8 +63,9 @@ def control_sequence(text):
 
 
 def unescape(text):
-    return text.replace("&gt;", ">").replace("&lt;", "<").replace(
-        "&nbsp;", " ").replace("<br>", "\n")
+    text = text.replace("&gt;", ">").replace("&lt;", "<")
+    text = text.replace("&nbsp;", " ").replace("<br>", "\n")
+    return text
 
 
 def strip_tags(text):

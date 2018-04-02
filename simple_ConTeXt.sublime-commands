@@ -7,7 +7,7 @@
 		"caption": "simple_ConTeXt: View/change the settings",
 		"command": "simple_context_settings_controller",
 	},
-	// not in an acceptable state at present
+	// Not in an acceptable state at present.
 	// {
 	// 	"caption": "simple_ConTeXt: Open TeX/ConTeXt documentation",
 	// 	"command": "simple_context_find_docs",
@@ -16,11 +16,6 @@
 		"caption": "simple_ConTeXt: Run a ConTeXt script",
 		"command": "simple_context_run_script",
 	},
-	// one day
-	// {
-	//   "caption": "simple_ConTeXt: Format ConTeXt file",
-	//   "command": "simple_context_format",
-	// },
 	{
 		"caption": "simple_ConTeXt: Regenerate interface files",
 		"command": "simple_context_regenerate_interface_files",

@@ -8,5 +8,5 @@
 	 * certain length. So matching the (possibly) truncated name is a bad idea.
 	 * Instead we go in for this workaround, where we match the file name only.
 	 */
-	"file_regex": "^(?:lua:)?.*$simple_context_path_sep(.*\\.lua):([0-9]+):?\\s*(.*)"
+	"file_regex": "^(?:lua:)?.*$simple_context_path_sep(.*\\.lua):([0-9]+):?\\s*(.*)",
 }

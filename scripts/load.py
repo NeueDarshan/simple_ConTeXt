@@ -27,7 +27,7 @@ def tagged_format(text, tag, n, align="<", min_=None):
 
 def nice_sorted(list_, reverse=False):
     list_ = sorted(
-        [l for l in list_ if l is not None], key=html_css.strip_tags
+        [l for l in list_ if l is not None], key=html_css.strip_tags,
     )
     inherits, upper, mixed, lower = [], [], [], []
     for e in list_:
@@ -115,7 +115,7 @@ class InterfaceLoader:
         self._syntax = [
             " " * (len(self.name) + 1),
             html_css.control_sequence(self.name),
-            " " * (len(self.name) + 1)
+            " " * (len(self.name) + 1),
         ]
         self._docstring = []
         self._n = 0
@@ -164,7 +164,7 @@ class InterfaceLoader:
             tagged_format(self._n, "num", self._len, align="^")
         self._syntax[1] += self._rendering
         self._syntax[2] += normal_format(
-            "OPT" if self._optional else "", self._len, align="^", min_=3
+            "OPT" if self._optional else "", self._len, align="^", min_=3,
         )
         if self._optional:
             for i in range(3):
@@ -197,7 +197,7 @@ class InterfaceLoader:
         return self.guide() + self._content
 
     def docstring_list(self):
-        line_break = self.kwargs.get("line_break", 80)
+        line_break = self.kwargs.get("line_break", 65)
         if isinstance(line_break, int):
             return self.docstring_list_break(line_break)
         return self.docstring_list_nobreak()
@@ -230,7 +230,7 @@ class InterfaceLoader:
         return self.guide() + " ".join(self._content)
 
     def docstring_dict(self):
-        line_break = self.kwargs.get("line_break", 80)
+        line_break = self.kwargs.get("line_break", 65)
         len_ = max(len(html_css.strip_tags(k)) for k in self._content)
 
         if isinstance(line_break, int):

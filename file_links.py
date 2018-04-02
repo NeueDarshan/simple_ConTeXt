@@ -65,7 +65,7 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
 
         self.reload_settings()
         file_ = scopes.enclosing_block(
-            self.view, point, scopes.FILE_NAME, end=self.size
+            self.view, point, scopes.FILE_NAME, end=self.size,
         )
         if file_:
             file_name = self.view.substr(sublime.Region(*file_))
@@ -83,7 +83,7 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
             location=file_[0],
             flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY,
             on_navigate=self.on_navigate,
-            on_hide=self.on_hide
+            on_hide=self.on_hide,
         )
 
     def on_navigate(self, href):
@@ -100,34 +100,36 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
                 href,
                 flags=self.flags,
                 extensions=self.extensions,
-                methods=reversed(methods)
+                methods=reversed(methods),
             )
             if file_ and os.path.exists(file_):
                 self.view.window().open_file(file_)
                 return
 
         other = files.fuzzy_locate(
-            self._path, href, flags=self.flags, extensions=self.extensions
+            self._path, href, flags=self.flags, extensions=self.extensions,
         )
         if other and os.path.exists(other):
-            #D For some reason, this is crashing Sublime Text on finishing the
-            #D dialogue \periods.
+            # For some reason, this is crashing Sublime Text on finishing the
+            # dialogue \periods.
+            #
             # msg = (
             #     'Unable to locate file "{}".\n\nSearched around the '
             #     'current working directory.\n\nFound a file with the same '
             #     'name in the TeX tree containing "{}", open instead?'
-            # ).format(href, self._path)
-            # if sublime.ok_cancel_dialog(msg):
+            # )
+            # if sublime.ok_cancel_dialog(msg.format(href, self._path)):
             #     self.view.window().open_file(other)
-            #D So instead let's just open the file.
+            #
+            # So instead let's just open the file.
             self.view.window().open_file(other)
         else:
             msg = (
                 'Unable to locate file "{}".\n\nSearched around the '
                 'current working directory, and in the TeX tree '
                 'containing "{}".'
-            ).format(href, self._path)
-            sublime.error_message(msg)
+            )
+            sublime.error_message(msg.format(href, self._path))
 
     def on_hide(self):
         pass

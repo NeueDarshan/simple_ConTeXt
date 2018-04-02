@@ -4,3 +4,6 @@ desktop.ini
 
 # don't track package metadata
 package-metadata.json
+
+# ignore interface files
+/interface

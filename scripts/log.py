@@ -12,8 +12,8 @@ def translate_class(text):
 def parse(data, code):
     result = ""
     success = code == 0
-    text = data.decode(encoding="utf-8", errors="ignore").replace(
-        "\r\n", "\n").replace("\r", "\n")
+    text = data.decode(encoding="utf-8", errors="ignore")
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
 
     if success:
         result += "  - finished successfully\n"

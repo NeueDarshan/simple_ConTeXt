@@ -2,7 +2,7 @@ def is_scope(view, scope):
     sel = view.sel()
     if sel:
         return view.match_selector(sel[0].begin(), scope)
-    #D If in doubt, let's return \type{False}
+    # If in doubt, let's return \type{False}
     return False
 
 
@@ -18,7 +18,7 @@ def is_lua(view):
     return is_scope(view, "source.lua")
 
 
-#D Does order matter for scope matching? If so, then we need to rethink these.
+# Does order matter for scope matching? If so, then we need to rethink these.
 def AND(a, b):
     return ALL(a, b)
 
@@ -153,9 +153,9 @@ def enclosing_block(view, point, scope, end=None):
     return None
 
 
-#D Like \type{enclosing_block}, but checks that \type{point} is the
-#D right||boundary of the eventual block. If not, signal an error with
-#D \type{None}.
+# Like \type{enclosing_block}, but checks that \type{point} is the
+# right||boundary of the eventual block. If not, signal an error with
+# \type{None}.
 def left_enclosing_block(view, point, scope, end=None):
     if end is None:
         end = view.size()

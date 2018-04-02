@@ -31,7 +31,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
         self.window.show_quick_panel(
             self.flatten_current_level(),
             self.run_handle,
-            selected_index=self.get_history()
+            selected_index=self.get_history(),
         )
 
     def run_handle(self, index):
@@ -54,9 +54,9 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
             value = here[key]
             self.location.append(key)
 
-            #D It's nice to be able to quickly toggle booleans, but we also
-            #D want the option to change a boolean into, say, a string. So we
-            #D do this compromise.
+            # It's nice to be able to quickly toggle booleans, but we also want
+            # the option to change a boolean into, say, a string. So we do this
+            # compromise.
             if isinstance(value, bool):
                 self.window.show_input_panel(
                     "new value:",
@@ -85,7 +85,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
         self.window.show_quick_panel(
             self.flatten_current_level(),
             self.run_handle_scheme,
-            selected_index=self.get_history()
+            selected_index=self.get_history(),
         )
 
     def run_handle_scheme(self, index):
@@ -112,7 +112,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
         self.window.show_quick_panel(
             self.flatten_current_level(),
             self.run_handle_choice,
-            selected_index=self.get_history()
+            selected_index=self.get_history(),
         )
 
     def run_handle_choice(self, index):
@@ -134,7 +134,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
 
     def on_done(self, text):
         deep_dict.set_safe(
-            self.encoded_settings, self.location, utilities.guess_type(text)
+            self.encoded_settings, self.location, utilities.guess_type(text),
         )
         self.location.pop()
         self.save()
@@ -176,7 +176,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
     def save(self, decode=True):
         if decode:
             self.decode_settings()
-        self._sublime_settings.set("settings", self._settings)
+        self._sublime_settings.set("current_settings", self._settings)
         sublime.save_settings("simple_ConTeXt.sublime-settings")
         self.reload_settings()
         self.encode_settings()
@@ -186,24 +186,20 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
         self.encoded_settings["path"] = \
             utilities.Choice(self._paths, choice=self._settings.get("path"))
         viewer = utilities.Choice(
-            self._PDF_viewers,
-            choice=self._settings.get("PDF", {}).get("viewer")
+            self._PDF_viewers, choice=self._PDF.get("viewer"),
         )
         self.encoded_settings.setdefault("PDF", {})["viewer"] = viewer
         self.encoded_settings["setting_groups"] = self._setting_groups
 
     def decode_settings(self):
         self._settings["path"] = self.encoded_settings["path"].get()
-        self._settings.get("PDF", {})["viewer"] = \
-            self.encoded_settings["PDF"]["viewer"].get()
+        self._PDF["viewer"] = self.encoded_settings["PDF"]["viewer"].get()
         del self._settings["setting_groups"]
 
 
 class SimpleContextEditSettingsCommand(sublime_plugin.WindowCommand):
     def run(self, *args, **kwargs):
-        args = {
-            "base_file":
-                "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings",
-            "default": "{\n\t$0\n}\n"
-        }
+        base_file = \
+            "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings"
+        args = {"base_file": base_file, "default": "{\n\t$0\n}\n"}
         sublime.run_command("edit_settings", args)

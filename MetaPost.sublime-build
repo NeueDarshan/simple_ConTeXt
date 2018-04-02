@@ -12,7 +12,7 @@
 			"cmd": ["context", "$file"],
 			"cancel": {"kill": true},
 			"file_regex": "^\\((.*\\.mp)",
-			"line_regex": "^l\\.([0-9]+)"
-		}
-	]
+			"line_regex": "^l\\.([0-9]+)",
+		},
+	],
 }
