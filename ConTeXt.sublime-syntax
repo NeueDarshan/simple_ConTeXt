@@ -270,9 +270,9 @@ contexts:
   math.operator:
     - match: '[\+\-/\^_=<>]'
       scope: keyword.operator.context
-    - match: '[∈]'
+    - match: '[∈∉∼≁×]'
       scope: keyword.operator.context
-    - match: '(\\)(?:[lg]eq?|ll|gg)\b'
+    - match: '(\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)\b'
       captures:
         0: meta.control-word.context keyword.operator.context
         1:
@@ -1517,7 +1517,9 @@ contexts:
       push: argument.list.file*/
     - match: '(\\)start(?:component|environment|product|project)\b'
       captures:
-        0: meta.control-word.context keyword.control.context
+        0:
+          meta.control-word.context meta.structure.start.context
+          keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list-or-name.this-file*/
   file.input:
@@ -1933,7 +1935,17 @@ contexts:
         0: constant.character.escape.context
         1: punctuation.definition.backslash.context
   control.active-character:
-    - match: '[|~]'
+    - match: '\|'
+      scope: constant.other.active.context
+      push:
+        - include: generic.gobble-whitespace
+        - match: '([^\\|])?(\|)'
+          captures:
+            1: constant.other.modifier.context
+            2: constant.other.active.context
+          pop: true
+        - include: generic.pop/
+    - match: '~'
       scope: constant.other.active.context
 
 

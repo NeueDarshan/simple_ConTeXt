@@ -86,7 +86,7 @@ class SimpleContextHighlightSelectionCommand(sublime_plugin.TextCommand):
             self.view.add_regions(
                 "simple_ConTeXt_show_selection",
                 [sublime.Region(*tup) for tup in regions],
-                scope="entity.name.function",
+                scope="comment",
                 flags=sublime.DRAW_NO_FILL,
             )
 
@@ -213,8 +213,10 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
     def on_highlight(self, index):
         if 0 <= index < len(self.matches):
             tup = self.matches[index]
+            # self.view.run_command(
+            #     "simple_context_highlight_selection", {"regions": [tup]},
+            # )
             self.view.run_command(
-                # "simple_context_highlight_selection", {"regions": [tup]},
                 "simple_context_show_selection", {"regions": [tup]},
             )
 
@@ -326,8 +328,10 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
     def on_highlight(self, index):
         if 0 <= index < len(self.data):
             tup = self.data[index][:2]
+            # self.view.run_command(
+            #     "simple_context_highlight_selection", {"regions": [tup]},
+            # )
             self.view.run_command(
-                # "simple_context_highlight_selection", {"regions": [tup]},
                 "simple_context_show_selection", {"regions": [tup]},
             )
 

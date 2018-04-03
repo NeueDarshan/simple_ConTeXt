@@ -13,6 +13,7 @@
   - [Spell Checking](#spell-checking)
   - [Bracket Highlighter](#bracket-highlighter)
 - [Builders](#builders)
+- [Snippets](#snippets)
 - [Misc](#misc)
 - [Features To Work On](#features-to-work-on)
 - [Future Features](#future-features)
@@ -151,7 +152,7 @@ places only (e.g. not in maths or code blocks).
 
 If you use the excellent [BracketHighlighter][bracket-highlighter] package, then
 adding the following to the BracketHighlighter settings will provide some
-rudimentary support for ConTeXt start/stop commands.
+support for ConTeXt start/stop commands.
 
 ```json
 {
@@ -164,11 +165,15 @@ rudimentary support for ConTeXt start/stop commands.
       "scope_exclude": ["- meta.structure"],
       "language_filter": "whitelist",
       "language_list": ["ConTeXt"],
+      "plugin_library": "simple_ConTeXt.bracket_highlighter.context_environments",
       "enabled": true
     }
   ]
 }
 ```
+
+The file `context_environments.py` simply checks that the start and stop tags
+match.
 
 ## Builders
 
@@ -183,6 +188,15 @@ As it's easy to do so, there are a couple other builders:
   that ships with the ConTeXt installation. Alternatively, use `context` itself:
   when called on a MetaPost file, it will compile it (using the MetaFun format)
   into a PDF.
+
+## Snippets
+
+There are various snippets for ConTeXt (and a couple for MetaPost as well).
+
+- Samples, analogous to the built-in snippet `lorem`.
+- Headings, for part/chapter/section/subsection and so on.
+- Markup constructs such as `\emph`.
+- Project environments.
 
 ## Misc
 

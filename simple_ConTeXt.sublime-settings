@@ -13,12 +13,12 @@
 		},
 		"ConTeXt_paths":
 		{
-			/* The keys here are just names for a \ConTeXt{} installation, and
+			/* The keys here are just names for a \ConTeXt\ installation, and
 			 * the value should be the path to the \type{context} binaries. For
 			 * example: if you have the \type{context} program located at
 			 * \type
 			 *   {/home/user-name/.local/context/tex/texmf-linux-64/bin/context}
-			 * (so the \ConTeXt{} installation tree's root is at
+			 * (so the \ConTeXt\ installation tree's root is at
 			 * \type{/home/user-name/.local/context/}), then you should write
 			 * something like
 			 *
@@ -73,7 +73,7 @@
 			 */
 			"viewer": "evince",
 			/* Technical note: the variable
-			 * \type{$simple_context_open_pdf_after_build} in the \ConTeXt{}
+			 * \type{$simple_context_open_pdf_after_build} in the \ConTeXt\
 			 * builder gets this value assigned to it.
 			 */
 			"open_after_build": true,
