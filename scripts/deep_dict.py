@@ -6,6 +6,7 @@ def update(dict_, new_dict):
             update(dict_[k], v)
         else:
             dict_[k] = v
+    return dict_
 
 
 def iter_(dict_):

@@ -14,6 +14,8 @@
   - [Bracket Highlighter](#bracket-highlighter)
 - [Builders](#builders)
 - [Snippets](#snippets)
+- [Quick Settings](#quick-settings)
+- [Scripts](#scripts)
 - [Misc](#misc)
 - [Features To Work On](#features-to-work-on)
 - [Future Features](#future-features)
@@ -191,12 +193,60 @@ As it's easy to do so, there are a couple other builders:
 
 ## Snippets
 
-There are various snippets for ConTeXt (and a couple for MetaPost as well).
+There are various snippets for ConTeXt (and a couple for MetaPost as well). You
+can find these by typing `snippet` in the command palette in a ConTeXt file, but
+here is a quick summary.
 
-- Samples, analogous to the built-in snippet `lorem`.
-- Headings, for part/chapter/section/subsection and so on.
-- Markup constructs such as `\emph`.
-- Project environments.
+- Samples, analogous to the built-in snippet `lorem`. These are: `bryson`,
+  `carey`, `carrol`, `darwin`, `davis`, `dawkins`, `douglas`, `greenfield`,
+  `hawking`, `jojomayer`, `khatt`, `klein`, `knuth`, `linden`, `montgomery`,
+  `reich`, `sapolsky`, `thuan`, `tufte`, `waltham`, `ward`, `weisman`, and
+  `zapf`.
+- Headings, for part/chapter/section and so on: `chap`, `part`, `title`, `sec`,
+  `sub`, `sec2`, `sub2`, `sec3` and `sub3`.
+- For item groups: `items` and `item`
+- For mark-up: `bf`, `em`, `emph`, `it`, and `sl`.
+- For tables: `tabn`, `tabln`, `tabu`, and `tabx`.
+- For math: `align`, `form`, `forma`, `pform`, `pforma`, and `math`.
+- For Lua: `lua`, `ctx`, and `lmx`.
+- For projects/modules: `mod`, `comp`, `env`, and `prod`.
+- For placing things: `place`,  `pfig`, and `ptab`.
+- Others: `start`, `text`, `doc`, and `page`.
+
+## Quick Settings
+
+In the command palette there is a command called
+`simple_ConTeXt: Quick change the settings`. It brings up an interactive menu
+for browsing and modifying the current settings. Some things (e.g. adding new
+settings) need to be done by opening up the settings the traditional ST way, but
+especially for modifying existing options this command can be very useful.
+
+## Scripts
+
+We provide a command `simple_ConTeXt: Run a ConTeXt script` in the ST palette.
+It is a straightforward wrapper around a command line, with the environment path
+modified to include the path to the ConTeXt binaries currently chosen in the
+settings (the one named `current_settings ▶ path`). It also expands the default
+ST variables (e.g. `$file`). (Note that it is very basic at the moment, it
+simply waits for the script to finish and only then reports the result. Also, if
+the script has an error of some kind then this command can get stuck.)
+
+This can be a convenience if you have multiple installations of ConTeXt on one
+machine, as it takes care of setting up your PATH for you. Then you can do
+things like
+
+```shell
+mtxrun --generate --force
+```
+
+to (re)generate the file database for the version of ConTeXt currently active in
+simple ConTeXt (typically takes a few seconds), and
+
+```shell
+mtxrun --script font --list --pattern=*latinmodern* --all
+```
+
+to look up all the Latin Modern fonts that ConTeXt is aware of.
 
 ## Misc
 
@@ -209,7 +259,6 @@ names are the same.)
 
 Things that should be relatively easy to add at the moment.
 
-- Add option for return focus to ST after opening PDF on build.
 - Add option for showing output panel, with the choices:
   - never,
   - only if there are errors/warnings,
@@ -222,11 +271,24 @@ Things that should be relatively easy to add at the moment.
     - on save,
     - at regular time intervals;
   - never.
+- Change options structure (again).
+  - I like the current setup we have a lot. However, in order to play nice with
+    the excellent [Package Dev][package-dev] package and also (on reflection) to
+    be more in line with the usual ST style, we should flatten our settings
+    completely. I'm thinking we'll still give the same structure implicitly by
+    using prefixes (and dots as separators).
+  - Then we can provide a version of the quick settings command for flat
+    settings that works the same as the current one for hierarchical settings,
+    and also reap the benefits of Package Dev features (such as settings
+    linting, completions, pop-ups, and quick-edit icons). (Note: we'd better
+    stop using `/* ... */` style comments for this, and only use `// ...` style
+    instead.)
 
 ## Future Features
 
 Features we would like to have, but may be harder to implement.
 
+- Add option for return focus to ST after opening PDF on build.
 - SyncTeX support. (Forward and backward jump to PDF.)
 - Code formatter.
 - Extend the command auto-complete/pop-up system to allow for user-defined
@@ -249,3 +311,4 @@ Features we would like to have, but may be harder to implement.
 [sublime-text]:         https://www.sublimetext.com
 [unicode-completion]:   https://github.com/randy3k/UnicodeCompletion
 [bracket-highlighter]:  https://github.com/facelessuser/BracketHighlighter
+[package-dev]:          https://github.com/SublimeText/PackageDev

@@ -153,10 +153,12 @@ def enclosing_block(view, point, scope, end=None):
     return None
 
 
-# Like \type{enclosing_block}, but checks that \type{point} is the
-# right||boundary of the eventual block. If not, signal an error with
-# \type{None}.
 def left_enclosing_block(view, point, scope, end=None):
+    """
+    Like \\type{enclosing_block}, but checks that \\type{point} is the
+    right||boundary of the eventual block. If not, signal an error with
+    \\type{None}.
+    """
     if end is None:
         end = view.size()
     block = enclosing_block(view, point, scope, end=end)

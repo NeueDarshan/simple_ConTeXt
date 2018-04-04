@@ -4,7 +4,7 @@
 		"command": "simple_context_edit_settings",
 	},
 	{
-		"caption": "simple_ConTeXt: View/change the settings",
+		"caption": "simple_ConTeXt: Quick change the settings",
 		"command": "simple_context_settings_controller",
 	},
 	// Not in an acceptable state at present.

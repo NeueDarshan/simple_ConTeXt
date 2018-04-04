@@ -35,16 +35,16 @@ SELECTORS = {
 }
 
 
-# Strip braces and whitespace.
 def general_clean(text):
+    """Strip braces and whitespace."""
     match = re.match(r"^\s*{\s*(.*?)\s*}\s*", text)
     if match:
         return match.group(1)
     return text.strip()
 
 
-# Strip leading slash from command name.
 def def_clean(text):
+    """Strip leading slash from command name."""
     text = general_clean(text)
     if text.startswith("\\"):
         return text[1:]

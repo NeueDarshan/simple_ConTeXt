@@ -10,6 +10,16 @@ from .scripts import scopes
 BUILT_IN_REFERENCERS = r"\A(about|in|at|from|over)\Z"
 
 
+def is_reference_start(text):
+    return text == "["
+
+
+def is_reference_history(command):
+    if command:
+        return command[0] not in ["left_delete", "right_delete"]
+    return True
+
+
 class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
     def reload_settings(self):
         utilities.reload_settings(self)
@@ -39,8 +49,8 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
             last_char = self.view.substr(max(0, region.end() - 1))
             last_cmd = self.view.command_history(0, modifying_only=True)
             if (
-                self.is_reference_start(last_char) and
-                self.is_reference_history(last_cmd) and
+                is_reference_start(last_char) and
+                is_reference_history(last_cmd) and
                 self.is_reference_command(*ctrl)
             ):
                 self.view.window().run_command(
@@ -51,12 +61,6 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
                         "selected_index": "closest",
                     },
                 )
-
-    def is_reference_start(self, text):
-        return text == "["
-
-    def is_reference_history(self, command):
-        return command[0] not in ["left_delete", "right_delete"]
 
     def is_reference_command(self, begin, end):
         name = self.view.substr(sublime.Region(begin, end))

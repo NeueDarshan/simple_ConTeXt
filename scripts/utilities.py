@@ -87,6 +87,7 @@ def reload_settings(self):
 
     self._builder = self._settings.get("builder", {})
     self._behaviour = self._builder.get("behaviour", {})
+    self._output_panel = self._builder.get("output_panel", {})
     self._options = self._builder.get("options_passed_to_ConTeXt", {})
 
 

@@ -58,11 +58,8 @@ def decode_bytes(text):
 
 
 def clean_output(text):
-    return re.sub(
-        r"resolvers\s*[>|]\s*trees\s*[>|]\s*analyzing\s*'home:texmf'",
-        "",
-        text,
-    ).strip()
+    regex = r"resolvers\s*[>|]\s*trees\s*[>|]\s*analyzing\s*'home:texmf'"
+    return re.sub(regex, "", text).strip()
 
 
 def parse_checker(text, tolerant=True):

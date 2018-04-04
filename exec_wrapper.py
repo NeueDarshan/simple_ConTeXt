@@ -3,9 +3,12 @@ import sublime_plugin
 from .scripts import utilities
 
 
-# A simple wrapper around the built||in \type{exec}. The only difference is we
-# provide some extra variables fetched from the simple ConTeXt settings.
 class SimpleContextExecWrapperCommand(sublime_plugin.WindowCommand):
+    """
+    A simple wrapper around the built||in \\type{exec}. The only difference is
+    we provide some extra variables fetched from the simple ConTeXt settings.
+    """
+
     def reload_settings(self):
         utilities.reload_settings(self)
 

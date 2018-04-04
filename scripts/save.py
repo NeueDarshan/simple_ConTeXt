@@ -57,9 +57,11 @@ class InterfaceSaver:
         self.load_commands(modules=modules)
 
     def load_definitions(self):
-        # To handle resolves pointing to objects not yet defined, we simply do
-        # two passes. Of course, it would be better to handle the dependency
-        # graph in one pass, but this is simpler and seems to be fast enough.
+        """
+        To handle resolves pointing to objects not yet defined, we simply do
+        two passes. Of course, it would be better to handle the dependency
+        graph in one pass, but this is simpler and seems to be fast enough.
+        """
         self.load_definitions_aux()
         self.load_definitions_aux()
 
@@ -97,8 +99,10 @@ class InterfaceSaver:
                 self.do_define(child)
         except (OSError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
-            if self.tolerant: print(msg)
-            else: raise type(e)(msg)
+            if self.tolerant:
+                print(msg)
+            else:
+                raise type(e)(msg)
 
     def load_commands(self, modules=True):
         self.to_load = set()

@@ -43,19 +43,19 @@
 	 *   "setting_groups": {
 	 *     "turn_references_on": {
 	 *       "references": {
-	 *         "on": true,
-	 *       },
+	 *         "on": true
+	 *       }
 	 *     },
 	 *     "turn_references_off": {
 	 *       "references": {
-	 *         "on": false,
-	 *       },
-	 *     },
+	 *         "on": false
+	 *       }
+	 *     }
 	 *   }
 	 * \stoptyping
 	 *
 	 * Then, suppose we ran the command
-	 * \type{simple_ConTeXt: View/change the settings} in the command palette
+	 * \type{simple_ConTeXt: Quick change the settings} in the command palette
 	 * and selected the option called \type{setting_groups}. We would see
 	 * options called \type{turn_references_on} and \type{turn_references_off},
 	 * and selecting either one of them would change the current settings to
@@ -63,6 +63,22 @@
 	 */
 	"setting_groups":
 	{
+		"verbose_builder_on": {
+			"builder": {
+				"output_panel": {
+					"report_full_command": true,
+					"report_ConTeXt_path": true,
+				},
+			},
+		},
+		"verbose_builder_off": {
+			"builder": {
+				"output_panel": {
+					"report_full_command": false,
+					"report_ConTeXt_path": false,
+				},
+			},
+		},
 	},
 	"current_settings":
 	{
@@ -95,7 +111,7 @@
 			 * \starttyping
 			 *   "options_passed_to_ConTeXt": {
 			 *     "randomseed": 42,
-			 *     "jit": true,
+			 *     "jit": true
 			 *   }
 			 * \stoptyping
 			 *
@@ -107,14 +123,19 @@
 				"autogenerate": true,
 				"jit": false,
 			},
-			"behaviour":
+			"output_panel":
 			{
 				/* The options are \type{true}, \type{"when_there_are_errors"}
 				 * and \type{false}. If \type{"show_panel_on_build"} is set to
 				 * \type{false} then this setting is ignored and the build
 				 * panel is never shown.
 				 */
-				"show_output_panel": true,
+				"show": true,
+				"report_full_command": false,
+				"report_ConTeXt_path": false,
+			},
+			"behaviour":
+			{
 				// TODO: implement these options.
 				"auto_build":
 				{
@@ -133,8 +154,8 @@
 					 * \starttyping
 					 *   "extra_options_passed_to_ConTeXt": {
 					 *     "mode": {
-					 *       "draft": true,
-					 *     },
+					 *       "draft": true
+					 *     }
 					 *   }
 					 * \stoptyping
 					 */

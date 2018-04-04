@@ -83,7 +83,6 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
             location=file_[0],
             flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY,
             on_navigate=self.on_navigate,
-            on_hide=self.on_hide,
         )
 
     def on_navigate(self, href):
@@ -130,6 +129,3 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
                 'containing "{}".'
             )
             sublime.error_message(msg.format(href, self._path))
-
-    def on_hide(self):
-        pass

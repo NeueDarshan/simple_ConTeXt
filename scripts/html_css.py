@@ -20,7 +20,8 @@ def match_exact(regex, text):
 # that when a pop||up is requested we consult the exact style used at that
 # point via the ST API.
 CASES = [
-    {  # keyword.control
+    {
+        # keyword.control
         "tags": ("flo", "sfl"),
         "f": lambda text:
             text.startswith("start") or
@@ -30,19 +31,23 @@ CASES = [
                 CONTROL_COND_A, CONTROL_COND_B, CONTROL_MODULE,
             ]),
     },
-    {  # storage.type
+    {
+        # storage.type
         "tags": ("sto", "sst"),
         "f": lambda text: match_exact(r"[xge]?def|g?let|define", text),
     },
-    {  # constant.language
+    {
+        # constant.language
         "tags": ("lan", "sla"),
         "f": lambda text: text in ["relax"],
     },
-    {  # storage.modifier
+    {
+        # storage.modifier
         "tags": ("mod", "smo"),
         "f": lambda text: text in ["global", "immediate", "the", "outer"],
     },
-    {  # support.function
+    {
+        # support.function
         "tags": ("con", "sco"),
         "f": lambda _: True,
     },
@@ -94,9 +99,8 @@ def pretty_print(text):
 
 
 def raw_print(text):
-    return unescape(
-        strip_tags(text.replace("<br>", "\n")).replace("&nbsp;", " ")
-    )
+    text = strip_tags(text.replace("<br>", "\n")).replace("&nbsp;", " ")
+    return unescape(text)
 
 
 def strip_css_comments(text):
