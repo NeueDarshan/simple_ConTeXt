@@ -99,10 +99,15 @@ class ExecMainSubprocess:
         self.proc = subprocess.Popen(cmd, **opts)
         if output == "context":
             self.root.add_to_output("running context:\n")
-            if self.root._output_panel.get("report_ConTeXt_path") is True:
-                path = self.root._settings.get("path")
-                self.root.add_to_output("- path: {}\n".format(path))
-            if self.root._output_panel.get("report_full_command") is True:
+            if self.root.get_setting(
+                "builder/output_panel/report_ConTeXt_path"
+            ) is True:
+                path = self.root.sublime_settings.get("current_settings/path")
+                if path:
+                    self.root.add_to_output("- path: {}\n".format(path))
+            if self.root.get_setting(
+                "builder/output_panel/report_full_command"
+            ) is True:
                 self.root.add_to_output(
                     "- command: {}\n".format(" ".join(cmd))
                 )
@@ -190,6 +195,9 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
         super().__init__(*args, **kwargs)
         self.proc = None
 
+    def get_setting(self, opt):
+        return utilities.get_setting(self, opt)
+
     def reload_settings(self):
         utilities.reload_settings(self)
         self.show_errors_inline = sublime.load_settings(
@@ -249,7 +257,10 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
             sublime.status_message("Building")
 
         self.hide_phantoms()
-        if self.show_panel_on_build and self._output_panel.get("show") is True:
+        if (
+            self.show_panel_on_build and
+            self.get_setting("builder/output_panel/show")
+        ):
             self.show_output()
             self.show_output_on_errors = False
         else:
@@ -257,7 +268,7 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
             # options than \type{"when_there_are_errors"} are just \type{True}
             # and \type{False}.
             self.show_output_on_errors = \
-                isinstance(self._output_panel.get("show"), str)
+                isinstance(self.get_setting("builder/output_panel/show"), str)
 
         if not working_dir and self.view:
             file_ = self.view.file_name()

@@ -5,6 +5,29 @@ from .scripts import utilities
 from .scripts import deep_dict
 
 
+CURRENT_SETTINGS = [
+    "builder/behaviour/auto/after_save",
+    "builder/behaviour/auto/after_time_delay",
+    "builder/behaviour/auto/extra_opts_for_ConTeXt",
+    "builder/behaviour/auto/time_delay",
+    "builder/behaviour/return_focus_after_open_PDF",
+    "builder/opts_for_ConTeXt",
+    "builder/output_panel/report_ConTeXt_path",
+    "builder/output_panel/report_full_command",
+    "builder/output_panel/show",
+    "path",
+    "PDF/open_after_build",
+    "PDF/viewer",
+    "pop_ups/line_break",
+    "pop_ups/methods/on_hover",
+    "pop_ups/methods/on_modified",
+    "pop_ups/show_copy_pop_up",
+    "pop_ups/show_source_files",
+    "references/command_regex",
+    "references/on",
+]
+
+
 def simplify(obj):
     if isinstance(obj, str):
         return obj
@@ -18,9 +41,22 @@ def simplify(obj):
 class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
     def reload_settings(self):
         utilities.reload_settings(self)
+        self.context_paths = \
+            utilities.get_setting_location(self, "ConTeXt_paths", default={})
+
+    def get_setting(self, opt):
+        return utilities.get_setting(self, opt)
+
+    def update_settings(self):
+        self.current_settings = {}
+        for k in CURRENT_SETTINGS:
+            deep_dict.set_safe(
+                self.current_settings, k.split("/"), self.get_setting(k),
+            )
 
     def run(self):
         self.reload_settings()
+        self.update_settings()
         self.encode_settings()
         self.last_scheme = None
         self.location = []
@@ -104,7 +140,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
             self.last_scheme = key
             self.decode_settings()
             for location, val in deep_dict.iter_(value):
-                deep_dict.set_safe(self._settings, location, val)
+                deep_dict.set_safe(self.encoded_settings, location, val)
             self.save(decode=False)
             self.run_panel_scheme()
 
@@ -176,25 +212,62 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
     def save(self, decode=True):
         if decode:
             self.decode_settings()
-        self._sublime_settings.set("current_settings", self._settings)
+        self.write_settings()
+        for k, v in self.to_write.items():
+            self.sublime_settings.set("current_settings/{}".format(k), v)
         sublime.save_settings("simple_ConTeXt.sublime-settings")
         self.reload_settings()
         self.encode_settings()
 
     def encode_settings(self):
-        self.encoded_settings = self._settings
-        self.encoded_settings["path"] = \
-            utilities.Choice(self._paths, choice=self._settings.get("path"))
+        """
+        Load the settings on file into memory, and perform some simple
+        transformations to them.
+        """
+        self.encoded_settings = self.current_settings
+        self.encoded_settings["path"] = utilities.Choice(
+            self.context_paths, choice=self.current_settings.get("path"),
+        )
         viewer = utilities.Choice(
-            self._PDF_viewers, choice=self._PDF.get("viewer"),
+            utilities.get_setting_location(self, "PDF_viewers", default={}),
+            choice=self.get_setting("PDF/viewer"),
         )
         self.encoded_settings.setdefault("PDF", {})["viewer"] = viewer
-        self.encoded_settings["setting_groups"] = self._setting_groups
+        self.encoded_settings["setting_groups"] = \
+            self.sublime_settings.get("setting_groups", {})
 
     def decode_settings(self):
-        self._settings["path"] = self.encoded_settings["path"].get()
-        self._PDF["viewer"] = self.encoded_settings["PDF"]["viewer"].get()
-        del self._settings["setting_groups"]
+        """
+        Write the settings in memory onto the appropriate file, undoing the
+        transformations as appropriate.
+        """
+        self.current_settings["path"] = self.encoded_settings["path"].get()
+        self.current_settings.get("PDF", {})["viewer"] = \
+            self.encoded_settings["PDF"]["viewer"].get()
+        del self.current_settings["setting_groups"]
+
+    def write_settings(self):
+        self.to_write = {}
+        for k, v in deep_dict.iter_(self.current_settings):
+
+            for opt in ["extra_opts_for_ConTeXt", "opts_for_ConTeXt"]:
+                if opt in k:
+                    i = k.index(opt) + 1
+                    deep_dict.set_safe(
+                        self.to_write, ["/".join(k[:i])] + k[i:], v,
+                    )
+                    break
+            else:
+                self.to_write["/".join(k)] = v
+
+            # if "extra_opts_for_ConTeXt" in k:
+            #     i = k.index("extra_opts_for_ConTeXt") + 1
+            #     deep_dict.set_safe(self.to_write, ["/".join(k[:i])] + k[i:], v)
+            # elif "opts_for_ConTeXt" in k:
+            #     i = k.index("opts_for_ConTeXt") + 1
+            #     deep_dict.set_safe(self.to_write, ["/".join(k[:i])] + k[i:], v)
+            # else:
+            #     self.to_write["/".join(k)] = v
 
 
 class SimpleContextEditSettingsCommand(sublime_plugin.WindowCommand):

@@ -4,7 +4,6 @@ import re
 import sublime
 import sublime_plugin
 
-from .scripts import utilities
 from .scripts import scopes
 
 
@@ -98,7 +97,7 @@ class SimpleContextUnHighlightSelectionCommand(sublime_plugin.TextCommand):
 
 class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
     def reload_settings(self):
-        utilities.reload_settings(self)
+        # utilities.reload_settings(self)
         self.reload_view()
 
     def reload_view(self):
@@ -223,7 +222,7 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
 
 class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
     def reload_settings(self):
-        utilities.reload_settings(self)
+        # utilities.reload_settings(self)
         self.reload_view()
 
     def reload_view(self):

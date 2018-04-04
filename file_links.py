@@ -95,7 +95,7 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
             methods.append(os.path.normpath(os.path.join(self.base_dir, "..")))
 
             file_ = files.fuzzy_locate(
-                self._path,
+                self.context_path,
                 href,
                 flags=self.flags,
                 extensions=self.extensions,
@@ -106,7 +106,10 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
                 return
 
         other = files.fuzzy_locate(
-            self._path, href, flags=self.flags, extensions=self.extensions,
+            self.context_path,
+            href,
+            flags=self.flags,
+            extensions=self.extensions,
         )
         if other and os.path.exists(other):
             # For some reason, this is crashing Sublime Text on finishing the
@@ -117,7 +120,7 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
             #     'current working directory.\n\nFound a file with the same '
             #     'name in the TeX tree containing "{}", open instead?'
             # )
-            # if sublime.ok_cancel_dialog(msg.format(href, self._path)):
+            # if sublime.ok_cancel_dialog(msg.format(href, self.context_path)):
             #     self.view.window().open_file(other)
             #
             # So instead let's just open the file.
@@ -128,4 +131,4 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
                 'current working directory, and in the TeX tree '
                 'containing "{}".'
             )
-            sublime.error_message(msg.format(href, self._path))
+            sublime.error_message(msg.format(href, self.context_path))

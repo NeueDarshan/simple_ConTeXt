@@ -8,6 +8,9 @@ class SimpleContextBuildOnSaveListener(sublime_plugin.ViewEventListener):
     def reload_settings(self):
         utilities.reload_settings(self)
 
+    def get_setting(self, opt):
+        return utilities.get_setting(self, opt)
+
     def is_visible(self):
         return scopes.is_context(self.view)
 
@@ -15,6 +18,6 @@ class SimpleContextBuildOnSaveListener(sublime_plugin.ViewEventListener):
         self.reload_settings()
         if (
             self.is_visible() and
-            self._behaviour.get("auto_build", {}).get("after_save")
+            self.get_setting("builder/behaviour/auto/after_save")
         ):
             self.view.window().run_command("build")

@@ -165,11 +165,24 @@ class SimpleContextMacroSignatureEventListener(
         self.extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
         self.last_ctrl_seq = None
 
+    def get_setting(self, opt):
+        return utilities.get_setting(self, opt)
+
     def reload_settings(self):
         utilities.reload_settings(self)
+        self.pop_ups = {
+            k.split("/")[-1]: self.get_setting("pop_ups/{}".format(k))
+            for k in [
+                "line_break",
+                "methods/on_hover",
+                "methods/on_modified",
+                "show_copy_pop_up",
+                "show_source_files",
+            ]
+        }
         self.flags = \
             files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
-        self.name = files.file_as_slug(self._path)
+        self.name = files.file_as_slug(self.context_path)
         self.size = self.view.size()
         if (
             self.state == IDLE and
@@ -185,7 +198,7 @@ class SimpleContextMacroSignatureEventListener(
             "simple_context_regenerate_interface_files",
             {
                 "do_all": False,
-                "paths": [self._path],
+                "paths": [self.context_path],
                 "overwrite": False,
             },
         )
@@ -240,7 +253,7 @@ class SimpleContextMacroSignatureEventListener(
         self.reload_settings()
         if (
             self.state != IDLE or
-            not self._pop_ups.get("methods", {}).get("on_hover") or
+            not self.get_setting("pop_ups/methods/on_hover") or
             not self.is_visible()
         ):
             self.view.hide_popup()
@@ -268,7 +281,7 @@ class SimpleContextMacroSignatureEventListener(
         if (
             self.state != IDLE or
             not self.is_visible() or
-            not self._pop_ups.get("methods", {}).get("on_modified")
+            not self.get_setting("pop_ups/methods/on_modified")
         ):
             self.view.hide_popup()
             return
@@ -297,7 +310,7 @@ class SimpleContextMacroSignatureEventListener(
                 self.view.hide_popup()
 
     def get_popup_text(self, name):
-        new_pop_up_state = json.dumps(self._pop_ups, sort_keys=True)
+        new_pop_up_state = json.dumps(self.pop_ups, sort_keys=True)
         if not hasattr(self, "prev_pop_up_state"):
             self.prev_pop_up_state = None
         if new_pop_up_state != self.prev_pop_up_state:
@@ -305,7 +318,7 @@ class SimpleContextMacroSignatureEventListener(
         if name not in self.html_cache[self.name]:
             cmd = self.cache[self.name][name]
             self.html_cache[self.name][name] = self.loader.load(
-                name, cmd, protect_space=True, **self._pop_ups
+                name, cmd, protect_space=True, **self.pop_ups
             )
         self.prev_pop_up_state = new_pop_up_state
         self.popup_name = name
@@ -372,13 +385,16 @@ class SimpleContextMacroSignatureEventListener(
                 self.copy(html_css.raw_print(text))
 
     def on_navigate_file(self, name, command):
-        main = files.locate(self._path, name, flags=self.flags)
+        main = files.locate(self.context_path, name, flags=self.flags)
         if main and os.path.exists(main):
             view = self.view.window().open_file(main)
             try_jump_to_def(view, command)
         else:
             other = files.fuzzy_locate(
-                self._path, name, extensions=self.extensions, flags=self.flags,
+                self.context_path,
+                name,
+                extensions=self.extensions,
+                flags=self.flags,
             )
             if other and os.path.exists(other):
                 # For some reason, this is crashing Sublime Text on finishing
@@ -389,7 +405,9 @@ class SimpleContextMacroSignatureEventListener(
                 #     'containing "{}".\n\nFound file "{}" with similar name, '
                 #     'open instead?'
                 # )
-                # msg = msg_.format(name, self._path, os.path.basename(other))
+                # msg = msg_.format(
+                #     name, self.context_path, os.path.basename(other)
+                # )
                 # if sublime.ok_cancel_dialog(msg):
                 #     self.view.window().open_file(other)
                 #
@@ -401,7 +419,7 @@ class SimpleContextMacroSignatureEventListener(
                     'Unable to locate file "{}".\n\nSearched in the TeX tree '
                     'containing "{}".'
                 )
-                sublime.error_message(msg.format(name, self._path))
+                sublime.error_message(msg.format(name, self.context_path))
 
     def copy(self, text):
         self.view.hide_popup()

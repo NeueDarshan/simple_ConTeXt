@@ -67,47 +67,45 @@ def iter_i_merge_sorted(sorted_iters, key=first_of_one):
         stack[i] = next(sorted_iters[i], None)
 
 
+def get_path_setting(self, default=None):
+    path = self.sublime_settings.get("current_settings/path", "")
+    paths = get_setting_location(self, "ConTeXt_paths", default={})
+    return paths.get(path, default)
+
+
+def get_setting(self, opt, default=None):
+    return \
+        self.sublime_settings.get("current_settings/{}".format(opt), default)
+
+
+def get_setting_location(self, opt, default=None):
+    return \
+        self.sublime_settings.get("program_locations/{}".format(opt), default)
+
+
 def reload_settings(self):
-    self._sublime_settings = \
+    self.sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
-    self._program_locations = \
-        self._sublime_settings.get("program_locations", {})
-    self._paths = self._program_locations.get("ConTeXt_paths", {})
-    self._PDF_viewers = self._program_locations.get("PDF_viewers", {})
-    self._settings = self._sublime_settings.get("current_settings", {})
-    self._setting_groups = self._sublime_settings.get("setting_groups", {})
-
-    self._path = self._settings.get("path")
-    if self._path in self._paths:
-        self._path = self._paths[self._path]
-
-    self._PDF = self._settings.get("PDF", {})
-    self._pop_ups = self._settings.get("pop_ups", {})
-    self._references = self._settings.get("references", {})
-
-    self._builder = self._settings.get("builder", {})
-    self._behaviour = self._builder.get("behaviour", {})
-    self._output_panel = self._builder.get("output_panel", {})
-    self._options = self._builder.get("options_passed_to_ConTeXt", {})
+    self.context_path = get_path_setting(self)
 
 
 def get_variables(self):
     variables = self.window.extract_variables()
-
     variables["simple_context_path_sep"] = re.escape(os.path.sep)
 
     env = os.environ.copy()
-    if self._path and os.path.exists(self._path):
+    if self.context_path and os.path.exists(self.context_path):
         variables["simple_context_prefixed_path"] = \
-            files.add_path(env["PATH"], self._path)
+            files.add_path(env["PATH"], self.context_path)
     else:
         variables["simple_context_prefixed_path"] = env["PATH"]
 
-    name = self._PDF.get("viewer")
-    viewer = self._PDF_viewers.get(name)
-    variables["simple_context_pdf_viewer"] = viewer if viewer else ""
+    name = get_setting(self, "PDF/viewer")
+    viewer = \
+        get_setting_location(self, "PDF_viewers", default={}).get(name, "")
+    variables["simple_context_pdf_viewer"] = viewer
     variables["simple_context_open_pdf_after_build"] = \
-        str(bool(self._PDF.get("open_after_build")))
+        str(bool(get_setting(self, "PDF/open_after_build")))
 
     return variables
 
@@ -126,12 +124,16 @@ def _expand_variables(self, args, variables):
         result = []
         for x in args:
             if x == "$simple_context_insert_options":
-                result += process_options(self, self._options, variables)
+                result += process_options(
+                    self,
+                    get_setting(self, "builder/opts_for_ConTeXt"),
+                    variables,
+                )
             else:
                 result.append(_expand_variables(self, x, variables))
         return result
     elif args == "$simple_context_open_pdf_after_build":
-        return bool(self._PDF.get("open_after_build"))
+        return bool(get_setting(self, "PDF/open_after_build"))
     return args
 
 

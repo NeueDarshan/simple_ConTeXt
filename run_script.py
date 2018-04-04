@@ -31,9 +31,10 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
 
     def reload_settings(self):
         utilities.reload_settings(self)
-        if self._path and os.path.exists(self._path):
+        if self.context_path and os.path.exists(self.context_path):
             environ = os.environ.copy()
-            environ["PATH"] = files.add_path(environ["PATH"], self._path)
+            environ["PATH"] = \
+                files.add_path(environ["PATH"], self.context_path)
             self.options["env"] = environ
         else:
             self.options["env"] = os.environ.copy()

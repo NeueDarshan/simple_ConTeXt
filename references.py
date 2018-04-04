@@ -24,12 +24,15 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
     def reload_settings(self):
         utilities.reload_settings(self)
 
+    def get_setting(self, opt):
+        return utilities.get_setting(self, opt)
+
     def is_visible(self):
         return scopes.is_context(self.view)
 
     def on_modified_async(self):
         self.reload_settings()
-        if not (self.is_visible() and self._references.get("on")):
+        if not self.is_visible() or not self.get_setting("references/on"):
             return
 
         sel = self.view.sel()
@@ -64,7 +67,7 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
 
     def is_reference_command(self, begin, end):
         name = self.view.substr(sublime.Region(begin, end))
-        user_regex = self._references.get("command_regex")
+        user_regex = self.get_setting("references/command_regex")
         if re.match(BUILT_IN_REFERENCERS, name):
             return True
         elif user_regex and re.match(r"\A" + user_regex + r"\Z", name):

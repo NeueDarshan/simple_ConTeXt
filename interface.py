@@ -27,6 +27,8 @@ class SimpleContextRegenerateInterfaceFilesCommand(
         utilities.reload_settings(self)
         self.flags = \
             files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+        self.context_paths = \
+            utilities.get_setting_location(self, "ConTeXt_paths", default={})
 
     def run(
         self,
@@ -42,7 +44,9 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             self.state = RUNNING
 
             def f():
-                self.run_aux(self._paths if do_all else paths, overwrite)
+                self.run_aux(
+                    self.context_paths if do_all else paths, overwrite,
+                )
 
             if threaded:
                 thread = threading.Thread(target=f)
@@ -55,8 +59,8 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             self.run_aux_i(path, overwrite)
 
     def run_aux_i(self, path, overwrite):
-        if path in self._paths:
-            path = self._paths[path]
+        if path in self.context_paths:
+            path = self.context_paths[path]
 
         slug = files.file_as_slug(path)
         dir_ = os.path.join(
