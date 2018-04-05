@@ -12,9 +12,9 @@ CURRENT_SETTINGS = [
     "builder/behaviour/auto/time_delay",
     "builder/behaviour/return_focus_after_open_PDF",
     "builder/opts_for_ConTeXt",
-    "builder/output_panel/report_ConTeXt_path",
-    "builder/output_panel/report_full_command",
-    "builder/output_panel/show",
+    "builder/output/show_ConTeXt_path",
+    "builder/output/show_full_command",
+    "builder/output/show",
     "path",
     "PDF/open_after_build",
     "PDF/viewer",
@@ -214,7 +214,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
             self.decode_settings()
         self.write_settings()
         for k, v in self.to_write.items():
-            self.sublime_settings.set("current_settings/{}".format(k), v)
+            self.sublime_settings.set("current.{}".format(k), v)
         sublime.save_settings("simple_ConTeXt.sublime-settings")
         self.reload_settings()
         self.encode_settings()
@@ -259,15 +259,6 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
                     break
             else:
                 self.to_write["/".join(k)] = v
-
-            # if "extra_opts_for_ConTeXt" in k:
-            #     i = k.index("extra_opts_for_ConTeXt") + 1
-            #     deep_dict.set_safe(self.to_write, ["/".join(k[:i])] + k[i:], v)
-            # elif "opts_for_ConTeXt" in k:
-            #     i = k.index("opts_for_ConTeXt") + 1
-            #     deep_dict.set_safe(self.to_write, ["/".join(k[:i])] + k[i:], v)
-            # else:
-            #     self.to_write["/".join(k)] = v
 
 
 class SimpleContextEditSettingsCommand(sublime_plugin.WindowCommand):

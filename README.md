@@ -56,21 +56,18 @@ Afterwards, there are some optional things to set up.
 
 Open the simple ConTeXt settings file via `Preferences: simple_ConTeXt Settings`
 in the command palette or
-`Preferences ▶ Package Settings ▶ simple_ConTeXt ▶ Settings` in the menu bar.
+`Preferences ▶ Package Settings ▶ simple_ConTeXt ▶ Settings` from the menu bar.
 Under the `paths` key, put in a key-value entry for the ConTeXt installation on
 your machine: the key is just a name for that installation, and the value should
 be the path to the `context` binaries. For example: if you have the `context`
-program located at
-`/home/user-name/.local/context/tex/texmf-linux-64/bin/context` (so the ConTeXt
-installation tree's root is at `/home/user-name/.local/context/`), then you
-should write something like
+program located at `/some-path/context/tex/texmf-linux-64/bin/context` (so the
+ConTeXt installation tree's root is at `/some-path/context/`), then you should
+write something like
 
 ```json
 {
-  "program_locations": {
-    "ConTeXt_paths": {
-      "example": "/home/user-name/.local/context/tex/texmf-linux-64/bin"
-    }
+  "program_locations.ConTeXt_paths": {
+    "example": "/home/user-name/.local/context/tex/texmf-linux-64/bin"
   }
 }
 ```
@@ -82,10 +79,10 @@ each one, and they can happily coexist in simple ConTeXt.
 ### PDFs
 
 For opening PDFs after building a ConTeXt file, and for opening the manuals, the
-`current_settings ▶ PDF ▶ viewer` entry is consulted. It should be the name of
-one of the keys in `program_locations ▶ PDF_viewers`.
+`current.PDF/viewer` entry is consulted. It should be the name of one of the
+keys in `program_locations.PDF_viewers`.
 
-Similarly to the previous, the keys in `program_locations ▶ PDF_viewers` can be
+Similarly to the previous, the keys in `program_locations.PDF_viewers` can be
 any string, but each value should be the name of a PDF viewer program. (In the
 case of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your
 environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
@@ -143,7 +140,8 @@ Consider adding the following to your ConTeXt syntax specific settings:
 ```json
 {
   "spell_check": true,
-  "spelling_selector": "text.tex.context - (meta.control-word.context, meta.environment.math.context, meta.brackets.context, source, markup.raw, comment)"
+  "spelling_selector":
+    "text.tex.context - (meta.control-word.context, meta.environment.math.context, meta.brackets.context, source, markup.raw, comment)"
 }
 ```
 
@@ -167,7 +165,8 @@ support for ConTeXt start/stop commands.
       "scope_exclude": ["- meta.structure"],
       "language_filter": "whitelist",
       "language_list": ["ConTeXt"],
-      "plugin_library": "simple_ConTeXt.bracket_highlighter.context_environments",
+      "plugin_library":
+        "simple_ConTeXt.bracket_highlighter.context_environments",
       "enabled": true
     }
   ]
@@ -226,10 +225,10 @@ especially for modifying existing options this command can be very useful.
 We provide a command `simple_ConTeXt: Run a ConTeXt script` in the ST palette.
 It is a straightforward wrapper around a command line, with the environment path
 modified to include the path to the ConTeXt binaries currently chosen in the
-settings (the one named `current_settings ▶ path`). It also expands the default
-ST variables (e.g. `$file`). (Note that it is very basic at the moment, it
-simply waits for the script to finish and only then reports the result. Also, if
-the script has an error of some kind then this command can get stuck.)
+settings (the one named `current.path`). It also expands the default ST
+variables (e.g. `$file`). (Note that it is very basic at the moment, it simply
+waits for the script to finish and only then reports the result. Also, if the
+script has an error of some kind then this command can get stuck.)
 
 This can be a convenience if you have multiple installations of ConTeXt on one
 machine, as it takes care of setting up your PATH for you. Then you can do
@@ -259,11 +258,6 @@ names are the same.)
 
 Things that should be relatively easy to add at the moment.
 
-- Add option for showing output panel, with the choices:
-  - never,
-  - only if there are errors/warnings,
-  - always.
-- Review README.
 - Add auto-build functionality. It should have the ability to pass different
   options to the auto-builder, e.g. `--flags=draft`. It should have options for
   when to run:
@@ -271,18 +265,6 @@ Things that should be relatively easy to add at the moment.
     - on save,
     - at regular time intervals;
   - never.
-- Change options structure (again).
-  - I like the current setup we have a lot. However, in order to play nice with
-    the excellent [Package Dev][package-dev] package and also (on reflection) to
-    be more in line with the usual ST style, we should flatten our settings
-    completely. I'm thinking we'll still give the same structure implicitly by
-    using prefixes (and dots as separators).
-  - Then we can provide a version of the quick settings command for flat
-    settings that works the same as the current one for hierarchical settings,
-    and also reap the benefits of Package Dev features (such as settings
-    linting, completions, pop-ups, and quick-edit icons). (Note: we'd better
-    stop using `/* ... */` style comments for this, and only use `// ...` style
-    instead.)
 
 ## Future Features
 

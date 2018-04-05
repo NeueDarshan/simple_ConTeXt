@@ -1,9 +1,10 @@
 def is_scope(view, scope):
     sel = view.sel()
-    if sel:
+    try:
         return view.match_selector(sel[0].begin(), scope)
-    # If in doubt, let's return \type{False}
-    return False
+    except IndexError:
+        # If in doubt, let's return \type{False}
+        return False
 
 
 def is_context(view):

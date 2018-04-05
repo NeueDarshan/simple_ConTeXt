@@ -99,15 +99,11 @@ class ExecMainSubprocess:
         self.proc = subprocess.Popen(cmd, **opts)
         if output == "context":
             self.root.add_to_output("running context:\n")
-            if self.root.get_setting(
-                "builder/output_panel/report_ConTeXt_path"
-            ) is True:
+            if self.root.get_setting("builder/output/show_ConTeXt_path"):
                 path = self.root.sublime_settings.get("current_settings/path")
                 if path:
                     self.root.add_to_output("- path: {}\n".format(path))
-            if self.root.get_setting(
-                "builder/output_panel/report_full_command"
-            ) is True:
+            if self.root.get_setting("builder/output/show_full_command"):
                 self.root.add_to_output(
                     "- command: {}\n".format(" ".join(cmd))
                 )
@@ -259,7 +255,7 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
         self.hide_phantoms()
         if (
             self.show_panel_on_build and
-            self.get_setting("builder/output_panel/show")
+            self.get_setting("builder/output/show")
         ):
             self.show_output()
             self.show_output_on_errors = False
@@ -268,7 +264,7 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
             # options than \type{"when_there_are_errors"} are just \type{True}
             # and \type{False}.
             self.show_output_on_errors = \
-                isinstance(self.get_setting("builder/output_panel/show"), str)
+                isinstance(self.get_setting("builder/output/show"), str)
 
         if not working_dir and self.view:
             file_ = self.view.file_name()

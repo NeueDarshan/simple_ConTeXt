@@ -68,19 +68,18 @@ def iter_i_merge_sorted(sorted_iters, key=first_of_one):
 
 
 def get_path_setting(self, default=None):
-    path = self.sublime_settings.get("current_settings/path", "")
+    path = self.sublime_settings.get("current.path", "")
     paths = get_setting_location(self, "ConTeXt_paths", default={})
     return paths.get(path, default)
 
 
 def get_setting(self, opt, default=None):
-    return \
-        self.sublime_settings.get("current_settings/{}".format(opt), default)
+    return self.sublime_settings.get("current.{}".format(opt), default)
 
 
 def get_setting_location(self, opt, default=None):
     return \
-        self.sublime_settings.get("program_locations/{}".format(opt), default)
+        self.sublime_settings.get("program_locations.{}".format(opt), default)
 
 
 def reload_settings(self):

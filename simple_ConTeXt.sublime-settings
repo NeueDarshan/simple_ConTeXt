@@ -1,84 +1,55 @@
 {
-	// If the PDF viewer is on your 'PATH' environment
-	// variable then you can just give its name;
-	// otherwise, you must specify its full path. Some
-	// example values are given by default.
-	"program_locations/PDF_viewers": {
-		"evince": "evince",
-		"sumatra": "sumatraPDF",
-		"skim": "skim",
-	},
-
-	// The keys here are just names for a ConTeXt
-	// installation, and the value should be the path to
-	// the context binaries. For example: if you have the
-	// context program located at
-	// '/home/foo/context/tex/texmf-linux-64/bin/context'
-	// (so the ConTeXt installation tree's root is at
-	// '/home/foo/context/'), then you should write
-	// something like
-	//
-	// ```json
-	// {
-	//   "program_locations/ConTeXt_paths": {
-	//     "example":
-	//       "/home/foo/context/tex/texmf-linux-64/bin"
-	//   }
-	// }
-	// ```
-	"program_locations/ConTeXt_paths": {
-		"example": "/example/path/to/context/program",
-	},
-
-	// Each entry in this dictionary has a name to refer
-	// to it by, and the value should be a dictionary to
-	// merge and overwrite the current settings with. For
-	// example, we could have the following.
-	//
-	// ```json
-	// "setting_groups": {
-	//   "turn_references_on": {
-	//     "references.on": true
-	//   },
-	//   "turn_references_off": {
-	//     "references.on": false
-	//   }
-	// }
-	// ```
-	//
-	// Then, suppose we ran the command 'simple_ConTeXt:
-	// Quick change the settings' in the command palette
-	// and selected the option called 'setting_groups'. We
-	// would see options called 'turn_references_on' and
-	// 'turn_references_off', and selecting either one of
-	// them would change the current settings to turn
-	// references on/off respectively.
-	"setting_groups": {
-		"verbose_builder_on": {
-			"builder/output_panel/report_full_command": true,
-			"builder/output_panel/report_ConTeXt_path": true,
-		},
-		"verbose_builder_off": {
-			"builder/output_panel/report_full_command": false,
-			"builder/output_panel/report_ConTeXt_path": false,
-		},
-	},
-
-	// The value should be one of the names in the
-	// 'program_locations/PDF_viewers' option.
-	"current_settings/PDF/viewer": "evince",
 	// Set to `true` or `false`. Technical note: the
 	// variable '$simple_context_open_pdf_after_build' in
 	// the ConTeXt builder gets this value assigned to it.
-	"current_settings/PDF/open_after_build": true,
+	"current.PDF/open_after_build": true,
+	// The value should be one of the names in the
+	// 'program_locations.PDF_viewers' option.
+	"current.PDF/viewer": "evince",
+
+	// Whether to rebuild on saving: `true` or `false`.
+	"current.builder/behaviour/auto/after_save": false,
+	// Whether to rebuild forever with a time delay given
+	// by the 'current.builder/behaviour/auto/time_delay'
+	// option. Either `true` or `false`.
+	"current.builder/behaviour/auto/after_time_delay": false,
+	// Extra options to pass to the 'context' process when
+	// doing an auto-build. For example, to pass the
+	// option '--mode=draft' you could do the following.
+	//
+	// ```json
+	// {
+	//   'current.builder/behaviour/auto/extra_opts_for_ConTeXt': {
+	//     'mode': {
+	//       'draft': true
+	//     }
+	//   }
+	// }
+	// ```
+	//
+	// TODO: implement this.
+	"current.builder/behaviour/auto/extra_opts_for_ConTeXt": {
+		"mode": {
+			"draft": true,
+		},
+	},
+	// Time delay in seconds. Should be numeric.
+	"current.builder/behaviour/auto/time_delay": 60,
+
+	// Whether to change window focus back to Sublime Text
+	// after opening the PDF file at the end of a
+	// successful build; `true` or `false`.
+	//
+	// TODO: implement this.
+	"current.builder/behaviour/return_focus_after_open_PDF": true,
 
 	// These options will be passed along to the 'context'
 	// process. You can simply pass a string, like so.
 	//
 	// ```json
 	// {
-	//   "current_settings/builder/opts_for_ConTeXt":
-	//     "--randomseed=42 --jit"
+	//   'current.builder/opts_for_ConTeXt':
+	//     '--randomseed=42 --jit'
 	// }
 	// ```
 	//
@@ -90,102 +61,58 @@
 	//
 	// ```json
 	// {
-	//   "current_settings/builder/opts_for_ConTeXt": {
-	//     "randomseed": 42,
-	//     "jit": true
+	//   'current.builder/opts_for_ConTeXt': {
+	//     'randomseed': 42,
+	//     'jit': true
 	//   }
 	// }
 	// ```
 	//
 	// TODO: talk more about the structured approach, and
 	// improve the actual implementation.
-	"current_settings/builder/opts_for_ConTeXt": {
+	"current.builder/opts_for_ConTeXt": {
 		"autogenerate": true,
 		"jit": false,
 	},
 
+	// Set to `true` or `false`; whether to show the
+	// current ConTeXt path being used in the output
+	// panel.
+	"current.builder/output/show_ConTeXt_path": false,
+	// Set to `true` or `false`; whether to show the full
+	// command in the output panel.
+	"current.builder/output/show_full_command": false,
 	// The options are `true`, `when_there_are_errors` and
 	// `false`. If the global Sublime Text setting
 	// 'show_panel_on_build' is set to 'false' then this
 	// setting is ignored and the build panel is never
 	// shown.
-	"current_settings/builder/output_panel/show": true,
-	// Set to `true` or `false`; whether to show the full
-	// command in the output panel.
-	"current_settings/builder/output_panel/report_full_command": false,
-	// Set to `true` or `false`; whether to show the
-	// current ConTeXt path being used in the output
-	// panel.
-	"current_settings/builder/output_panel/report_ConTeXt_path": false,
-
-	// Whether to rebuild on saving: `true` or `false`.
-	"current_settings/builder/behaviour/auto/after_save": false,
-	// Whether to rebuild forever with a time delay given
-	// by the
-	// 'current_settings/builder/behaviour/auto/time_delay'
-	// option. Either `true` or `false`.
-	"current_settings/builder/behaviour/auto/after_time_delay": false,
-	// Time delay in seconds. Should be numeric.
-	"current_settings/builder/behaviour/auto/time_delay": 60,
-	// Extra options to pass to the 'context' process when
-	// doing an auto-build. For example, to pass the
-	// option '--mode=draft' you could do the following.
-	//
-	// ```json
-	// {
-	//   "current_settings/builder/behaviour/auto/extra_opts_for_ConTeXt": {
-	//     "mode": {
-	//       "draft": true
-	//     }
-	//   }
-	// }
-	// ```
-	"current_settings/builder/behaviour/auto/extra_opts_for_ConTeXt": {
-		"mode": {
-			"draft": true,
-		},
-	},
-
-	// Whether to change window focus back to Sublime Text
-	// after opening the PDF file at the end of a
-	// successful build; `true` or `false`.
-	//
-	// TODO: implement this.
-	"current_settings/builder/behaviour/return_focus_after_open_PDF": true,
+	"current.builder/output/show": true,
 
 	// This should be one of the keys in the
-	// 'program_locations/ConTeXt_paths' option.
-	"current_settings/path": "example",
+	// 'program_locations.ConTeXt_paths' option.
+	"current.path": "example",
 
 	// Options are either a numeric value (I find 65 to be
 	// a reasonable default) or `false` which turns
 	// line-breaking off entirely.
-	"current_settings/pop_ups/line_break": 65,
-
+	"current.pop_ups/line_break": 65,
 	// Whether to show pop-ups when you hover over a
 	// command name '\foo'. Should be `true` or `false`.
-	"current_settings/pop_ups/methods/on_hover": true,
+	"current.pop_ups/methods/on_hover": true,
 	// Whether to show pop-ups when you type in a command
 	// name '\foo'. Should be `true` or `false`.
-	"current_settings/pop_ups/methods/on_modified": true,
-
+	"current.pop_ups/methods/on_modified": true,
 	// Whether to show an option to copy the contents of a
 	// pop-up into the copy/paste clipboard. Occasionally
 	// useful. Set to either `true` or `false`.
-	"current_settings/pop_ups/show_copy_pop_up": false,
-
+	"current.pop_ups/show_copy_pop_up": false,
 	// Whether to show the source file in a pop-up for a
 	// command '\foo'. If so, the source file is a
 	// clickable link which will take you to that file,
 	// and moreover to the exact definition site (assuming
 	// we can find it). Set to `true` or `false`.
-	"current_settings/pop_ups/show_source_files": true,
-
-	// Whether to bring up the list of references upon
-	// typing in the start of a reference command. For
-	// example, typing the sequence '\in[' will trigger
-	// this. Can be `true` or `false`.
-	"current_settings/references/on": true,
+	"current.pop_ups/show_source_files": true,
 
 	// This is a less-than-elegant solution to a tricky
 	// problem. We provide the reference functionality for
@@ -201,5 +128,74 @@
 	//
 	// Should be a string, the default value of
 	// `[a-zA-Z]*ref` seems reasonable to me.
-	"current_settings/references/command_regex": "[a-zA-Z]*ref",
+	"current.references/command_regex": "[a-zA-Z]*ref",
+	// Whether to bring up the list of references upon
+	// typing in the start of a reference command. For
+	// example, typing the sequence '\in[' will trigger
+	// this. Can be `true` or `false`.
+	"current.references/on": true,
+
+	// The keys here are just names for a ConTeXt
+	// installation, and the value should be the path to
+	// the context binaries. For example: if you have the
+	// context program located at
+	// '/home/foo/context/tex/texmf-linux-64/bin/context'
+	// (so the ConTeXt installation tree's root is at
+	// '/home/foo/context/'), then you should write
+	// something like
+	//
+	// ```json
+	// {
+	//   'program_locations.ConTeXt_paths': {
+	//     'example':
+	//       '/home/foo/context/tex/texmf-linux-64/bin'
+	//   }
+	// }
+	// ```
+	"program_locations.ConTeXt_paths": {
+		"example": "/example/path/to/context/program",
+	},
+	// If the PDF viewer is on your 'PATH' environment
+	// variable then you can just give its name;
+	// otherwise, you must specify its full path. Some
+	// example values are given by default.
+	"program_locations.PDF_viewers": {
+		"evince": "evince",
+		"sumatra": "sumatraPDF",
+		"skim": "skim",
+	},
+
+	// Each entry in this dictionary has a name to refer
+	// to it by, and the value should be a dictionary to
+	// merge and overwrite the current settings with. For
+	// example, we could have the following.
+	//
+	// ```json
+	// 'setting_groups': {
+	//   'turn_references_on': {
+	//     'references.on': true
+	//   },
+	//   'turn_references_off': {
+	//     'references.on': false
+	//   }
+	// }
+	// ```
+	//
+	// Then, suppose we ran the command 'simple_ConTeXt:
+	// Quick change the settings' in the command palette
+	// and selected the option called 'setting_groups'. We
+	// would see options called 'turn_references_on' and
+	// 'turn_references_off', and selecting either one of
+	// them would change the current settings to turn
+	// references on/off respectively.
+	"setting_groups": {
+		"verbose_builder_on": {
+			"builder/output/show_full_command": true,
+			"builder/output/show_ConTeXt_path": true,
+		},
+		"verbose_builder_off": {
+			"builder/output/show_full_command": false,
+			"builder/output/show_ConTeXt_path": false,
+		},
+	},
 }

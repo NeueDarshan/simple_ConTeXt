@@ -146,10 +146,9 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        math.main.pop-if-stopformula/,
-        argument.list*/,
-      ]
+      push:
+        - math.main.pop-if-stopformula/
+        - argument.list*/
     - match: '(\\)start(display|d)math\b'
       captures:
         0:
@@ -167,10 +166,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group.math.outer*/,
-        argument.list*/,
-      ]
+      push:
+        - argument.group.math.outer*/
+        - argument.list*/
     - match: '(\\)inline(?:math|mathematics)\b'
       captures:
         0: meta.control-word.context support.function.context
@@ -328,10 +326,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group.math.adjacent*/,
-        argument.list.math.adjacent*/,
-      ]
+      push:
+        - argument.group.math.adjacent*/
+        - argument.list.math.adjacent*/
 
   math.control.intertext:
     - match: '(\\)start(intertext)\b'
@@ -356,10 +353,9 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        math.main.cases/,
-        argument.list.adjacent*/,
-      ]
+      push:
+        - math.main.cases/
+        - argument.list.adjacent*/
 
   math.cases.rows:
     - match: '(\\)NC\b'
@@ -435,10 +431,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group.Lua*/,
-        argument.integer*/,
-      ]
+      push:
+        - argument.group.Lua*/
+        - argument.integer*/
     # Hmm, a bit overkill? Should some of these permit an integer as well?
     - match:
         "(\\\\)(?:luacode|(?:late|direct)lua(?:code)?|cld(?:command|context|\
@@ -516,29 +511,26 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group.with-assignments*/,
-        argument.group*/,
-      ]
+      push:
+        - argument.group.with-assignments*/
+        - argument.group*/
     - match: '(\\)setMPpositiongraphic\b'
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group.with-assignments*/,
-        argument.group*/,
-        argument.group*/,
-      ]
+      push:
+        - argument.group.with-assignments*/
+        - argument.group*/
+        - argument.group*/
     - match: '(\\)setMPpositiongraphicrange\b'
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group.with-assignments*/,
-        argument.group*/,
-        argument.group*/,
-        argument.group*/,
-      ]
+      push:
+        - argument.group.with-assignments*/
+        - argument.group*/
+        - argument.group*/
+        - argument.group*/
 
   MetaFun.block:
     - match: '(\\)startuniqueMPgraphic\b'
@@ -547,127 +539,115 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.uniqueMPgraphic/,
-        argument.group*/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.uniqueMPgraphic/
+        - argument.group*/
+        - argument.group*/
     - match: '(\\)startuniqueMPpagegraphic\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.uniqueMPpagegraphic/,
-        argument.group*/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.uniqueMPpagegraphic/
+        - argument.group*/
+        - argument.group*/
     - match: '(\\)startuseMPgraphic\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.useMPgraphic/,
-        argument.group*/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.useMPgraphic/
+        - argument.group*/
+        - argument.group*/
     - match: '(\\)startusableMPgraphic\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.usableMPgraphic/,
-        argument.group*/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.usableMPgraphic/
+        - argument.group*/
+        - argument.group*/
     - match: '(\\)startreusableMPgraphic\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.reusableMPgraphic/,
-        argument.group*/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.reusableMPgraphic/
+        - argument.group*/
+        - argument.group*/
     - match: '(\\)startstaticMPfigure\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.staticMPfigure/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.staticMPfigure/
+        - argument.group*/
     - match: '(\\)startMPcode\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.MPcode/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.MPcode/
+        - argument.group*/
     - match: '(\\)startMPdefinitions\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.MPdefinitions/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.MPdefinitions/
+        - argument.group*/
     - match: '(\\)startMPinclusions\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.MPinclusions/,
-        argument.group*/,
-        argument.list*/,
-      ]
+      push:
+        - MetaFun.main.MPinclusions/
+        - argument.group*/
+        - argument.list*/
     - match: '(\\)startMPpage\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.MPpage/,
-        argument.list*/,
-      ]
+      push:
+        - MetaFun.main.MPpage/
+        - argument.list*/
     - match: '(\\)startMPextensions\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.MPextensions/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.MPextensions/
+        - argument.group*/
     - match: '(\\)startMPpositiongraphic\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        MetaFun.main.MPpositiongraphic/,
-        argument.group*/,
-        argument.group*/,
-      ]
+      push:
+        - MetaFun.main.MPpositiongraphic/
+        - argument.group*/
+        - argument.group*/
 
   # The repetitive code that follows is ugly, but the best approach I've found
   # so far.
@@ -796,10 +776,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group.quote*/,
-        argument.list*/,
-      ]
+      push:
+        - argument.group.quote*/
+        - argument.list*/
 
   markup.quote.block:
     - match: '(\\)startquote\b'
@@ -808,55 +787,50 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        markup.main.quote/,
-        argument.list*/,
-        argument.list*/,
-      ]
+      push:
+        - markup.main.quote/
+        - argument.list*/
+        - argument.list*/
     - match: '(\\)startblockquote\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        markup.main.blockquote/,
-        argument.list*/,
-        argument.list*/,
-      ]
+      push:
+        - markup.main.blockquote/
+        - argument.list*/
+        - argument.list*/
     - match: '(\\)startquotation\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        markup.main.quotation/,
-        argument.list*/,
-        argument.list*/,
-      ]
+      push:
+        - markup.main.quotation/
+        - argument.list*/
+        - argument.list*/
     - match: '(\\)startaside\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        markup.main.aside/,
-        argument.list*/,
-        argument.list*/,
-      ]
+      push:
+        - markup.main.aside/
+        - argument.list*/
+        - argument.list*/
     - match: '(\\)startspeech\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        markup.main.speech/,
-        argument.list*/,
-        argument.list*/,
-      ]
+      push:
+        - markup.main.speech/
+        - argument.list*/
+        - argument.list*/
 
   markup.main.quote/:
     - match: ''
@@ -1001,27 +975,24 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list.template-or-name*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list.template-or-name*/
     - match: '(\\)(?:REF|ReFormat)\b'
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group*/,
-        argument.list.template*/,
-      ]
+      push:
+        - argument.group*/
+        - argument.list.template*/
     - match: '(\\)Use\b'
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group*/,
-        argument.list.template*/,
-        argument.group.with-integers*/,
-      ]
+      push:
+        - argument.group*/
+        - argument.list.template*/
+        - argument.group.with-integers*/
 
 
   list:
@@ -1043,10 +1014,9 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group*/,
-        argument.list.reference*/,
-      ]
+      push:
+        - argument.group*/
+        - argument.list.reference*/
 
 
   verbatim:
@@ -1060,10 +1030,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group-or-angles-or-delim.verbatim*/,
-        argument.list*/,
-      ]
+      push:
+        - argument.group-or-angles-or-delim.verbatim*/
+        - argument.list*/
     - match: '(\\)(?:tex|arg|mat|dis|astype|verbatim(?:string)?)\b'
       captures:
         0: meta.control-word.context support.function.context
@@ -1075,10 +1044,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.group.verbatim*/,
-        argument.list*/,
-      ]
+      push:
+        - argument.group.verbatim*/
+        - argument.list*/
 
   # Should we embed the appropriate syntaxes inside \type{TEX}, \type{LUA},
   # etc.? Hmm. On a technical note, embedding syntaxes is tricky, so it's a
@@ -1090,60 +1058,54 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        verbatim.main/,
-        argument.list*/,
-      ]
+      push:
+        - verbatim.main/
+        - argument.list*/
     - match: '(\\)startTEX\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        verbatim.main.TEX/,
-        argument.list*/,
-      ]
+      push:
+        - verbatim.main.TEX/
+        - argument.list*/
     - match: '(\\)startLUA\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        verbatim.main.LUA/,
-        argument.list*/,
-      ]
+      push:
+        - verbatim.main.LUA/
+        - argument.list*/
     - match: '(\\)startXML\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        verbatim.main.XML/,
-        argument.list*/,
-      ]
+      push:
+        - verbatim.main.XML/
+        - argument.list*/
     - match: '(\\)startPARSEDXML\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        verbatim.main.PARSEDXML/,
-        argument.list*/,
-      ]
+      push:
+        - verbatim.main.PARSEDXML/
+        - argument.list*/
     - match: '(\\)startMP\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        verbatim.main.MP/,
-        argument.list*/,
-      ]
+      push:
+        - verbatim.main.MP/
+        - argument.list*/
     # Similar to the inline capture we can use this to handle a generic verbatim
     # environment. Again, assumes that you use uppercase for verbatim and
     # nothing else. I think the inline version is more acceptable because of the
@@ -1155,10 +1117,9 @@ contexts:
     #       meta.control-word.context meta.structure.start.context
     #       keyword.control.context
     #     1: punctuation.definition.backslash.context
-    #   push: [
-    #     verbatim.main.wildcard/,
-    #     argument.list*/,
-    #   ]
+    #   push:
+    #     - verbatim.main.wildcard/
+    #     - argument.list*/
 
   verbatim.main/:
     - match: ''
@@ -1217,10 +1178,9 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        verbatim.main.buffer/,
-        argument.list*/,
-      ]
+      push:
+        - verbatim.main.buffer/
+        - argument.list*/
   verbatim.main.buffer/:
     - match: ''
       set: verbatim.main.buffer.aux/
@@ -1269,18 +1229,16 @@ contexts:
         1: punctuation.definition.backslash.context
       push:
         - match: '(?=\[[^=]*?\])'
-          set: [
-            argument.group.part*/,
-            argument.group.with-integers-only*/,
-            argument.list.reference*/,
-          ]
+          set:
+            - argument.group.part*/
+            - argument.group.with-integers-only*/
+            - argument.list.reference*/
         - match: '(?=\[)'
           set: argument.list.part*/
         - match: '(?=\{)'
-          set: [
-            argument.group.part*/,
-            argument.group.with-integers-only*/
-          ]
+          set:
+            - argument.group.part*/
+            - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
     - match: '(\\)(?:chapter|title)\b'
       captures:
@@ -1288,18 +1246,16 @@ contexts:
         1: punctuation.definition.backslash.context
       push:
         - match: '(?=\[[^=]*?\])'
-          set: [
-            argument.group.chapter*/,
-            argument.group.with-integers-only*/,
-            argument.list.reference*/,
-          ]
+          set:
+            - argument.group.chapter*/
+            - argument.group.with-integers-only*/
+            - argument.list.reference*/
         - match: '(?=\[)'
           set: argument.list.chapter*/
         - match: '(?=\{)'
-          set: [
-            argument.group.chapter*/,
-            argument.group.with-integers-only*/
-          ]
+          set:
+            - argument.group.chapter*/
+            - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
     - match: '(\\)(?:section|subject)\b'
       captures:
@@ -1307,18 +1263,16 @@ contexts:
         1: punctuation.definition.backslash.context
       push:
         - match: '(?=\[[^=]*?\])'
-          set: [
-            argument.group.section*/,
-            argument.group.with-integers-only*/,
-            argument.list.reference*/,
-          ]
+          set:
+            - argument.group.section*/
+            - argument.group.with-integers-only*/
+            - argument.list.reference*/
         - match: '(?=\[)'
           set: argument.list.section*/
         - match: '(?=\{)'
-          set: [
-            argument.group.section*/,
-            argument.group.with-integers-only*/
-          ]
+          set:
+            - argument.group.section*/
+            - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
     - match: '(\\)sub(?:section|subject)\b'
       captures:
@@ -1326,18 +1280,16 @@ contexts:
         1: punctuation.definition.backslash.context
       push:
         - match: '(?=\[[^=]*?\])'
-          set: [
-            argument.group.subsection*/,
-            argument.group.with-integers-only*/,
-            argument.list.reference*/,
-          ]
+          set:
+            - argument.group.subsection*/
+            - argument.group.with-integers-only*/
+            - argument.list.reference*/
         - match: '(?=\[)'
           set: argument.list.subsection*/
         - match: '(?=\{)'
-          set: [
-            argument.group.subsection*/,
-            argument.group.with-integers-only*/
-          ]
+          set:
+            - argument.group.subsection*/
+            - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
     - match: '(\\)subsub(?:section|subject)\b'
       captures:
@@ -1345,18 +1297,16 @@ contexts:
         1: punctuation.definition.backslash.context
       push:
         - match: '(?=\[[^=]*?\])'
-          set: [
-            argument.group.sub2section*/,
-            argument.group.with-integers-only*/,
-            argument.list.reference*/,
-          ]
+          set:
+            - argument.group.sub2section*/
+            - argument.group.with-integers-only*/
+            - argument.list.reference*/
         - match: '(?=\[)'
           set: argument.list.sub2section*/
         - match: '(?=\{)'
-          set: [
-            argument.group.sub2section*/,
-            argument.group.with-integers-only*/
-          ]
+          set:
+            - argument.group.sub2section*/
+            - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
     - match: '(\\)subsubsub(?:section|subject)\b'
       captures:
@@ -1364,18 +1314,16 @@ contexts:
         1: punctuation.definition.backslash.context
       push:
         - match: '(?=\[[^=]*?\])'
-          set: [
-            argument.group.sub3section*/,
-            argument.group.with-integers-only*/,
-            argument.list.reference*/,
-          ]
+          set:
+            - argument.group.sub3section*/
+            - argument.group.with-integers-only*/
+            - argument.list.reference*/
         - match: '(?=\[)'
           set: argument.list.sub3section*/
         - match: '(?=\{)'
-          set: [
-            argument.group.sub3section*/,
-            argument.group.with-integers-only*/
-          ]
+          set:
+            - argument.group.sub3section*/
+            - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
     - match: '(\\)subsubsubsub(?:section|subject)\b'
       captures:
@@ -1383,18 +1331,16 @@ contexts:
         1: punctuation.definition.backslash.context
       push:
         - match: '(?=\[[^=]*?\])'
-          set: [
-            argument.group.sub4section*/,
-            argument.group.with-integers-only*/,
-            argument.list.reference*/,
-          ]
+          set:
+            - argument.group.sub4section*/
+            - argument.group.with-integers-only*/
+            - argument.list.reference*/
         - match: '(?=\[)'
           set: argument.list.sub4section*/
         - match: '(?=\{)'
-          set: [
-            argument.group.sub4section*/,
-            argument.group.with-integers-only*/
-          ]
+          set:
+            - argument.group.sub4section*/
+            - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
 
   heading.block:
@@ -1414,70 +1360,63 @@ contexts:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list.part*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list.part*/
     - match: '(\\)start(?:chapter|title)\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list.chapter*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list.chapter*/
     - match: '(\\)start(?:section|subject)\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list.section*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list.section*/
     - match: '(\\)startsub(?:section|subject)\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list.subsection*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list.subsection*/
     - match: '(\\)startsubsub(?:section|subject)\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list.sub2section*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list.sub2section*/
     - match: '(\\)startsubsubsub(?:section|subject)\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list.sub3section*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list.sub3section*/
     - match: '(\\)startsubsubsubsub(?:section|subject)\b'
       captures:
         0:
           meta.control-word.context meta.structure.start.context
           keyword.control.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list.sub4section*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list.sub4section*/
 
 
   file:
@@ -1499,11 +1438,10 @@ contexts:
         1:
           punctuation.definition.backslash.context
           punctuation.definition.keyword.context
-      push: [
-        argument.list*/,
-        argument.list*/,
-        argument.list*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list*/
+        - argument.list*/
   file.project:
     - match: '(\\)(?:component|environment|product|project)\b'
       captures:
@@ -1535,12 +1473,11 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list*/,
-        argument.list*/,
-        argument.list.url*/,
-        argument.list*/,
-      ]
+      push:
+        - argument.list*/
+        - argument.list*/
+        - argument.list.url*/
+        - argument.list*/
 
 
   process:
@@ -1550,10 +1487,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.list.apply*/,
-        argument.list*/,
-      ]
+      push:
+        - argument.list.apply*/
+        - argument.list*/
 
 
   definition:
@@ -1581,14 +1517,13 @@ contexts:
           meta.control-word.context meta.structure.start.context
           storage.type.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.name*/,
-        argument.do-n-tuple*/,
-        argument.expanded*/,
-        argument.unexpanded*/,
-        argument.global*/,
-        argument.spaces*/,
-      ]
+      push:
+        - argument.name*/
+        - argument.do-n-tuple*/
+        - argument.expanded*/
+        - argument.unexpanded*/
+        - argument.global*/
+        - argument.spaces*/
     - match: '(\\)stoptexdefinition\b'
       captures:
         0:
@@ -1600,19 +1535,17 @@ contexts:
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.control-sequence.definition*/,
-        argument.list.with-integers-only*/,
-      ]
+      push:
+        - argument.control-sequence.definition*/
+        - argument.list.with-integers-only*/
   definition.define.protect:
     - match: '(\\)define(?:expandable)?\b'
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.control-sequence.protect.definition*/,
-        argument.list.with-integers-only*/,
-      ]
+      push:
+        - argument.control-sequence.protect.definition*/
+        - argument.list.with-integers-only*/
 
   # In addition to supporting some high||level constructs, we also try to
   # handle some lower||level bits and bobs. It's a bit ad hoc in places, but
@@ -1638,10 +1571,9 @@ contexts:
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.equals*/,
-        argument.control-sequence.definition*/,
-      ]
+      push:
+        - argument.equals*/
+        - argument.control-sequence.definition*/
   low-level.tex.protect:
     - match: '(\\)(?:u?[egx]?|toks|(?:math)?char|count|dimen|(?:mu)?skip)def\b'
       captures:
@@ -1652,10 +1584,9 @@ contexts:
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.equals*/,
-        argument.control-sequence.protect.definition*/,
-      ]
+      push:
+        - argument.equals*/
+        - argument.control-sequence.protect.definition*/
   low-level.modifier:
     - match:
         '(\\)(?:long|outer|global|unexpanded|immediate|the|normalprotected)\b'
@@ -1833,10 +1764,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.lists-or-groups*/,
-        argument.list.definition*/,
-      ]
+      push:
+        - argument.lists-or-groups*/
+        - argument.list.definition*/
     - include: control.word.generic.common
     - match: '(\\)[[:alpha:]]+'
       captures:
@@ -1855,10 +1785,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.lists-or-groups.protect*/,
-        argument.list.protect.definition*/,
-      ]
+      push:
+        - argument.lists-or-groups.protect*/
+        - argument.list.protect.definition*/
     - include: control.word.generic.protect.common
     - match: '(\\)[[:alpha:]_@?!]+'
       captures:
@@ -1877,10 +1806,9 @@ contexts:
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
-      push: [
-        argument.lists-or-groups.adjacent*/,
-        argument.list.definition.adjacent*/,
-      ]
+      push:
+        - argument.lists-or-groups.adjacent*/
+        - argument.list.definition.adjacent*/
     - include: control.word.generic.common
     - match: '(\\)[[:alpha:]]+'
       captures:
@@ -1904,10 +1832,9 @@ contexts:
     #   captures:
     #     0: meta.control-word.context support.function.context
     #     1: punctuation.definition.backslash.context
-    #   push: [
-    #     argument.lists-or-groups.math.adjacent*/,
-    #     argument.list.definition.adjacent*/,
-    #   ]
+    #   push:
+    #     - argument.lists-or-groups.math.adjacent*/,
+    #     - argument.list.definition.adjacent*/,
     - include: control.word.generic.common
     - match: '(\\)[[:alpha:]]+'
       captures:
