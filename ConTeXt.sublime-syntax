@@ -110,7 +110,7 @@ contexts:
 
   # See the comments on \type{Lua.functions}
   template.Lua.functions:
-    - match: '\b(inject)\b'
+    - match: '\binject\b'
       scope: support.function.library.lua
 
 
@@ -761,7 +761,7 @@ contexts:
   markup:
     - include: markup.font
     - include: markup.quote
-  # - include: markup.notes
+    # - include: markup.notes
 
   # markup.notes:
   #   - match:

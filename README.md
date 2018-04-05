@@ -265,6 +265,10 @@ Things that should be relatively easy to add at the moment.
     - on save,
     - at regular time intervals;
   - never.
+- Handle syntax embedding better. Currently we have many different embeddings
+  that work reasonably well. However, there is definite room for improvement in
+  terms of the end result, and also it would be nice for the code to be more
+  principled.
 
 ## Future Features
 
@@ -282,9 +286,6 @@ Features we would like to have, but may be harder to implement.
 - Citation handler. (We handle references well enough, similar support would be
   nice for `\cite[...]`. I expect we would try to keep it simple, and I would
   like to handle the `.lua`, `.xml` and `.bib` formats.)
-- Handle syntax embedding better. Currently we have various embeddings that work
-  fairly well, but the code is ugly and error prone and comes with some
-  limitations.
 - Robust log parsing, esp. for reporting warnings/errors.
 - Word count. (Could be nice to have, but lots of difficulties with it.)
 
