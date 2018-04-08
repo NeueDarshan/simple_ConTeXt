@@ -1,0 +1,2140 @@
+%YAML 1.2
+%TAG ! tag:yaml-macros:scripts.macros_context:
+---
+name: ConTeXt
+file_extensions:
+  - tex
+  - mkii
+  - mkiv
+  - mkvi
+  - mkix
+  - mkxi
+scope: text.tex.context
+first_line_match:
+  "^\\s*(?:%.*?macros\\s*=\\s*mk(?:[vx]i)|\\\\(?:start(?:text|document)|\
+   usemodule|setup[[:alpha:]]+))\\b"
+variables:
+  key: '[[:alpha:][:digit:].\-\+_:;!\?<>@&/]'
+  setup: '{{key}}'
+  verbatim: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
+  variable: '[[:alpha:]]'
+
+
+contexts:
+  prototype:
+    - include: comment
+    - include: template
+
+
+  main:
+    - include: math
+    - include: Lua
+    - include: MetaFun
+    # - include: JavaScript
+    - include: catcode
+    - include: markup
+    - include: table
+    - include: list
+    - include: verbatim
+    - include: heading
+    - include: file
+    - include: link
+    - include: process
+    - include: definition
+    - include: low-level
+    - include: control
+    - include: scoping
+
+  main.pop-if-stop-match-two/:
+    - include: generic.pop-if-stop-match-two/
+    - include: main
+  main.cases/:
+    - include: math.cases.pop-at-newrow/
+    - include: math.cases.pop-at-end/
+    - include: main
+
+  # The question is, how far to go with this kind of thing. The best possible
+  # thing would be to duplicate this syntax file in its entirety, and then go in
+  # and change a handful of places where we match control sequences. Instead, we
+  # go for a somewhat crude compromise, by providing a stripped down copy of the
+  # usual syntax, with the appropriate changes.
+  main.protect:
+    - meta_content_scope: meta.environment.protect.context
+    - include: definition.protect
+    - include: low-level.protect
+    - include: control.protect
+    - include: scoping.protect
+  main.protect/:
+    - meta_content_scope: meta.environment.protect.context
+    - !control_sequence
+        name: protect
+        pop: true
+    - include: main.protect
+
+
+  comment:
+    - include: comment.TeX
+  comment.TeX:
+    - match: '(%).*$\n?'
+      captures:
+        0: comment.line.percentage.context
+        1: punctuation.definition.comment.context
+
+
+  # In \ConTeXt\ there is some preprocessing available. One aspect of this is
+  # allowing named parameters \type{#argument} in the source code, instead of
+  # the usual \TeX\ syntax \type{#1}.
+  # \startfootnote
+  #   To activate this feature, you can add a line with the directive
+  #   \type{macros=mkvi} or \type{macros=mkxi} at the top of your source file,
+  #   or change the file extension to \type{mkvi} resp.\ \type{mkxi}. Then
+  #   named arguments will be automatically translated into the usual \TeX\
+  #   style before \TeX\ gets to see them.
+  # \stopfootnote \space
+  # Another aspect is presented here: using an XML||like syntax, you can run
+  # snippets of \Lua\ \emph{before} the main \ConTeXt\ run.
+  template:
+    - match: '(<\?)(lua)\b'
+      captures:
+        1: punctuation.definition.tag.begin.context
+        2: entity.name.tag.lua.context
+      push:
+        - meta_include_prototype: false
+        - meta_scope: meta.tag.context  # meta.preprocessor.lua.context
+        - meta_content_scope: source.lua.embedded.context
+        - match: '\?>'
+          scope: punctuation.definition.tag.end.context
+          pop: true
+        - include: template.Lua.functions
+        - include: scope:source.lua
+
+  # See the comments on \type{Lua.functions}
+  template.Lua.functions:
+    - match: '\binject\b'
+      scope: support.function.library.lua
+
+
+  math:
+    - include: math.display
+    - include: math.inline
+    - include: math.place
+  math.display:
+    - include: math.display.double-dollar
+    - include: math.display.control
+  math.inline:
+    - include: math.inline.dollar
+    - include: math.inline.control
+
+  math.place:
+    - !control_sequence
+        name: placeformula
+        push: argument.list.reference*/
+    - !control_sequence_start
+        name: placeformula
+        push: argument.list.maybe-reference*/
+
+  math.display.control:
+    - !control_sequence_start
+        name: formula
+        push:
+          - math.main.pop-if-stopformula/
+          - argument.list*/
+    - !control_sequence_start
+        name: (display|d)math
+        push: math.main.pop-if-stop-match-two/
+    - !control_sequence
+        name: display(?:math|mathematics)
+        push: argument.group.math*/
+  math.inline.control:
+    - !control_sequence
+        name: (?:m|math|mathematics|formula)
+        push:
+          - argument.group.math.outer*/
+          - argument.list*/
+    - !control_sequence
+        name: inline(?:math|mathematics)
+        push: argument.group.math.outer*/
+    - !control_sequence_start
+        name: (?:imath|mathmode)
+        push: math.main.pop-if-stop-match-two/
+
+  # Quoting from the \ConTeXt\ math manual:
+  #
+  # \startblockquote
+  #   The inline method [\type{$...$}] is still valid, but for display math
+  #   the \type{$$} method should not be used. This has to do with the fact
+  #   that we want to control spacing in a consistent way.
+  # \stopblockquote
+  #
+  # But you can still use the double dollar \type{$$ ... $$} method if you
+  # insist, so here it is.
+  math.display.double-dollar:
+    - match: '\$\$'
+      scope:
+        punctuation.section.double-dollar.begin.context
+        string.quoted.other.double-dollar.context
+      # meta.structure.start.context
+      push: math.main.double-dollar/
+  math.inline.dollar:
+    - match: '\$'
+      scope:
+        punctuation.section.dollar.begin.context
+        string.quoted.other.dollar.context
+      push: math.main.dollar/
+
+  math.main:
+    - include: math.number
+    - include: math.operator
+    - include: math.variable
+    - include: math.control
+    - include: definition.parameter
+    - include: scoping.math
+
+  math.main.dollar/:
+    - meta_content_scope: meta.dollar.context meta.environment.math.context
+    - match: '\$'
+      scope:
+        punctuation.section.dollar.end.context
+        string.quoted.other.dollar.context
+      pop: true
+    - include: math.main
+  math.main.double-dollar/:
+    - meta_content_scope:
+        meta.double-dollar.context meta.environment.math.context
+    - match: '\$\$'
+      scope:
+        punctuation.section.double-dollar.end.context
+        string.quoted.other.double-dollar.context
+      # meta.structure.stop.context
+      pop: true
+    - include: math.main
+  math.main.pop-if-stopformula/:
+    - match: ''
+      set: math.main.pop-if-stopformula.aux/
+  math.main.pop-if-stopformula.aux/:
+    - meta_content_scope: meta.environment.math.context
+    - match: '(?=\\stopformula\b)'
+      pop: true
+    - include: math.main
+  math.main.pop-if-stop-match-two/:
+    - meta_content_scope: meta.environment.math.context
+    - include: generic.pop-if-stop-match-two/
+    - include: math.main
+  math.main.cases/:
+    - include: math.cases.pop-at-end/
+    - include: math.cases.pop-at-newrow/
+    - include: math.cases.rows
+    - include: math.main
+
+  # Should we try to handle unicode entities? Should one write math in
+  # unicode? It's nice for some things (such as writing \type{α} instead of
+  # the more verbose \type{\alpha}), but you can lose semantic information
+  # as well as the ability to easily tweak e.g.\ the spacing of \type{\int}
+  # throughout the whole document. Hmm.
+  math.number:
+    - include: generic.real
+    - match: '[∞π]'
+      scope: constant.other.math.context
+    - match: '(\\)(?:infty|pi)\b'
+      captures:
+        0: meta.control-word.context constant.other.math.context
+        1: punctuation.definition.backslash.context
+
+  # We can make these lists more complete as time goes on.
+  math.operator:
+    - match: '[\+\-/\^_=<>]'
+      scope: keyword.operator.context
+    - match: '[∈∉∼≁×]'
+      scope: keyword.operator.context
+    - match: '(\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)\b'
+      captures:
+        0: meta.control-word.context keyword.operator.context
+        1:
+          punctuation.definition.backslash.context
+          punctuation.definition.keyword.context
+
+  math.variable:
+    # I think \type{variable.other} makes the most sense logically. However,
+    # in my experience few colour schemes style this scope. So let's use
+    # \type{string} instead.
+    - match: '{{variable}}'
+      scope: string.unquoted.math.context
+
+  # In math mode, control sequences with arguments are tricky. Consider the
+  # following example.
+  #
+  # \startbuffer
+  # \startformula
+  #   \startalign
+  #     \NC \sqrt[3]{2} \NC > 2                        \NR
+  #     \NC [y]         \NC = \{ x \in X : x \sim y \} \NR
+  #   \stopalign
+  # \stopformula
+  # \stopbuffer
+  #
+  # \typebuffer
+  #
+  # This produces the output:
+  #
+  # \getbuffer
+  #
+  # On the one hand we have \type<<\sqrt[3]{2}>>, where the square brackets
+  # denote an optional argument. On the other we have \type<<\NC [y]>>, where
+  # the square brackets are part of the mathematical notation, and have
+  # nothing whatsoever to do with the control sequence \type<<\NC>>.
+  #
+  # If we use the same approach as in text mode, we will (wrongly) interpret
+  # the \type<<[y]>> as an optional argument to \type<<\NC>>. To address these
+  # kinds of problems, we implement a simple rule: \emph{no spaces allowed}
+  # between a control sequence and its arguments in math mode.
+  #
+  # One other thing, let's forget about active characters in math mode.
+  math.control:
+    - include: Lua
+    - include: math.control.cases
+    - include: math.control.intertext
+    - include: math.control.sqrt
+    - include: control.word.math.adjacent
+    - include: control.symbol
+
+  math.control.sqrt:
+    - !control_sequence
+        name: sqrt
+        push:
+          - argument.group.math.adjacent*/
+          - argument.list.math.adjacent*/
+
+  math.control.intertext:
+    - !control_sequence_start
+        name: (intertext)
+        push: main.pop-if-stop-match-two/
+    - !control_sequence
+        name: (?:inter)?text
+        push: argument.group.adjacent*/
+
+  # Understanding math vs.\ text in \type{\startcases ... \stopcases} is a
+  # nice feature to have. As the code is fairly clean so far, let's keep it.
+  math.control.cases:
+    - !control_sequence_start
+        name: cases
+        push:
+          - math.main.cases/
+          - argument.list.adjacent*/
+
+  math.cases.rows:
+    - !control_sequence_align
+        name: NC
+        push:
+          - !control_sequence_align
+              name: NC
+              set: main.cases/
+          - !control_sequence_align
+              name: MC
+              set: math.main.cases/
+          - include: math.main.cases
+
+  math.cases.pop-at-end/:
+    - match: '(?=\\stopcases\b)'
+      pop: true
+  math.cases.pop-at-newrow/:
+    - !control_sequence_align
+        name: NR
+        set: argument.list.reference.adjacent*/
+
+
+  # We try to keep track of catcode regimes in embedded \Lua. Of course, there
+  # is only so much we can do without implementing \TeX\ within Sublime Text,
+  # but for typical use cases we can do very well.
+  #
+  # What about the other namespaces \periods\ what is the situation with
+  # \type{\usercode{...}} and \type{\startusercode ... \stopusercode}.
+  Lua:
+    - include: Lua.block
+    - include: Lua.inline
+
+  Lua.block:
+    - !control_sequence_start
+        name: (luacode)
+        push:
+          - meta_include_prototype: false
+          - meta_content_scope:
+              meta.environment.lua.major.context source.lua.embedded.context
+          - include: Lua.main.pop-if-stop-match-two/
+    - !control_sequence_start
+        name: (lua)
+        push:
+          - meta_content_scope:
+              meta.environment.lua.minor.context source.lua.embedded.context
+          - include: Lua.main.pop-if-stop-match-two/
+  Lua.inline:
+    - !control_sequence
+        name: (?:late|direct)lua
+        push:
+          - argument.group.Lua*/
+          - argument.integer*/
+    # Hmm, a bit overkill? Should some of these permit an integer as well?
+    - !control_sequence
+        name:
+          "(?:luacode|(?:late|direct)lua(?:code)?|cld(?:command|context|\
+           loadfile|processfile)|ctx(?:command|directcommand|directlua|\
+           latecommand|latelua|lua|report|sprint|write))"
+        push: argument.group.Lua*/
+
+  Lua.main:
+    - include: Lua.control
+    - include: Lua.comment.embed-friendly
+    - include: Lua.functions
+    - include: scope:source.lua
+  Lua.main.pop-if-stop-match-two/:
+    - include: generic.pop-if-stop-match-two/
+    - include: Lua.main
+
+  Lua.control:
+    # I suppose you can do \Lua\ nested inside \Lua\ if you so desire \periods.
+    - include: Lua
+    - include: control.word.without-alignment
+    - include: control.symbol
+
+  Lua.functions:
+    - match:
+        '\b(?:context\.delayed\.[[:alpha:]]+|context\.[[:alpha:]]+|context)\b'
+      scope: support.function.library.lua
+
+  Lua.comment.embed-friendly:
+    - match: '--(?!\[\[)'
+      scope: punctuation.definition.comment.lua
+      push:
+        - meta_scope: comment.line.double-dash.lua
+        - match: '$\n?'
+          pop: true
+
+
+  MetaFun:
+    - include: MetaFun.block
+    - include: MetaFun.use
+
+  MetaFun.use:
+    - !control_sequence
+        name: (?:MPposition|reusableMP|(?:re)?useMP|uniqueMP(?:page)?)graphic
+        push:
+          - argument.group.with-assignments*/
+          - argument.group*/
+    - !control_sequence
+        name: setMPpositiongraphic
+        push:
+          - argument.group.with-assignments*/
+          - argument.group*/
+          - argument.group*/
+    - !control_sequence
+        name: setMPpositiongraphicrange
+        push:
+          - argument.group.with-assignments*/
+          - argument.group*/
+          - argument.group*/
+          - argument.group*/
+
+  MetaFun.block:
+    - include: MetaFun.block.a
+    - include: MetaFun.block.b
+    - include: MetaFun.block.c
+
+  MetaFun.block.a:
+    !foreach
+      - - uniqueMPgraphic
+        - uniqueMPpagegraphic
+        - useMPgraphic
+        - usableMPgraphic
+        - reusableMPgraphic
+        - MPpositiongraphic
+      - !control_sequence_start
+          name: !argument value
+          push:
+            - !format MetaFun.main.{value}/
+            - argument.group*/
+            - argument.group*/
+  MetaFun.block.b:
+    !foreach
+      - - staticMPfigure
+        - MPcode
+        - MPdefinitions
+        - MPextensions
+      - !control_sequence_start
+          name: !argument value
+          push:
+            - !format MetaFun.main.{value}/
+            - argument.group*/
+  MetaFun.block.c:
+    - !control_sequence_start
+        name: MPinclusions
+        push:
+          - MetaFun.main.MPinclusions/
+          - argument.group*/
+          - argument.list*/
+    - !control_sequence_start
+        name: MPpage
+        push:
+          - MetaFun.main.MPpage/
+          - argument.list*/
+
+  MetaFun.main:
+    - include: MetaFun.TeX
+    - include: MetaFun.control
+    - include: scope:source.metapost.metafun
+
+  MetaFun.main.MPcode/:
+    - !block_stop_metafun MPcode
+  MetaFun.main.MPpage/:
+    - !block_stop_metafun MPpage
+  MetaFun.main.uniqueMPgraphic/:
+    - !block_stop_metafun uniqueMPgraphic
+  MetaFun.main.uniqueMPpagegraphic/:
+    - !block_stop_metafun uniqueMPpagegraphic
+  MetaFun.main.useMPgraphic/:
+    - !block_stop_metafun useMPgraphic
+  MetaFun.main.usableMPgraphic/:
+    - !block_stop_metafun usableMPgraphic
+  MetaFun.main.reusableMPgraphic/:
+    - !block_stop_metafun reusableMPgraphic
+  MetaFun.main.staticMPfigure/:
+    - !block_stop_metafun staticMPfigure
+  MetaFun.main.MPdefinitions/:
+    - !block_stop_metafun MPdefinitions
+  MetaFun.main.MPinclusions/:
+    - !block_stop_metafun MPinclusions
+  MetaFun.main.MPextensions/:
+    - !block_stop_metafun MPextensions
+  MetaFun.main.MPpositiongraphic/:
+    - !block_stop_metafun MPpositiongraphic
+
+  MetaFun.control:
+    - include: Lua
+    - include: control.symbol
+    - include: control.word.generic
+  MetaFun.TeX:
+    - match: '\b(?:b|verbatim)tex\b'
+      scope: support.function.metapost
+      push:
+        - meta_content_scope: text.tex.context.embedded.metafun
+        - match: '(?=\betex\b)'
+          pop: true
+        - include: main
+
+
+  # It would be nice for commands like \type{\em} to stand out from the crowd.
+  # On the other hand, what scope can we logically apply to them besides the
+  # usual \type{support.function}? I suppose the scopes (such as
+  # \type{markup.italic}) will have to suffice.
+  markup:
+    - include: markup.font
+    - include: markup.quote
+    # - include: markup.footnote
+
+  markup.quote:
+    - include: markup.quote.inline
+    - include: markup.quote.block
+
+  markup.quote.inline:
+    - !control_sequence
+        name: (?:quote|blockquote|quotation|aside|speech)
+        push:
+          - argument.group.quote*/
+          - argument.list*/
+
+  markup.quote.block:
+    !foreach
+      - - quote
+        - blockquote
+        - quotation
+        - aside
+        - speech
+      - !control_sequence_start
+          name: !argument value
+          push:
+            - !format markup.main.{value}/
+            - argument.list*/
+            - argument.list*/
+
+  markup.main.quote/:
+    - !block_stop_quote quote
+  markup.main.blockquote/:
+    - !block_stop_quote blockquote
+  markup.main.quotation/:
+    - !block_stop_quote quotation
+  markup.main.aside/:
+    - !block_stop_quote aside
+  markup.main.speech/:
+    - !block_stop_quote speech
+
+  # We can have toggles:
+  #
+  # \startitemize
+  #   \startitem
+  #     at the start of a group: \type{... {\em ...} ...},
+  #   \stopitem \startitem
+  #     in the middle of a group: \type{... {... \em ...} ...},
+  #   \stopitem \startitem
+  #     at the start of an implicit group:
+  #     \type{\bTABLE\bTR\bTC \em ... \eTC\eTR\eTABLE}.
+  #   \stopitem  \startitem
+  #     in the middle of an implicit group:
+  #     \type{\bTABLE\bTR\bTC ... \em ... \eTC\eTR\eTABLE}.
+  #   \stopitem
+  # \stopitemize
+  #
+  # We also have the commands \type{\emph} and co.\ which are chameleons, in
+  # that they can be used as toggles \type{{\emph ...}} or delimited as
+  # \type{\emph{...}}. And again we can have explicit grouping \type{{...}} or
+  # implicit grouping \type{\start<...> ... \stop<...>}.
+  #
+  # The approach we take to handle all this variety is to keep it as simple as
+  # possible, by making reasonable assumptions about common usage. So for
+  # example, whilst \type{lorem {ipsum \em dolor} sit} is possible at the
+  # \TeX\ level, we assume that you place the toggle at the start of the
+  # group \type{lorem ipsum {\em dolor} sit}.
+  markup.font:
+    - include: markup.command
+    - include: markup.toggle
+
+  markup.toggle:
+    - include: scoping.markup
+
+  markup.command:
+    - !control_sequence
+        name: emph
+        push: argument.group.emphasis*/
+    - !control_sequence
+        name: (?:small)?bold
+        push: argument.group.boldface*/
+    - !control_sequence
+        name: italic
+        push: argument.group.italic*/
+    - !control_sequence
+        name: (?:small)?slanted
+        push: argument.group.slanted*/
+    - !control_sequence
+        name: (?:small)?(?:bolditalic|italicbold)
+        push: argument.group.bold-italic*/
+    - !control_sequence
+        name: (?:small)?(?:boldslanted|slantedbold)
+        push: argument.group.bold-slanted*/
+    - !control_sequence
+        name: sansbold
+        push: argument.group.sans-bold*/
+    - !control_sequence
+        name: mono
+        push: argument.group.typewriter*/
+    - !control_sequence
+        name: monobold
+        push: argument.group.typewriter-bold*/
+
+
+  table:
+    - !control_sequence_start
+        name: (?:table|tabulate)
+        push:
+          - argument.list*/
+          - argument.list.template-or-name*/
+    - !control_sequence
+        name: (?:REF|ReFormat)
+        push:
+          - argument.group*/
+          - argument.list.template*/
+    - !control_sequence
+        name: Use
+        push:
+          - argument.group*/
+          - argument.list.template*/
+          - argument.group.with-integers*/
+
+
+  list:
+    - !control_sequence
+        name: item
+        push: argument.list.reference*/
+    - !control_sequence_start
+        name: item
+        push: argument.list.reference*/
+    - !control_sequence_start
+        name: head
+        push:
+          - argument.group*/
+          - argument.list.reference*/
+
+
+  verbatim:
+    - include: verbatim.inline
+    - include: verbatim.block
+    - include: verbatim.buffer
+    - include: verbatim.hiding
+
+  verbatim.inline:
+    - !control_sequence
+        name: type?
+        push:
+          - argument.group-or-angles-or-delim.verbatim*/
+          - argument.list*/
+    - !control_sequence
+        name: (?:tex|arg|mat|dis|astype|verbatim(?:string)?)
+        push: argument.group.verbatim*/
+    # Assume that these commands are following the convention of using
+    # uppercase for verbatim.
+    - !control_sequence
+        name: (?:inline|type)[[:upper:]]+
+        push:
+          - argument.group.verbatim*/
+          - argument.list*/
+
+  # Should we embed the appropriate syntaxes inside \type{TEX}, \type{LUA},
+  # etc.? Hmm. On a technical note, embedding syntaxes is tricky, so it's a
+  # lot easier to just mark them up as verbatim and call it a day.
+  verbatim.block:
+    !foreach
+      - - typing
+        - TEX
+        - LUA
+        - XML
+        - PARSEDXML
+        - MP
+      - !control_sequence_start
+          name: !argument value
+          push:
+            - !format verbatim.main.{value}/
+            - argument.list*/
+
+  verbatim.main.typing/:
+    - !block_stop_verbatim typing
+  verbatim.main.TEX/:
+    - !block_stop_verbatim TEX
+  verbatim.main.LUA/:
+    - !block_stop_verbatim LUA
+  verbatim.main.XML/:
+    - !block_stop_verbatim XML
+  verbatim.main.PARSEDXML/:
+    - !block_stop_verbatim PARSEDXML
+  verbatim.main.MP/:
+    - !block_stop_verbatim MP
+
+  verbatim.buffer:
+    - !control_sequence_start
+        name: buffer
+        push:
+          - verbatim.main.buffer/
+          - argument.list*/
+  verbatim.main.buffer/:
+    - !block_stop
+        name: buffer
+        meta_content_scope:
+          meta.environment.buffer.context markup.raw.block.context
+        meta_include_prototype: false
+
+  verbatim.hiding:
+    - !control_sequence_start
+        name: (hiding)
+        push:
+          - meta_content_scope: comment.block.hiding.context
+          - include: generic.pop-if-stop-match-two/
+
+
+  # Should we bother trying to handle \type{\unprotect ... \protect}, or
+  # \type{\startasciimode ... \stopasciimode}? It would be nice to handle
+  # \quote{protect} decently.
+  catcode:
+    - include: catcode.protect
+    # - include: catcode.asciimode
+
+  catcode.protect:
+    - !control_sequence
+        name: unprotect
+        push: main.protect/
+
+
+  heading:
+    - include: heading.inline
+    - include: heading.block
+
+  heading.inline:
+    !foreach
+      - - part
+        - chapter
+        - section
+        - subsection
+        - sub2section
+        - sub3section
+        - sub4section
+      - !control_sequence
+          name: !argument value
+          name_map: heading
+          push:
+            - match: '(?=\[[^=]*?\])'
+              set:
+                - !format argument.group.{value}*/
+                - argument.group.with-integers-only*/
+                - argument.list.reference*/
+            - match: '(?=\[)'
+              set: !format argument.list.{value}*/
+            - match: '(?=\{)'
+              set:
+                - !format argument.group.{value}*/
+                - argument.group.with-integers-only*/
+            - include: generic.gobble-whitespace-or-pop/
+
+  heading.block:
+    - include: heading.block.a
+    - include: heading.block.b
+
+  heading.block.a:
+    # Okay, \quote{document} isn't technically a \quote{section}, but it can
+    # be nice to give it some similar functionality, e.g.\ showing up in the
+    # symbol list. There's not really any harm in adding it in here.
+    - !control_sequence_start
+        name: document
+        push: argument.list.document*/
+  heading.block.b:
+    !foreach
+      - - part
+        - chapter
+        - section
+        - subsection
+        - sub2section
+        - sub3section
+        - sub4section
+      - !control_sequence_start
+          name: !argument value
+          name_map: heading
+          push:
+            - argument.list*/
+            - !format argument.list.{value}*/
+
+
+  file:
+    - include: file.project
+    - include: file.input
+    - include: file.module
+
+  file.module:
+    - !control_sequence_import
+        name: useluamodule
+        push: argument.list*/
+    - !control_sequence_import
+        name: use(?:tex)?module
+        push:
+          - argument.list*/
+          - argument.list*/
+          - argument.list*/
+  file.project:
+    - !control_sequence
+        name: (?:component|environment|product|project)
+        push: argument.list-or-name.file*/
+    - !control_sequence
+        name: use(?:component|environment|product|project)
+        push: argument.list.file*/
+    - !control_sequence_start
+        name: (?:component|environment|product|project)
+        push: argument.list-or-name.this-file*/
+  file.input:
+    - !control_sequence
+        name: input
+        push: argument.group-or-name.file*/
+
+
+  link:
+    - !control_sequence
+        name: useURL
+        push:
+          - argument.list*/
+          - argument.list*/
+          - argument.list.url*/
+          - argument.list*/
+
+
+  process:
+    - !control_sequence
+        name:
+          (?:process(?:action|(firstaction|allactions)inset)|rawprocessaction)
+        push:
+          - argument.list.apply*/
+          - argument.list*/
+
+
+  definition:
+    - include: definition.texdef
+    - include: definition.define
+    - include: definition.parameter
+  definition.protect:
+    - include: definition.texdef
+    - include: definition.define.protect
+    - include: definition.parameter
+
+  # See the comments on \type{template}.
+  definition.parameter:
+    - match: '(?:\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})[[:digit:]]'
+      scope: variable.parameter.context
+    - match:
+        "(?:\\#|\\#{2}|\\#{4}|\\#{8}|\\#{16}|\\#{32}|\\#{64})\
+         (?:[[:alpha:]]+|\\{[^\\{\\}]+\\})"
+      scope: variable.parameter.preprocessor.context
+
+  definition.texdef:
+    - !control_sequence_start
+        name: texdefinition
+        push:
+          - argument.name*/
+          - argument.do-n-tuple*/
+          - argument.expanded*/
+          - argument.unexpanded*/
+          - argument.global*/
+          - argument.spaces*/
+    - !control_sequence_stop
+        name: texdefinition
+  definition.define:
+    - !control_sequence_define
+        name: define(?:expandable)?
+        push:
+          - argument.control-sequence.definition*/
+          - argument.list.with-integers-only*/
+  definition.define.protect:
+    - !control_sequence_define
+        name: define(?:expandable)?
+        push:
+          - argument.control-sequence.protect.definition*/
+          - argument.list.with-integers-only*/
+
+
+  # In addition to supporting some high||level constructs, we also try to
+  # handle some lower||level bits and bobs. It's a bit ad hoc in places, but
+  # the results look pretty decent.
+  low-level:
+    - include: low-level.tex
+    - include: low-level.modifier
+    - include: low-level.type
+    - include: low-level.constant
+  low-level.protect:
+    - include: low-level.tex.protect
+    - include: low-level.modifier
+    - include: low-level.type.protect
+    - include: low-level.constant
+
+  low-level.tex:
+    - !control_sequence_define
+        name: (?:u?[egx]?|toks|(?:math)?char|count|dimen|(?:mu)?skip)def
+        push: argument.control-sequence.definition*/
+    - !control_sequence_define
+        name: (?:g|global)?let
+        push:
+          - argument.equals*/
+          - argument.control-sequence.definition*/
+  low-level.tex.protect:
+    - !control_sequence_define
+        name: (?:u?[egx]?|toks|(?:math)?char|count|dimen|(?:mu)?skip)def
+        push: argument.control-sequence.protect.definition*/
+    - !control_sequence_define
+        name: (?:g|global)?let
+        push:
+          - argument.equals*/
+          - argument.control-sequence.protect.definition*/
+  low-level.modifier:
+    - !control_sequence_modify
+        name: (?:long|outer|global|unexpanded|immediate|the|normalprotected)
+  low-level.type:
+    - !control_sequence_define
+        name:
+          "new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|\
+           box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|\
+           write|marks|insert|language|fam(?:ily)?|help)"
+        push: argument.control-sequence.definition*/
+    - !control_sequence_define
+        name: setnew(?:constant|macro)
+        push: argument.control-sequence.definition*/
+  low-level.type.protect:
+    - !control_sequence_define
+        name:
+          "new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|\
+           box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|\
+           write|marks|insert|language|fam(?:ily)?|help)"
+        push: argument.control-sequence.protect.definition*/
+    - !control_sequence_define
+        name: setnew(?:constant|macro)
+        push: argument.control-sequence.protect.definition*/
+  low-level.constant:
+    - match:
+        "(\\\\)(?:zerocount|minus(?:one|two)|plus(?:one|two|three|four|five|\
+         six|seven|eight|nine|ten|sixteen|hundred|twohundred|cxxvii|cxxviii|\
+         cclv|cclvi|thousand|tenthousand|twentythousand)|zeroskip|\
+         (?:zero|one|halfa?|onebase|scaled|thousand)point|points|(?:up|down|\
+         right|left)rotationangle|empty|relax|maxdimen|maxcount|\
+         (?:zero|one)muskip|muquad|(?:escape|begingroup|endgroup|mathshift|\
+         alignment|endofline|parameter|superscript|subscript|ignore|space|\
+         letter|other|active|comment|invalid)catcode|(?:bottomlevel|simple|\
+         hbox|adjustedhbox|vbox|vtop|align|noalign|output|math|discretionary|\
+         insert|vcenter|mathchoice|semisimple|mathshift|mathleft|vadjust)\
+         groupcode|(?:char|cat|num|dim|odd|vmode|hmode|mmode|inner|void|hbox|\
+         vbox|x|eof|true|false|case|defined|csname|fontchar)ifcode|\
+         (?:batch|nonstop|scroll|errorstop)modecode|(?:char|hlist|vlist|rule|\
+         insert|mark|adjust|ligature|discretionary|whatsit|math|glue|kern|\
+         penalty|unset|maths)nodecode|emptytoks|voidbox|(?:big|med|small)\
+         skipamount)\\b"
+      captures:
+        0: meta.control-word.context constant.language.context
+        1: punctuation.definition.backslash.context
+
+
+  control:
+    - include: control.word
+    - include: control.symbol
+    - include: control.active-character
+  control.protect:
+    - include: control.word.protect
+    - include: control.symbol
+    - include: control.active-character
+
+  control.word:
+    # Let's always make alignment arguments adjacent.
+    - include: control.word.alignment.adjacent
+    - include: control.word.without-alignment
+  control.word.protect:
+    - include: control.word.protect.without-alignment
+  control.word.without-alignment:
+    - include: control.word.conditional
+    - include: control.word.generic
+  control.word.protect.without-alignment:
+    - include: control.word.protect.special
+    - include: control.word.protect.conditional  # Hmm\periods
+    - include: control.word.protect.generic
+  control.word.adjacent:
+    - include: control.word.alignment.adjacent
+    - include: control.word.conditional.adjacent
+    - include: control.word.generic.adjacent
+  control.word.math.adjacent:
+    - include: control.word.alignment.adjacent
+    - include: control.word.conditional.adjacent
+    - include: control.word.generic.math.adjacent
+
+  # What scope should alignment things have? I suppose \type{keyword} is the
+  # best choice.
+  control.word.alignment.adjacent:
+    - !control_sequence_align
+        name: (?:NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R|CT)
+        push: argument.list.maybe-reference.adjacent*/
+
+  control.word.conditional:
+    - !control_sequence_conditional
+        name:
+          "(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
+           [[:alpha:]]*doif(?:else)?[[:alpha:]]*)"
+        push: argument.lists-or-groups*/
+    - include: control.word.conditional.common
+  control.word.protect.conditional:
+    - !control_sequence_conditional
+        name:
+          "(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
+           [[:alpha:]]*doif(?:else)?[[:alpha:]]*)"
+        push: argument.lists-or-groups.protect*/
+    - include: control.word.conditional.common
+  control.word.conditional.adjacent:
+    - !control_sequence_conditional
+        name:
+          "(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
+           [[:alpha:]]*doif(?:else)?[[:alpha:]]*)"
+        push: argument.lists-or-groups.adjacent*/
+    - include: control.word.conditional.common
+  control.word.conditional.common:
+    - !control_sequence_conditional
+        name:
+          "(?:if[[:alpha:]]*|[[:alpha:]]*(?:true|false)|loop|repeat|then|\
+           or|else|fi)"
+
+  # Experiment, I don't completely understand what naming conventions are used
+  # in the \ConTeXt\ core. Perhaps these are reasonable definitions?
+  control.word.protect.special:
+    - match: '(\\)c![[:alpha:]_@?!]*'
+      captures:
+        0: meta.control-word.context variable.parameter.context
+        1: punctuation.definition.backslash.context
+    - match: '(\\)v![[:alpha:]_@?!]*'
+      captures:
+        0: meta.control-word.context string.quoted.other.control-word.context
+        1: punctuation.definition.backslash.context
+    - match: '(\\)s![[:alpha:]_@?!]*'
+      captures:
+        0:
+          meta.control-word.context string.quoted.other.control-word.context
+        # constant.language.context
+        1: punctuation.definition.backslash.context
+
+  # The pattern \type{(\\)define[[:alpha:]]*} works remarkably well in almost
+  # all cases. However it is not foolproof. For the moment, we use the below
+  # work around for some known edge cases. If the number of edge cases grows
+  # significantly, then we will need to reconsider this approach.
+  control.word.generic:
+    - !control_sequence_start
+        name: '[[:alpha:]]*'
+        push: argument.lists-or-groups*/
+    - !control_sequence
+        name: define(?!dfont\b)[[:alpha:]]*
+        push:
+          - argument.lists-or-groups*/
+          - argument.list.definition*/
+    - include: control.word.generic.common
+    - !control_sequence
+        name: '[[:alpha:]]+'
+        push: argument.lists-or-groups*/
+  control.word.protect.generic:
+    - !control_sequence_start
+        name: '[[:alpha:]_@?!]*'
+        push: argument.lists-or-groups.protect*/
+    - !control_sequence
+        name: define(?!dfont)[[:alpha:]_@?!]*
+        push:
+          - argument.lists-or-groups.protect*/
+          - argument.list.protect.definition*/
+    - include: control.word.generic.protect.common
+    - !control_sequence
+        name: '[[:alpha:]_@?!]+'
+        push: argument.lists-or-groups.protect*/
+  control.word.generic.adjacent:
+    - !control_sequence_start
+        name: '[[:alpha:]]*'
+        push: argument.lists-or-groups.adjacent*/
+    - !control_sequence
+        name: define(?!dfont)[[:alpha:]_@?!]*
+        push:
+          - argument.lists-or-groups.adjacent*/
+          - argument.list.definition.adjacent*/
+    - include: control.word.generic.common
+    - !control_sequence
+        name: '[[:alpha:]]+'
+        push: argument.lists-or-groups.adjacent*/
+  # Hmm, how should we handle arguments? The context
+  # \type{argument.lists-or-groups.math.adjacent*/} goes for a compromise:
+  # groups are in math mode, while lists are in text mode. Alternatively, in
+  # lists we can have assignments as in text||mode but everything else in math
+  # mode. I think this is the better option overall.
+  control.word.generic.math.adjacent:
+    - !control_sequence_start
+        name: '[[:alpha:]]*'
+        push: argument.lists-or-groups.math.adjacent*/
+    # - !control_sequence
+    #     name: define(?!dfont)[[:alpha:]]*
+    #     push:
+    #       - argument.lists-or-groups.math.adjacent*/,
+    #       - argument.list.definition.adjacent*/,
+    - include: control.word.generic.common
+    - !control_sequence
+        name: '[[:alpha:]]+'
+        push: argument.lists-or-groups.math.adjacent*/
+  control.word.generic.common:
+    - !control_sequence_stop
+        name: '[[:alpha:]]*'
+  control.word.generic.protect.common:
+    - !control_sequence_stop
+        name: '[[:alpha:]_@?!]*'
+
+  control.symbol:
+    - match: '(\\)(?:[^[:alpha:]]|$)'
+      captures:
+        0: constant.character.escape.context
+        1: punctuation.definition.backslash.context
+  control.active-character:
+    - match: '\|'
+      scope: constant.other.active.context
+      push:
+        - include: generic.gobble-whitespace
+        - match: '([^\\\|])?(\|)'
+          captures:
+            1: constant.other.modifier.context
+            2: constant.other.active.context
+          pop: true
+        - include: generic.pop/
+    - match: '~'
+      scope: constant.other.active.context
+
+
+  scoping:
+    - include: scoping.group
+  scoping.protect:
+    - include: scoping.group.protect
+  scoping.math:
+    - include: scoping.group.math
+    - include: generic.pop-if-group-end/
+    # Could add
+    #
+    # \starttyping
+    #   - include: generic.pop-if-group-end/
+    # \stoptyping
+    #
+    # in here. The idea is that we can have all the usual math support, and
+    # {\em also} cope with situations like
+    #
+    # \starttyping
+    # \unexpanded\def\startfoo
+    #   {\startimath
+    #    \dosomestuff}
+    #
+    # Some text not in math mode \periods
+    #
+    # \unexpanded\def\stopfoo
+    #   {\dosomemorestuff
+    #    \stopimath}
+    # \stoptyping
+    #
+    # We could add the same capability to \Lua\ and to \MetaPost\ and so on.
+    # Need to mull this over some more.
+
+  scoping.Lua:
+    - include: scoping.group.Lua
+  scoping.verbatim:
+    - include: scoping.group.verbatim
+  scoping.markup:
+    - include: scoping.group.emphasis
+    - include: scoping.group.boldface
+    - include: scoping.group.italic
+    - include: scoping.group.slanted
+    - include: scoping.group.bold-italic
+    - include: scoping.group.bold-slanted
+    - include: scoping.group.sans-bold
+    - include: scoping.group.typewriter
+    - include: scoping.group.typewriter-bold
+
+  scoping.group:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: scoping.group.main/
+  scoping.group.main/:
+    - meta_scope: meta.braces.context
+    - include: generic.pop-at-group-end/
+    - include: main
+
+  scoping.group.protect:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: scoping.group.protect.main/
+  scoping.group.protect.main/:
+    - meta_scope: meta.braces.context
+    - include: generic.pop-at-group-end/
+    - include: main.protect
+
+  scoping.group.math:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: scoping.group.math.main/
+  scoping.group.math.main/:
+    - meta_scope: meta.braces.context
+    - include: generic.pop-at-group-end/
+    - include: math.main
+
+  scoping.group.Lua:
+    - match: '\{'
+      push: scoping.group.Lua.main/
+  scoping.group.Lua.main/:
+    - match: '\}'
+      pop: true
+    - include: scoping.group.Lua
+    - include: Lua.main
+
+  scoping.group.verbatim:
+    - match: '\{'
+      push: scoping.group.verbatim.main/
+  scoping.group.verbatim.main/:
+    - meta_include_prototype: false
+    - match: '\}'
+      pop: true
+    - include: scoping.group.verbatim
+
+  scoping.group.emphasis:
+    - !control_sequence_group_markup
+        name: (?:emph|em)
+        push: scoping.group.emphasis.main/
+  scoping.group.boldface:
+    - !control_sequence_group_markup
+        name: (?:boldface|(?:small)?bold|bf(?:xx|[xabcd])?)
+        push: scoping.group.boldface.main/
+  scoping.group.italic:
+    - !control_sequence_group_markup
+        name: (?:italic|it(?:xx|[xabcd])?)
+        push: scoping.group.italic.main/
+  scoping.group.slanted:
+    - !control_sequence_group_markup
+        name: (?:(?:small)?slanted|sl(?:xx|[xabcd])?)
+        push: scoping.group.slanted.main/
+  scoping.group.bold-italic:
+    - !control_sequence_group_markup
+        name: (?:(?:small)?(?:bolditalic|italicbold)|bi(?:xx|[xabcd])?)
+        push: scoping.group.bold-italic.main/
+  scoping.group.bold-slanted:
+    - !control_sequence_group_markup
+        name: (?:(?:small)?(?:boldslanted|slantedbold)|bs(?:xx|[xabcd])?)
+        push: scoping.group.bold-slanted.main/
+  scoping.group.sans-bold:
+    - !control_sequence_group_markup
+        name: sansbold
+        push: scoping.group.sans-bold.main/
+  scoping.group.typewriter:
+    - !control_sequence_group_markup
+        name: (?:mono|tt(?:xx|[xabcd])?)
+        push: scoping.group.typewriter.main/
+  scoping.group.typewriter-bold:
+    - !control_sequence_group_markup
+        name: monobold
+        push: scoping.group.typewriter-bold.main/
+
+  scoping.group.emphasis.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.emphasis.context
+    - include: argument.group.main/
+  scoping.group.boldface.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context
+    - include: argument.group.main/
+  scoping.group.italic.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.italic.context
+    - include: argument.group.main/
+  scoping.group.slanted.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.italic.slanted.context
+    - include: argument.group.main/
+  scoping.group.bold-italic.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope:
+        markup.italic.italic.context markup.bold.boldface.context
+    - include: argument.group.main/
+  scoping.group.bold-slanted.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope:
+        markup.italic.slanted.context markup.bold.boldface.context
+    - include: argument.group.main/
+  scoping.group.sans-bold.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context
+    # markup.sans-serif.context ?
+    - include: argument.group.main/
+  scoping.group.typewriter.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.raw.inline.context
+    - include: argument.group.main/
+  scoping.group.typewriter-bold.main/:
+    - meta_scope: meta.braces.context
+    - meta_content_scope: markup.bold.boldface.context markup.raw.inline.context
+    - include: argument.group.main/
+
+
+  argument.group:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: argument.group.main/
+  argument.group/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.main/
+  argument.group*/:
+    - include: argument.group/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.group/
+    - include: generic.pop/
+  argument.groups*/:
+    - include: argument.group
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.main/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - include: generic.pop-at-group-end/
+    - include: main
+
+  argument.group.protect:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: argument.group.protect.main/
+  argument.group.protect/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.protect.main/
+  argument.group.protect*/:
+    - include: argument.group.protect/
+    - include: generic.pop-if-no-nearby-group/
+  argument.groups.protect*/:
+    - include: argument.group.protect
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.protect.main/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - include: generic.pop-at-group-end/
+    - include: main.protect
+
+  argument.group.math:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: argument.group.math.main/
+  argument.group.math/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.math.main/
+  argument.group.math*/:
+    - include: argument.group.math/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.math.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.group.math/
+    - include: generic.pop/
+  argument.group.math.main/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - include: generic.pop-at-group-end/
+    - include: math.main
+
+  argument.group.with-assignments/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.with-assignments.main/
+  argument.group.with-assignments*/:
+    - include: argument.group.with-assignments/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.with-assignments.main/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - include: generic.group.assignments
+    - include: argument.group.main/
+
+  argument.group.with-integers/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.with-integers.main/
+  argument.group.with-integers*/:
+    - include: argument.group.with-integers/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.with-integers.main/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - include: generic.integer
+    - include: argument.group.main/
+
+  # Special case, should do the job well enough.
+  argument.group.with-integers-only/:
+    - match: '(\{)\s*([[:digit:]]+)\s*(\})'
+      captures:
+        0: meta.braces.context meta.environment.argument.context
+        1: punctuation.section.braces.begin.context
+        2: constant.numeric.context
+        3: punctuation.section.braces.begin.context
+      pop: true
+  argument.group.with-integers-only*/:
+    - include: argument.group.with-integers-only/
+    - include: generic.gobble-whitespace-or-pop/
+
+  argument.group.quote/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.quote.main/
+  argument.group.quote*/:
+    - include: argument.group.quote/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.quote.main/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - meta_content_scope: markup.quote.inline.context
+    - include: argument.group.main/
+
+  argument.group.math.outer:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      push: argument.group.math.outer.main/
+  argument.group.math.outer/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.math.outer.main/
+  argument.group.math.outer*/:
+    - include: argument.group.math.outer/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.math.outer.main/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - meta_content_scope: meta.environment.math.context
+    - include: argument.group.math.main/
+
+  argument.group.Lua/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context meta.braces.context
+      set: argument.group.Lua.main/
+  argument.group.Lua*/:
+    - include: argument.group.Lua/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.Lua.main/:
+    - match: ''
+      set: argument.group.Lua.main.aux/
+  argument.group.Lua.main.aux/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - meta_content_scope:
+        source.lua.embedded.context meta.environment.lua.minor.context
+    - include: generic.pop-at-group-end/
+    - include: scoping.Lua
+    - include: Lua.main
+
+  argument.group.verbatim/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.verbatim.main/
+  argument.group.verbatim*/:
+    - include: argument.group.verbatim/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.verbatim.main/:
+    - meta_include_prototype: false
+    - meta_content_scope: markup.raw.inline.context
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - include: generic.pop-at-group-end/
+    - include: scoping.verbatim
+
+  argument.group.file/:
+    - match: '\{'
+      scope: punctuation.section.braces.begin.context
+      set: argument.group.file.main/
+  argument.group.file*/:
+    - include: argument.group.file/
+    - include: generic.pop-if-no-nearby-group/
+  argument.group.file.main/:
+    - meta_scope: meta.braces.context meta.environment.argument.context
+    - meta_content_scope: meta.file-name.context
+    - include: argument.group.main/
+
+  argument.group.part*/:
+    !group_heading part
+  argument.group.chapter*/:
+    !group_heading chapter
+  argument.group.section*/:
+    !group_heading section
+  argument.group.subsection*/:
+    !group_heading subsection
+  argument.group.sub2section*/:
+    !group_heading sub2section
+  argument.group.sub3section*/:
+    !group_heading sub3section
+  argument.group.sub4section*/:
+    !group_heading sub4section
+
+  argument.group.emphasis*/:
+    !group_markup emphasis
+  argument.group.boldface*/:
+    !group_markup boldface
+  argument.group.italic*/:
+    !group_markup italic
+  argument.group.slanted*/:
+    !group_markup slanted
+  argument.group.bold-italic*/:
+    !group_markup bold-italic
+  argument.group.bold-slanted*/:
+    !group_markup bold-slanted
+  argument.group.sans-bold*/:
+    !group_markup sans-bold
+  argument.group.typewriter*/:
+    !group_markup typewriter
+  argument.group.typewriter-bold*/:
+    !group_markup typewriter-bold
+
+  argument.list:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      push: argument.list.main/
+  argument.list/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.main/
+  argument.list*/:
+    - include: argument.list/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.list/
+    - include: generic.pop/
+  argument.lists*/:
+    - include: argument.list
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - include: generic.pop-at-list-end/
+    - include: generic.list.assignments
+    - include: generic.dimension
+    - include: main
+
+  argument.list.protect:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      push: argument.list.protect.main/
+  argument.list.protect/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.protect.main/
+  argument.list.protect*/:
+    - include: argument.list.protect/
+    - include: generic.pop-if-no-nearby-list/
+  argument.lists.protect*/:
+    - include: argument.list.protect
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.protect.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - include: generic.pop-at-list-end/
+    - include: generic.list.protect.assignments
+    - include: generic.dimension
+    - include: main.protect
+
+  argument.list.apply:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      push: argument.list.apply.main/
+  argument.list.apply/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.apply.main/
+  argument.list.apply*/:
+    - include: argument.list.apply/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.apply.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.list.apply/
+    - include: generic.pop/
+  argument.lists.apply*/:
+    - include: argument.list.apply
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.apply.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - include: generic.pop-at-list-end/
+    - include: generic.list.processors
+    # - include: generic.dimension
+    - include: main
+
+  argument.list.math:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      push: argument.list.math.main/
+  argument.list.math/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.math.main/
+  argument.list.math*/:
+    - include: argument.list.math/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.math.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.list.math/
+    - include: generic.pop/
+  argument.lists.math*/:
+    - include: argument.list.math
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.math.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - include: generic.pop-at-list-end/
+    - include: generic.list.assignments
+    - include: generic.dimension
+    - include: math.main
+
+  argument.list.file/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.file.main/
+  argument.list.file*/:
+    - include: argument.list.file/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.file.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: meta.file-name.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  argument.list.this-file/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.this-file.main/
+  argument.list.this-file*/:
+    - include: argument.list.this-file/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.this-file.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: meta.this-file-name.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  argument.list.definition/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.definition.main/
+  argument.list.definition*/:
+    - include: argument.list.definition/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.definition.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: entity.name.function.other.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  argument.list.protect.definition/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.protect.definition.main/
+  argument.list.protect.definition*/:
+    - include: argument.list.protect.definition/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.protect.definition.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: entity.name.function.other.context
+    - include: generic.pop-at-list-end/
+    - include: main.protect
+
+  argument.list.url/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.url.main/
+  argument.list.url*/:
+    - include: argument.list.url/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.url.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: markup.underline.link
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  # Special case, should do the job well enough.
+  argument.list.with-integers-only/:
+    - match: '(\[)\s*([[:digit:]]+)\s*(\])'
+      captures:
+        0: meta.brackets.context meta.environment.argument.context
+        1: punctuation.section.brackets.begin.context
+        2: constant.numeric.context
+        3: punctuation.section.brackets.begin.context
+      pop: true
+  argument.list.with-integers-only*/:
+    - include: argument.list.with-integers-only/
+    - include: generic.gobble-whitespace-or-pop/
+
+  argument.list.document*/:
+    !list_heading document
+  argument.list.part*/:
+    !list_heading part
+  argument.list.chapter*/:
+    !list_heading chapter
+  argument.list.section*/:
+    !list_heading section
+  argument.list.subsection*/:
+    !list_heading subsection
+  argument.list.sub2section*/:
+    !list_heading sub2section
+  argument.list.sub3section*/:
+    !list_heading sub3section
+  argument.list.sub4section*/:
+    !list_heading sub4section
+  argument.list.heading.common/:
+    - include: generic.list.pop-at-end-of-assignment/
+    - include: main
+
+  argument.list.reference/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.reference.main/
+  argument.list.reference*/:
+    - include: argument.list.reference/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.reference.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.list.reference/
+    - include: generic.pop/
+  argument.list.reference.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: entity.name.label.reference.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
+  argument.list.maybe-reference/:
+    - match: '(?=\[[^=]*?\])'
+      set: argument.list.reference*/
+    - match: '(?=\[)'
+      set: argument.list*/
+  argument.list.maybe-reference.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.list.maybe-reference/
+    - include: generic.pop/
+  argument.list.maybe-reference*/:
+    - include: argument.list.maybe-reference/
+    - include: generic.pop-if-no-nearby-list/
+
+  argument.list.template/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.template.main/
+  argument.list.template*/:
+    - include: argument.list.template/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.template.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - include: argument.list.template.keys
+    - include: generic.pop-at-list-end/
+
+  argument.list.template-or-name/:
+    - match: '\['
+      scope: meta.brackets.context punctuation.section.brackets.begin.context
+      set: argument.list.template-or-name.main/
+  argument.list.template-or-name*/:
+    - include: argument.list.template-or-name/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.template-or-name.main/:
+    - match: '(?=\s*[^\]]*\|)'
+      set: argument.list.template.main/
+    - match: ''
+      set: argument.list.main/
+
+  # We (ab)use some of the usual scopes.
+  argument.list.template.keys:
+    - match: '\|'
+      scope: punctuation.separator.column.context
+    - match: '[lcrx]'
+      scope: variable.parameter.table.context
+    - match: '[wp]'
+      scope: variable.parameter.table.context
+    # push: argument.parens.with-dimensions*/
+    # The space is important, apparently.
+    - match: '([nNqQ])\s*([[:digit:]]+)\.([[:digit:]]+) '
+      captures:
+        1: variable.parameter.table.context
+        2: constant.numeric.context
+        3: constant.numeric.context
+    - match: '(?:[mM]|[BISRT])'
+      scope: keyword.other.table.context
+    - match: '[f]'
+      scope: keyword.other.table.context
+      push: argument.group*/
+    - match: '([sojk])\s*([[:digit:]])'
+      captures:
+        1: support.function.table.context
+        2: constant.numeric.context
+    - match: '[sojk]'
+      scope: support.function.table.context
+      push: argument.group.with-integers*/
+    - include: generic.dimension
+    - include: main
+
+  argument.list-or-group:
+    - include: argument.list
+    - include: argument.group
+  argument.lists-or-groups*/:
+    - include: argument.list-or-group
+    - include: generic.pop-if-no-nearby-list-or-group/
+  argument.lists-or-groups.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.list-or-group
+    - include: generic.pop/
+
+  argument.list-or-group.protect:
+    - include: argument.list.protect
+    - include: argument.group.protect
+  argument.lists-or-groups.protect*/:
+    - include: argument.list-or-group.protect
+    - include: generic.pop-if-no-nearby-list-or-group/
+
+  argument.list-or-group.math:
+    - include: argument.list.math
+    # - include: argument.list
+    - include: argument.group.math
+  argument.lists-or-groups.math*/:
+    - include: argument.list-or-group.math
+    - include: generic.pop-if-no-nearby-list-or-group/
+  argument.lists-or-groups.math.adjacent*/:
+    - include: generic.pop-if-whitespace/
+    - include: argument.list-or-group.math
+    - include: generic.pop/
+
+  argument.group-or-name.file*/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - match: '(?=\{)'
+      set: argument.group.file*/
+    - match: '(?=.)'
+      set: argument.name.file*/
+  argument.list-or-name.file*/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - match: '(?=\[)'
+      set: argument.list.file*/
+    - match: '(?=.)'
+      set: argument.name.file*/
+  argument.list-or-name.this-file*/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - match: '(?=\[)'
+      set: argument.list.this-file*/
+    - match: '(?=.)'
+      set: argument.name.this-file*/
+
+  argument.angles.verbatim/:
+    - match: '<<'
+      scope: punctuation.section.double-angle.begin.context
+      set: argument.angles.verbatim.main/
+  argument.angles.verbatim.main/:
+    - meta_include_prototype: false
+    - meta_content_scope: markup.raw.inline.context
+    - meta_scope: meta.double-angle.context
+    - match: '>>'
+      scope: punctuation.section.double-angle.end.context
+      pop: true
+
+  argument.delim.verbatim/:
+    - match: '({{verbatim}})'
+      scope: punctuation.section.delim.begin.context
+      set: argument.delim.verbatim.main/
+  argument.delim.verbatim.main/:
+    - meta_include_prototype: false
+    - meta_content_scope: markup.raw.inline.context
+    - meta_scope: meta.delim.context
+    - match: '\1'
+      scope: punctuation.section.delim.end.context
+      pop: true
+
+  argument.group-or-angles-or-delim.verbatim*/:
+    - include: argument.group.verbatim/
+    - include: argument.angles.verbatim/
+    - include: argument.delim.verbatim/
+    - include: generic.gobble-whitespace-or-pop/
+
+  # We shall assume that if we see something like \type{\def\csname ...} that
+  # some \TeX\ trickery is taking place with e.g.\ \type{\expandafter}.
+  # Therefore, we do {\em not} count this as a (re)definition of
+  # \type{\csname}. Similarly for some other common \TeX\ primitives.
+  argument.control-word.definition/:
+    - match: '(?=\\(?:csname|expandafter|fi|recurselevel)\b)'
+      pop: true
+    - match: '(\\)[[:alpha:]]+'
+      captures:
+        0: meta.control-word.context entity.name.function.context
+        1: punctuation.definition.backslash.context
+      pop: true
+  argument.control-word.protect.definition/:
+    - match: '(?=\\(?:csname|expandafter|fi|recurselevel)\b)'
+      pop: true
+    - match: '(\\)[[:alpha:]_?!@]+'
+      captures:
+        0: meta.control-word.context entity.name.function.context
+        1: punctuation.definition.backslash.context
+      pop: true
+  argument.control-symbol.definition/:
+    - match: '(\\)([^[:alpha:]]|$)'
+      captures:
+        0: entity.name.function.context
+        1: punctuation.definition.backslash.context
+      pop: true
+  argument.control-sequence.definition/:
+    - include: argument.control-word.definition/
+    - include: argument.control-symbol.definition/
+  argument.control-sequence.definition*/:
+    - include: argument.control-sequence.definition/
+    - include: generic.pop-if-no-nearby-control-sequence/
+  argument.control-sequence.protect.definition/:
+    - include: argument.control-word.protect.definition/
+    - include: argument.control-symbol.definition/
+  argument.control-sequence.protect.definition*/:
+    - include: argument.control-sequence.protect.definition/
+    - include: generic.pop-if-no-nearby-control-sequence/
+
+  argument.integer:
+    - include: generic.integer
+  argument.integer/:
+    - include: generic.integer/
+  argument.integer*/:
+    - include: generic.integer/
+    - include: generic.gobble-whitespace-or-pop/
+
+  argument.equals/:
+    - match: '='
+      scope: keyword.operator.assignment.context
+      pop: true
+  argument.equals*/:
+    - include: argument.equals/
+    - include: generic.gobble-whitespace-or-pop/
+
+  argument.spaces/:
+    - match: '\b(?:no)?spaces\b'
+      scope: storage.modifier.spaces.context
+      pop: true
+  argument.global/:
+    - match: '\bglobal\b'
+      scope: storage.modifier.global.context
+      pop: true
+  argument.unexpanded/:
+    - match: '\bunexpanded\b'
+      scope: storage.modifier.unexpanded.context
+      pop: true
+  argument.expanded/:
+    - match: '\bexpanded\b'
+      scope: storage.modifier.expanded.context
+      pop: true
+  argument.do-n-tuple/:
+    - match:
+        "\\b(?:single|double|triple|quadruple|quintuple|sixtuple)\
+         (?:argument|empty)\\b"
+      scope: storage.modifier.n-tuple.context
+      pop: true
+  argument.name/:
+    - match: '{{setup}}+'
+      scope: entity.name.function.context
+      pop: true
+  argument.name.file/:
+    - match: '{{setup}}+'
+      scope: meta.file-name.context
+      pop: true
+  argument.name.this-file/:
+    - match: '{{setup}}+'
+      scope: meta.this-file-name.context
+      pop: true
+
+  argument.spaces*/:
+    - include: argument.spaces/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.global*/:
+    - include: argument.global/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.unexpanded*/:
+    - include: argument.unexpanded/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.expanded*/:
+    - include: argument.expanded/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.do-n-tuple*/:
+    - include: argument.do-n-tuple/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name*/:
+    - include: argument.name/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name.file*/:
+    - include: argument.name.file/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name.this-file*/:
+    - include: argument.name.this-file/
+    - include: generic.gobble-whitespace-or-pop/
+
+  generic.pop-if-group-end/:
+    - match: '(?=\})'
+      pop: true
+  generic.pop-if-no-group/:
+    - match: '(?=[^\{])'
+      pop: true
+  generic.pop-if-no-list/:
+    - match: '(?=[^\[])'
+      pop: true
+  generic.pop-if-no-parens/:
+    - match: '(?=[^\(])'
+      pop: true
+  generic.pop-if-no-list-or-group/:
+    - match: '(?=[^\[\{])'
+      pop: true
+  generic.pop-if-no-control-sequence/:
+    - match: '(?=[^\\])'
+      pop: true
+  generic.pop-if-blank-line/:
+    - match: '(?=^\s*$\n?)'
+      pop: true
+  generic.pop-if-whitespace/:
+    - match: '(?=\s)'
+      pop: true
+  generic.pop/:
+    - match: ''
+      pop: true
+  generic.pop-if-stop-match-two/:
+    - match: '(?=\\stop\2\b)'
+      pop: true
+
+  generic.gobble-whitespace:
+    - match: '\s+'
+  generic.gobble-whitespace-or-pop-if-blank-line/:
+    - include: generic.pop-if-blank-line/
+    - include: generic.gobble-whitespace
+  generic.gobble-whitespace-or-pop/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop/
+
+  generic.pop-if-no-nearby-group/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop-if-no-group/
+  generic.pop-if-no-nearby-list/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop-if-no-list/
+  generic.pop-if-no-nearby-list-or-group/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop-if-no-list-or-group/
+  generic.pop-if-no-nearby-parens/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop-if-no-parens/
+  generic.pop-if-no-nearby-control-sequence/:
+    - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop-if-no-control-sequence/
+
+  generic.pop-at-group-end/:
+    - match: '\}'
+      scope: punctuation.section.braces.end.context
+      pop: true
+  generic.pop-at-list-end/:
+    - match: '\]'
+      scope: punctuation.section.brackets.end.context
+      pop: true
+  generic.pop-at-parens-end/:
+    - match: '\)'
+      scope: punctuation.section.parens.end.context
+      pop: true
+  generic.list.pop-at-end-of-assignment/:
+    - include: generic.pop-at-comma/
+    - match: '(?=\])'
+      pop: true
+  generic.group.pop-at-end-of-assignment/:
+    - include: generic.pop-at-comma/
+    - match: '(?=\})'
+      pop: true
+  generic.pop-at-comma/:
+    - match: ','
+      scope: punctuation.separator.comma.context
+      pop: true
+
+  generic.integer:
+    - match: '[[:digit:]]+'
+      scope: constant.numeric.context
+  generic.integer/:
+    - match: '[[:digit:]]+'
+      scope: constant.numeric.context
+      pop: true
+  generic.real:
+    - match: '(?:[[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)'
+      scope: constant.numeric.context
+  generic.real/:
+    - match: '(?:[[:digit:]]+|[[:digit:]]*\.[[:digit:]]+)'
+      scope: constant.numeric.context
+      pop: true
+  generic.dimension:
+    - match:
+        "([[:digit:]]+|[[:digit:]]*\\.[[:digit:]]+)\
+         (pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\\b"
+      captures:
+        1: constant.numeric.context
+        2: keyword.other.unit.context
+  generic.dimension/:
+    - match:
+        "([[:digit:]]+|[[:digit:]]*\\.[[:digit:]]+)\
+         (pt|pc|in|bp|cm|mm|dd|cc|sp|em|ex)\\b"
+      captures:
+        1: constant.numeric.context
+        2: keyword.other.unit.context
+      pop: true
+
+  generic.list.assignments:
+    - match: '\b(reference)\s*(=)'
+      captures:
+        1: variable.parameter.context
+        2: keyword.operator.assignment.context
+      push:
+        - meta_content_scope:
+            meta.value.context entity.name.label.reference.context
+        - include: generic.list.pop-at-end-of-assignment/
+        - include: main
+    - !assignment
+        include_main: main
+    - include: generic.assignment.comma
+  generic.list.protect.assignments:
+    - !assignment
+        include_main: main.protect
+    - include: generic.assignment.comma
+
+  generic.list.processors:
+    - !assignment
+        delim: '=>'
+    - include: generic.assignment.comma
+
+  generic.group.assignments:
+    - !assignment
+        mode: group
+    - include: generic.assignment.comma
+
+  generic.assignment.comma:
+    - match: ','
+      scope: punctuation.separator.comma.context

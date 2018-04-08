@@ -50,7 +50,8 @@ Currently the features are:
 ## Installation/Setup
 
 Install via [package control][package-control], under the name `simple_ConTeXt`.
-Afterwards, there are some optional things to set up.
+(Alternatively, `git clone` the repository into your Sublime Text packages
+directory.) Afterwards, there are some optional things to set up.
 
 ### Builder
 

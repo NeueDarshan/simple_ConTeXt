@@ -25,7 +25,7 @@ def AND(a, b):
 
 
 def ALL(*args):
-    return "({})".format(" ".join(args))
+    return " ".join(args)
 
 
 def OR(a, b):
@@ -33,11 +33,11 @@ def OR(a, b):
 
 
 def ANY(*args):
-    return "({})".format(", ".join(args))
+    return ", ".join(args)
 
 
 def NOT(a):
-    return "- ({})".format(a)
+    return "- {}".format(a)
 
 
 BACKSLASH = "punctuation.definition.backslash.context"
@@ -120,6 +120,44 @@ HEADING = ANY(
     # DOCUMENT, OTHER,
     PART, CHAPTER, SECTION, SUBSECTION, SUB2SECTION, SUB3SECTION, SUB4SECTION
 )
+
+KEYWORD_BACKSLASH = AND(BACKSLASH, "punctuation.definition.keyword.context")
+
+META_ARGUMENT = "meta.environment.argument.context"
+
+BRACES_ARGUMENT = AND(BRACES, META_ARGUMENT)
+
+BRACKETS_ARGUMENT = AND(BRACKETS, META_ARGUMENT)
+
+SUPPORT_CONTROL = "support.function.context"
+
+KEYWORD_CONTROL = "keyword.control.context"
+
+ALIGN_CONTROL = "keyword.operator.alignment.context"
+
+IMPORT_CONTROL = "keyword.control.import.context"
+
+DEFINE_CONTROL = "storage.type.context"
+
+MODIFY_CONTROL = "storage.modifier.context"
+
+CONDITIONAL_CONTROL = "keyword.control.conditional.context"
+
+CONTROL_WORD_NORMAL = AND(FULL_CONTROL_WORD, SUPPORT_CONTROL)
+
+CONTROL_WORD_START = ALL(FULL_CONTROL_WORD, FULL_START, KEYWORD_CONTROL)
+
+CONTROL_WORD_STOP = ALL(FULL_CONTROL_WORD, FULL_STOP, KEYWORD_CONTROL)
+
+CONTROL_WORD_ALIGN = AND(FULL_CONTROL_WORD, ALIGN_CONTROL)
+
+CONTROL_WORD_IMPORT = AND(FULL_CONTROL_WORD, IMPORT_CONTROL)
+
+CONTROL_WORD_DEFINE = AND(FULL_CONTROL_WORD, DEFINE_CONTROL)
+
+CONTROL_WORD_MODIFY = AND(FULL_CONTROL_WORD, MODIFY_CONTROL)
+
+CONTROL_WORD_CONDITIONAL = AND(FULL_CONTROL_WORD, CONDITIONAL_CONTROL)
 
 
 def skip_while_match(view, begin, scope, end=None):
