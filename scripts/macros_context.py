@@ -5,12 +5,6 @@ from YAMLMacros.lib.extend import apply, merge, prepend
 from . import scopes
 
 
-EMBEDDED_METAFUN = "source.metapost.metafun.embedded.context"
-
-BLOCK_QUOTE = "markup.quote.block.context"
-
-BLOCK_RAW = "markup.raw.block.context"
-
 _MAP_HEADING = {
     "part": "part",
     "chapter": "(?:chapter|title)",
@@ -22,17 +16,15 @@ _MAP_HEADING = {
 }
 
 _MAP_MARKUP = {
-    "emphasis": "markup.italic.emphasis.context",
-    "boldface": "markup.bold.boldface.context",
-    "italic": "markup.italic.italic.context",
-    "slanted": "markup.italic.slanted.context",
-    "bold-italic": "markup.italic.italic.context markup.bold.boldface.context",
-    "bold-slanted":
-        "markup.italic.slanted.context markup.bold.boldface.context",
-    "sans-bold": "markup.bold.boldface.context",
-    "typewriter": "markup.raw.inline.context",
-    "typewriter-bold":
-        "markup.bold.boldface.context markup.raw.inline.context",
+    "emphasis": scopes.EMPHASIS,
+    "boldface": scopes.BOLDFACE,
+    "italic": scopes.ITALIC,
+    "slanted": scopes.SLANTED,
+    "bold-italic": scopes.BOLD_ITALIC,
+    "bold-slanted": scopes.BOLD_SLANTED,
+    "sans-bold": scopes.SANS_BOLD,
+    "typewriter": scopes.TYPEWRITER,
+    "typewriter-bold": scopes.TYPEWRITER_BOLD,
 }
 
 
@@ -41,6 +33,7 @@ def _control_sequence_aux(name, scope, backslash=scopes.BACKSLASH):
         "match": r"(\\){}\b".format(name),
         "captures": {0: scope, 1: backslash},
     }
+
 
 def _control_sequence(
     name,
@@ -129,7 +122,7 @@ def control_sequence_modify(name="", set=None, **kwargs):
     )
 
 
-def control_sequence_group_markup(name="", push=None):
+def control_sequence_group_markup(name="", push_scoping=None):
     rule_base = {
         "match": r"(\{)\s*((\\)%s)\b" % name,
         "captures": {
@@ -138,8 +131,8 @@ def control_sequence_group_markup(name="", push=None):
             3: scopes.BACKSLASH,
         },
     }
-    if push is not None:
-        rule_base["push"] = push
+    if push_scoping is not None:
+        rule_base["push"] = "scoping.group.{}.main/".format(push_scoping)
     return rule(**rule_base)
 
 
@@ -158,37 +151,40 @@ def block_stop(
         match="",
         set=prototype_rule + [
             rule(meta_content_scope=meta_content_scope),
-            rule(
-                match=r"(?=\\stop{}\b)".format(name),
-                pop=True,
-            ),
+            rule(match=r"(?=\\stop{}\b)".format(name), pop=True),
         ] + include_rule,
     )
 
 
 def block_stop_metafun(name):
     return block_stop(
-        name=name, meta_content_scope=EMBEDDED_METAFUN, include="MetaFun.main",
+        name=name,
+        meta_content_scope=scopes.EMBEDDED_METAFUN,
+        include="MetaFun.main",
     )
 
 
 def block_stop_quote(name):
     return block_stop(
-        name=name, meta_content_scope=BLOCK_QUOTE, include="main",
+        name=name, meta_content_scope=scopes.BLOCK_QUOTE, include="main",
     )
 
 
 def block_stop_verbatim(name):
     return block_stop(
-        name=name, meta_content_scope=BLOCK_RAW, meta_include_prototype=False,
+        name=name,
+        meta_content_scope=scopes.BLOCK_RAW,
+        meta_include_prototype=False,
     )
 
 
 def list_heading(name):
-    content_scope = (
-        "meta.value.context meta.title.context "
-        "entity.name.section.{}.context markup.heading.context"
-    ).format(name)
+    content_scope = scopes.ALL(
+        scopes.VALUE,
+        scopes.META_TITLE,
+        "entity.name.section.{}.context".format(name),
+        scopes.MARKUP_HEADING,
+    )
     return [
         rule(
             match=r"\[",
@@ -197,10 +193,7 @@ def list_heading(name):
                 rule(meta_scope=scopes.BRACKETS_ARGUMENT),
                 rule(
                     match=r"\b(title)\s*(=)",
-                    captures={
-                        1: "variable.parameter.context",
-                        2: "keyword.operator.assignment.context",
-                    },
+                    captures={1: scopes.KEY, 2: scopes.EQUALS},
                     push=[
                         rule(meta_content_scope=content_scope),
                         rule(include="argument.list.heading.common/"),
@@ -214,9 +207,10 @@ def list_heading(name):
 
 
 def group_heading(name):
-    content_scope = (
-        "meta.title.context entity.name.section.{}.context "
-        "markup.heading.context"
+    content_scope = scopes.ALL(
+        scopes.META_TITLE,
+        "entity.name.section.{}.context".format(name),
+        scopes.MARKUP_HEADING,
     )
     return [
         rule(
@@ -252,12 +246,9 @@ def group_markup(name):
 def assignment(delim="=", mode="list", include_main="main"):
     return rule(
         match="({{key}}*)\\s*(%s)" % delim,
-        captures={
-            1: "variable.parameter.context",
-            2: "keyword.operator.assignment.context",
-        },
+        captures={1: scopes.KEY, 2: scopes.EQUALS},
         push=[
-            rule(meta_content_scope="meta.value.context"),
+            rule(meta_content_scope=scopes.VALUE),
             rule(include="generic.{}.pop-at-end-of-assignment/".format(mode)),
             rule(include="generic.dimension"),
             rule(include=include_main),

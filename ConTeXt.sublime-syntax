@@ -1646,16 +1646,11 @@ contexts:
     - include: scoping.group
   scoping.protect:
     - include: scoping.group.protect
+    - include: generic.pop-if-group-end/
   scoping.math:
     - include: scoping.group.math
     - include: generic.pop-if-group-end/
-    # Could add
-    #
-    # \starttyping
-    #   - include: generic.pop-if-group-end/
-    # \stoptyping
-    #
-    # in here. The idea is that we can have all the usual math support, and
+    # The idea here is that we can have all the usual math support, and
     # {\em also} cope with situations like
     #
     # \starttyping
@@ -1675,8 +1670,10 @@ contexts:
 
   scoping.Lua:
     - include: scoping.group.Lua
+    # - include: generic.pop-if-group-end/
   scoping.verbatim:
     - include: scoping.group.verbatim
+    # - include: generic.pop-if-group-end/
   scoping.markup:
     - include: scoping.group.emphasis
     - include: scoping.group.boldface

@@ -129,6 +129,8 @@ BRACES_ARGUMENT = AND(BRACES, META_ARGUMENT)
 
 BRACKETS_ARGUMENT = AND(BRACKETS, META_ARGUMENT)
 
+META_TITLE = "meta.title.context"
+
 SUPPORT_CONTROL = "support.function.context"
 
 KEYWORD_CONTROL = "keyword.control.context"
@@ -158,6 +160,32 @@ CONTROL_WORD_DEFINE = AND(FULL_CONTROL_WORD, DEFINE_CONTROL)
 CONTROL_WORD_MODIFY = AND(FULL_CONTROL_WORD, MODIFY_CONTROL)
 
 CONTROL_WORD_CONDITIONAL = AND(FULL_CONTROL_WORD, CONDITIONAL_CONTROL)
+
+EMPHASIS = "markup.italic.emphasis.context"
+
+BOLDFACE = "markup.bold.boldface.context"
+
+ITALIC = "markup.italic.italic.context"
+
+SLANTED = "markup.italic.slanted.context"
+
+BOLD_ITALIC = AND(ITALIC, BOLDFACE)
+
+BOLD_SLANTED = AND(SLANTED, BOLDFACE)
+
+SANS_BOLD = "markup.bold.boldface.context"
+
+TYPEWRITER = "markup.raw.inline.context"
+
+TYPEWRITER_BOLD = AND(BOLDFACE, TYPEWRITER)
+
+EMBEDDED_METAFUN = "source.metapost.metafun.embedded.context"
+
+BLOCK_QUOTE = "markup.quote.block.context"
+
+BLOCK_RAW = "markup.raw.block.context"
+
+MARKUP_HEADING = "markup.heading.context"
 
 
 def skip_while_match(view, begin, scope, end=None):
