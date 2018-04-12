@@ -187,6 +187,7 @@ class SimpleContextMacroSignatureEventListener(
         if (
             self.state == IDLE and
             self.is_visible() and
+            self.get_setting("pop_ups/try_generate_on_demand") and
             self.name not in self.cache
         ):
             self.state = RUNNING
@@ -236,14 +237,18 @@ class SimpleContextMacroSignatureEventListener(
         if self.state != IDLE or not self.is_visible():
             return None
 
-        for location in locations:
-            if scopes.enclosing_block(
-                self.view, location-1, scopes.FULL_CONTROL_SEQ, end=self.size,
-            ):
-                return [
-                    ["\\" + ctrl, ""]
-                    for ctrl in self.cache[self.name].get_cmds()
-                ]
+        if self.name in self.cache:
+            for location in locations:
+                if scopes.enclosing_block(
+                    self.view,
+                    location - 1,
+                    scopes.FULL_CONTROL_SEQ,
+                    end=self.size,
+                ):
+                    return [
+                        ["\\" + ctrl, ""]
+                        for ctrl in self.cache[self.name].get_cmds()
+                    ]
         return None
 
     def on_hover(self, point, hover_zone):
@@ -379,10 +384,11 @@ class SimpleContextMacroSignatureEventListener(
                 s for s in self.html_cache[self.name][self.popup_name][:-1]
                 if s
             )
-            if content == "html":
-                self.copy(html_css.pretty_print(text))
-            elif content == "plain":
-                self.copy(html_css.raw_print(text))
+            self.copy(html_css.raw_print(text))
+            # if content == "html":
+            #     self.copy(html_css.pretty_print(text))
+            # elif content == "plain":
+            #     self.copy(html_css.raw_print(text))
 
     def on_navigate_file(self, name, command):
         main = files.locate(self.context_path, name, flags=self.flags)

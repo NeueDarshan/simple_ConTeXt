@@ -5,6 +5,7 @@ from .scripts import utilities
 from .scripts import deep_dict
 
 
+# Bit ugly that we take this approach.
 CURRENT_SETTINGS = [
     "builder/behaviour/auto/after_save",
     "builder/behaviour/auto/after_time_delay",
@@ -23,6 +24,7 @@ CURRENT_SETTINGS = [
     "pop_ups/methods/on_modified",
     "pop_ups/show_copy_pop_up",
     "pop_ups/show_source_files",
+    "pop_ups/try_generate_on_demand",
     "references/command_regex",
     "references/on",
 ]

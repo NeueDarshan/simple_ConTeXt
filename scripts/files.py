@@ -1,5 +1,5 @@
 import subprocess
-import string
+import zlib
 import re
 import os
 
@@ -105,14 +105,7 @@ def add_path(old, new):
 
 
 def file_as_slug(text):
-    slug = ""
-    if text:
-        for c in text:
-            if c in string.ascii_letters + string.digits:
-                slug += c.lower()
-            else:
-                slug += "_"
-    return slug
+    return hex(zlib.adler32(bytes(text, "utf-8")))
 
 
 def file_with_ext(file_, ext):

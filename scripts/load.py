@@ -97,10 +97,11 @@ class InterfaceLoader:
         else:
             source = ""
         if self.kwargs.get("show_copy_pop_up", False):
-            copy = (
-                '<clipboard>copy pop-up text: <a href="copy:plain">(plain)'
-                '</a>, <a href="copy:html">(HTML)</a></clipboard>'
-            )
+            copy = '<clipboard><a href="copy:plain">copy text</a></clipboard>'
+            # copy = (
+            #     '<clipboard>copy pop-up text: <a href="copy:plain">(plain)'
+            #     '</a>, <a href="copy:html">(HTML)</a></clipboard>'
+            # )
         else:
             copy = ""
 

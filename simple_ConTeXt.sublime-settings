@@ -113,6 +113,14 @@
 	// and moreover to the exact definition site (assuming
 	// we can find it). Set to `true` or `false`.
 	"current.pop_ups/show_source_files": true,
+	// Should be `true` or `false`. Controls whether or
+	// not to try generating the interface files 'on
+	// demand'. They can be 'demanded' when you hover over
+	// a command if 'current.pop_ups/methods/on_hover' is
+	// set to true, and when you start typing in a command
+	// name '\foo' if
+	// 'current.pop_ups/methods/on_modified' is true.
+	"current.pop_ups/try_generate_on_demand": true,
 
 	// This is a less-than-elegant solution to a tricky
 	// problem. We provide the reference functionality for

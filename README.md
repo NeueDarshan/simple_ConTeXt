@@ -47,10 +47,23 @@ Currently the features are:
 - Snippets.
 - Other miscellany.
 
+(I should say that I only use ConTeXt MkIV, and so the package is designed and
+tested with MkIV only. In other words, if MkII stuff works then it is a happy
+accident. However, the syntax file should work perfectly well (I speculate) for
+MkII, and some of the other parts might work e.g. the references. I would
+certainly not be opposed to adding stuff for MkII. It's just not something I
+use, so I am not interested in spending my free time working on it.)
+
+(Also, the multilingual interface in ConTeXt is not something that I have really
+considered. I only use the English interface; indeed, I would hardly know where
+to start with supporting the other languages. Again, I would be more than happy
+if it *were* supported, it's just not something that makes sense for me to put
+my time into.)
+
 ## Installation/Setup
 
 Install via [package control][package-control], under the name `simple_ConTeXt`.
-(Alternatively, `git clone` the repository into your Sublime Text packages
+(Alternatively, `git clone` the repository into your Sublime Text (ST) packages
 directory.) Afterwards, there are some optional things to set up.
 
 ### Builder
@@ -90,9 +103,8 @@ environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
 
 ### Auto-Completion
 
-Add the following entry to your general Sublime Text (ST) settings, in order to
-get automatic completions for ConTeXt commands on typing the initial backslash
-<kbd>\\</kbd>.
+Add the following entry to your general ST settings, in order to get automatic
+completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
 
 ```json
 {
@@ -229,7 +241,8 @@ modified to include the path to the ConTeXt binaries currently chosen in the
 settings (the one named `current.path`). It also expands the default ST
 variables (e.g. `$file`). (Note that it is very basic at the moment, it simply
 waits for the script to finish and only then reports the result. Also, if the
-script has an error of some kind then this command can get stuck.)
+script has an error of some kind then this command can get stuck; in this way it
+is quite fragile.)
 
 This can be a convenience if you have multiple installations of ConTeXt on one
 machine, as it takes care of setting up your PATH for you. Then you can do
@@ -257,7 +270,7 @@ names are the same.)
 
 ## Features To Work On
 
-Things that should be relatively easy to add at the moment.
+Things that I'm interested in setting up, that should be relatively easy to do.
 
 - Add auto-build functionality. It should have the ability to pass different
   options to the auto-builder, e.g. `--flags=draft`. It should have options for
@@ -273,21 +286,38 @@ Things that should be relatively easy to add at the moment.
 
 ## Future Features
 
-Features we would like to have, but may be harder to implement.
+Features I would like to have, but may be harder to implement or lower priority.
 
+- Add back in, in a more robust way, the `key=val` autocompletion stuff. If we
+  can get it set up right, it'll be really awesome. For example, on typing
+  `\setuphead[c` we would have the possible keys starting with `c` suggested:
+  `catcodes`, `color`, `command`, `commandafter`, `commandbefore`, `continue`,
+  `conversion`, `coupling`, `criterium`. Moreover, if we choose `criterium` and
+  start typing in the value, we could have the possible values (`all`,
+  `positive`, and `strict`) come up as suggestions.
+- Add support for multi file documents. This is not something I do very much,
+  so I'm not sure what it should look like. Have the builder figure out the
+  master file? What other things would be useful?
+- Add support for the syntax `\start[foo] ... \stop` as a valid alternative to
+  `\startfoo ... \stopfoo`.
 - Add option for return focus to ST after opening PDF on build.
-- SyncTeX support. (Forward and backward jump to PDF.)
+- SyncTeX support. (Forward and backward jump to PDF.) What's the situation
+  with SyncTeX in ConTeXt?
 - Code formatter.
 - Extend the command auto-complete/pop-up system to allow for user-defined
   commands. Easiest would probably be to define them in the `.xml` style that
   the ConTeXt interface files use.
-- Fix up the documentation browser.
+- Fix up the documentation browser. I saw some discussion on the mailing list
+  about using commands like `mtxrun --launch cld-mkiv.pdf` to open the docs,
+  which would be ideal for this.
 - Checker/linter. (The checks provided by `mtxrun --script check` are quite
-  basic. Not sure what ConTeXt support `chktex` has.)
+  basic, last I 'checked'. I don't know that `chktex` has much ConTeXt support,
+  seems to be targeted at LaTeX.)
 - Citation handler. (We handle references well enough, similar support would be
   nice for `\cite[...]`. I expect we would try to keep it simple, and I would
   like to handle the `.lua`, `.xml` and `.bib` formats.)
-- Robust log parsing, esp. for reporting warnings/errors.
+- Robust log parsing, esp. for reporting warnings/errors. Related to this, put
+  phantom errors back in.
 - Word count. (Could be nice to have, but lots of difficulties with it.)
 
 [context-introduction]: http://wiki.contextgarden.net/What_is_ConTeXt
