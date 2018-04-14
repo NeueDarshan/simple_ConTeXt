@@ -5,26 +5,38 @@ from YAMLMacros.lib.extend import apply, merge, prepend
 from . import scopes
 
 
-_MAP_HEADING = {
-    "part": "part",
-    "chapter": "(?:chapter|title)",
-    "section": "(?:section|subject)",
-    "subsection": "sub(?:section|subject)",
-    "sub2section": "subsub(?:section|subject)",
-    "sub3section": "subsubsub(?:section|subject)",
-    "sub4section": "subsubsubsub(?:section|subject)",
-}
-
-_MAP_MARKUP = {
-    "emphasis": scopes.EMPHASIS,
-    "boldface": scopes.BOLDFACE,
-    "italic": scopes.ITALIC,
-    "slanted": scopes.SLANTED,
-    "bold-italic": scopes.BOLD_ITALIC,
-    "bold-slanted": scopes.BOLD_SLANTED,
-    "sans-bold": scopes.SANS_BOLD,
-    "typewriter": scopes.TYPEWRITER,
-    "typewriter-bold": scopes.TYPEWRITER_BOLD,
+_MAPS = {
+    "heading": {
+        "part": r"part",
+        "chapter": r"(?:chapter|title)",
+        "section": r"(?:section|subject)",
+        "subsection": r"sub(?:section|subject)",
+        "sub2section": r"subsub(?:section|subject)",
+        "sub3section": r"subsubsub(?:section|subject)",
+        "sub4section": r"subsubsubsub(?:section|subject)",
+    },
+    "markup": {
+        "emphasis": r"emph",
+        "boldface": r"(?:small)?bold",
+        "italic": r"italic",
+        "slanted": r"(?:small)?slanted",
+        "bold-italic": r"(?:small)?(?:bolditalic|italicbold)",
+        "bold-slanted": r"(?:small)?(?:boldslanted|slantedbold)",
+        "sans-bold": r"sansbold",
+        "typewriter": r"mono",
+        "typewriter-bold": r"monobold",
+    },
+    "markup_group": {
+        "emphasis": scopes.EMPHASIS,
+        "boldface": scopes.BOLDFACE,
+        "italic": scopes.ITALIC,
+        "slanted": scopes.SLANTED,
+        "bold-italic": scopes.BOLD_ITALIC,
+        "bold-slanted": scopes.BOLD_SLANTED,
+        "sans-bold": scopes.SANS_BOLD,
+        "typewriter": scopes.TYPEWRITER,
+        "typewriter-bold": scopes.TYPEWRITER_BOLD,
+    },
 }
 
 
@@ -41,85 +53,69 @@ def _control_sequence(
     name_map=None,
     name_pre="",
     name_post="",
-    push=None,
-    set_=None,
-    pop=None,
     backslash=scopes.BACKSLASH,
+    **kwargs
 ):
-    if name_map == "heading":
-        name = _MAP_HEADING.get(name, name)
-    elif name_map == "markup":
-        name = _MAP_MARKUP.get(name, name)
+    if name_map in _MAPS:
+        name = _MAPS[name_map].get(name, name)
     rule_base = _control_sequence_aux(
         name_pre + name + name_post, scope, backslash=backslash,
     )
-    if push is not None:
-        rule_base["push"] = push
-    if set_ is not None:
-        rule_base["set"] = set_
-    if pop is not None:
-        rule_base["pop"] = pop
+    for k, v in kwargs.items():
+        if v is not None:
+            rule_base[k] = v
     return rule(**rule_base)
 
 
-def control_sequence(name="", set=None, **kwargs):
+def control_sequence(name="", **kwargs):
+    return _control_sequence(name, scopes.CONTROL_WORD_NORMAL, **kwargs)
+
+
+def control_sequence_start(name="", **kwargs):
     return _control_sequence(
-        name, scopes.CONTROL_WORD_NORMAL, set_=set, **kwargs
+        name, scopes.CONTROL_WORD_START, name_pre="start", **kwargs
     )
 
 
-def control_sequence_start(name="", set=None, **kwargs):
+def control_sequence_stop(name="", **kwargs):
     return _control_sequence(
-        name, scopes.CONTROL_WORD_START, name_pre="start", set_=set, **kwargs
+        name, scopes.CONTROL_WORD_STOP, name_pre="stop", **kwargs
     )
 
 
-def control_sequence_stop(name="", set=None, **kwargs):
-    return _control_sequence(
-        name, scopes.CONTROL_WORD_STOP, name_pre="stop", set_=set, **kwargs
-    )
-
-
-def control_sequence_align(name="", set=None, **kwargs):
+def control_sequence_align(name="", **kwargs):
     return _control_sequence(
         name,
         scopes.CONTROL_WORD_ALIGN,
         backslash=scopes.KEYWORD_BACKSLASH,
-        set_=set,
         **kwargs
     )
 
 
-def control_sequence_import(name="", set=None, **kwargs):
+def control_sequence_import(name="", **kwargs):
     return _control_sequence(
         name,
         scopes.CONTROL_WORD_IMPORT,
         backslash=scopes.KEYWORD_BACKSLASH,
-        set_=set,
         **kwargs
     )
 
 
-def control_sequence_conditional(name="", set=None, **kwargs):
+def control_sequence_conditional(name="", **kwargs):
     return _control_sequence(
         name,
         scopes.CONTROL_WORD_CONDITIONAL,
         backslash=scopes.KEYWORD_BACKSLASH,
-        set_=set,
         **kwargs
     )
 
 
-def control_sequence_define(name="", set=None, **kwargs):
-    return _control_sequence(
-        name, scopes.CONTROL_WORD_DEFINE, set_=set, **kwargs
-    )
+def control_sequence_define(name="", **kwargs):
+    return _control_sequence(name, scopes.CONTROL_WORD_DEFINE, **kwargs)
 
 
-def control_sequence_modify(name="", set=None, **kwargs):
-    return _control_sequence(
-        name, scopes.CONTROL_WORD_MODIFY, set_=set, **kwargs
-    )
+def control_sequence_modify(name="", **kwargs):
+    return _control_sequence(name, scopes.CONTROL_WORD_MODIFY, **kwargs)
 
 
 def control_sequence_group_markup(name="", push_scoping=None):
@@ -153,14 +149,6 @@ def block_stop(
             rule(meta_content_scope=meta_content_scope),
             rule(match=r"(?=\\stop{}\b)".format(name), pop=True),
         ] + include_rule,
-    )
-
-
-def block_stop_metafun(name):
-    return block_stop(
-        name=name,
-        meta_content_scope=scopes.EMBEDDED_METAFUN,
-        include="MetaFun.main",
     )
 
 
@@ -227,8 +215,8 @@ def group_heading(name):
 
 
 def group_markup(name):
-    content_scope = \
-        _MAP_MARKUP.get(name, "markup.italic.{}.context".format(name))
+    fallback = "markup.italic.{}.context".format(name)
+    content_scope = _MAPS["markup_group"].get(name, fallback)
     return [
         rule(
             match=r"\{",
@@ -253,4 +241,11 @@ def assignment(delim="=", mode="list", include_main="main"):
             rule(include="generic.dimension"),
             rule(include=include_main),
         ],
+    )
+
+
+def verbatim_helper(name):
+    return rule(
+        match="",
+        push=["verbatim.main.{}.aux/".format(name), "argument.list*/"],
     )

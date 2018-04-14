@@ -135,6 +135,11 @@
   % <- source.metapost.metafun.embedded.context
 \stopreusableMPgraphic
 
+  \startMPcode btex Lorem \color[red]{ipsum} dolor \periods etex \stopMPcode
+% ^^^^^^^^^^^^                                                               keyword.control.context - source.metapost.metafun.embedded.context
+%                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                  text.tex.context.embedded.metafun.embedded.context
+%              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^             source.metapost.metafun.embedded.context
+%                                                                ^^^^^^^^^^^ keyword.control.context - source.metapost.metafun.embedded.context
 
 % ===== MATH =====
 Adding $1$, \m{2} and \math[three]{3} gives \mathematics{6}.
@@ -170,17 +175,21 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 %                                                           ^^ punctuation.section.double-angle.end.context
 %                                                       ^^^^^^ meta.double-angle.context
 
-\starttyping[option=xml]
-%            ^^^^^^      variable.parameter.context
-%                  ^     keyword.operator.assignment.context
-%           ^^^^^^^^^^^^ meta.brackets.context - markup.raw.block.context
+\starttyping
+  \def\firstoftwo#1#2{#1}
+  \def\secondoftwo#1#2{#2}
+  % <- markup.raw.block.context
+\stoptyping
+
+\startXML[continue]
+  %      ^^^^^^^^^^ meta.brackets.context - text.xml.embedded.context
   <cd:command name="MPcolor" file="colo-ini.mkiv">
     <cd:arguments>
       <cd:resolve name="argument-color"/>
     </cd:arguments>
   </cd:command>
-  % <- markup.raw.block.context
-\stoptyping
+  % <- text.xml.embedded.context
+\stopXML
 
 \startbuffer
   ... \type{#1} % \anundefinedcontrolsequence
@@ -190,12 +199,15 @@ The percent sign \type[option=tex]{%} and the hash \type<<#1>> are special.
 
 
 % ===== COMMENTS =====
-  % Lorem ipsum
-% ^             punctuation.definition.comment.context
-% ^^^^^^^^^^^^^ comment.line.percentage.context
+  Lorem % ipsum \periods
+% ^^^^^                  - comment.line.percentage.context
+%       ^                punctuation.definition.comment.context
+%       ^^^^^^^^^^^^^^^^ comment.line.percentage.context
 
-\starthiding ... \stophiding
-%            ^^^ comment.block.hiding.context
+  Lorem \starthiding ... \stophiding ipsum \periods
+% ^^^^^                                             - comment.block.hiding.context
+%                    ^^^                            comment.block.hiding.context
+%                                    ^^^^^^^^^^^^^^ - comment.block.hiding.context
 
 
 % ===== TEMPLATES =====
@@ -322,18 +334,14 @@ Lorem \quote{ipsum} dolor sit \quotation{amet}, consectetur adipisicing.
 %            ^^^^^                            markup.quote.inline.context
 %                                        ^^^^ markup.quote.inline.context
 
-\startquote
-  consectetur adipisicing \type{elit}, sed do eiusmod {\sl tempor} incididunt
-  ut labore et dolore magna aliqua.
-  % <- markup.quote.block.context
-\stopquote
+\startquote consectetur adipisicing \periods \stopquote
+%           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ markup.quote.block.context
 
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-aliquip ex ea commodo consequat.
+Ut enim ad minim veniam \periods
+% <- - markup.quote.block.context
 
 \startquotation
-  Duis aute \type[option=lua]{\irure} dolor in reprehenderit {\it in} voluptate
-  velit esse cillum dolore eu fugiat nulla pariatur.
+  Duis aute \periods
   % <- markup.quote.block.context
 \stopquotation
 

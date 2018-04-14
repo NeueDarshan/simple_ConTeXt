@@ -31,7 +31,7 @@ contexts:
     - include: Lua
     - include: MetaFun
     # - include: JavaScript
-    - include: catcode
+    # - include: catcode
     - include: markup
     - include: table
     - include: list
@@ -52,24 +52,6 @@ contexts:
     - include: math.cases.pop-at-newrow/
     - include: math.cases.pop-at-end/
     - include: main
-
-  # The question is, how far to go with this kind of thing. The best possible
-  # thing would be to duplicate this syntax file in its entirety, and then go in
-  # and change a handful of places where we match control sequences. Instead, we
-  # go for a somewhat crude compromise, by providing a stripped down copy of the
-  # usual syntax, with the appropriate changes.
-  main.protect:
-    - meta_content_scope: meta.environment.protect.context
-    - include: definition.protect
-    - include: low-level.protect
-    - include: control.protect
-    - include: scoping.protect
-  main.protect/:
-    - meta_content_scope: meta.environment.protect.context
-    - !control_sequence
-        name: protect
-        pop: true
-    - include: main.protect
 
 
   comment:
@@ -94,19 +76,19 @@ contexts:
   # Another aspect is presented here: using an XML||like syntax, you can run
   # snippets of \Lua\ \emph{before} the main \ConTeXt\ run.
   template:
-    - match: '(<\?)(lua)\b'
+    - match: '(<\?)(lua)\s+'
       captures:
         1: punctuation.definition.tag.begin.context
         2: entity.name.tag.lua.context
-      push:
-        - meta_include_prototype: false
-        - meta_scope: meta.tag.context  # meta.preprocessor.lua.context
-        - meta_content_scope: source.lua.embedded.context
-        - match: '\?>'
-          scope: punctuation.definition.tag.end.context
-          pop: true
-        - include: template.Lua.functions
-        - include: scope:source.lua
+      embed: template.Lua.main
+      embed_scope: source.lua.embedded.context
+      escape: '\s+(\?>)'
+      escape_captures:
+        1: punctuation.definition.tag.end.context
+
+  template.Lua.main:
+    - include: template.Lua.functions
+    - include: scope:source.lua
 
   # See the comments on \type{Lua.functions}
   template.Lua.functions:
@@ -293,16 +275,8 @@ contexts:
     - include: Lua
     - include: math.control.cases
     - include: math.control.intertext
-    - include: math.control.sqrt
     - include: control.word.math.adjacent
     - include: control.symbol
-
-  math.control.sqrt:
-    - !control_sequence
-        name: sqrt
-        push:
-          - argument.group.math.adjacent*/
-          - argument.list.math.adjacent*/
 
   math.control.intertext:
     - !control_sequence_start
@@ -355,44 +329,45 @@ contexts:
   Lua.block:
     - !control_sequence_start
         name: (luacode)
-        push:
-          - meta_include_prototype: false
-          - meta_content_scope:
-              meta.environment.lua.major.context source.lua.embedded.context
-          - include: Lua.main.pop-if-stop-match-two/
+        embed: Lua.block.major.main
+        embed_scope:
+          meta.environment.lua.major.context source.lua.embedded.context
+        escape: (?=\s*\\stop\2)
     - !control_sequence_start
         name: (lua)
-        push:
-          - meta_content_scope:
-              meta.environment.lua.minor.context source.lua.embedded.context
-          - include: Lua.main.pop-if-stop-match-two/
+        embed: Lua.block.minor.main
+        embed_scope:
+          meta.environment.lua.minor.context source.lua.embedded.context
+        escape: (?=\s*\\stop\2)
+
   Lua.inline:
     - !control_sequence
         name: (?:late|direct)lua
         push:
           - argument.group.Lua*/
           - argument.integer*/
-    # Hmm, a bit overkill? Should some of these permit an integer as well?
     - !control_sequence
         name:
-          "(?:luacode|(?:late|direct)lua(?:code)?|cld(?:command|context|\
-           loadfile|processfile)|ctx(?:command|directcommand|directlua|\
-           latecommand|latelua|lua|report|sprint|write))"
+          "(?:cld(?:context|command)|ctx(?:(?:direct|late)(?:lua|command)|\
+           sprint|write|command|report|lua)|(?:direct|late)?luacode)"
         push: argument.group.Lua*/
 
-  Lua.main:
-    - include: Lua.control
+  Lua.block.major.main:
+    - meta_include_prototype: false
+    - include: Lua.main.common
+  Lua.block.minor.main:
+    - include: Lua.main.common
+  Lua.inline.main:
     - include: Lua.comment.embed-friendly
+    - include: Lua.main.common
+
+  Lua.main.common:
+    - include: Lua.control
     - include: Lua.functions
     - include: scope:source.lua
-  Lua.main.pop-if-stop-match-two/:
-    - include: generic.pop-if-stop-match-two/
-    - include: Lua.main
 
   Lua.control:
-    # I suppose you can do \Lua\ nested inside \Lua\ if you so desire \periods.
-    - include: Lua
-    - include: control.word.without-alignment
+    - include: control.without-active-character
     - include: control.symbol
 
   Lua.functions:
@@ -437,6 +412,7 @@ contexts:
     - include: MetaFun.block.a
     - include: MetaFun.block.b
     - include: MetaFun.block.c
+    - include: MetaFun.block.d
 
   MetaFun.block.a:
     !foreach
@@ -448,10 +424,8 @@ contexts:
         - MPpositiongraphic
       - !control_sequence_start
           name: !argument value
-          push:
-            - !format MetaFun.main.{value}/
-            - argument.group*/
-            - argument.group*/
+          embed: MetaFun.main.a
+          escape: !format '(?=\\stop{value}\b)'
   MetaFun.block.b:
     !foreach
       - - staticMPfigure
@@ -460,64 +434,63 @@ contexts:
         - MPextensions
       - !control_sequence_start
           name: !argument value
-          push:
-            - !format MetaFun.main.{value}/
-            - argument.group*/
+          embed: MetaFun.main.b
+          escape: !format '(?=\\stop{value}\b)'
   MetaFun.block.c:
     - !control_sequence_start
         name: MPinclusions
-        push:
-          - MetaFun.main.MPinclusions/
-          - argument.group*/
-          - argument.list*/
+        embed: MetaFun.main.c
+        escape: !format '(?=\\stopMPinclusions\b)'
+  MetaFun.block.d:
     - !control_sequence_start
         name: MPpage
-        push:
-          - MetaFun.main.MPpage/
-          - argument.list*/
+        embed: MetaFun.main.d
+        escape: !format '(?=\\stopMPpage\b)'
 
-  MetaFun.main:
-    - include: MetaFun.TeX
-    - include: MetaFun.control
-    - include: scope:source.metapost.metafun
+  MetaFun.main.a:
+    - match: ''
+      push:
+        - MetaFun.main.aux/
+        - argument.group*/
+        - argument.group*/
+  MetaFun.main.b:
+    - match: ''
+      push:
+        - MetaFun.main.aux/
+        - argument.group*/
+  MetaFun.main.c:
+    - match: ''
+      push:
+        - MetaFun.main.aux/
+        - argument.group*/
+        - argument.list*/
+  MetaFun.main.d:
+    - match: ''
+      push:
+        - MetaFun.main.aux/
+        - argument.list*/
 
-  MetaFun.main.MPcode/:
-    - !block_stop_metafun MPcode
-  MetaFun.main.MPpage/:
-    - !block_stop_metafun MPpage
-  MetaFun.main.uniqueMPgraphic/:
-    - !block_stop_metafun uniqueMPgraphic
-  MetaFun.main.uniqueMPpagegraphic/:
-    - !block_stop_metafun uniqueMPpagegraphic
-  MetaFun.main.useMPgraphic/:
-    - !block_stop_metafun useMPgraphic
-  MetaFun.main.usableMPgraphic/:
-    - !block_stop_metafun usableMPgraphic
-  MetaFun.main.reusableMPgraphic/:
-    - !block_stop_metafun reusableMPgraphic
-  MetaFun.main.staticMPfigure/:
-    - !block_stop_metafun staticMPfigure
-  MetaFun.main.MPdefinitions/:
-    - !block_stop_metafun MPdefinitions
-  MetaFun.main.MPinclusions/:
-    - !block_stop_metafun MPinclusions
-  MetaFun.main.MPextensions/:
-    - !block_stop_metafun MPextensions
-  MetaFun.main.MPpositiongraphic/:
-    - !block_stop_metafun MPpositiongraphic
+  MetaFun.main.aux/:
+    - match: ''
+      set:
+        - meta_scope: source.metapost.metafun.embedded.context
+        - include: MetaFun.TeX
+        - include: MetaFun.control
+        - include: scope:source.metapost.metafun
 
   MetaFun.control:
-    - include: Lua
+    - include: control.without-active-character
     - include: control.symbol
-    - include: control.word.generic
+
   MetaFun.TeX:
     - match: '\b(?:b|verbatim)tex\b'
       scope: support.function.metapost
-      push:
-        - meta_content_scope: text.tex.context.embedded.metafun
-        - match: '(?=\betex\b)'
-          pop: true
-        - include: main
+      embed: scope:text.tex.context
+      embed_scope: text.tex.context.embedded.metafun.embedded.context
+      escape: '\betex\b'
+      # Not sure why this repetition of the \type{embed_scope} is needed here.
+      escape_captures:
+        0: source.metapost.metafun.embedded.context support.function.metapost
 
 
   # It would be nice for commands like \type{\em} to stand out from the crowd.
@@ -527,7 +500,9 @@ contexts:
   markup:
     - include: markup.font
     - include: markup.quote
-    # - include: markup.footnote
+    - include: markup.footnote
+
+  # markup.footnote:
 
   markup.quote:
     - include: markup.quote.inline
@@ -599,33 +574,20 @@ contexts:
     - include: scoping.markup
 
   markup.command:
-    - !control_sequence
-        name: emph
-        push: argument.group.emphasis*/
-    - !control_sequence
-        name: (?:small)?bold
-        push: argument.group.boldface*/
-    - !control_sequence
-        name: italic
-        push: argument.group.italic*/
-    - !control_sequence
-        name: (?:small)?slanted
-        push: argument.group.slanted*/
-    - !control_sequence
-        name: (?:small)?(?:bolditalic|italicbold)
-        push: argument.group.bold-italic*/
-    - !control_sequence
-        name: (?:small)?(?:boldslanted|slantedbold)
-        push: argument.group.bold-slanted*/
-    - !control_sequence
-        name: sansbold
-        push: argument.group.sans-bold*/
-    - !control_sequence
-        name: mono
-        push: argument.group.typewriter*/
-    - !control_sequence
-        name: monobold
-        push: argument.group.typewriter-bold*/
+    !foreach
+      - - emphasis
+        - boldface
+        - italic
+        - slanted
+        - bold-italic
+        - bold-slanted
+        - sans-bold
+        - typewriter
+        - typewriter-bold
+      - !control_sequence
+          name: !argument value
+          name_map: markup
+          push: !format 'argument.group.{value}*/'
 
 
   table:
@@ -674,19 +636,16 @@ contexts:
           - argument.group-or-angles-or-delim.verbatim*/
           - argument.list*/
     - !control_sequence
-        name: (?:tex|arg|mat|dis|astype|verbatim(?:string)?)
+        name: (?:tex|arg|mat|dis|astype|filename|verbatim)
         push: argument.group.verbatim*/
     # Assume that these commands are following the convention of using
-    # uppercase for verbatim.
+    # uppercase for verbatim. Given the prefix, this seems reasonable to me.
     - !control_sequence
         name: (?:inline|type)[[:upper:]]+
         push:
           - argument.group.verbatim*/
           - argument.list*/
 
-  # Should we embed the appropriate syntaxes inside \type{TEX}, \type{LUA},
-  # etc.? Hmm. On a technical note, embedding syntaxes is tricky, so it's a
-  # lot easier to just mark them up as verbatim and call it a day.
   verbatim.block:
     !foreach
       - - typing
@@ -697,55 +656,80 @@ contexts:
         - MP
       - !control_sequence_start
           name: !argument value
-          push:
-            - !format verbatim.main.{value}/
-            - argument.list*/
+          embed: !format 'verbatim.main.{value}'
+          escape: !format '(?=\\stop{value}\b)'
 
-  verbatim.main.typing/:
-    - !block_stop_verbatim typing
-  verbatim.main.TEX/:
-    - !block_stop_verbatim TEX
-  verbatim.main.LUA/:
-    - !block_stop_verbatim LUA
-  verbatim.main.XML/:
-    - !block_stop_verbatim XML
-  verbatim.main.PARSEDXML/:
-    - !block_stop_verbatim PARSEDXML
-  verbatim.main.MP/:
-    - !block_stop_verbatim MP
+  # For fun, we could try and get stuff like
+  # \type{\starttyping[option=lua] ... \stoptyping} to actually work. I'm
+  # thinking, we could use a custom version of \type{argument.list*/} that
+  # looks out for \type{option=...}, and if it sees a match then it uses (say)
+  # \type{set} in order to replace the current \type{argument.list*/}||ish
+  # context with something else.
+  #
+  # I also think the current behaviour is perfectly reasonable too.
+  verbatim.main.typing:
+    - !verbatim_helper typing
+  verbatim.main.TEX:
+    - !verbatim_helper TEX
+  verbatim.main.LUA:
+    - !verbatim_helper LUA
+  verbatim.main.XML:
+    - !verbatim_helper XML
+  verbatim.main.PARSEDXML:
+    - !verbatim_helper PARSEDXML
+  verbatim.main.MP:
+    - !verbatim_helper MP
+
+  verbatim.main.typing.aux/:
+    - match: ''
+      set:
+        - meta_scope: markup.raw.block.context
+  verbatim.main.TEX.aux/:
+    - match: ''
+      set:
+        - meta_scope: text.tex.embedded.context
+        - include: scope:text.tex
+  verbatim.main.LUA.aux/:
+    - match: ''
+      set:
+        - meta_scope: source.lua.embedded.context
+        - include: scope:source.lua
+  verbatim.main.XML.aux/:
+    - match: ''
+      set:
+        - meta_scope: text.xml.embedded.context
+        - include: scope:text.xml
+  # I don't know what PARSEDXML is, I assume it is some form of XML.
+  verbatim.main.PARSEDXML.aux/:
+    - include: verbatim.main.XML.aux/
+  verbatim.main.MP.aux/:
+    - match: ''
+      set:
+        - meta_scope: source.metapost.embedded.context
+        - include: scope:source.metapost
+
 
   verbatim.buffer:
     - !control_sequence_start
         name: buffer
-        push:
-          - verbatim.main.buffer/
-          - argument.list*/
+        embed: verbatim.main.buffer/
+        escape: '(?=\\stopbuffer\b)'
   verbatim.main.buffer/:
-    - !block_stop
-        name: buffer
-        meta_content_scope:
-          meta.environment.buffer.context markup.raw.block.context
-        meta_include_prototype: false
+    - !verbatim_helper buffer
+  verbatim.main.buffer.aux/:
+    - match: ''
+      set:
+        - meta_scope: meta.environment.buffer.context markup.raw.block.context
+        - meta_include_prototype: false
 
   verbatim.hiding:
     - !control_sequence_start
-        name: (hiding)
-        push:
-          - meta_content_scope: comment.block.hiding.context
-          - include: generic.pop-if-stop-match-two/
-
-
-  # Should we bother trying to handle \type{\unprotect ... \protect}, or
-  # \type{\startasciimode ... \stopasciimode}? It would be nice to handle
-  # \quote{protect} decently.
-  catcode:
-    - include: catcode.protect
-    # - include: catcode.asciimode
-
-  catcode.protect:
-    - !control_sequence
-        name: unprotect
-        push: main.protect/
+        name: hiding
+        embed: verbatim.main.hiding
+        embed_scope: comment.block.hiding.context
+        escape: '(?=\\stophiding\b)'
+  verbatim.main.hiding:
+    - meta_include_prototype: false
 
 
   heading:
@@ -860,10 +844,6 @@ contexts:
     - include: definition.texdef
     - include: definition.define
     - include: definition.parameter
-  definition.protect:
-    - include: definition.texdef
-    - include: definition.define.protect
-    - include: definition.parameter
 
   # See the comments on \type{template}.
   definition.parameter:
@@ -892,12 +872,6 @@ contexts:
         push:
           - argument.control-sequence.definition*/
           - argument.list.with-integers-only*/
-  definition.define.protect:
-    - !control_sequence_define
-        name: define(?:expandable)?
-        push:
-          - argument.control-sequence.protect.definition*/
-          - argument.list.with-integers-only*/
 
 
   # In addition to supporting some high||level constructs, we also try to
@@ -907,11 +881,6 @@ contexts:
     - include: low-level.tex
     - include: low-level.modifier
     - include: low-level.type
-    - include: low-level.constant
-  low-level.protect:
-    - include: low-level.tex.protect
-    - include: low-level.modifier
-    - include: low-level.type.protect
     - include: low-level.constant
 
   low-level.tex:
@@ -923,15 +892,6 @@ contexts:
         push:
           - argument.equals*/
           - argument.control-sequence.definition*/
-  low-level.tex.protect:
-    - !control_sequence_define
-        name: (?:u?[egx]?|toks|(?:math)?char|count|dimen|(?:mu)?skip)def
-        push: argument.control-sequence.protect.definition*/
-    - !control_sequence_define
-        name: (?:g|global)?let
-        push:
-          - argument.equals*/
-          - argument.control-sequence.protect.definition*/
   low-level.modifier:
     - !control_sequence_modify
         name: (?:long|outer|global|unexpanded|immediate|the|normalprotected)
@@ -945,16 +905,6 @@ contexts:
     - !control_sequence_define
         name: setnew(?:constant|macro)
         push: argument.control-sequence.definition*/
-  low-level.type.protect:
-    - !control_sequence_define
-        name:
-          "new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|\
-           box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|\
-           write|marks|insert|language|fam(?:ily)?|help)"
-        push: argument.control-sequence.protect.definition*/
-    - !control_sequence_define
-        name: setnew(?:constant|macro)
-        push: argument.control-sequence.protect.definition*/
   low-level.constant:
     - match:
         "(\\\\)(?:zerocount|minus(?:one|two)|plus(?:one|two|three|four|five|\
@@ -979,27 +929,20 @@ contexts:
 
 
   control:
+    - include: control.without-active-character
+    - include: control.active-character
+
+  control.without-active-character:
     - include: control.word
     - include: control.symbol
-    - include: control.active-character
-  control.protect:
-    - include: control.word.protect
-    - include: control.symbol
-    - include: control.active-character
 
   control.word:
     # Let's always make alignment arguments adjacent.
     - include: control.word.alignment.adjacent
     - include: control.word.without-alignment
-  control.word.protect:
-    - include: control.word.protect.without-alignment
   control.word.without-alignment:
     - include: control.word.conditional
     - include: control.word.generic
-  control.word.protect.without-alignment:
-    - include: control.word.protect.special
-    - include: control.word.protect.conditional  # Hmm\periods
-    - include: control.word.protect.generic
   control.word.adjacent:
     - include: control.word.alignment.adjacent
     - include: control.word.conditional.adjacent
@@ -1023,13 +966,6 @@ contexts:
            [[:alpha:]]*doif(?:else)?[[:alpha:]]*)"
         push: argument.lists-or-groups*/
     - include: control.word.conditional.common
-  control.word.protect.conditional:
-    - !control_sequence_conditional
-        name:
-          "(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
-           [[:alpha:]]*doif(?:else)?[[:alpha:]]*)"
-        push: argument.lists-or-groups.protect*/
-    - include: control.word.conditional.common
   control.word.conditional.adjacent:
     - !control_sequence_conditional
         name:
@@ -1043,23 +979,23 @@ contexts:
           "(?:if[[:alpha:]]*|[[:alpha:]]*(?:true|false)|loop|repeat|then|\
            or|else|fi)"
 
-  # Experiment, I don't completely understand what naming conventions are used
-  # in the \ConTeXt\ core. Perhaps these are reasonable definitions?
-  control.word.protect.special:
-    - match: '(\\)c![[:alpha:]_@?!]*'
-      captures:
-        0: meta.control-word.context variable.parameter.context
-        1: punctuation.definition.backslash.context
-    - match: '(\\)v![[:alpha:]_@?!]*'
-      captures:
-        0: meta.control-word.context string.quoted.other.control-word.context
-        1: punctuation.definition.backslash.context
-    - match: '(\\)s![[:alpha:]_@?!]*'
-      captures:
-        0:
-          meta.control-word.context string.quoted.other.control-word.context
-        # constant.language.context
-        1: punctuation.definition.backslash.context
+  # # Experiment, I don't completely understand what naming conventions are used
+  # # in the \ConTeXt\ core. Perhaps these are reasonable definitions?
+  # control.word.protect.special:
+  #   - match: '(\\)c![[:alpha:]_@?!]*'
+  #     captures:
+  #       0: meta.control-word.context variable.parameter.context
+  #       1: punctuation.definition.backslash.context
+  #   - match: '(\\)v![[:alpha:]_@?!]*'
+  #     captures:
+  #       0: meta.control-word.context string.quoted.other.control-word.context
+  #       1: punctuation.definition.backslash.context
+  #   - match: '(\\)s![[:alpha:]_@?!]*'
+  #     captures:
+  #       0:
+  #         meta.control-word.context string.quoted.other.control-word.context
+  #       # constant.language.context
+  #       1: punctuation.definition.backslash.context
 
   # The pattern \type{(\\)define[[:alpha:]]*} works remarkably well in almost
   # all cases. However it is not foolproof. For the moment, we use the below
@@ -1078,19 +1014,6 @@ contexts:
     - !control_sequence
         name: '[[:alpha:]]+'
         push: argument.lists-or-groups*/
-  control.word.protect.generic:
-    - !control_sequence_start
-        name: '[[:alpha:]_@?!]*'
-        push: argument.lists-or-groups.protect*/
-    - !control_sequence
-        name: define(?!dfont)[[:alpha:]_@?!]*
-        push:
-          - argument.lists-or-groups.protect*/
-          - argument.list.protect.definition*/
-    - include: control.word.generic.protect.common
-    - !control_sequence
-        name: '[[:alpha:]_@?!]+'
-        push: argument.lists-or-groups.protect*/
   control.word.generic.adjacent:
     - !control_sequence_start
         name: '[[:alpha:]]*'
@@ -1125,9 +1048,6 @@ contexts:
   control.word.generic.common:
     - !control_sequence_stop
         name: '[[:alpha:]]*'
-  control.word.generic.protect.common:
-    - !control_sequence_stop
-        name: '[[:alpha:]_@?!]*'
 
   control.symbol:
     - match: '(\\)(?:[^[:alpha:]]|$)'
@@ -1151,9 +1071,6 @@ contexts:
 
   scoping:
     - include: scoping.group
-  scoping.protect:
-    - include: scoping.group.protect
-    - include: generic.pop-if-group-end/
   scoping.math:
     - include: scoping.group.math
     # The idea here is that we can have all the usual math support, and
@@ -1200,15 +1117,6 @@ contexts:
     - meta_scope: meta.braces.context
     - include: generic.pop-at-group-end/
     - include: main
-
-  scoping.group.protect:
-    - match: '\{'
-      scope: punctuation.section.braces.begin.context
-      push: scoping.group.protect.main/
-  scoping.group.protect.main/:
-    - meta_scope: meta.braces.context
-    - include: generic.pop-at-group-end/
-    - include: main.protect
 
   scoping.group.math:
     - match: '\{'
@@ -1338,25 +1246,6 @@ contexts:
     - include: generic.pop-at-group-end/
     - include: main
 
-  argument.group.protect:
-    - match: '\{'
-      scope: punctuation.section.braces.begin.context
-      push: argument.group.protect.main/
-  argument.group.protect/:
-    - match: '\{'
-      scope: punctuation.section.braces.begin.context
-      set: argument.group.protect.main/
-  argument.group.protect*/:
-    - include: argument.group.protect/
-    - include: generic.pop-if-no-nearby-group/
-  argument.groups.protect*/:
-    - include: argument.group.protect
-    - include: generic.pop-if-no-nearby-group/
-  argument.group.protect.main/:
-    - meta_scope: meta.braces.context meta.environment.argument.context
-    - include: generic.pop-at-group-end/
-    - include: main.protect
-
   argument.group.math:
     - match: '\{'
       scope: punctuation.section.braces.begin.context
@@ -1456,9 +1345,9 @@ contexts:
     - meta_scope: meta.braces.context meta.environment.argument.context
     - meta_content_scope:
         source.lua.embedded.context meta.environment.lua.minor.context
-    - include: generic.pop-at-group-end/
+    - include: generic.pop-at-group-end-greedy/
     - include: scoping.Lua
-    - include: Lua.main
+    - include: Lua.inline.main
 
   argument.group.verbatim/:
     - match: '\{'
@@ -1544,27 +1433,6 @@ contexts:
     - include: generic.list.assignments
     - include: generic.dimension
     - include: main
-
-  argument.list.protect:
-    - match: '\['
-      scope: punctuation.section.brackets.begin.context
-      push: argument.list.protect.main/
-  argument.list.protect/:
-    - match: '\['
-      scope: punctuation.section.brackets.begin.context
-      set: argument.list.protect.main/
-  argument.list.protect*/:
-    - include: argument.list.protect/
-    - include: generic.pop-if-no-nearby-list/
-  argument.lists.protect*/:
-    - include: argument.list.protect
-    - include: generic.pop-if-no-nearby-list/
-  argument.list.protect.main/:
-    - meta_scope: meta.brackets.context meta.environment.argument.context
-    - include: generic.pop-at-list-end/
-    - include: generic.list.protect.assignments
-    - include: generic.dimension
-    - include: main.protect
 
   argument.list.apply:
     - match: '\['
@@ -1654,19 +1522,6 @@ contexts:
     - meta_content_scope: entity.name.function.other.context
     - include: generic.pop-at-list-end/
     - include: main
-
-  argument.list.protect.definition/:
-    - match: '\['
-      scope: punctuation.section.brackets.begin.context
-      set: argument.list.protect.definition.main/
-  argument.list.protect.definition*/:
-    - include: argument.list.protect.definition/
-    - include: generic.pop-if-no-nearby-list/
-  argument.list.protect.definition.main/:
-    - meta_scope: meta.brackets.context meta.environment.argument.context
-    - meta_content_scope: entity.name.function.other.context
-    - include: generic.pop-at-list-end/
-    - include: main.protect
 
   argument.list.url/:
     - match: '\['
@@ -1810,13 +1665,6 @@ contexts:
     - include: argument.list-or-group
     - include: generic.pop/
 
-  argument.list-or-group.protect:
-    - include: argument.list.protect
-    - include: argument.group.protect
-  argument.lists-or-groups.protect*/:
-    - include: argument.list-or-group.protect
-    - include: generic.pop-if-no-nearby-list-or-group/
-
   argument.list-or-group.math:
     - include: argument.list.math
     # - include: argument.list
@@ -1890,14 +1738,6 @@ contexts:
         0: meta.control-word.context entity.name.function.context
         1: punctuation.definition.backslash.context
       pop: true
-  argument.control-word.protect.definition/:
-    - match: '(?=\\(?:csname|expandafter|fi|recurselevel)\b)'
-      pop: true
-    - match: '(\\)[[:alpha:]_?!@]+'
-      captures:
-        0: meta.control-word.context entity.name.function.context
-        1: punctuation.definition.backslash.context
-      pop: true
   argument.control-symbol.definition/:
     - match: '(\\)([^[:alpha:]]|$)'
       captures:
@@ -1909,12 +1749,6 @@ contexts:
     - include: argument.control-symbol.definition/
   argument.control-sequence.definition*/:
     - include: argument.control-sequence.definition/
-    - include: generic.pop-if-no-nearby-control-sequence/
-  argument.control-sequence.protect.definition/:
-    - include: argument.control-word.protect.definition/
-    - include: argument.control-symbol.definition/
-  argument.control-sequence.protect.definition*/:
-    - include: argument.control-sequence.protect.definition/
     - include: generic.pop-if-no-nearby-control-sequence/
 
   argument.integer:
@@ -2053,6 +1887,11 @@ contexts:
     - match: '\}'
       scope: punctuation.section.braces.end.context
       pop: true
+  generic.pop-at-group-end-greedy/:
+    - match: '\s*(\})'
+      captures:
+        1: punctuation.section.braces.end.context
+      pop: true
   generic.pop-at-list-end/:
     - match: '\]'
       scope: punctuation.section.brackets.end.context
@@ -2115,10 +1954,6 @@ contexts:
         - include: generic.list.pop-at-end-of-assignment/
         - include: main
     - !assignment {}
-    - include: generic.assignment.comma
-  generic.list.protect.assignments:
-    - !assignment
-        include_main: main.protect
     - include: generic.assignment.comma
 
   generic.list.processors:

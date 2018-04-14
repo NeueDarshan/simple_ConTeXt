@@ -23,7 +23,8 @@ contexts:
     - include: function
     - include: scope:source.metapost#definition
     - include: environment
-    - include: scope:source.metapost#TeX
+    # - include: scope:source.metapost#TeX
+    - include: TeX
 
 
   comment:
@@ -109,3 +110,14 @@ contexts:
     - match: '\b(?:Start|Stop)Page\b'
       scope: support.function.metapost.metafun
     - include: scope:source.metapost#environment
+
+
+  TeX:
+    - match: '\b(?:b|verbatim)tex\b'
+      scope: support.function.metapost
+      # embed: scope:text.tex.context
+      embed: scope:text.tex
+      embed_scope: text.tex.embedded.metapost.metafun
+      escape: '\betex\b'
+      escape_captures:
+        0: support.function.metapost

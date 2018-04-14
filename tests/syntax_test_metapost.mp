@@ -174,11 +174,11 @@
       picture pic;
       pic := thelabel.top(
         btex
-      % ^^^^ support.function.metapost
+      % ^^^^ support.function.metapost - text.tex.embedded.metapost
           $\displaystyle \sum_{n=1}^{\infty} n = -\frac{1}{12}$
       % <- text.tex.embedded.metapost
         etex,
-      % ^^^^ support.function.metapost
+      % ^^^^ support.function.metapost - text.tex.embedded.metapost
         p
       );
 

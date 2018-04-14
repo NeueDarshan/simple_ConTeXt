@@ -254,14 +254,11 @@ contexts:
   TeX:
     - match: '\b(?:b|verbatim)tex\b'
       scope: support.function.metapost
-      push: TeX.main/
-    - match: '\betex\b'
-      scope: support.function.metapost
-  TeX.main/:
-    - meta_content_scope: text.tex.embedded.metapost
-    - match: '(?=\betex\b)'
-      pop: true
-    - include: scope:text.tex#main
+      embed: scope:text.tex
+      embed_scope: text.tex.embedded.metapost
+      escape: '\betex\b'
+      escape_captures:
+        0: support.function.metapost
 
 
   argument.parens.figure/:
