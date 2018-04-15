@@ -5,7 +5,8 @@ from .scripts import utilities
 from .scripts import deep_dict
 
 
-# Bit ugly that we take this approach.
+# Bit ugly that we take this approach. We feel the need to do so because I can't
+# see how to iterate over a ST settings object.
 CURRENT_SETTINGS = [
     "builder/behaviour/auto/after_save",
     "builder/behaviour/auto/after_time_delay",
@@ -16,6 +17,7 @@ CURRENT_SETTINGS = [
     "builder/output/show_ConTeXt_path",
     "builder/output/show_full_command",
     "builder/output/show",
+    "option_completions/on",
     "path",
     "PDF/open_after_build",
     "PDF/viewer",

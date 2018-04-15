@@ -305,7 +305,7 @@ contexts:
           - !control_sequence_align
               name: MC
               set: math.main.cases/
-          - include: math.main.cases
+          - include: math.main.cases/
 
   math.cases.pop-at-end/:
     - match: '(?=\\stopcases\b)'
@@ -500,9 +500,18 @@ contexts:
   markup:
     - include: markup.font
     - include: markup.quote
-    - include: markup.footnote
+    # - include: markup.footnote
 
   # markup.footnote:
+  #   - !control_sequence_start
+  #       name: footnote
+  #       push:
+  #         - !format markup.main.footnote/
+  #         - argument.list*/
+  # markup.main.footnote/:
+  #   - !block_stop
+  #       name: footnote
+  #       meta_content_scope: markup.other.footnote.context
 
   markup.quote:
     - include: markup.quote.inline
@@ -668,17 +677,23 @@ contexts:
   #
   # I also think the current behaviour is perfectly reasonable too.
   verbatim.main.typing:
-    - !verbatim_helper typing
+    - !verbatim_helper
+        name: typing
   verbatim.main.TEX:
-    - !verbatim_helper TEX
+    - !verbatim_helper
+        name: TEX
   verbatim.main.LUA:
-    - !verbatim_helper LUA
+    - !verbatim_helper
+        name: LUA
   verbatim.main.XML:
-    - !verbatim_helper XML
+    - !verbatim_helper
+        name: XML
   verbatim.main.PARSEDXML:
-    - !verbatim_helper PARSEDXML
+    - !verbatim_helper
+        name: PARSEDXML
   verbatim.main.MP:
-    - !verbatim_helper MP
+    - !verbatim_helper
+        name: MP
 
   verbatim.main.typing.aux/:
     - match: ''
@@ -715,7 +730,9 @@ contexts:
         embed: verbatim.main.buffer/
         escape: '(?=\\stopbuffer\b)'
   verbatim.main.buffer/:
-    - !verbatim_helper buffer
+    - !verbatim_helper
+        name: buffer
+        arg: buffer
   verbatim.main.buffer.aux/:
     - match: ''
       set:
@@ -956,7 +973,7 @@ contexts:
   # best choice.
   control.word.alignment.adjacent:
     - !control_sequence_align
-        name: (?:NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R|CT)
+        name: (?:[BCHNMR]C|N[BNDGL]|[BCFHLMTV]L|C[MT]|[EHR]Q|[ACFHLMNS]R)
         push: argument.list.maybe-reference.adjacent*/
 
   control.word.conditional:
@@ -1134,7 +1151,7 @@ contexts:
     - match: '\}'
       pop: true
     - include: scoping.group.Lua
-    - include: Lua.main
+    - include: Lua.inline.main
 
   scoping.group.verbatim:
     - match: '\{'
@@ -1497,6 +1514,19 @@ contexts:
     - include: generic.pop-at-list-end/
     - include: main
 
+  argument.list.buffer/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.buffer.main/
+  argument.list.buffer*/:
+    - include: argument.list.buffer/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.buffer.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: meta.buffer-name.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
   argument.list.this-file/:
     - match: '\['
       scope: punctuation.section.brackets.begin.context
@@ -1532,7 +1562,7 @@ contexts:
     - include: generic.pop-if-no-nearby-list/
   argument.list.url.main/:
     - meta_scope: meta.brackets.context meta.environment.argument.context
-    - meta_content_scope: markup.underline.link
+    - meta_content_scope: markup.underline.link.context
     - include: generic.pop-at-list-end/
     - include: main
 

@@ -316,7 +316,7 @@ contexts:
             0: meta.control-word.context keyword.operator.alignment.context
             1: punctuation.definition.backslash.context punctuation.definition.keyword.context
           set: math.main.cases/
-        - include: math.main.cases
+        - include: math.main.cases/
 
   math.cases.pop-at-end/:
     - match: (?=\\stopcases\b)
@@ -338,15 +338,15 @@ contexts:
     - include: Lua.inline
 
   Lua.block:
-    - match: (\\)start(luacode)\b
-      embed_scope: meta.environment.lua.major.context source.lua.embedded.context
+    - embed_scope: meta.environment.lua.major.context source.lua.embedded.context
+      match: (\\)start(luacode)\b
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: Lua.block.major.main
       escape: (?=\s*\\stop\2)
-    - match: (\\)start(lua)\b
-      embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
+    - embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
+      match: (\\)start(lua)\b
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -550,6 +550,7 @@ contexts:
       embed: scope:text.tex.context
       embed_scope: text.tex.context.embedded.metafun.embedded.context
       escape: \betex\b
+      # Not sure why this repetition of the \type{embed_scope} is needed here.
       escape_captures:
         0: source.metapost.metafun.embedded.context support.function.metapost
 
@@ -561,9 +562,18 @@ contexts:
   markup:
     - include: markup.font
     - include: markup.quote
-    - include: markup.footnote
+    # - include: markup.footnote
 
   # markup.footnote:
+  #   - !control_sequence_start
+  #       name: footnote
+  #       push:
+  #         - !format markup.main.footnote/
+  #         - argument.list*/
+  # markup.main.footnote/:
+  #   - !block_stop
+  #       name: footnote
+  #       meta_content_scope: markup.other.footnote.context
 
   markup.quote:
     - include: markup.quote.inline
@@ -875,9 +885,7 @@ contexts:
         - verbatim.main.PARSEDXML.aux/
         - argument.list*/
   verbatim.main.MP:
-    -                  
-
-      match: ''
+    - match: ''
       push:
         - verbatim.main.MP.aux/
         - argument.list*/
@@ -921,7 +929,7 @@ contexts:
     - match: ''
       push:
         - verbatim.main.buffer.aux/
-        - argument.list*/
+        - argument.list.buffer*/
   verbatim.main.buffer.aux/:
     - match: ''
       set:
@@ -929,8 +937,8 @@ contexts:
         - meta_include_prototype: false
 
   verbatim.hiding:
-    - match: (\\)starthiding\b
-      embed_scope: comment.block.hiding.context
+    - embed_scope: comment.block.hiding.context
+      match: (\\)starthiding\b
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1321,7 +1329,7 @@ contexts:
   # What scope should alignment things have? I suppose \type{keyword} is the
   # best choice.
   control.word.alignment.adjacent:
-    - match: (\\)(?:NB|[BCHNMR]C|ND|NG|[BCFHLMTV]L|CM|NN|[EHR]Q|[ACFHLMNS]R|CT)\b
+    - match: (\\)(?:[BCHNMR]C|N[BNDGL]|[BCFHLMTV]L|C[MT]|[EHR]Q|[ACFHLMNS]R)\b
       captures:
         0: meta.control-word.context keyword.operator.alignment.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
@@ -1519,7 +1527,7 @@ contexts:
     - match: \}
       pop: true
     - include: scoping.group.Lua
-    - include: Lua.main
+    - include: Lua.inline.main
 
   scoping.group.verbatim:
     - match: \{
@@ -2008,6 +2016,19 @@ contexts:
     - include: generic.pop-at-list-end/
     - include: main
 
+  argument.list.buffer/:
+    - match: \[
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.buffer.main/
+  argument.list.buffer*/:
+    - include: argument.list.buffer/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.buffer.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: meta.buffer-name.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
   argument.list.this-file/:
     - match: \[
       scope: punctuation.section.brackets.begin.context
@@ -2043,7 +2064,7 @@ contexts:
     - include: generic.pop-if-no-nearby-list/
   argument.list.url.main/:
     - meta_scope: meta.brackets.context meta.environment.argument.context
-    - meta_content_scope: markup.underline.link
+    - meta_content_scope: markup.underline.link.context
     - include: generic.pop-at-list-end/
     - include: main
 

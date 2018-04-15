@@ -476,24 +476,25 @@ class InterfaceSaver:
         return val == "yes"
 
     def flatten(self, obj):
-        if not obj:
-            return None
-        elif len(obj) == 1:
-            return obj[0]
-        if all(
-            isinstance(e, str) or (
-                isinstance(e, list) and all(isinstance(s, str) for s in e)
-            )
-            for e in obj
-        ):
-            res = []
-            for e in obj:
-                if isinstance(e, str):
-                    res.append(e)
-                else:
-                    res += e
-            return res
         return obj
+        # if not obj:
+        #     return None
+        # elif len(obj) == 1:
+        #     return obj[0]
+        # if all(
+        #     isinstance(e, str) or (
+        #         isinstance(e, list) and all(isinstance(s, str) for s in e)
+        #     )
+        #     for e in obj
+        # ):
+        #     res = []
+        #     for e in obj:
+        #         if isinstance(e, str):
+        #             res.append(e)
+        #         else:
+        #             res += e
+        #     return res
+        # return obj
 
     def transform(self, text, escape=True):
         f = self.escape if escape else self.identity
@@ -587,8 +588,7 @@ class InterfaceSaver:
         return self.simplify_aux_i(new)
 
     def simplify_aux_i(self, vars_):
-        len_ = len(vars_)
-        if len_ <= 1:
+        if len(vars_) <= 1:
             return vars_
         var_copy = copy.deepcopy(vars_)
 
@@ -616,7 +616,7 @@ class InterfaceSaver:
     def iter_mand_to_opt(self, syntax):
         if syntax["con"] is None:
             yield syntax
-            raise StopIteration
+            return
         if not isinstance(syntax["con"], list):
             syntax["con"] = [syntax["con"]]
         mand_ind = [

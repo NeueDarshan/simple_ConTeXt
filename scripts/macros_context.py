@@ -244,8 +244,12 @@ def assignment(delim="=", mode="list", include_main="main"):
     )
 
 
-def verbatim_helper(name):
+def verbatim_helper(name="", arg=None):
+    if arg is None:
+        arg_ = "argument.list*/"
+    else:
+        arg_ = "argument.list.{}*/".format(arg)
     return rule(
         match="",
-        push=["verbatim.main.{}.aux/".format(name), "argument.list*/"],
+        push=["verbatim.main.{}.aux/".format(name), arg_],
     )

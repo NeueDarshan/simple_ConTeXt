@@ -35,7 +35,6 @@ TEMPLATE = """
 </html>
 """
 
-
 def extra_style():
     result = []
     suffixes = ["style", "weight", "color", "background"]
@@ -163,7 +162,7 @@ class SimpleContextMacroSignatureEventListener(
         self.file_min = 20000
         self.param_char = string.ascii_letters  # + string.whitespace
         self.extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
-        self.last_ctrl_seq = None
+        self.auto_complete_cmd_key = None
 
     def get_setting(self, opt):
         return utilities.get_setting(self, opt)
@@ -237,19 +236,80 @@ class SimpleContextMacroSignatureEventListener(
         if self.state != IDLE or not self.is_visible():
             return None
 
+        cmd = self.auto_complete_cmd_key
+        if cmd is not None:
+            self.auto_complete_cmd_key = None
+            return self.complete_key(cmd)
+
         if self.name in self.cache:
-            for location in locations:
-                if scopes.enclosing_block(
-                    self.view,
-                    location - 1,
-                    scopes.FULL_CONTROL_SEQ,
-                    end=self.size,
-                ):
-                    return [
-                        ["\\" + ctrl, ""]
-                        for ctrl in self.cache[self.name].get_cmds()
-                    ]
+            return self.complete_command(self.cache[self.name], locations)
+
         return None
+
+    def complete_command(self, cmds, locations):
+        for location in locations:
+            if scopes.enclosing_block(
+                self.view,
+                location - 1,
+                scopes.FULL_CONTROL_SEQ,
+                end=self.size,
+            ):
+                # TODO: would be cool to do \type{foo ... command (2)} or so,
+                # to indicate the (say) maximum number of arguments expected.
+                return [
+                    [
+                        "{}\tcommand".format("\\" + ctrl),
+                        "\\{}$0".format(ctrl)
+                    ]
+                    for ctrl in cmds.get_cmds()
+                ]
+        return None
+
+    # Crude, does a decent job though.
+    def complete_key(self, cmd, limit=2):
+        return self.complete_key_aux(cmd, intermediate=False, limit=limit)
+
+    # For now, just handle the possibility of multiple variations by
+    # merging them all. Watch out for infinite recursion.
+    def complete_key_aux(self, cmd, intermediate=False, limit=2):
+        result = {}
+        for var in cmd:
+            if not isinstance(var, dict):
+                continue
+            content = var.get("con")
+            if not isinstance(content, list) or not content:
+                continue
+            for arg in content:
+                if not isinstance(arg, dict):
+                    continue
+                con = arg.get("con")
+                if isinstance(con, dict):
+                    for k in con:
+                        if k.isalpha():
+                            result[k] = [
+                                "{}\t{}".format(k, "option"),
+                                "{}=$1, $0".format(k),
+                            ]
+                inh_orig = arg.get("inh")
+                if inh_orig is None:
+                    continue
+                inhs = [inh_orig] if isinstance(inh_orig, str) else inh_orig
+                for inh in inhs:
+                    if (
+                        limit > 0 and
+                        self.name in self.cache and
+                        inh in self.cache.get(self.name, {})
+                    ):
+                        inh_cmd = self.cache[self.name][inh]
+                        result.update(
+                            self.complete_key_aux(
+                                inh_cmd, intermediate=True, limit=limit - 1,
+                            )
+                        )
+
+        if intermediate:
+            return result
+        return sorted(result.values()) if result else None
 
     def on_hover(self, point, hover_zone):
         if not self.is_visible() or hover_zone != sublime.HOVER_TEXT:
@@ -283,36 +343,59 @@ class SimpleContextMacroSignatureEventListener(
 
     def on_modified_async(self):
         self.reload_settings()
-        if (
-            self.state != IDLE or
-            not self.is_visible() or
-            not self.get_setting("pop_ups/methods/on_modified")
-        ):
+        if self.state != IDLE or not self.is_visible():
             self.view.hide_popup()
             return
 
-        for sel in self.view.sel():
-            end = sel.end()
-            if end < self.size:
-                end -= 1
+        selection = self.view.sel()
+        if not selection:
+            return
+        sel = selection[0]
+        end = sel.end()
+        end_ = end-1 if end < self.size else end
+
+        if self.get_setting("pop_ups/methods/on_modified"):
             ctrl = scopes.left_enclosing_block(
-                self.view, end, scopes.CONTROL_SEQ, end=self.size
+                self.view, end_, scopes.CONTROL_SEQ, end=self.size
             )
-            if not ctrl:
-                self.view.hide_popup()
-                continue
-            name = self.view.substr(sublime.Region(*ctrl))
-            if name in self.cache.get(self.name, {}):
-                self.view.show_popup(
-                    self.get_popup_text(name),
-                    location=ctrl[0] - 1,
-                    max_width=600,
-                    flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
-                    on_navigate=lambda href: self.on_navigate(href, name),
-                )
-                return
-            else:
-                self.view.hide_popup()
+            if ctrl:
+                name = self.view.substr(sublime.Region(*ctrl))
+                if name in self.cache.get(self.name, {}):
+                    self.view.show_popup(
+                        self.get_popup_text(name),
+                        location=ctrl[0] - 1,
+                        max_width=600,
+                        flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
+                        on_navigate=lambda href: self.on_navigate(href, name),
+                    )
+                    return
+
+        if self.get_setting("option_completions/on"):
+            ctrl = scopes.last_block_in_region(
+                self.view,
+                0,
+                scopes.CONTROL_SEQ,
+                end=end_,
+                skip=scopes.SKIP_ARGS_AND_SPACES,
+            )
+            if (
+                ctrl and
+                self.view.match_selector(end-1, scopes.BRACKETS_NOT_VALUE) and
+                self.view.substr(end-1) in string.ascii_letters
+            ):
+                name = self.view.substr(sublime.Region(*ctrl))
+                if name in self.cache.get(self.name, {}):
+                    self.auto_complete_cmd_key = self.cache[self.name][name]
+                    self.view.run_command(
+                        "auto_complete",
+                        {
+                            "disable_auto_insert": True,
+                            "api_completions_only": True,
+                        },
+                    )
+                    return
+
+        self.view.hide_popup()
 
     def get_popup_text(self, name):
         new_pop_up_state = json.dumps(self.pop_ups, sort_keys=True)

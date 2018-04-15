@@ -80,11 +80,15 @@ ARGUMENT = OR(BRACKETS, BRACES)
 
 NOT_ARGUMENT = NOT(ARGUMENT)
 
+META_ARGUMENT = "meta.environment.argument.context"
+
 KEY = "variable.parameter.context"
 
 EQUALS = "keyword.operator.assignment.context"
 
 VALUE = "meta.value.context"
+
+BRACKETS_NOT_VALUE = AND(BRACKETS, NOT(VALUE))
 
 ASSIGNMENT = ANY(KEY, EQUALS, VALUE)
 
@@ -182,6 +186,8 @@ TYPEWRITER_BOLD = AND(BOLDFACE, TYPEWRITER)
 EMBEDDED_METAFUN = "source.metapost.metafun.embedded.context"
 
 BLOCK_QUOTE = "markup.quote.block.context"
+
+BLOCK_NOTE = "markup.other.footnote.context"
 
 BLOCK_RAW = "markup.raw.block.context"
 

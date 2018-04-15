@@ -89,6 +89,10 @@
 	// shown.
 	"current.builder/output/show": true,
 
+	// Whether to do 'key=value' style completions for
+	// ConTeXt commands; should be `true` or `false`.
+	"current.option_completions/on": true,
+
 	// This should be one of the keys in the
 	// 'program_locations.ConTeXt_paths' option.
 	"current.path": "example",
