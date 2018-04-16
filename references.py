@@ -7,11 +7,18 @@ from .scripts import utilities
 from .scripts import scopes
 
 
+BUFFER = "meta.buffer-name.context"
+
 BUILT_IN_REFERENCERS = r"\A(about|in|at|from|over)\Z"
 
 BUILT_IN_BUFFERS = [
     "ctxluabuffer",
     "getbuffer",
+    "savebuffer",
+    "typebuffer",
+    "typesetbuffer",
+    "setupbuffer",
+    "scitebuffer",
     "getbufferdata",
     "getdefinedbuffer",
     "inlinebuffer",
@@ -43,14 +50,13 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
 
     def on_modified_async(self):
         self.reload_settings()
-        if not self.is_visible() or not self.get_setting("references/on"):
+        if not self.is_visible():
             return
 
         sel = self.view.sel()
         if not sel:
             return
-        else:
-            region = sel[0]
+        region = sel[0]
 
         ctrl = scopes.last_block_in_region(
             self.view,
@@ -59,38 +65,46 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
             end=region.begin(),
             skip=scopes.SKIP_ARGS_AND_SPACES,
         )
-        if ctrl:
-            self.try_reference(region, ctrl)
-
-    def try_reference(self, region, ctrl):
+        if not ctrl:
+            return
         last_char = self.view.substr(max(0, region.end() - 1))
         last_cmd = self.view.command_history(0, modifying_only=True)
         if (
-            is_reference_start(last_char) and
-            is_reference_history(last_cmd) and
+            not is_reference_start(last_char) or
+            not is_reference_history(last_cmd)
+        ):
+            return
+
+        if (
+            self.get_setting("references/on") and
             self.is_reference_command(*ctrl)
         ):
-            self.view.window().run_command(
-                "simple_context_show_overlay",
-                {
-                    "selector": "reference",
-                    "on_choose": "insert",
-                    "selected_index": "closest",
-                },
-            )
+            self.do_reference()
         elif (
-            is_reference_start(last_char) and
-            is_reference_history(last_cmd) and
+            self.get_setting("buffer/on") and
             self.is_buffer_command(*ctrl)
         ):
-            self.view.window().run_command(
-                "simple_context_show_overlay",
-                {
-                    "selector_raw": "meta.buffer-name.context",
-                    "on_choose": "insert",
-                    "selected_index": "closest",
-                },
-            )
+            self.do_buffer()
+
+    def do_reference(self):
+        self.view.window().run_command(
+            "simple_context_show_overlay",
+            {
+                "selector": "reference",
+                "on_choose": "insert",
+                "selected_index": "closest",
+            },
+        )
+
+    def do_buffer(self):
+        self.view.window().run_command(
+            "simple_context_show_overlay",
+            {
+                "selector_raw": BUFFER,
+                "on_choose": "insert",
+                "selected_index": "closest",
+            },
+        )
 
     def is_reference_command(self, begin, end):
         name = self.view.substr(sublime.Region(begin, end))

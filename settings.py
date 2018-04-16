@@ -8,6 +8,7 @@ from .scripts import deep_dict
 # Bit ugly that we take this approach. We feel the need to do so because I can't
 # see how to iterate over a ST settings object.
 CURRENT_SETTINGS = [
+    "buffer/on",
     "builder/behaviour/auto/after_save",
     "builder/behaviour/auto/after_time_delay",
     "builder/behaviour/auto/extra_opts_for_ConTeXt",

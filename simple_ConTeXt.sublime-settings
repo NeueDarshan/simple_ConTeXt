@@ -7,11 +7,19 @@
 	// 'program_locations.PDF_viewers' option.
 	"current.PDF/viewer": "evince",
 
+	// Whether or not to attempt to autocomplete the name
+	// of a buffer when encountering a command such as
+	// '\typebuffer'. Valid options are `true` and
+	// `false`.
+	"current.buffer/on": true,
+
 	// Whether to rebuild on saving: `true` or `false`.
 	"current.builder/behaviour/auto/after_save": false,
 	// Whether to rebuild forever with a time delay given
 	// by the 'current.builder/behaviour/auto/time_delay'
 	// option. Either `true` or `false`.
+	//
+	// TODO: implement this.
 	"current.builder/behaviour/auto/after_time_delay": false,
 	// Extra options to pass to the 'context' process when
 	// doing an auto-build. For example, to pass the
