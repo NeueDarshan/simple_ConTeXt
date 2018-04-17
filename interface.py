@@ -16,17 +16,14 @@ RUNNING = 1
 
 
 class SimpleContextRegenerateInterfaceFilesCommand(
-    sublime_plugin.WindowCommand
+    utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.state = IDLE
-        self.first_error = True
+    state = IDLE
+    first_error = True
+    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
-    def reload_settings(self):
-        utilities.reload_settings(self)
-        self.flags = \
-            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+    def reload_settings_alt(self):
+        self.reload_settings()
         self.context_paths = \
             utilities.get_setting_location(self, "ConTeXt_paths", default={})
 
@@ -38,7 +35,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
         overwrite=False,
         file_min=20000,
     ):
-        self.reload_settings()
+        self.reload_settings_alt()
         self.file_min = file_min
         if self.state == IDLE:
             self.state = RUNNING

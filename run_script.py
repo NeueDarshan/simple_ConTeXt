@@ -15,32 +15,25 @@ IDLE = 0
 RUNNING = 1
 
 
-class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        flags = \
-            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
-        self.options = {
-            "creationflags": flags,
-            "stdin": subprocess.PIPE,
-            "stdout": subprocess.PIPE,
-            "stderr": subprocess.STDOUT,
-        }
-        self.state = IDLE
-        self.previous_script = "context --version"
+class SimpleContextRunScriptCommand(
+    utilities.BaseSettings, sublime_plugin.WindowCommand,
+):
+    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+    options = {
+        "creationflags": flags,
+        "stdin": subprocess.PIPE,
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+    }
+    state = IDLE
+    previous_script = "context --version"
 
-    def reload_settings(self):
-        utilities.reload_settings(self)
-        if self.context_path and os.path.exists(self.context_path):
-            environ = os.environ.copy()
-            environ["PATH"] = \
-                files.add_path(environ["PATH"], self.context_path)
-            self.options["env"] = environ
-        else:
-            self.options["env"] = os.environ.copy()
+    def reload_settings_alt(self):
+        self.reload_settings()
+        self.options["env"] = utilities.get_path_var(self)
 
     def run(self, user_input=None):
-        self.reload_settings()
+        self.reload_settings_alt()
         self.setup_output_view()
         if self.state == IDLE:
             self.state = RUNNING
@@ -58,28 +51,29 @@ class SimpleContextRunScriptCommand(sublime_plugin.WindowCommand):
     def on_done(self, text):
         self.start_time = time.time()
         view = self.window.active_view()
-        variables = self.window.extract_variables()
         if view:
             name = view.file_name()
             path = os.path.dirname(view.file_name()) if name else None
         else:
             path = None
         thread = threading.Thread(
-            target=lambda: self.on_done_aux(text, variables, path=path)
+            target=lambda: self.on_done_aux(text, path=path)
         )
         thread.start()
 
-    def on_done_aux(self, text, variables, path=None):
+    def on_done_aux(self, text, path=None):
         if path and os.path.exists(path):
             os.chdir(path)
 
-        cmd = sublime.expand_variables(text.split(), variables)
-        print('Running: {}'.format(" ".join(cmd)))
+        cmd = self.expand_variables(text.split())
+        print("Running: {}".format(" ".join(cmd)))
         process = subprocess.Popen(cmd, **self.options)
-        result = process.communicate()
-        output = files.clean_output(files.decode_bytes(result[0]))
+        result = \
+            process.communicate(timeout=self.get_setting("script/timeout"))
+        if result:
+            output = files.clean_output(files.decode_bytes(result[0]))
+            self.add_to_output(output)
         self.show_output()
-        self.add_to_output(output)
         self.add_to_output(
             "\n[Finished in {:.1f}s]".format(time.time() - self.start_time)
         )

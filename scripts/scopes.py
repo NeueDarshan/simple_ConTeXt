@@ -194,24 +194,6 @@ BLOCK_RAW = "markup.raw.block.context"
 MARKUP_HEADING = "markup.heading.context"
 
 
-def skip_while_match(view, begin, scope, end=None):
-    point = begin
-    if end is None:
-        end = view.size()
-    while point < end and view.match_selector(point, scope):
-        point += 1
-    return point
-
-
-def skip_while_space(view, begin, end=None):
-    point = begin
-    if end is None:
-        end = view.size()
-    while point < end and view.substr(point).isspace():
-        point += 1
-    return point
-
-
 def enclosing_block(view, point, scope, end=None):
     start = stop = point
     while start > 0 and view.match_selector(start, scope):
@@ -238,26 +220,6 @@ def left_enclosing_block(view, point, scope, end=None):
     if block and not view.match_selector(point + 1, scope):
         return block
     return None
-
-
-def block_contains_scope(view, begin, scope, end=None):
-    if end is None:
-        end = view.size()
-    return any(
-        view.match_selector(point, scope) for point in range(begin, end)
-    )
-
-
-def all_blocks_in_region(view, begin, scope, end=None):
-    matches = []
-    if end is None:
-        end = view.size()
-    for point in range(begin, end):
-        if view.match_selector(point, scope):
-            matches.append(point)
-    return sorted(
-        set(enclosing_block(view, match, scope, end=end) for match in matches)
-    )
 
 
 def do_skip_anything(view, point):

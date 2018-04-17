@@ -5,7 +5,7 @@ from YAMLMacros.lib.extend import apply, merge, prepend
 from . import scopes
 
 
-_MAPS = {
+MAPS = {
     "heading": {
         "part": r"part",
         "chapter": r"(?:chapter|title)",
@@ -56,8 +56,8 @@ def _control_sequence(
     backslash=scopes.BACKSLASH,
     **kwargs
 ):
-    if name_map in _MAPS:
-        name = _MAPS[name_map].get(name, name)
+    if name_map in MAPS:
+        name = MAPS[name_map].get(name, name)
     rule_base = _control_sequence_aux(
         name_pre + name + name_post, scope, backslash=backslash,
     )
@@ -216,7 +216,7 @@ def group_heading(name):
 
 def group_markup(name):
     fallback = "markup.italic.{}.context".format(name)
-    content_scope = _MAPS["markup_group"].get(name, fallback)
+    content_scope = MAPS["markup_group"].get(name, fallback)
     return [
         rule(
             match=r"\{",

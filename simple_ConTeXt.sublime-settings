@@ -155,6 +155,15 @@
 	// this. Can be `true` or `false`.
 	"current.references/on": true,
 
+	// When using the 'simple_ConTeXt: Run a ConTeXt
+	// script' command in the Sublime Text palette, this
+	// is the timeout we use for waiting for the command
+	// to respond.
+	//
+	// Should be either a numeric value (in seconds), or
+	// `false` to never time out.
+	"current.script/timeout": 10,
+
 	// The keys here are just names for a ConTeXt
 	// installation, and the value should be the path to
 	// the context binaries. For example: if you have the

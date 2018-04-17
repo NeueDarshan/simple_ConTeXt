@@ -28,23 +28,24 @@ class UnexpectedModeError(Exception):
 
 
 class InterfaceSaver:
+    delimiters = {
+        "braces": "{}",
+        "parentheses": "()",
+        "default": "[]",
+        "none": None,
+    }
+    defs = {}
+    cmds = {}
+    to_load = []
+
     def __init__(self, flags=0):
+        self.flags = flags
         self.method = {
             "range": ":",
             "factor": "*",
             "apply": self.escape("->"),
             "none": None,
         }
-        self.delimiters = {
-            "braces": "{}",
-            "parentheses": "()",
-            "default": "[]",
-            "none": None,
-        }
-        self.defs = {}
-        self.cmds = {}
-        self.to_load = []
-        self.flags = flags
 
     def parse(self, file_):
         return ET.parse(file_).getroot()
@@ -477,24 +478,6 @@ class InterfaceSaver:
 
     def flatten(self, obj):
         return obj
-        # if not obj:
-        #     return None
-        # elif len(obj) == 1:
-        #     return obj[0]
-        # if all(
-        #     isinstance(e, str) or (
-        #         isinstance(e, list) and all(isinstance(s, str) for s in e)
-        #     )
-        #     for e in obj
-        # ):
-        #     res = []
-        #     for e in obj:
-        #         if isinstance(e, str):
-        #             res.append(e)
-        #         else:
-        #             res += e
-        #     return res
-        # return obj
 
     def transform(self, text, escape=True):
         f = self.escape if escape else self.identity
@@ -576,6 +559,7 @@ class InterfaceSaver:
         else:
             self.cmds[name] = [obj]
 
+    # I don't think this is working properly.
     def simplify(self):
         for name in self.cmds:
             self.cmds[name] = self.simplify_aux(self.cmds[name])

@@ -48,15 +48,14 @@ DOCS = [
 
 
 # Needs some work.
-class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
-    def get_setting(self, opt):
-        return utilities.get_setting(self, opt)
+class SimpleContextFindDocsCommand(
+    utilities.BaseSettings, sublime_plugin.WindowCommand,
+):
+    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
-    def reload_settings(self, force_reload_docs=False):
-        utilities.reload_settings(self)
+    def reload_settings_alt(self, force_reload_docs=False):
+        self.reload_settings()
         self.viewer = self.get_setting("PDF/viewer")
-        self.flags = \
-            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         if force_reload_docs:
             self.reload_docs()
         else:
@@ -73,7 +72,7 @@ class SimpleContextFindDocsCommand(sublime_plugin.WindowCommand):
                 self.docs.append([name, file_, path])
 
     def run(self):
-        self.reload_settings(force_reload_docs=True)
+        self.reload_settings_alt(force_reload_docs=True)
         thread = threading.Thread(target=self.run_panel)
         thread.start()
 

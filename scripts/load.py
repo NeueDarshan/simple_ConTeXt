@@ -21,7 +21,6 @@ def tagged_format(text, tag, n, align="<", min_=None):
         (" " * left) + "<{tag}>" + init[left:total - right] + "</{tag}>" +
         (" " * right)
     )
-    # print(init, template)
     return template.format(tag=tag)
 
 
@@ -161,8 +160,7 @@ class InterfaceLoader:
         if self._optional:
             for i in range(3):
                 self._syntax[i] += "<opt>"
-        self._syntax[0] += \
-            tagged_format(self._n, "num", self._len, align="^")
+        self._syntax[0] += tagged_format(self._n, "num", self._len, align="^")
         self._syntax[1] += self._rendering
         self._syntax[2] += normal_format(
             "OPT" if self._optional else "", self._len, align="^", min_=3,

@@ -38,16 +38,9 @@ def is_reference_history(command):
     return True
 
 
-class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
-    def reload_settings(self):
-        utilities.reload_settings(self)
-
-    def get_setting(self, opt):
-        return utilities.get_setting(self, opt)
-
-    def is_visible(self):
-        return scopes.is_context(self.view)
-
+class SimpleContextReferenceEventListener(
+    utilities.BaseSettings, sublime_plugin.ViewEventListener,
+):
     def on_modified_async(self):
         self.reload_settings()
         if not self.is_visible():
@@ -87,24 +80,15 @@ class SimpleContextReferenceEventListener(sublime_plugin.ViewEventListener):
             self.do_buffer()
 
     def do_reference(self):
-        self.view.window().run_command(
-            "simple_context_show_overlay",
-            {
-                "selector": "reference",
-                "on_choose": "insert",
-                "selected_index": "closest",
-            },
-        )
+        self.do_common(selector="reference")
 
     def do_buffer(self):
-        self.view.window().run_command(
-            "simple_context_show_overlay",
-            {
-                "selector_raw": BUFFER,
-                "on_choose": "insert",
-                "selected_index": "closest",
-            },
-        )
+        self.do_common(selector_raw=BUFFER)
+
+    def do_common(self, **kwargs):
+        opts = {"on_choose": "insert", "selected_index": "closest"}
+        opts.update(kwargs)
+        self.view.window().run_command("simple_context_show_overlay", opts)
 
     def is_reference_command(self, begin, end):
         name = self.view.substr(sublime.Region(begin, end))

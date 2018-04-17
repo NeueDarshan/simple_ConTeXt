@@ -6,25 +6,17 @@ import os
 import sublime
 
 from . import randomize
+from . import scopes
 from . import files
 
 
-def remove_duplicates(list_):
-    accum = []
-    for obj in list_:
-        if obj not in accum:
-            accum.append(obj)
-    return accum
-
-
-def type_as_str(obj):
-    if isinstance(obj, int):
-        return "integer"
-    elif isinstance(obj, float):
-        return "float"
-    elif isinstance(obj, str):
-        return "string"
-    return str(type(obj))
+def get_path_var(self):
+    copy_ = os.environ.copy()
+    if self.context_path and os.path.exists(self.context_path):
+        environ = copy_
+        environ["PATH"] = files.add_path(environ["PATH"], self.context_path)
+        return environ
+    return copy_
 
 
 def guess_type(obj):
@@ -54,19 +46,6 @@ def first_of_one(obj):
     return obj
 
 
-def second_of_n(obj):
-    return obj[1]
-
-
-def iter_i_merge_sorted(sorted_iters, key=first_of_one):
-    stack = [next(iter_, None) for iter_ in sorted_iters]
-    while any(stack):
-        tops = [(i, top) for i, top in enumerate(stack) if top is not None]
-        i, next_ = min(tops, key=key)
-        yield i, next_
-        stack[i] = next(sorted_iters[i], None)
-
-
 def get_path_setting(self, default=None):
     path = self.sublime_settings.get("current.path", "")
     paths = get_setting_location(self, "ConTeXt_paths", default={})
@@ -86,10 +65,19 @@ def reload_settings(self):
     self.sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
     self.context_path = get_path_setting(self)
+    self.prefixed_context_path = expand_variables(
+        self, "$simple_context_prefixed_path", get_variables(self),
+    )
 
 
 def get_variables(self):
-    variables = self.window.extract_variables()
+    if hasattr(self, "window"):
+        variables = self.window.extract_variables()
+    elif hasattr(self, "view"):
+        variables = self.view.window().extract_variables()
+    else:
+        variables = {}
+
     variables["simple_context_path_sep"] = re.escape(os.path.sep)
 
     env = os.environ.copy()
@@ -281,3 +269,22 @@ class FuzzyOrderedDict:
 
     def __str__(self):
         return str(self.cache)
+
+
+class BaseSettings:
+    def reload_settings(self):
+        reload_settings(self)
+
+    def get_setting(self, opt):
+        return get_setting(self, opt)
+
+    def is_visible(self):
+        if hasattr(self, "window"):
+            view = self.window.active_view()
+            return scopes.is_context(view) if view else False
+        elif hasattr(self, "view"):
+            return scopes.is_context(self.view)
+        return False
+
+    def expand_variables(self, data):
+        return expand_variables(self, data, get_variables(self))

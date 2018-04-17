@@ -26,25 +26,22 @@ TEMPLATE = """
 </html>
 """
 
+EXTENSIONS = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
 
-class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        exts = ["tex", "mkii", "mkiv", "mkvi", "mkix", "mkxi"]
-        self.extensions = [""] + [".{}".format(s) for s in exts]
 
-    def reload_settings(self):
-        utilities.reload_settings(self)
+class SimpleContextFileHoverListener(
+    utilities.BaseSettings, sublime_plugin.ViewEventListener,
+):
+    extensions = [""] + [".{}".format(s) for s in EXTENSIONS]
+    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+
+    def reload_settings_alt(self):
+        self.reload_settings()
         self.load_css()
         self.size = self.view.size()
-        self.flags = \
-            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         try:
             file_name = self.view.file_name()
-            if file_name:
-                self.base_dir, _ = os.path.split(file_name)
-            else:
-                self.base_dir = None
+            self.base_dir = os.path.dirname(file_name) if file_name else None
         except AttributeError:
             self.base_dir = None
 
@@ -56,14 +53,11 @@ class SimpleContextFileHoverListener(sublime_plugin.ViewEventListener):
                 )
             )
 
-    def is_visible(self):
-        return scopes.is_context(self.view)
-
     def on_hover(self, point, hover_zone):
         if hover_zone != sublime.HOVER_TEXT or not self.is_visible():
             return
 
-        self.reload_settings()
+        self.reload_settings_alt()
         file_ = scopes.enclosing_block(
             self.view, point, scopes.FILE_NAME, end=self.size,
         )

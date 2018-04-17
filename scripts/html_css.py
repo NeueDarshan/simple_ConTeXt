@@ -13,12 +13,7 @@ def match_exact(regex, text):
     return re.match(r"(?:{})\Z".format(regex), text)
 
 
-# Ugly thing \periods\ I don't know what the best approach would be here. This
-# is a decent approximation anyhow.
-#
-# I suppose the best approach would be to refactor \type{completions.py}, so
-# that when a pop||up is requested we consult the exact style used at that
-# point via the ST API.
+# This approach is a bit odd, seems to work reasonably well though.
 CASES = [
     {
         # keyword.control
@@ -63,7 +58,7 @@ def control_sequence(text):
                 return temp.format(a=tags[1], b=tags[0]) % text
         return ""
     except AttributeError as e:
-        print("err", text)
+        # print("err", text)
         raise e
 
 

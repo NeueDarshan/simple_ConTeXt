@@ -4,6 +4,7 @@ import re
 import sublime
 import sublime_plugin
 
+from .scripts import utilities
 from .scripts import scopes
 
 
@@ -95,17 +96,9 @@ class SimpleContextUnHighlightSelectionCommand(sublime_plugin.TextCommand):
         self.view.erase_regions("simple_ConTeXt_show_selection")
 
 
-class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
-    def reload_settings(self):
-        # utilities.reload_settings(self)
-        self.reload_view()
-
-    def reload_view(self):
-        self.view = self.window.active_view()
-
-    def is_visible(self):
-        return scopes.is_context(self.view)
-
+class SimpleContextShowOverlayCommand(
+    utilities.BaseSettings, sublime_plugin.WindowCommand,
+):
     # For our use, we give a descriptive name as a \type{selector}. But you can
     # override this by providing a \type{selector_raw} instead.
     def run(
@@ -116,7 +109,7 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
         on_choose=None,
         selected_index="closest",
     ):
-        self.reload_settings()
+        self.view = self.window.active_view()
         if not self.view:
             return
         self.orig_sel = [(region.a, region.b) for region in self.view.sel()]
@@ -153,16 +146,19 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
         else:
             return
 
-        if selected_index in ["closest", "previous", "next"]:
+        self.run_aux(selected_index, matches)
+
+    def run_aux(self, sel_index, all_matches):
+        if sel_index in ["closest", "previous", "next"]:
             sel = self.view.sel()
-            num_matches = len(self.matches)
-            num_regions = len(sel)
-            if num_regions > 0 and num_matches > 0:
-                middle_region = sel[num_regions // 2]
+            matches = len(self.matches)
+            regions = len(sel)
+            if regions and matches:
+                middle_region = sel[regions // 2]
                 sequence = [
-                    i for i in range(num_matches) if filter_(
+                    i for i in range(matches) if filter_(
                         self.matches[i][0] - middle_region.begin(),
-                        selected_index,
+                        sel_index,
                     )
                 ]
                 if sequence:
@@ -171,11 +167,13 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
                     index = 0
             else:
                 index = 0
+        elif isinstance(sel_index, int):
+            index = sel_index
         else:
-            index = selected_index
+            index = 0
 
         self.window.show_quick_panel(
-            matches,
+            all_matches,
             self.on_done,
             on_highlight=self.on_highlight,
             selected_index=index,
@@ -185,7 +183,7 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
         return lambda i: -abs(self.matches[i][0] - region.begin())
 
     def on_done(self, index):
-        self.reload_view()
+        self.view = self.window.active_view()
         if not self.view:
             return
         # self.view.run_command("simple_context_un_highlight_selection")
@@ -305,12 +303,12 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
         self.last_choice = 0
         if self.selected_index in ["closest", "previous", "next"]:
             sel = self.view.sel()
-            num_matches = len(self.data)
-            num_regions = len(sel)
-            if num_regions > 0 and num_matches > 0:
-                middle_region = sel[num_regions // 2]
+            matches = len(self.data)
+            regions = len(sel)
+            if regions and matches:
+                middle_region = sel[regions // 2]
                 sequence = [
-                    i for i in range(num_matches) if filter_(
+                    i for i in range(matches) if filter_(
                         self.data[i][0] - middle_region.begin(),
                         self.selected_index,
                     )
@@ -318,7 +316,7 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
                 if sequence:
                     self.last_choice += \
                         max(sequence, key=self.key_function(middle_region))
-        else:
+        elif isinstance(self.selected_index, int):
             self.last_choice += self.selected_index
 
     def key_function(self, region):

@@ -5,8 +5,8 @@ from .scripts import utilities
 from .scripts import deep_dict
 
 
-# Bit ugly that we take this approach. We feel the need to do so because I can't
-# see how to iterate over a ST settings object.
+# Bit ugly that we take this approach. We feel the need to do so because I
+# can't see how to iterate over a ST settings object.
 CURRENT_SETTINGS = [
     "buffer/on",
     "builder/behaviour/auto/after_save",
@@ -43,14 +43,13 @@ def simplify(obj):
     return str(obj)
 
 
-class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
-    def reload_settings(self):
-        utilities.reload_settings(self)
+class SimpleContextSettingsControllerCommand(
+    utilities.BaseSettings, sublime_plugin.WindowCommand,
+):
+    def reload_settings_alt(self):
+        self.reload_settings()
         self.context_paths = \
             utilities.get_setting_location(self, "ConTeXt_paths", default={})
-
-    def get_setting(self, opt):
-        return utilities.get_setting(self, opt)
 
     def update_settings(self):
         self.current_settings = {}
@@ -60,7 +59,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
             )
 
     def run(self):
-        self.reload_settings()
+        self.reload_settings_alt()
         self.update_settings()
         self.encode_settings()
         self.last_scheme = None
@@ -221,7 +220,7 @@ class SimpleContextSettingsControllerCommand(sublime_plugin.WindowCommand):
         for k, v in self.to_write.items():
             self.sublime_settings.set("current.{}".format(k), v)
         sublime.save_settings("simple_ConTeXt.sublime-settings")
-        self.reload_settings()
+        self.reload_settings_alt()
         self.encode_settings()
 
     def encode_settings(self):

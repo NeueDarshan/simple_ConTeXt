@@ -35,6 +35,7 @@ TEMPLATE = """
 </html>
 """
 
+
 def extra_style():
     result = []
     suffixes = ["style", "weight", "color", "background"]
@@ -150,25 +151,21 @@ def strip_prefix(text):
 
 
 class SimpleContextMacroSignatureEventListener(
-    sublime_plugin.ViewEventListener
+    utilities.BaseSettings, sublime_plugin.ViewEventListener,
 ):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.cache = {}
-        self.html_cache = {}
-        self.lock = threading.Lock()
-        self.loader = load.InterfaceLoader()
-        self.state = IDLE
-        self.file_min = 20000
-        self.param_char = string.ascii_letters  # + string.whitespace
-        self.extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
-        self.auto_complete_cmd_key = None
+    cache = {}
+    html_cache = {}
+    lock = threading.Lock()
+    loader = load.InterfaceLoader()
+    state = IDLE
+    file_min = 20000
+    param_char = string.ascii_letters  # + string.whitespace
+    extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
+    auto_complete_cmd_key = None
+    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
-    def get_setting(self, opt):
-        return utilities.get_setting(self, opt)
-
-    def reload_settings(self):
-        utilities.reload_settings(self)
+    def reload_settings_alt(self):
+        self.reload_settings()
         self.pop_ups = {
             k.split("/")[-1]: self.get_setting("pop_ups/{}".format(k))
             for k in [
@@ -179,8 +176,6 @@ class SimpleContextMacroSignatureEventListener(
                 "show_source_files",
             ]
         }
-        self.flags = \
-            files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
         self.name = files.file_as_slug(self.context_path)
         self.size = self.view.size()
         if (
@@ -228,11 +223,8 @@ class SimpleContextMacroSignatureEventListener(
         except OSError:
             pass
 
-    def is_visible(self):
-        return scopes.is_context(self.view)
-
     def on_query_completions(self, prefix, locations):
-        self.reload_settings()
+        self.reload_settings_alt()
         if self.state != IDLE or not self.is_visible():
             return None
 
@@ -315,7 +307,7 @@ class SimpleContextMacroSignatureEventListener(
         if not self.is_visible() or hover_zone != sublime.HOVER_TEXT:
             return
 
-        self.reload_settings()
+        self.reload_settings_alt()
         if (
             self.state != IDLE or
             not self.get_setting("pop_ups/methods/on_hover") or
@@ -342,7 +334,7 @@ class SimpleContextMacroSignatureEventListener(
             self.view.hide_popup()
 
     def on_modified_async(self):
-        self.reload_settings()
+        self.reload_settings_alt()
         if self.state != IDLE or not self.is_visible():
             self.view.hide_popup()
             return

@@ -16,9 +16,9 @@ def parse(data, code):
     text = text.replace("\r\n", "\n").replace("\r", "\n")
 
     if success:
-        result += "- finished successfully\n"
+        result += "  - finished successfully\n"
     else:
-        result += "- finished unsuccessfully\n"
+        result += "  - finished unsuccessfully\n"
 
     temp = syntax_1(text)
     if temp:
@@ -60,7 +60,7 @@ def syntax_2(text):
     error = re.search(match, text, flags=re.MULTILINE)
     if error:
         class_, line, _, desc = error.groups()
-        template = "- line {}, {} error: {}\n"
+        template = "  - line {}, {} error: {}\n"
         return template.format(line, translate_class(class_), desc)
     return None
 
@@ -71,7 +71,7 @@ def syntax_3(text):
     error = re.search(match, text, flags=re.MULTILINE)
     if error:
         class_, line, _, desc = error.groups()
-        template = "- line {}, {} error: {}\n"
+        template = "  - line {}, {} error: {}\n"
         return template.format(line, translate_class(class_), desc)
     return None
 
@@ -82,6 +82,6 @@ def syntax_4(text):
     error = re.search(match, text, flags=re.MULTILINE)
     if error:
         class_, line, _ = error.groups()
-        template = "- line {}, {} error\n"
+        template = "  - line {}, {} error\n"
         return template.format(line, translate_class(class_))
     return None

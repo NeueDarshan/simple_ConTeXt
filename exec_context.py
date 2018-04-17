@@ -31,16 +31,16 @@ PHANTOM_ERROR_TEMPLATE = """
 
 
 class ExecMainSubprocess:
+    platform = sublime.platform()
+    flags = files.CREATE_NO_WINDOW if platform == "windows" else 0
+    proc = None
+    killed = False
+    lock = threading.Lock()
+
     def __init__(self, sequence, root=None, working_dir=None):
-        self.platform = sublime.platform()
-        self.flags = \
-            files.CREATE_NO_WINDOW if self.platform == "windows" else 0
         self.sequence = list(reversed(sequence))
         self.root = root
         self.working_dir = working_dir
-        self.lock = threading.Lock()
-        self.proc = None
-        self.killed = False
 
     def start(self):
         with self.lock:
@@ -102,15 +102,13 @@ class ExecMainSubprocess:
             if self.root.get_setting("builder/output/show_ConTeXt_path"):
                 path = self.root.sublime_settings.get("current_settings/path")
                 if path:
-                    self.root.add_to_output("- path: {}\n".format(path))
+                    self.root.add_to_output("  - path: {}\n".format(path))
             if self.root.get_setting("builder/output/show_full_command"):
                 self.root.add_to_output(
-                    "- command: {}\n".format(" ".join(cmd))
+                    "  - command: {}\n".format(" ".join(cmd))
                 )
-            result = self.proc.communicate()
-            code = self.proc.returncode
-        else:
-            code = 0
+        result = self.proc.communicate()
+        code = self.proc.returncode
 
         with self.lock:
             if output == "context":
@@ -186,16 +184,13 @@ class ExecMainSubprocess:
         self.root.proc = None
 
 
-class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.proc = None
+class SimpleContextExecMainCommand(
+    utilities.BaseSettings, sublime_plugin.WindowCommand,
+):
+    proc = None
 
-    def get_setting(self, opt):
-        return utilities.get_setting(self, opt)
-
-    def reload_settings(self):
-        utilities.reload_settings(self)
+    def reload_settings_alt(self):
+        self.reload_settings()
         self.show_errors_inline = sublime.load_settings(
             "Preferences.sublime-settings").get("show_errors_inline", True)
         self.show_panel_on_build = sublime.load_settings(
@@ -217,7 +212,7 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
         line_regex="",
         **kwargs
     ):
-        self.reload_settings()
+        self.reload_settings_alt()
 
         if update_phantoms_only:
             if self.show_errors_inline:
@@ -273,17 +268,14 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
             os.chdir(working_dir)
 
         if cmd_seq:
-            sequence = utilities.expand_variables(
-                self, cmd_seq, utilities.get_variables(self),
-            )
-
+            sequence = self.expand_variables(cmd_seq)
             try:
                 self.proc = ExecMainSubprocess(
                     sequence, root=self, working_dir=working_dir,
                 )
                 self.proc.start()
             except Exception as e:
-                print(str(e))
+                # print(str(e))
                 if not self.quiet:
                     text = "encountered error of type {}\n[Finished]\n"
                     self.add_to_output(text.format(type(e)))
@@ -333,10 +325,10 @@ class SimpleContextExecMainCommand(sublime_plugin.WindowCommand):
         if syntax:
             self.output_view.assign_syntax(syntax)
 
-        self.window.create_output_panel("ConTeXt")  # this line is important
+        self.window.create_output_panel("ConTeXt")
 
     def update_phantoms(self):
-        pass  # TODO
+        pass
 
     def hide_phantoms(self):
         if self.view:
