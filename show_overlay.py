@@ -219,13 +219,6 @@ class SimpleContextShowOverlayCommand(
 
 
 class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
-    def reload_settings(self):
-        # utilities.reload_settings(self)
-        self.reload_view()
-
-    def reload_view(self):
-        self.view = self.window.active_view()
-
     def is_visible(self):
         return scopes.is_context(self.view)
 
@@ -239,7 +232,7 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
         prefix=True,
         selected_index="closest",
     ):
-        self.reload_settings()
+        self.view = self.window.active_view()
         if not self.view:
             return
         self.orig_sel = [(region.a, region.b) for region in self.view.sel()]

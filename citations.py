@@ -1,3 +1,5 @@
+# import json
+
 import sublime
 import sublime_plugin
 
@@ -23,15 +25,18 @@ class SimpleContextTestCiteCommand(
         self.lua_script = self.expand_variables(
             "${packages}/simple_ConTeXt/scripts/parse_lua.lua"
         )
+        self.bib_script = self.expand_variables(
+            "${packages}/simple_ConTeXt/scripts/parse_btx.lua"
+        )
 
     def run(self):
         self.reload_settings_alt()
-        self.cite_lua()
 
-    def cite_lua(self):
-        result = cite.parse_lua(
-            "test.lua",
-            self.lua_script,
-            self.opts,
-        )
-        print(result)
+    def parse_lua(self, name):
+        return cite.parse_lua(name, self.lua_script, self.opts)
+
+    def parse_btx(self, name):
+        return cite.parse_btx(name, self.lua_script, self.opts)
+
+    def parse_xml(self, name):
+        return cite.parse_xml(name)
