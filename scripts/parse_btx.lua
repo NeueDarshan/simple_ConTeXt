@@ -19,7 +19,7 @@ do
   local quote = P '"'
   local l_brace = P "{"
   local r_brace = P "}"
-  local braces = S "{}"
+  local brace = S "{}"
   local end_of_string = P(-1)
 
   local ident = letter * (letter + number + punct)^0
@@ -28,14 +28,21 @@ do
   local type_ = ident
   local key = ident
   local name = ident
+  local function not_(x) return P(1) - x end
 
+  -- Similar to \type{P}, but ignores case.
+  local function P_(str)
+    local result = P ""
+    for i = 1, #str do
+      local c = str:sub(i, i)
+      result = result * S(c:lower() .. c:upper())
+    end
+    return result
+  end
 
-  local not_quotes = 1 - quote
-  local not_braces = 1 - braces
-
-  local quote_content = P { quote * C( (not_quotes + V(1))^0 ) * quote }
-  local brace_content = P { l_brace * C( (not_braces + V(1))^0 ) * r_brace }
-  local brace_no_content = P { l_brace * (not_braces + V(1))^0 * r_brace }
+  local quote_content = P { quote * C( (not_(quote) + V(1))^0 ) * quote }
+  local brace_content = P { l_brace * C( (not_(brace) + V(1))^0 ) * r_brace }
+  local brace_no_content = P { l_brace * (not_(brace) + V(1))^0 * r_brace }
 
   -- We take some care to keep track of abbreviations.
   local string_name = ident
@@ -71,10 +78,10 @@ do
     format_main_entry
 
 
-  local comment = at * P "comment" * spaces * brace_no_content
+  local comment = at * P_ "comment" * spaces * brace_no_content
 
   -- Let's ignore the preamble.
-  local preamble = at * P "preamble" * spaces * brace_no_content
+  local preamble = at * P_ "preamble" * spaces * brace_no_content
 
 
   local function format_string(tab)
@@ -88,14 +95,14 @@ do
 
   local string =
     Ct(
-      at * P "string" * spaces * l_brace * spaces * (entry_tag * spaces)^0 *
+      at * P_ "string" * spaces * l_brace * spaces * (entry_tag * spaces)^0 *
       r_brace
     ) / format_string
 
 
   local entry = comment + string + preamble + main_entry
 
-  bibtex = Ct(spaces * (entry * spaces)^0 * end_of_string)
+  bibtex = Ct(not_(at)^0 * (entry * not_(at)^0)^0 * end_of_string)
 end
 
 

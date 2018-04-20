@@ -25,7 +25,7 @@ class SimpleContextTestCiteCommand(
         self.lua_script = self.expand_variables(
             "${packages}/simple_ConTeXt/scripts/parse_lua.lua"
         )
-        self.bib_script = self.expand_variables(
+        self.btx_script = self.expand_variables(
             "${packages}/simple_ConTeXt/scripts/parse_btx.lua"
         )
 
@@ -36,7 +36,7 @@ class SimpleContextTestCiteCommand(
         return cite.parse_lua(name, self.lua_script, self.opts)
 
     def parse_btx(self, name):
-        return cite.parse_btx(name, self.lua_script, self.opts)
+        return cite.parse_btx(name, self.btx_script, self.opts)
 
     def parse_xml(self, name):
         return cite.parse_xml(name)

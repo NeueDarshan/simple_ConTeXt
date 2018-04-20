@@ -28,7 +28,9 @@ def parse_common_texlua(file_name, script, opts):
     # code = proc.returncode
     if result:
         try:
-            return json.loads(files.decode_bytes(result[0]))
+            result = \
+                json.loads(files.decode_bytes(result[0]), encoding="utf-8")
+            return normalize_dict(result)
         except ValueError:
             return None
     return None
@@ -61,4 +63,22 @@ def parse_xml(file_name):
 
         result[tag] = entry
 
-    return result
+    return normalize_dict(result)
+
+
+def normalize_dict(data):
+    return {tag: normalize_dict_aux(entry) for tag, entry in data.items()}
+
+
+def normalize_dict_aux(data):
+    if isinstance(data, dict):
+        result = {}
+        for k, v in data.items():
+            k = k.lower() if isinstance(k, str) else k
+            if k == "category" and isinstance(v, str):
+                v = v.lower()
+            else:
+                v = normalize_dict_aux(v)
+            result[k] = v
+        return result
+    return data

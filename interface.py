@@ -33,10 +33,27 @@ def arg_count(cmd):
 
 
 def arg_count_aux(list_):
+    count = 0
+    for var in list_:
+        n = 0
+        if isinstance(var, dict):
+            con = var.get("con")
+            if isinstance(con, list):
+                n += arg_count_aux_i(con)
+            elif isinstance(con, dict):
+                n += arg_count_aux_i([con])
+        count = max(count, n)
+    return count
+
+
+def arg_count_aux_i(list_):
     n = 0
     for arg in list_:
         if isinstance(arg, dict):
-            if arg.get("con") is not None or arg.get("inh") is not None:
+            if (
+                arg.get("con") is not None or
+                arg.get("inh") is not None
+            ):
                 n += 1
     return n
 
@@ -158,12 +175,16 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             self.run_aux_v(cache, os.path.join(dir_, "{}.json".format(key)))
         self.run_aux_v(
             sorted(
-                ["{}:{}".format(0, name) for name, desc in cmds.items()],
-                key=lambda s: s.split(":", 1)[1]
+                [
+                    "{}:{}".format(arg_count(desc), name)
+                    for name, desc in cmds.items()
+                ],
+                key=lambda s: s.split(":", 1)[1],
             ),
             os.path.join(dir_, "_commands.json"),
         )
 
     def run_aux_v(self, data, file_):
         with open(file_, encoding="utf-8", mode="w") as f:
-            json.dump(data, f, indent=2, sort_keys=True, ensure_ascii=False)
+            # json.dump(data, f, indent=2, sort_keys=True, ensure_ascii=False)
+            json.dump(data, f, sort_keys=True, ensure_ascii=False)

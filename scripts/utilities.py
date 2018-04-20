@@ -78,7 +78,11 @@ def get_variables(self):
     if hasattr(self, "window"):
         variables = self.window.extract_variables()
     elif hasattr(self, "view"):
-        variables = self.view.window().extract_variables()
+        window = self.view.window()
+        if window:
+            variables = window.extract_variables()
+        else:
+            variables = {}
     else:
         variables = {}
 
