@@ -58,7 +58,7 @@ def control_sequence(text):
                 return temp.format(a=tags[1], b=tags[0]) % text
         return ""
     except AttributeError as e:
-        # print("err", text)
+        print("[simple_ConTeXt] err:", text)
         raise e
 
 
@@ -68,8 +68,15 @@ def unescape(text):
     return text
 
 
-def strip_tags(text):
-    return re.sub("<[^<]+>", "", text)
+def strip_tags(data):
+    if isinstance(data, str):
+        return re.sub("<[^<]+>", "", data)
+    elif isinstance(data, list):
+        return [strip_tags(x) for x in data]
+    elif isinstance(data, dict):
+        return {strip_tags(k): strip_tags(v) for k, v in data.items()}
+    else:
+        return data
 
 
 def protect_space(text):

@@ -25,26 +25,28 @@ def tagged_format(text, tag, n, align="<", min_=None):
 
 
 def nice_sorted(list_, reverse=False):
-    list_ = sorted(
-        [l for l in list_ if l is not None], key=html_css.strip_tags,
-    )
-    inherits, upper, mixed, lower = [], [], [], []
-    for e in list_:
-        raw = html_css.strip_tags(e)
-        if raw.startswith("inherits"):
-            inherits.append(e)
-        elif raw.isupper():
-            upper.append(e)
-        elif any(c.isupper() for c in raw):
-            mixed.append(e)
+    main, others = [], []
+    for x in list_:
+        if x is None:
+            pass
+        elif isinstance(x, str):
+            main.append(x)
         else:
-            lower.append(e)
-    if reverse:
-        return (
-            list(reversed(inherits)) + list(reversed(upper)) +
-            list(reversed(mixed)) + list(reversed(lower))
-        )
-    return lower + mixed + upper + inherits
+            others.append(x)
+    main = sorted(main, key=html_css.strip_tags)
+    inherits, upper, mixed, lower = [], [], [], []
+    for x in main:
+        raw = html_css.strip_tags(x)
+        if raw.startswith("inherits"):
+            inherits.append(x)
+        elif raw.isupper():
+            upper.append(x)
+        elif any(c.isupper() for c in raw):
+            mixed.append(x)
+        else:
+            lower.append(x)
+    result = others + lower + mixed + upper + inherits
+    return list(reversed(result)) if reverse else result
 
 
 class InterfaceLoader:

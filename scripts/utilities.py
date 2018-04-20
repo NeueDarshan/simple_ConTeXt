@@ -10,6 +10,14 @@ from . import scopes
 from . import files
 
 
+def deduplicate_list(list_):
+    accum = []
+    for obj in list_:
+        if obj not in accum:
+            accum.append(obj)
+    return accum
+
+
 def get_path_var(self):
     copy_ = os.environ.copy()
     if self.context_path and os.path.exists(self.context_path):
@@ -40,10 +48,6 @@ def iter_power_set(iter_):
     return itertools.chain.from_iterable(
         itertools.combinations(full, n) for n in range(len(full) + 1)
     )
-
-
-def first_of_one(obj):
-    return obj
 
 
 def get_path_setting(self, default=None):
@@ -278,7 +282,7 @@ class BaseSettings:
     def get_setting(self, opt):
         return get_setting(self, opt)
 
-    def is_visible(self):
+    def is_visible_alt(self):
         if hasattr(self, "window"):
             view = self.window.active_view()
             return scopes.is_context(view) if view else False

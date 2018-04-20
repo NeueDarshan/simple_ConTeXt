@@ -1,3 +1,4 @@
+import collections
 import threading
 import string
 import json
@@ -52,6 +53,7 @@ def extra_style():
         "equ": "equals",
         "num": "numeric",
         "com": "comma",
+        "par": "parameter",
     }
 
     for tag, pre in data.items():
@@ -105,16 +107,18 @@ class VirtualCommandDict:
         self.dir = dir_
         self.missing = sorted(f for f in os.listdir(self.dir) if f != cmds)
         with open(os.path.join(self.dir, cmds)) as f:
-            self.cmds = set(json.load(f))
+            self.cmds = collections.OrderedDict()
+            for text in sorted(json.load(f), key=lambda s: s.split(":", 1)[1]):
+                parity, ctrl = text.split(":", 1)
+                self.cmds[ctrl] = int(parity)
         self.local_size = local_size
         self.cache = utilities.FuzzyOrderedDict(max_size=max_size)
 
     def __setitem__(self, key, value):
-        self.cmds.add(key)
         self.cache.add_left(key, value)
 
     def __getitem__(self, key):
-        if key in self.cmds:
+        if key in self:
             if key in self.cache:
                 return self.cache[key]
             name = min(f for f in self.missing if key <= f)
@@ -128,11 +132,10 @@ class VirtualCommandDict:
                 )
             ]
             self.cache.fuzzy_add_right(sample)
-            for k, _ in sample:
-                self.cmds.add(k)
 
-            self[key] = data[key]
-            return self[key]
+            result = data[key]
+            self[key] = result
+            return result
         else:
             raise KeyError
 
@@ -141,9 +144,6 @@ class VirtualCommandDict:
 
     def __contains__(self, key):
         return key in self.cmds
-
-    def get_cmds(self):
-        return sorted(self.cmds)
 
 
 def strip_prefix(text):
@@ -163,6 +163,9 @@ class SimpleContextMacroSignatureEventListener(
     extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
     auto_complete_cmd_key = None
     flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+
+    def is_visible(self):
+        return self.is_visible_alt()
 
     def reload_settings_alt(self):
         self.reload_settings()
@@ -238,7 +241,7 @@ class SimpleContextMacroSignatureEventListener(
 
         return None
 
-    def complete_command(self, cmds, locations):
+    def complete_command(self, cache, locations):
         for location in locations:
             if scopes.enclosing_block(
                 self.view,
@@ -246,15 +249,17 @@ class SimpleContextMacroSignatureEventListener(
                 scopes.FULL_CONTROL_SEQ,
                 end=self.size,
             ):
-                # TODO: would be cool to do \type{foo ... command (2)} or so,
-                # to indicate the (say) maximum number of arguments expected.
-                return [
-                    [
-                        "{}\tcommand".format("\\" + ctrl),
-                        "\\{}$0".format(ctrl)
-                    ]
-                    for ctrl in cmds.get_cmds()
-                ]
+                # TODO: doesn't work perfectly, think we need to correct the
+                # \type{arg_count} function in \type{interface.py}.
+                result = []
+                for ctrl, parity in cache.cmds.items():
+                    if parity > 0:
+                        entry = ["\\{}\t({}) command".format(ctrl, parity)]
+                    else:
+                        entry = ["\\{}\tcommand".format(ctrl)]
+                    entry.append("\\{}$0".format(ctrl))
+                    result.append(entry)
+                return result
         return None
 
     # Crude, does a decent job though.
@@ -344,7 +349,7 @@ class SimpleContextMacroSignatureEventListener(
             return
         sel = selection[0]
         end = sel.end()
-        end_ = end-1 if end < self.size else end
+        end_ = end - 1 if end < self.size else end
 
         if self.get_setting("pop_ups/methods/on_modified"):
             ctrl = scopes.left_enclosing_block(
@@ -372,8 +377,8 @@ class SimpleContextMacroSignatureEventListener(
             )
             if (
                 ctrl and
-                self.view.match_selector(end-1, scopes.BRACKETS_NOT_VALUE) and
-                self.view.substr(end-1) in string.ascii_letters
+                self.view.substr(end - 1) in string.ascii_letters and
+                self.view.match_selector(end - 1, scopes.BRACKETS_NOT_VALUE)
             ):
                 name = self.view.substr(sublime.Region(*ctrl))
                 if name in self.cache.get(self.name, {}):
@@ -424,11 +429,13 @@ class SimpleContextMacroSignatureEventListener(
         equ = self.view.style_for_scope("keyword.operator.assignment")
         num = self.view.style_for_scope("constant.numeric")
         com = self.view.style_for_scope("punctuation.separator.comma")
+        par = self.view.style_for_scope("variable.parameter")
 
         styles = {
             "con": con, "sco": sco, "flo": flo, "sfl": sfl, "mod": mod,
             "smo": smo, "sto": sto, "sst": sst, "lan": lan, "sla": sla,
             "pun": pun, "key": key, "equ": equ, "num": num, "com": com,
+            "par": par,
         }
         opts = {}
         for s, d in styles.items():

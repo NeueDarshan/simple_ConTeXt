@@ -4,7 +4,7 @@ import re
 import sublime
 import sublime_plugin
 
-from .scripts import utilities
+# from .scripts import utilities
 from .scripts import scopes
 
 
@@ -96,9 +96,10 @@ class SimpleContextUnHighlightSelectionCommand(sublime_plugin.TextCommand):
         self.view.erase_regions("simple_ConTeXt_show_selection")
 
 
-class SimpleContextShowOverlayCommand(
-    utilities.BaseSettings, sublime_plugin.WindowCommand,
-):
+class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
+    def is_visible(self):
+        return scopes.is_context(self.view)
+
     # For our use, we give a descriptive name as a \type{selector}. But you can
     # override this by providing a \type{selector_raw} instead.
     def run(

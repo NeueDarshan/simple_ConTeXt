@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-import itertools
+# import itertools
 import html
 import copy
 import os
@@ -50,8 +50,18 @@ class InterfaceSaver:
     def parse(self, file_):
         return ET.parse(file_).getroot()
 
-    def save(self, path, modules=True, tolerant=True, namespace=NAMESPACE):
+    def save(
+        self,
+        path,
+        modules=True,
+        tolerant=True,
+        quiet=False,
+        prefix="",
+        namespace=NAMESPACE,
+    ):
         self.path = path
+        self.quiet = quiet
+        self.prefix = prefix
         self.namespace = namespace
         self.tolerant = tolerant
         self.load_definitions()
@@ -84,10 +94,10 @@ class InterfaceSaver:
                     )
         except (OSError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
-            if self.tolerant:
-                print(msg)
-            else:
+            if not self.tolerant:
                 raise type(e)(msg)
+            elif not self.quiet:
+                print(self.prefix + msg)
 
     def load_definitions_aux_i(self, filename):
         file_ = files.locate(self.path, filename, flags=self.flags)
@@ -100,10 +110,10 @@ class InterfaceSaver:
                 self.do_define(child)
         except (OSError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
-            if self.tolerant:
-                print(msg)
-            else:
+            if not self.tolerant:
                 raise type(e)(msg)
+            elif not self.quiet:
+                print(self.prefix + msg)
 
     def load_commands(self, modules=True):
         self.to_load = set()
@@ -152,10 +162,10 @@ class InterfaceSaver:
                         )
             except (OSError, ET.ParseError, UnicodeDecodeError) as e:
                 msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
-                if self.tolerant:
-                    print(msg)
-                else:
+                if not self.tolerant:
                     raise type(e)(msg)
+                elif not self.quiet:
+                    print(self.prefix + msg)
 
     def do_define(self, node):
         name = node.attrib["name"]
@@ -316,9 +326,9 @@ class InterfaceSaver:
                     message.format(child.attrib, child.tag)
                 )
         return {
-            "con": self.flatten(content),
+            "con": content,
             "ren": self.render("keywords", node.attrib),
-            "inh": self.flatten(inherits),
+            "inh": inherits,
             "opt": self.is_true(node.attrib.get("optional")),
         }
 
@@ -339,7 +349,7 @@ class InterfaceSaver:
         return {
             "con": content if content else None,
             "ren": self.render("assignments", node.attrib),
-            "inh": self.flatten(inherits),
+            "inh": inherits,
             "opt": self.is_true(node.attrib.get("optional")),
         }
 
@@ -360,7 +370,7 @@ class InterfaceSaver:
                 raise UnexpectedTagError(
                     message.format(child.attrib, child.tag)
                 )
-        return self.flatten(content)
+        return content
 
     def do_delimiter(self, node):
         return {
@@ -464,19 +474,39 @@ class InterfaceSaver:
             return html_css.control_sequence(self.escape(attrib["name"]))
         else:
             msg = 'unexpected mode, mode: "{}", attrib: "{}"'
-            if self.tolerant:
-                print(msg.format(mode, attrib))
-                return None
-            else:
+            if not self.tolerant:
                 raise UnexpectedModeError(msg.format(mode, attrib))
-
-    # def signal_primitive(self):
-    #     pass
+            elif not self.quiet:
+                print(self.prefix + msg.format(mode, attrib))
+            return None
 
     def is_true(self, val):
         return val == "yes"
 
     def flatten(self, obj):
+        if not obj:
+            return None
+        elif isinstance(obj, list):
+            if len(obj) == 1:
+                return self.flatten(obj[0])
+            elif all(
+                isinstance(x, str) or (
+                    isinstance(x, list) and
+                    all(isinstance(y, str) for y in x)
+                )
+                for x in obj
+            ):
+                result = []
+                for x in obj:
+                    if isinstance(x, str):
+                        result.append(x)
+                    else:
+                        result += x
+                return result
+            else:
+                return [self.flatten(x) for x in obj]
+        elif isinstance(obj, dict):
+            return {k: self.flatten(v) for k, v in obj.items()}
         return obj
 
     def transform(self, text, escape=True):
@@ -484,7 +514,15 @@ class InterfaceSaver:
         if text == "cd:sign":
             return f("[+-]")
         elif text.startswith("cd:"):
-            return "<typ>" + f(text[3:].upper()) + "</typ>"
+            rest = text[3:]
+            if rest == "oneargument":
+                return html_css.control_sequence("...") + "<par>#1</par>"
+            elif rest == "twoarguments":
+                return html_css.control_sequence("...") + "<par>#1#2</par>"
+            elif rest == "threearguments":
+                return html_css.control_sequence("...") + "<par>#1#2#3</par>"
+            else:
+                return "<typ>" + f(rest.upper()) + "</typ>"
         return f(text)
 
     def escape(self, text):
@@ -559,80 +597,15 @@ class InterfaceSaver:
         else:
             self.cmds[name] = [obj]
 
-    # I don't think this is working properly.
+    # This needs re||doing.
     def simplify(self):
         for name in self.cmds:
             self.cmds[name] = self.simplify_aux(self.cmds[name])
 
     def simplify_aux(self, vars_):
-        new = []
-        for v in vars_:
-            if not any(d == v for d in new):
-                new.append(v)
-        return self.simplify_aux_i(new)
-
-    def simplify_aux_i(self, vars_):
-        if len(vars_) <= 1:
-            return vars_
-        var_copy = copy.deepcopy(vars_)
-
-        done = False
-        while not done:
-            done = True
-            for pair in itertools.permutations(
-                [(n, entry) for n, entry in enumerate(var_copy)], 2,
-            ):
-                i, master = pair[0]
-                j, other = pair[1]
-                redundant = False
-                for master_var in self.iter_mand_to_opt(master):
-                    if self.is_copy_without_opt(other, master_var):
-                        redundant = True
-                        var_copy[i] = master_var
-                        del var_copy[j]
-                        break
-                if redundant:
-                    done = False
-                    break
-
-        return var_copy
-
-    def iter_mand_to_opt(self, syntax):
-        if syntax["con"] is None:
-            yield syntax
-            return
-        if not isinstance(syntax["con"], list):
-            syntax["con"] = [syntax["con"]]
-        mand_ind = [
-            i for i in range(len(syntax["con"])) if not syntax["con"][i]["opt"]
-        ]
-        copy_ = copy.deepcopy(syntax)
-        for comb in utilities.iter_power_set(mand_ind):
-            for i in mand_ind:
-                copy_["con"][i]["opt"] = bool(i in comb)
-            yield copy_
-
-    def is_copy_without_opt(self, other, master):
-        return any(
-            reduced == other for reduced in self.iter_without_opt(master)
-        )
-
-    def iter_without_opt(self, syntax):
-        if syntax["con"] is None:
-            yield syntax
-            raise StopIteration
-        if not isinstance(syntax["con"], list):
-            syntax["con"] = [syntax["con"]]
-        len_ = len(syntax["con"])
-        opt_ind = [
-            i for i in range(len_) if syntax["con"][i]["opt"]
-        ]
-        mand_ind = [i for i in range(len_) if i not in opt_ind]
-
-        for comb in utilities.iter_power_set(opt_ind):
-            ind = set(comb)
-            ind.update(mand_ind)
-            yield [syntax["con"][i] for i in sorted(ind)]
+        if isinstance(vars_, list):
+            return utilities.deduplicate_list(vars_)
+        return vars_
 
     def encode(self):
         self.simplify()

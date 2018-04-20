@@ -78,7 +78,7 @@ class ExecMainSubprocess:
                 env[k] = v
         output = seq.get("output")
 
-        print("Running: {}".format(" ".join(cmd)))
+        print("[simple_ConTeXt] Running: {}".format(" ".join(cmd)))
         thread = threading.Thread(
             target=lambda: self.run_command(
                 cmd,
@@ -263,7 +263,8 @@ class SimpleContextExecMainCommand(
 
         if not working_dir and self.view:
             file_ = self.view.file_name()
-            working_dir = os.path.dirname(file_)
+            if file_:
+                working_dir = os.path.dirname(file_)
         if working_dir:
             os.chdir(working_dir)
 
@@ -275,7 +276,7 @@ class SimpleContextExecMainCommand(
                 )
                 self.proc.start()
             except Exception as e:
-                # print(str(e))
+                # print("[simple_ConTeXt] {}".format(e))
                 if not self.quiet:
                     text = "encountered error of type {}\n[Finished]\n"
                     self.add_to_output(text.format(type(e)))

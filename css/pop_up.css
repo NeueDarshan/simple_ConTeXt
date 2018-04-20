@@ -14,6 +14,7 @@
  *   \NC <key> \NC key, as in \type{key=value} \NC\NR
  *   \NC <equ> \NC equals, as in \type{key=value} \NC\NR
  *   \NC <val> \NC default value \NC\NR
+ *   \NC <par> \NC argument parameter, i.e.\ something like \type{#1} \NC\NR
  *   \NC <num> \NC number \NC\NR
  *   \NC <typ> \NC type name, e.g.\ \type{CSNAME} means a control sequence
  *                 name \NC\NR
@@ -160,4 +161,11 @@ div.popup com {
     color: var(--comma-color);
     font-style: var(--comma-style);
     font-weight: var(--comma-weight);
+}
+
+div.popup par {
+    background-color: var(--parameter-background);
+    color: var(--parameter-color);
+    font-style: var(--parameter-style);
+    font-weight: var(--parameter-weight);
 }

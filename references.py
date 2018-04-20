@@ -41,6 +41,9 @@ def is_reference_history(command):
 class SimpleContextReferenceEventListener(
     utilities.BaseSettings, sublime_plugin.ViewEventListener,
 ):
+    def is_visible(self):
+        return self.is_visible_alt()
+
     def on_modified_async(self):
         self.reload_settings()
         if not self.is_visible():

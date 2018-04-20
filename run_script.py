@@ -66,7 +66,7 @@ class SimpleContextRunScriptCommand(
             os.chdir(path)
 
         cmd = self.expand_variables(text.split())
-        print("Running: {}".format(" ".join(cmd)))
+        print("[simple_ConTeXt] Running: {}".format(" ".join(cmd)))
         process = subprocess.Popen(cmd, **self.options)
         result = \
             process.communicate(timeout=self.get_setting("script/timeout"))

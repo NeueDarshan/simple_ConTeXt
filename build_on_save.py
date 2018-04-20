@@ -9,7 +9,7 @@ class SimpleContextBuildOnSaveListener(
     def on_post_save_async(self):
         self.reload_settings()
         if (
-            self.is_visible() and
+            self.is_visible_alt() and
             self.get_setting("builder/behaviour/auto/after_save")
         ):
             self.view.window().run_command(

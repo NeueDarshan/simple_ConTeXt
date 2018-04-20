@@ -1,8 +1,7 @@
 local to_json = require "table_to_json"
 
 
-local P, R, S, V = lpeg.P, lpeg.R, lpeg.S, lpeg.V
-local C, Ct = lpeg.C, lpeg.Ct
+local C, Ct, P, R, S, V = lpeg.C, lpeg.Ct, lpeg.P, lpeg.R, lpeg.S, lpeg.V
 local match = lpeg.match
 
 

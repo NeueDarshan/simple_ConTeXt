@@ -35,6 +35,9 @@ class SimpleContextFileHoverListener(
     extensions = [""] + [".{}".format(s) for s in EXTENSIONS]
     flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
+    def is_visible(self):
+        return self.is_visible_alt()
+
     def reload_settings_alt(self):
         self.reload_settings()
         self.load_css()
