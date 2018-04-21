@@ -225,14 +225,19 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
 
     def run(
         self,
-        selectors=SELECTORS.keys(),
-        active_selectors=SELECTORS.keys(),
-        selectors_raw=[],
-        active_selectors_raw=[],
+        selectors=None,
+        active_selectors=None,
+        selectors_raw=None,
+        active_selectors_raw=None,
         on_choose=None,
         prefix=True,
         selected_index="closest",
     ):
+        selectors = selectors or SELECTORS.keys()
+        active_selectors = active_selectors or SELECTORS.keys()
+        selectors_raw = selectors_raw or []
+        active_selectors_raw = active_selectors_raw or []
+
         self.view = self.window.active_view()
         if not self.view:
             return
@@ -327,7 +332,7 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
             )
 
     def run_handle(self, index):
-        self.reload_view()
+        self.view = self.window.active_view()
         if not self.view:
             return
         # self.view.run_command("simple_context_un_highlight_selection")

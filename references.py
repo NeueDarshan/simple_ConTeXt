@@ -9,7 +9,7 @@ from .scripts import scopes
 
 BUFFER = "meta.buffer-name.context"
 
-BUILT_IN_REFERENCERS = r"\A(about|in|at|from|over)\Z"
+BUILT_IN_REFERENCERS = r"\A(?:about|in|at|from|over)\Z"
 
 BUILT_IN_BUFFERS = [
     "ctxluabuffer",
@@ -65,9 +65,8 @@ class SimpleContextReferenceEventListener(
             return
         last_char = self.view.substr(max(0, region.end() - 1))
         last_cmd = self.view.command_history(0, modifying_only=True)
-        if (
-            not is_reference_start(last_char) or
-            not is_reference_history(last_cmd)
+        if not (
+            is_reference_start(last_char) and is_reference_history(last_cmd)
         ):
             return
 
@@ -76,10 +75,7 @@ class SimpleContextReferenceEventListener(
             self.is_reference_command(*ctrl)
         ):
             self.do_reference()
-        elif (
-            self.get_setting("buffer/on") and
-            self.is_buffer_command(*ctrl)
-        ):
+        elif self.get_setting("buffer/on") and self.is_buffer_command(*ctrl):
             self.do_buffer()
 
     def do_reference(self):

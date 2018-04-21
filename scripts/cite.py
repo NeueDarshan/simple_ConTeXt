@@ -1,6 +1,5 @@
 import xml.etree.ElementTree as ET
 import subprocess
-import json
 import os
 
 from . import files
@@ -24,12 +23,13 @@ def parse_common_texlua(file_name, script, opts):
     }
     deep_dict.update(kwargs, opts)
     proc = subprocess.Popen(["texlua", script, file_name], **kwargs)
-    result = proc.communicate()
+    output = proc.communicate()
     # code = proc.returncode
-    if result:
+    if output:
         try:
-            result = \
-                json.loads(files.decode_bytes(result[0]), encoding="utf-8")
+            # I don't see a problem with this use of \type{eval}, as we have
+            # complete control over the string being evaluated.
+            result = eval(files.decode_bytes(output[0]))
             return normalize_dict(result)
         except ValueError:
             return None

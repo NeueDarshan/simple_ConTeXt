@@ -97,6 +97,12 @@
 	// shown.
 	"current.builder/output/show": true,
 
+	// Whether to bring up the list of bibliographic
+	// entries upon typing in the start of a citation
+	// command. For example, typing the sequence '\cite['
+	// will trigger this. Can be `true` or `false`.
+	"current.citations/on": true,
+
 	// Whether to do 'key=value' style completions for
 	// ConTeXt commands; should be `true` or `false`.
 	"current.option_completions/on": true,

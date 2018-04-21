@@ -42,7 +42,7 @@ end
 
 
 local function encode_string(text)
-  return string.format('"%s"', string.gsub(text, '"', '\\"'))
+  return string.format('"""%s"""', text)
 end
 
 

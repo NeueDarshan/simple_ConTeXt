@@ -198,6 +198,18 @@ class Choice:
         return " ".join(self.options)
 
 
+class HashableDict(dict):
+    def __hash__(self):
+        return hash(frozenset(self.items()))
+
+
+def make_hashable_dict(dict_):
+    result = HashableDict()
+    for k, v in dict_.items():
+        result[k] = make_hashable_dict(v) if isinstance(v, dict) else v
+    return result
+
+
 class LeastRecentlyUsedCache:
     def __init__(self, max_size=100):
         self.max_size = max_size
@@ -223,7 +235,8 @@ class LeastRecentlyUsedCache:
 
 
 class FuzzyOrderedDict:
-    def __init__(self, iterable=[], max_size=100):
+    def __init__(self, iterable=None, max_size=100):
+        iterable = iterable or []
         self.max_size = max_size
         self.cache = collections.deque(iterable, max_size)
 
@@ -296,3 +309,44 @@ class BaseSettings:
 
     def expand_variables(self, data):
         return expand_variables(self, data, get_variables(self))
+
+
+class LocateSettings(BaseSettings):
+    def reload_settings(self):
+        reload_settings(self)
+        try:
+            file_name = self.view.file_name()
+            self.base_dir = os.path.dirname(file_name) if file_name else None
+        except AttributeError:
+            self.base_dir = None
+
+    def locate_file_main(self, name, extensions=None):
+        extensions = extensions or [""]
+        if self.base_dir:
+            methods = [os.path.normpath(self.base_dir)]
+            for f in os.listdir(os.path.normpath(self.base_dir)):
+                path = os.path.normpath(os.path.join(self.base_dir, f))
+                if os.path.isdir(path):
+                    methods.append(path)
+            methods.append(os.path.normpath(os.path.join(self.base_dir, "..")))
+
+            file_ = files.fuzzy_locate(
+                self.context_path,
+                name,
+                flags=self.flags,
+                extensions=extensions,
+                methods=reversed(methods),
+            )
+            if file_ and os.path.exists(file_):
+                return file_
+
+    def locate_file_context(self, name, extensions=None):
+        extensions = extensions or [""]
+        file_ = files.fuzzy_locate(
+            self.context_path,
+            name,
+            flags=self.flags,
+            extensions=extensions,
+        )
+        if file_ and os.path.exists(file_):
+            return file_

@@ -1,4 +1,4 @@
-local to_json = require "table_to_json"
+local to_dict = require "table_to_dict"
 
 
 local function get_file()
@@ -23,7 +23,7 @@ local function main()
     return nil
   end
 
-  return to_json.encode(result)
+  return to_dict.encode(result)
 end
 
 

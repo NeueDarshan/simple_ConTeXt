@@ -94,6 +94,8 @@ ASSIGNMENT = ANY(KEY, EQUALS, VALUE)
 
 REFERENCE = "entity.name.label.reference.context"
 
+MAYBE_CITATION = "meta.maybe-citation.context"
+
 FILE_NAME = "meta.file-name.context"
 
 DEFINE_TEX = "entity.name.function.context"

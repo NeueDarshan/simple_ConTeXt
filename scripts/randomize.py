@@ -7,7 +7,8 @@ def safe_random_sample(data, size):
     return data
 
 
-def poly_biased_randint(min_, max_, power=2, ignore=[]):
+def poly_biased_randint(min_, max_, power=2, ignore=None):
+    ignore = ignore or []
     while True:
         x = pow(random.random(), power)
         n = min_ + round((max_ - min_) * x)

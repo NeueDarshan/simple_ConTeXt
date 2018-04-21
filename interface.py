@@ -72,12 +72,13 @@ class SimpleContextRegenerateInterfaceFilesCommand(
 
     def run(
         self,
-        paths=[],
+        paths=None,
         do_all=False,
         threaded=True,
         overwrite=False,
         file_min=20000,
     ):
+        paths = paths or []
         self.reload_settings_alt()
         self.file_min = file_min
         if self.state == IDLE:

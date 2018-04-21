@@ -1,4 +1,4 @@
-local to_json = require "table_to_json"
+local to_dict = require "table_to_dict"
 
 
 local C, Ct, P, R, S, V = lpeg.C, lpeg.Ct, lpeg.P, lpeg.R, lpeg.S, lpeg.V
@@ -8,7 +8,7 @@ local match = lpeg.match
 local bibtex
 
 do
-  local space = S " \t\r\n"
+  local space = S " \t\r\n\f"
   local equal = P "="
   local at = P "@"
   local hash = P "#"
@@ -22,7 +22,7 @@ do
   local brace = S "{}"
   local end_of_string = P(-1)
 
-  local ident = letter * (letter + number + punct)^0
+  local ident = (letter + number) * (letter + number + punct)^0
   local integer = number^1
   local spaces = space^0
   local type_ = ident
@@ -40,20 +40,18 @@ do
     return result
   end
 
-  local quote_content = P { quote * C( (not_(quote) + V(1))^0 ) * quote }
-  local brace_content = P { l_brace * C( (not_(brace) + V(1))^0 ) * r_brace }
-  local brace_no_content = P { l_brace * (not_(brace) + V(1))^0 * r_brace }
+  local quote_content = P { quote * C( not_(quote)^0 ) * quote }
+  local brace_content = P { l_brace * C( (V(1) + not_(brace))^0 ) * r_brace }
+  local brace_no_content = P { l_brace * (V(1) + not_(brace))^0 * r_brace }
 
   -- We take some care to keep track of abbreviations.
   local string_name = ident
   local function indicate_string(x) return {x} end
-  local concat_part =
-    quote_content + C(string_name) / indicate_string
-  local concat_content = Ct(
-    concat_part * (spaces * hash * spaces * concat_part)^0
-  )
 
-  local content = brace_content + concat_content + C(integer)
+  local content_part =
+    brace_content + quote_content + C(string_name) / indicate_string +
+    C(integer)
+  local content = Ct(content_part * (spaces * hash * spaces * content_part)^0)
 
 
   local entry_start =
@@ -213,7 +211,7 @@ local function main()
   if init then
     local result = reformat(init)
     if result then
-      return to_json.encode(result)
+      return to_dict.encode(result)
     end
   end
 

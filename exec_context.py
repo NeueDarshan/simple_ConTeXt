@@ -199,7 +199,7 @@ class SimpleContextExecMainCommand(
 
     def run(
         self,
-        cmd_seq=[],
+        cmd_seq=None,
         encoding="utf-8",
         hide_phantoms_only=False,
         kill=False,
@@ -212,6 +212,7 @@ class SimpleContextExecMainCommand(
         line_regex="",
         **kwargs
     ):
+        cmd_seq = cmd_seq or []
         self.reload_settings_alt()
 
         if update_phantoms_only:

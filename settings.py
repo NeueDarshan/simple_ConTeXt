@@ -43,6 +43,8 @@ def simplify(obj):
     return str(obj)
 
 
+# Could do the \type{quick_panel} in a better way, with a row for each
+# sub||option.
 class SimpleContextSettingsControllerCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):

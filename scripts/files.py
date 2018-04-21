@@ -7,7 +7,9 @@ import os
 CREATE_NO_WINDOW = 0x08000000
 
 
-def fuzzy_locate(path, file_, flags=0, methods=[None], extensions=[""]):
+def fuzzy_locate(path, file_, flags=0, methods=None, extensions=None):
+    methods = methods or [None]
+    extensions = extensions or [""]
     for method in methods:
         for ext in extensions:
             text = locate(path, file_ + ext, flags=flags, methods=[method])
@@ -16,7 +18,8 @@ def fuzzy_locate(path, file_, flags=0, methods=[None], extensions=[""]):
     return None
 
 
-def locate(path, file_, flags=0, methods=[None]):
+def locate(path, file_, flags=0, methods=None):
+    methods = methods or [None]
     for method in methods:
         if method is None:
             environ = os.environ.copy()

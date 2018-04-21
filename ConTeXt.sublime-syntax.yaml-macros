@@ -30,9 +30,10 @@ contexts:
     - include: math
     - include: Lua
     - include: MetaFun
-    # - include: JavaScript
+    - include: JavaScript
     # - include: catcode
     - include: markup
+    - include: cite
     - include: table
     - include: list
     - include: verbatim
@@ -493,6 +494,38 @@ contexts:
         0: source.metapost.metafun.embedded.context support.function.metapost
 
 
+  JavaScript:
+    - !control_sequence_start
+        name: JScode
+        embed: JavaScript.main.a
+        escape: '(?=\\stopJScode\b)'
+    - !control_sequence_start
+        name: JSpreamble
+        embed: JavaScript.main.b
+        escape: '(?=\\stopJSpreamble\b)'
+
+  JavaScript.main.a:
+    - match: ''
+      push:
+        - JavaScript.main.aux/
+        - argument.name*/
+        - argument.uses*/
+        - argument.name-not-uses.def*/
+  JavaScript.main.b:
+    - match: ''
+      push:
+        - JavaScript.main.aux/
+        - argument.later-or-now*/
+        - argument.used*/
+        - argument.name-not-used.def*/
+
+  JavaScript.main.aux/:
+    - match: ''
+      set:
+        - meta_scope: source.js.embedded.context
+        - include: scope:source.js
+
+
   # It would be nice for commands like \type{\em} to stand out from the crowd.
   # On the other hand, what scope can we logically apply to them besides the
   # usual \type{support.function}? I suppose the scopes (such as
@@ -597,6 +630,15 @@ contexts:
           name: !argument value
           name_map: markup
           push: !format 'argument.group.{value}*/'
+
+
+  cite:
+    - !control_sequence
+        name: usebtxdataset
+        push:
+          - argument.list*/
+          - argument.list.maybe-citation*/
+          - argument.list.maybe-citation*/
 
 
   table:
@@ -875,7 +917,7 @@ contexts:
     - !control_sequence_start
         name: texdefinition
         push:
-          - argument.name*/
+          - argument.name.def*/
           - argument.do-n-tuple*/
           - argument.expanded*/
           - argument.unexpanded*/
@@ -1629,6 +1671,19 @@ contexts:
     - include: argument.list.maybe-reference/
     - include: generic.pop-if-no-nearby-list/
 
+  argument.list.maybe-citation/:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.context
+      set: argument.list.maybe-citation.main/
+  argument.list.maybe-citation*/:
+    - include: argument.list.maybe-citation/
+    - include: generic.pop-if-no-nearby-list/
+  argument.list.maybe-citation.main/:
+    - meta_scope: meta.brackets.context meta.environment.argument.context
+    - meta_content_scope: meta.maybe-citation.context
+    - include: generic.pop-at-list-end/
+    - include: main
+
   argument.list.template/:
     - match: '\['
       scope: punctuation.section.brackets.begin.context
@@ -1819,7 +1874,7 @@ contexts:
          (?:argument|empty)\\b"
       scope: storage.modifier.n-tuple.context
       pop: true
-  argument.name/:
+  argument.name.def/:
     - match: '{{setup}}+'
       scope: entity.name.function.context
       pop: true
@@ -1831,6 +1886,47 @@ contexts:
     - match: '{{setup}}+'
       scope: meta.this-file-name.context
       pop: true
+
+  argument.name/:
+    - match: '{{setup}}+'
+      pop: true
+  argument.later-or-now/:
+    - match: '\b(?:later|now)\b'
+      scope: constant.language.context
+      pop: true
+  argument.name-not-used.def/:
+    - match: '(?!used\b){{setup}}+'
+      scope: entity.name.function.context
+      pop: true
+  argument.name-not-uses.def/:
+    - match: '(?!uses\b){{setup}}+'
+      scope: entity.name.function.context
+      pop: true
+  argument.used/:
+    - match: '\bused\b'
+      pop: true
+  argument.uses/:
+    - match: '\buses\b'
+      pop: true
+
+  argument.name*/:
+    - include: argument.name/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.later-or-now*/:
+    - include: argument.later-or-now/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name-not-used.def*/:
+    - include: argument.name-not-used.def/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.name-not-uses.def*/:
+    - include: argument.name-not-uses.def/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.used*/:
+    - include: argument.used/
+    - include: generic.gobble-whitespace-or-pop/
+  argument.uses*/:
+    - include: argument.uses/
+    - include: generic.gobble-whitespace-or-pop/
 
   argument.spaces*/:
     - include: argument.spaces/
@@ -1847,8 +1943,8 @@ contexts:
   argument.do-n-tuple*/:
     - include: argument.do-n-tuple/
     - include: generic.gobble-whitespace-or-pop/
-  argument.name*/:
-    - include: argument.name/
+  argument.name.def*/:
+    - include: argument.name.def/
     - include: generic.gobble-whitespace-or-pop/
   argument.name.file*/:
     - include: argument.name.file/
