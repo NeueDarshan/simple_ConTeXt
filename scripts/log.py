@@ -1,7 +1,5 @@
 import re
 
-# from . import utilities
-
 
 def translate_class(text):
     if text == "mp":

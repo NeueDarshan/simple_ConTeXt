@@ -53,8 +53,8 @@ class SimpleContextFindDocsCommand(
 ):
     flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
-    def reload_settings_alt(self, force_reload_docs=False):
-        self.reload_settings()
+    def reload_settings(self, force_reload_docs=False):
+        super().reload_settings()
         self.viewer = self.get_setting("PDF/viewer")
         if force_reload_docs:
             self.reload_docs()
@@ -72,9 +72,8 @@ class SimpleContextFindDocsCommand(
                 self.docs.append([name, file_, path])
 
     def run(self):
-        self.reload_settings_alt(force_reload_docs=True)
-        thread = threading.Thread(target=self.run_panel)
-        thread.start()
+        self.reload_settings(force_reload_docs=True)
+        threading.Thread(target=self.run_panel).start()
 
     def run_panel(self, selected_index=0):
         self.window.show_quick_panel(

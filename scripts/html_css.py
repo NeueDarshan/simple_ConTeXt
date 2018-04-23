@@ -13,18 +13,18 @@ def match_exact(regex, text):
     return re.match(r"(?:{})\Z".format(regex), text)
 
 
-# This approach is a bit odd, seems to work reasonably well though.
-CASES = [
+# This approach is a bit odd, works reasonably well though.
+CASES = (
     {
         # keyword.control
         "tags": ("flo", "sfl"),
         "f": lambda text:
             text.startswith("start") or
             text.startswith("stop") or
-            text in ["loop", "repeat", "then", "or", "else", "fi"] or
-            any(match_exact(regex, text) for regex in [
+            text in {"loop", "repeat", "then", "or", "else", "fi"} or
+            any(match_exact(regex, text) for regex in {
                 CONTROL_COND_A, CONTROL_COND_B, CONTROL_MODULE,
-            ]),
+            }),
     },
     {
         # storage.type
@@ -34,19 +34,19 @@ CASES = [
     {
         # constant.language
         "tags": ("lan", "sla"),
-        "f": lambda text: text in ["relax"],
+        "f": lambda text: text == "relax",
     },
     {
         # storage.modifier
         "tags": ("mod", "smo"),
-        "f": lambda text: text in ["global", "immediate", "the", "outer"],
+        "f": lambda text: text in {"global", "immediate", "the", "outer"},
     },
     {
         # support.function
         "tags": ("con", "sco"),
         "f": lambda _: True,
     },
-]
+)
 
 
 def control_sequence(text):
@@ -73,6 +73,8 @@ def strip_tags(data):
         return re.sub("<[^<]+>", "", data)
     elif isinstance(data, list):
         return [strip_tags(x) for x in data]
+    elif isinstance(data, tuple):
+        return tuple(strip_tags(x) for x in data)
     elif isinstance(data, dict):
         return {strip_tags(k): strip_tags(v) for k, v in data.items()}
     else:

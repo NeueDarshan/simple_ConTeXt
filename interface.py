@@ -65,8 +65,8 @@ class SimpleContextRegenerateInterfaceFilesCommand(
     first_error = True
     flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
-    def reload_settings_alt(self):
-        self.reload_settings()
+    def reload_settings(self):
+        super().reload_settings()
         self.context_paths = \
             utilities.get_setting_location(self, "ConTeXt_paths", default={})
 
@@ -79,7 +79,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
         file_min=20000,
     ):
         paths = paths or []
-        self.reload_settings_alt()
+        self.reload_settings()
         self.file_min = file_min
         if self.state == IDLE:
             self.state = RUNNING
@@ -90,8 +90,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
                 )
 
             if threaded:
-                thread = threading.Thread(target=f)
-                thread.start()
+                threading.Thread(target=f).start()
             else:
                 f()
 

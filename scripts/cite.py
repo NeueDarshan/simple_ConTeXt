@@ -1,9 +1,20 @@
 import xml.etree.ElementTree as ET
 import subprocess
+import string
 import os
 
 from . import files
 from . import deep_dict
+
+
+class DefaultFormatter(string.Formatter):
+    def __init__(self, handler=None):
+        self._handler = handler
+
+    def get_value(self, key, args, kwargs):
+        if key not in kwargs and self._handler:
+            kwargs[key] = self._handler(key)
+        return super().get_value(key, args, kwargs)
 
 
 def parse_lua(file_name, script, opts):
@@ -22,8 +33,8 @@ def parse_common_texlua(file_name, script, opts):
         "env": {"LUA_PATH": os.path.join(os.path.dirname(script), "?.lua")},
     }
     deep_dict.update(kwargs, opts)
-    proc = subprocess.Popen(["texlua", script, file_name], **kwargs)
-    output = proc.communicate()
+    proc = subprocess.Popen(("texlua", script, file_name), **kwargs)
+    output = proc.communicate(timeout=5)
     # code = proc.returncode
     if output:
         try:

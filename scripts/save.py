@@ -1,5 +1,4 @@
 import xml.etree.ElementTree as ET
-# import itertools
 import html
 import copy
 import os
@@ -137,12 +136,12 @@ class InterfaceSaver:
         self.load_commands_aux_i()
 
     def load_commands_aux(self, file_):
-        return all([
-            file_.endswith(".xml"),
-            not file_.startswith("i-common"),
-            not file_.startswith("i-context"),
+        return (
+            file_.endswith(".xml") and
+            not file_.startswith("i-common") and
+            not file_.startswith("i-context") and
             file_ != "context-en.xml",
-        ])
+        )
 
     def load_commands_aux_i(self):
         for file_ in self.to_load:
@@ -491,8 +490,7 @@ class InterfaceSaver:
                 return self.flatten(obj[0])
             elif all(
                 isinstance(x, str) or (
-                    isinstance(x, list) and
-                    all(isinstance(y, str) for y in x)
+                    isinstance(x, list) and all(isinstance(y, str) for y in x)
                 )
                 for x in obj
             ):

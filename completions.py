@@ -39,7 +39,7 @@ TEMPLATE = """
 
 def extra_style():
     result = []
-    suffixes = ["style", "weight", "color", "background"]
+    suffixes = ("style", "weight", "color", "background")
     data = {
         "con": "",
         "flo": "flow",
@@ -58,7 +58,7 @@ def extra_style():
 
     for tag, pre in data.items():
         for suf in suffixes:
-            for opt in ["", "slash"]:
+            for opt in ("", "slash"):
                 result.append(
                     "--%s%scontrol-sequence-%s: {%s_%s};" % (
                         opt + "-" if opt else "",
@@ -80,9 +80,7 @@ EXTRA_STYLE = extra_style()
 
 
 def try_jump_to_def(view, command):
-    thread = \
-        threading.Thread(target=lambda: try_jump_to_def_aux(view, command))
-    thread.start()
+    threading.Thread(target=lambda: try_jump_to_def_aux(view, command)).start()
 
 
 def try_jump_to_def_aux(view, name):
@@ -167,8 +165,8 @@ class SimpleContextMacroSignatureEventListener(
     def is_visible(self):
         return self.is_visible_alt()
 
-    def reload_settings_alt(self):
-        self.reload_settings()
+    def reload_settings(self):
+        super().reload_settings()
         self.pop_ups = {
             k.split("/")[-1]: self.get_setting("pop_ups/{}".format(k))
             for k in [
@@ -188,8 +186,7 @@ class SimpleContextMacroSignatureEventListener(
             self.name not in self.cache
         ):
             self.state = RUNNING
-            thread = threading.Thread(target=self.reload_settings_aux)
-            thread.start()
+            threading.Thread(target=self.reload_settings_aux).start()
 
     def reload_settings_aux(self):
         self.view.window().run_command(
@@ -227,7 +224,7 @@ class SimpleContextMacroSignatureEventListener(
             pass
 
     def on_query_completions(self, prefix, locations):
-        self.reload_settings_alt()
+        self.reload_settings()
         if self.state != IDLE or not self.is_visible():
             return None
 
@@ -249,8 +246,6 @@ class SimpleContextMacroSignatureEventListener(
                 scopes.FULL_CONTROL_SEQ,
                 end=self.size,
             ):
-                # TODO: doesn't work perfectly, think we need to correct the
-                # \type{arg_count} function in \type{interface.py}.
                 result = []
                 for ctrl, parity in cache.cmds.items():
                     if parity > 0:
@@ -312,7 +307,7 @@ class SimpleContextMacroSignatureEventListener(
         if not self.is_visible() or hover_zone != sublime.HOVER_TEXT:
             return
 
-        self.reload_settings_alt()
+        self.reload_settings()
         if (
             self.state != IDLE or
             not self.get_setting("pop_ups/methods/on_hover") or
@@ -339,7 +334,7 @@ class SimpleContextMacroSignatureEventListener(
             self.view.hide_popup()
 
     def on_modified_async(self):
-        self.reload_settings_alt()
+        self.reload_settings()
         if self.state != IDLE or not self.is_visible():
             self.view.hide_popup()
             return
@@ -473,41 +468,33 @@ class SimpleContextMacroSignatureEventListener(
             #     self.copy(html_css.raw_print(text))
 
     def on_navigate_file(self, name, command):
+        threading.Thread(
+            target=lambda: self.on_navigate_file_aux(name, command)
+        ).start()
+
+    def on_navigate_file_aux(self, name, command):
         main = files.locate(self.context_path, name, flags=self.flags)
         if main and os.path.exists(main):
             view = self.view.window().open_file(main)
             try_jump_to_def(view, command)
-        else:
-            other = files.fuzzy_locate(
-                self.context_path,
-                name,
-                extensions=self.extensions,
-                flags=self.flags,
-            )
-            if other and os.path.exists(other):
-                # For some reason, this is crashing Sublime Text on finishing
-                # the dialogue \periods.
-                #
-                # msg_ = (
-                #     'Unable to locate file "{}".\n\nSearched in the TeX tree '
-                #     'containing "{}".\n\nFound file "{}" with similar name, '
-                #     'open instead?'
-                # )
-                # msg = msg_.format(
-                #     name, self.context_path, os.path.basename(other)
-                # )
-                # if sublime.ok_cancel_dialog(msg):
-                #     self.view.window().open_file(other)
-                #
-                # So instead let's just open the file.
-                view = self.view.window().open_file(other)
-                try_jump_to_def(view, command)
-            else:
-                msg = (
-                    'Unable to locate file "{}".\n\nSearched in the TeX tree '
-                    'containing "{}".'
-                )
-                sublime.error_message(msg.format(name, self.context_path))
+            return
+
+        other = files.fuzzy_locate(
+            self.context_path,
+            name,
+            extensions=self.extensions,
+            flags=self.flags,
+        )
+        if other and os.path.exists(other):
+            view = self.view.window().open_file(other)
+            try_jump_to_def(view, command)
+            return
+
+        msg = (
+            'Unable to locate file "{}".\n\nSearched in the TeX tree '
+            'containing "{}".'
+        )
+        sublime.message_dialog(msg.format(name, self.context_path))
 
     def copy(self, text):
         self.view.hide_popup()

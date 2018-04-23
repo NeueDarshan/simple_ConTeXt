@@ -1,5 +1,5 @@
-import itertools
 import collections
+import itertools
 import re
 import os
 
@@ -8,6 +8,26 @@ import sublime
 from . import randomize
 from . import scopes
 from . import files
+
+
+class HashableDict(dict):
+    def __hash__(self):
+        return hash(frozenset(self.items()))
+
+
+def make_hashable(obj):
+    if isinstance(obj, dict):
+        result = HashableDict()
+        for k, v in obj.items():
+            result[k] = make_hashable(v)
+        return result
+    elif isinstance(obj, list):
+        return tuple(make_hashable(x) for x in obj)
+    return obj
+
+
+def hash_first_arg(func):
+    return lambda x, *args, **kwargs: func(make_hashable(x), *args, **kwargs)
 
 
 def deduplicate_list(list_):
@@ -38,13 +58,13 @@ def guess_type(obj):
                 return True
             elif str(obj).lower() == "false":
                 return False
-            elif str(obj).lower() in ["none", "null"]:
+            elif str(obj).lower() in {"none", "null"}:
                 return None
             return obj
 
 
 def iter_power_set(iter_):
-    full = list(iter_)
+    full = tuple(iter_)
     return itertools.chain.from_iterable(
         itertools.combinations(full, n) for n in range(len(full) + 1)
     )
@@ -148,7 +168,7 @@ def process_options(self, options, variables):
 
         for opt, val in options.items():
             if opt == "mode":
-                if any(v for k, v in val.items()):
+                if any(val.values()):
                     pretty_val = ",".join(k for k, v in val.items() if v)
                     result.append("--{}={}".format(opt, pretty_val))
             elif isinstance(val, dict):
@@ -195,19 +215,7 @@ class Choice:
         return [[k, k == choice] for k in self.options]
 
     def __str__(self):
-        return " ".join(self.options)
-
-
-class HashableDict(dict):
-    def __hash__(self):
-        return hash(frozenset(self.items()))
-
-
-def make_hashable_dict(dict_):
-    result = HashableDict()
-    for k, v in dict_.items():
-        result[k] = make_hashable_dict(v) if isinstance(v, dict) else v
-    return result
+        return "[" + "] [".join(self.options) + "]"
 
 
 class LeastRecentlyUsedCache:
@@ -244,17 +252,17 @@ class FuzzyOrderedDict:
         if len(args) == 1:
             self._add_left(*args)
         elif len(args) == 2:
-            self._add_left([args])
+            self._add_left((args,))
 
     def _add_left(self, args):
         for k, v in reversed(args):
-            self.cache.appendleft([k, v])
+            self.cache.appendleft((k, v))
 
     def fuzzy_add_right(self, *args):
         if len(args) == 1:
             self._fuzzy_add_right(*args)
         elif len(args) == 2:
-            self._fuzzy_add_right([args])
+            self._fuzzy_add_right((args,))
 
     def _fuzzy_add_right(self, args):
         max_len = self.cache.maxlen
@@ -277,7 +285,7 @@ class FuzzyOrderedDict:
         return iter(self.cache)
 
     def __contains__(self, key):
-        return key in [k for k, _ in self]
+        return key in self.cache
 
     def __getitem__(self, key):
         for k, v in self:
@@ -321,27 +329,27 @@ class LocateSettings(BaseSettings):
             self.base_dir = None
 
     def locate_file_main(self, name, extensions=None):
-        extensions = extensions or [""]
+        extensions = extensions or ("",)
         if self.base_dir:
-            methods = [os.path.normpath(self.base_dir)]
+            methods = tuple(os.path.normpath(self.base_dir))
             for f in os.listdir(os.path.normpath(self.base_dir)):
                 path = os.path.normpath(os.path.join(self.base_dir, f))
                 if os.path.isdir(path):
-                    methods.append(path)
-            methods.append(os.path.normpath(os.path.join(self.base_dir, "..")))
+                    methods += (path,)
+            methods += (os.path.normpath(os.path.join(self.base_dir, "..")),)
 
             file_ = files.fuzzy_locate(
                 self.context_path,
                 name,
                 flags=self.flags,
                 extensions=extensions,
-                methods=reversed(methods),
+                methods=methods[::-1],
             )
             if file_ and os.path.exists(file_):
                 return file_
 
     def locate_file_context(self, name, extensions=None):
-        extensions = extensions or [""]
+        extensions = extensions or ("",)
         file_ = files.fuzzy_locate(
             self.context_path,
             name,

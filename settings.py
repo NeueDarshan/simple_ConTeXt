@@ -7,7 +7,7 @@ from .scripts import deep_dict
 
 # Bit ugly that we take this approach. We feel the need to do so because I
 # can't see how to iterate over a ST settings object.
-CURRENT_SETTINGS = [
+CURRENT_SETTINGS = (
     "buffer/on",
     "builder/behaviour/auto/after_save",
     "builder/behaviour/auto/after_time_delay",
@@ -18,6 +18,8 @@ CURRENT_SETTINGS = [
     "builder/output/show_ConTeXt_path",
     "builder/output/show_full_command",
     "builder/output/show",
+    "citations/on",
+    "citations/format",
     "option_completions/on",
     "path",
     "PDF/open_after_build",
@@ -30,26 +32,28 @@ CURRENT_SETTINGS = [
     "pop_ups/try_generate_on_demand",
     "references/command_regex",
     "references/on",
-]
+)
 
 
 def simplify(obj):
     if isinstance(obj, str):
         return obj
     elif isinstance(obj, dict):
-        return " ".join(sorted(obj))
+        return "[" + "] [".join(sorted(obj)) + "]"
     elif isinstance(obj, list):
-        return " ".join(tup[0] for tup in sorted(obj))
+        return "[" + "] [".join(tup[0] for tup in sorted(obj) if tup) + "]"
     return str(obj)
 
 
-# Could do the \type{quick_panel} in a better way, with a row for each
-# sub||option.
+# Would be nice to do the \type{quick_panel} in a better way, with a row for
+# each sub||option. However, I'm not sure is that's possible at the moment: it
+# seems that each entry is expected to have the same number of rows, which
+# limits our options.
 class SimpleContextSettingsControllerCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
-    def reload_settings_alt(self):
-        self.reload_settings()
+    def reload_settings(self):
+        super().reload_settings()
         self.context_paths = \
             utilities.get_setting_location(self, "ConTeXt_paths", default={})
 
@@ -61,7 +65,7 @@ class SimpleContextSettingsControllerCommand(
             )
 
     def run(self):
-        self.reload_settings_alt()
+        self.reload_settings()
         self.update_settings()
         self.encode_settings()
         self.last_scheme = None
@@ -222,7 +226,7 @@ class SimpleContextSettingsControllerCommand(
         for k, v in self.to_write.items():
             self.sublime_settings.set("current.{}".format(k), v)
         sublime.save_settings("simple_ConTeXt.sublime-settings")
-        self.reload_settings_alt()
+        self.reload_settings()
         self.encode_settings()
 
     def encode_settings(self):

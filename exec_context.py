@@ -1,15 +1,12 @@
 import subprocess
 import threading
 import time
-# import html
 import os
 
 import sublime
 import sublime_plugin
 
 from .scripts import utilities
-# from .scripts import html_css
-# from .scripts import scopes
 from .scripts import files
 from .scripts import log
 
@@ -38,7 +35,7 @@ class ExecMainSubprocess:
     lock = threading.Lock()
 
     def __init__(self, sequence, root=None, working_dir=None):
-        self.sequence = list(reversed(sequence))
+        self.sequence = sequence[::-1]
         self.root = root
         self.working_dir = working_dir
 
@@ -107,8 +104,12 @@ class ExecMainSubprocess:
                 self.root.add_to_output(
                     "  - command: {}\n".format(" ".join(cmd))
                 )
-        result = self.proc.communicate()
-        code = self.proc.returncode
+            result = self.proc.communicate()
+            code = self.proc.returncode
+        elif output == "pdf":
+            code = 0
+        else:
+            code = 0
 
         with self.lock:
             if output == "context":
@@ -116,10 +117,10 @@ class ExecMainSubprocess:
             elif output == "pdf":
                 self.output_context_pdf(cmd[0] if cmd else None)
 
-        if code == 0:
-            self.proceed()
-        else:
+        if code:
             self.quit()
+        else:
+            self.proceed()
 
     def output_context(self, data, code):
         if not self.root:
@@ -129,7 +130,7 @@ class ExecMainSubprocess:
             scroll_to_end=True,
             force=True,
         )
-        if code != 0 and self.root.show_output_on_errors:
+        if code and self.root.show_output_on_errors:
             self.root.show_output()
 
     def output_context_pdf(self, cmd):
@@ -189,8 +190,8 @@ class SimpleContextExecMainCommand(
 ):
     proc = None
 
-    def reload_settings_alt(self):
-        self.reload_settings()
+    def reload_settings(self):
+        super().reload_settings()
         self.show_errors_inline = sublime.load_settings(
             "Preferences.sublime-settings").get("show_errors_inline", True)
         self.show_panel_on_build = sublime.load_settings(
@@ -213,7 +214,7 @@ class SimpleContextExecMainCommand(
         **kwargs
     ):
         cmd_seq = cmd_seq or []
-        self.reload_settings_alt()
+        self.reload_settings()
 
         if update_phantoms_only:
             if self.show_errors_inline:

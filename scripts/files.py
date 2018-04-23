@@ -1,4 +1,5 @@
 import subprocess
+import functools
 import zlib
 import re
 import os
@@ -7,26 +8,28 @@ import os
 CREATE_NO_WINDOW = 0x08000000
 
 
+@functools.lru_cache(maxsize=256)
 def fuzzy_locate(path, file_, flags=0, methods=None, extensions=None):
-    methods = methods or [None]
-    extensions = extensions or [""]
+    methods = methods or (None,)
+    extensions = extensions or ("",)
     for method in methods:
         for ext in extensions:
-            text = locate(path, file_ + ext, flags=flags, methods=[method])
+            text = locate(path, file_ + ext, flags=flags, methods=(method,))
             if text:
                 return text
     return None
 
 
+@functools.lru_cache(maxsize=256)
 def locate(path, file_, flags=0, methods=None):
-    methods = methods or [None]
+    methods = methods or (None,)
     for method in methods:
         if method is None:
             environ = os.environ.copy()
             environ["PATH"] = add_path(environ["PATH"], path)
             try:
                 proc = subprocess.Popen(
-                    ["mtxrun", "--locate", file_],
+                    ("mtxrun", "--locate", file_),
                     creationflags=flags,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,

@@ -1,5 +1,5 @@
 import functools
-import time
+import threading
 import re
 
 import sublime
@@ -11,62 +11,59 @@ from .scripts import files
 from .scripts import cite
 
 
-IDLE = 0
-
-RUNNING = 1
-
 CITATIONS = (
     r"\A(?:(?:no|use|place|(?:btx)?(?:list|text|always|hidden))?"
     r"cit(?:e|ation))\Z"
 )
 
-EXTENSIONS = ["bib", "xml", "lua"]
+EXTENSIONS = ("bib", "xml", "lua")
+
+FORMAT = cite.DefaultFormatter(
+    handler=lambda k: "????" if k == "year" else "??"
+)
 
 
 def is_citation_start(text):
     return text == "["
 
 
-def is_citation_history(command):
-    if command:
-        return command[0] not in ["left_delete", "right_delete"]
-    return True
+def is_citation_history(cmd):
+    return cmd[0] not in ("left_delete", "right_delete") if cmd else True
 
 
-def hash_dict(func):
-    return lambda dict_: func(utilities.make_hashable_dict(dict_))
-
-
-@hash_dict
-@functools.lru_cache(maxsize=8)
-def get_entries(bibliographies):
+@utilities.hash_first_arg
+@functools.lru_cache(maxsize=128)
+def get_entries(bibliographies, format_str):
     return sorted(
         [
-            tag,
-            entry.get("title", "??"),
-            "{}, {}".format(
-                entry.get("year", "????"),
-                entry.get("author", "??"),
-            ),
-        ]
-        for v in bibliographies.values()
-        for tag, entry in v.items()
+            (
+                tag,
+                [
+                    FORMAT.format(s, tag=tag, **entry)
+                    for s in format_str.split("<>")
+                ],
+            )
+            for tag, entry in bibliographies.items()
+        ],
+        key=lambda tup: tup[1][0],
     )
 
 
 class SimpleContextCiteEventListener(
     utilities.LocateSettings, sublime_plugin.ViewEventListener,
 ):
-    extensions = [""] + [".{}".format(s) for s in EXTENSIONS]
+    extensions = ("",) + tuple(".{}".format(s) for s in EXTENSIONS)
     flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
     bibliographies = {}
-    state = IDLE
+    bib_per_files = {}
+    lock = threading.Lock()
 
     def is_visible(self):
         return self.is_visible_alt()
 
-    def reload_settings_alt(self):
-        self.reload_settings()
+    def reload_settings(self):
+        super().reload_settings()
+        self.file_name = self.view.file_name()
         self.opts = self.expand_variables(
             {
                 "creationflags": self.flags,
@@ -81,8 +78,13 @@ class SimpleContextCiteEventListener(
         )
 
     def on_modified_async(self):
-        self.reload_settings_alt()
-        if not self.is_visible():
+        self.reload_settings()
+        format_str = self.get_setting("citations/format")
+        if not (
+            self.is_visible() and
+            self.get_setting("citations/on") and
+            format_str
+        ):
             return
 
         sel = self.view.sel()
@@ -105,27 +107,33 @@ class SimpleContextCiteEventListener(
         if (
             is_citation_start(last_char) and
             is_citation_history(last_cmd) and
-            self.get_setting("citations/on") and
             self.is_citation_command(*ctrl)
         ):
-            self.do_citation()
+            threading.Thread(
+                target=lambda: self.do_citation(self.file_name, format_str)
+            ).start()
 
     def is_citation_command(self, begin, end):
         name = self.view.substr(sublime.Region(begin, end)).strip()
         return re.match(CITATIONS, name)
 
-    def do_citation(self):
-        if self.state == IDLE:
-            self.state == RUNNING
-            regions = self.view.find_by_selector(scopes.MAYBE_CITATION)
-            possible_names = [self.view.substr(r) for r in regions]
+    def do_citation(self, view_name, format_str):
+        regions = self.view.find_by_selector(scopes.MAYBE_CITATION)
+        possible_names = {self.view.substr(r).strip() for r in regions}
+        with self.lock:
             for name in possible_names:
-                self.try_parse(name)
-            self.state == IDLE
+                self.try_parse(name, view_name)
+
         window = self.view.window()
-        if window and self.bibliographies:
-            self.tags = get_entries(self.bibliographies)
-            window.show_quick_panel(self.tags, self.on_done)
+        if window:
+            dict_ = {}
+            for key, entry in self.bib_per_files.get(view_name, {}).items():
+                if key in possible_names:
+                    dict_.update(self.bibliographies.get(entry, {}))
+            self.tags = get_entries(dict_, format_str)
+            window.show_quick_panel(
+                [tup[1] for tup in self.tags], self.on_done,
+            )
 
     def on_done(self, index):
         if 0 <= index < len(self.tags):
@@ -137,27 +145,31 @@ class SimpleContextCiteEventListener(
             except IndexError:
                 pass
 
-    def try_parse(self, name):
-        if name not in self.bibliographies:
-            main = self.locate_file_main(name, extensions=self.extensions)
-            if main:
-                self.try_parse_aux(name, main)
-                return
+    def try_parse(self, name, view_name):
+        if view_name:
+            self.bib_per_files.setdefault(view_name, {})
+        if name not in self.bib_per_files[view_name]:
+            if view_name:
+                main = self.locate_file_main(name, extensions=self.extensions)
+                if main:
+                    self.bib_per_files[view_name][name] = main
+                    self.bibliographies[main] = self.try_parse_aux(name, main)
+                    return
             other = self.locate_file_context(name, extensions=self.extensions)
             if other:
-                self.try_parse_aux(name, other)
+                self.bib_per_files[view_name][name] = other
+                self.bibliographies[other] = self.try_parse_aux(name, other)
                 return
-            self.bibliographies[name] = None
+            self.bib_per_files[view_name][name] = 0
 
     def try_parse_aux(self, name, file_):
         if name.endswith(".bib"):
-            self.bibliographies[name] = self.parse_btx(file_)
+            return self.parse_btx(file_)
         elif name.endswith(".xml"):
-            self.bibliographies[name] = self.parse_xml(file_)
+            return self.parse_xml(file_)
         elif name.endswith(".lua"):
-            self.bibliographies[name] = self.parse_lua(file_)
-        else:
-            self.bibliographies[name] = self.parse_btx(file_)
+            return self.parse_lua(file_)
+        return self.parse_btx(file_)
 
     def parse_lua(self, name):
         return cite.parse_lua(name, self.lua_script, self.opts)

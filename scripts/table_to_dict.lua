@@ -34,7 +34,7 @@ local function encode_hashed_tab(tab)
     else
       result = result .. ","
     end
-    result = result .. string.format('%s:%s', encode(k), encode(v))
+    result = result .. string.format("%s:%s", encode(k), encode(v))
   end
   result = result .. "}"
   return result
@@ -42,7 +42,7 @@ end
 
 
 local function encode_string(text)
-  return string.format('"""%s"""', text)
+  return string.format('r"""%s"""', text)
 end
 
 

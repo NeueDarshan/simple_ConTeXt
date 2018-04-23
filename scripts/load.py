@@ -46,7 +46,7 @@ def nice_sorted(list_, reverse=False):
         else:
             lower.append(x)
     result = others + lower + mixed + upper + inherits
-    return list(reversed(result)) if reverse else result
+    return result[::-1] if reverse else result
 
 
 class InterfaceLoader:
@@ -89,8 +89,12 @@ class InterfaceLoader:
             parts.append("\n\n".join(sig))
 
         if self.kwargs.get("show_source_files", False) and files:
-            prim = [f for f in files if f is None]
-            rest = [f for f in files if f is not None]
+            prim, rest = [], []
+            for f in files:
+                if f is None:
+                    prim.append(f)
+                else:
+                    rest.append(f)
             source = " ".join(
                 [self.file_format(k) for k in sorted(rest)] +
                 [self.file_format(k) for k in prim]

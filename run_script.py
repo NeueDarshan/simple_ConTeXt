@@ -28,12 +28,12 @@ class SimpleContextRunScriptCommand(
     state = IDLE
     previous_script = "context --version"
 
-    def reload_settings_alt(self):
-        self.reload_settings()
+    def reload_settings(self):
+        super().reload_settings()
         self.options["env"] = utilities.get_path_var(self)
 
     def run(self, user_input=None):
-        self.reload_settings_alt()
+        self.reload_settings()
         self.setup_output_view()
         if self.state == IDLE:
             self.state = RUNNING
@@ -56,10 +56,9 @@ class SimpleContextRunScriptCommand(
             path = os.path.dirname(view.file_name()) if name else None
         else:
             path = None
-        thread = threading.Thread(
+        threading.Thread(
             target=lambda: self.on_done_aux(text, path=path)
-        )
-        thread.start()
+        ).start()
 
     def on_done_aux(self, text, path=None):
         if path and os.path.exists(path):
