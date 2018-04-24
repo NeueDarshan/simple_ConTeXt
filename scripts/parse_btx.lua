@@ -1,14 +1,17 @@
 local to_dict = require "table_to_dict"
 
 
-local C, Ct, P, R, S, V = lpeg.C, lpeg.Ct, lpeg.P, lpeg.R, lpeg.S, lpeg.V
-local match = lpeg.match
+local P, R, S, V, B = lpeg.P, lpeg.R, lpeg.S, lpeg.V, lpeg.B
+local C, Ct, match = lpeg.C, lpeg.Ct, lpeg.match
 
 
 local bibtex
 
 do
-  local space = S " \t\r\n\f"
+  local end_of_string = P(-1)
+  -- local start_of_string = B(-1)
+  local space = S " \t"
+  local line = S "\r\n\f"
   local equal = P "="
   local at = P "@"
   local hash = P "#"
@@ -20,11 +23,13 @@ do
   local l_brace = P "{"
   local r_brace = P "}"
   local brace = S "{}"
-  local end_of_string = P(-1)
 
+  local end_of_line = line + end_of_string
+  local all_space = space + line
+  local spaces = space^0
+  local all_spaces = all_space^0
   local ident = (letter + number) * (letter + number + punct)^0
   local integer = number^1
-  local spaces = space^0
   local type_ = ident
   local key = ident
   local name = ident
@@ -40,6 +45,7 @@ do
     return result
   end
 
+
   local quote_content = P { quote * C( not_(quote)^0 ) * quote }
   local brace_content = P { l_brace * C( (V(1) + not_(brace))^0 ) * r_brace }
   local brace_no_content = P { l_brace * (V(1) + not_(brace))^0 * r_brace }
@@ -49,16 +55,21 @@ do
   local function indicate_string(x) return {x} end
 
   local content_part =
-    brace_content + quote_content + C(string_name) / indicate_string +
-    C(integer)
-  local content = Ct(content_part * (spaces * hash * spaces * content_part)^0)
+    brace_content + quote_content + C(integer) +
+    C(string_name) / indicate_string
+  local content =
+    Ct(content_part * (all_spaces * hash * all_spaces * content_part)^0)
 
 
   local entry_start =
-    at * C(type_) * spaces * l_brace * spaces * C(key) * spaces * comma
+    at * C(type_) * all_spaces * l_brace * all_spaces * C(key) * all_spaces *
+    comma
 
   local entry_tag =
-    Ct( C(name) * spaces * equal * spaces * content * (spaces * comma)^-1 )
+    Ct(
+      C(name) * all_spaces * equal * all_spaces * content *
+      (all_spaces * comma)^-1
+    )
 
   local function format_main_entry(tab)
     local result = {category = tab[1], tag = tab[2]}
@@ -72,14 +83,15 @@ do
   end
 
   local main_entry =
-    Ct(entry_start * spaces * (entry_tag * spaces)^0 * r_brace) /
-    format_main_entry
+    Ct(
+      entry_start * all_spaces * (entry_tag * all_spaces)^0 * r_brace
+    )
+    / format_main_entry
 
-
-  local comment = at * P_ "comment" * spaces * brace_no_content
 
   -- Let's ignore the preamble.
-  local preamble = at * P_ "preamble" * spaces * brace_no_content
+  local preamble = at * P_ "preamble" * all_spaces * brace_no_content
+  local comment = at * P_ "comment" * all_spaces * brace_no_content
 
 
   local function format_string(tab)
@@ -93,14 +105,21 @@ do
 
   local string =
     Ct(
-      at * P_ "string" * spaces * l_brace * spaces * (entry_tag * spaces)^0 *
-      r_brace
-    ) / format_string
+      at * P_ "string" * all_spaces * l_brace * all_spaces *
+      (entry_tag * all_spaces)^0 * r_brace
+    )
+    / format_string
 
 
-  local entry = comment + string + preamble + main_entry
+  local entry =
+    spaces * (comment + string + preamble + main_entry) * spaces * end_of_line
+  local blank_line = spaces * line
+  local comment_line = spaces * not_(at) * not_(line)^0 * end_of_line
+  local ignore_line = blank_line + comment_line
+  local component = entry + ignore_line
 
-  bibtex = Ct(not_(at)^0 * (entry * not_(at)^0)^0 * end_of_string)
+
+  bibtex = Ct(component^0 * end_of_string)
 end
 
 

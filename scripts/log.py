@@ -3,7 +3,9 @@ import re
 
 def translate_class(text):
     if text == "mp":
-        return "metapost"
+        return "MetaPost"
+    elif text == "tex":
+        return "TeX"
     return text
 
 

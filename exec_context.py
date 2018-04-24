@@ -50,6 +50,7 @@ class ExecMainSubprocess:
     def proceed(self):
         self.lock.acquire()
         if not self.sequence:
+            self.lock.release()
             self.quit()
             return
 
@@ -75,7 +76,8 @@ class ExecMainSubprocess:
                 env[k] = v
         output = seq.get("output")
 
-        print("[simple_ConTeXt] Running: {}".format(" ".join(cmd)))
+        # print("[simple_ConTeXt] Running: {}".format(" ".join(cmd)))
+        print("Running {}".format(" ".join(cmd)))
         thread = threading.Thread(
             target=lambda: self.run_command(
                 cmd,
@@ -95,14 +97,16 @@ class ExecMainSubprocess:
     def run_command(self, cmd, opts, output):
         self.proc = subprocess.Popen(cmd, **opts)
         if output == "context":
-            self.root.add_to_output("running context:\n")
+            self.root.add_to_output("running ConTeXt\n")
             if self.root.get_setting("builder/output/show_ConTeXt_path"):
-                path = self.root.sublime_settings.get("current_settings/path")
+                path = self.root.get_setting("path")
                 if path:
-                    self.root.add_to_output("  - path: {}\n".format(path))
+                    self.root.add_to_output(
+                        "  - ConTeXt path: {}\n".format(path)
+                    )
             if self.root.get_setting("builder/output/show_full_command"):
                 self.root.add_to_output(
-                    "  - command: {}\n".format(" ".join(cmd))
+                    "  - full command: {}\n".format(" ".join(cmd))
                 )
             result = self.proc.communicate()
             code = self.proc.returncode
@@ -134,7 +138,10 @@ class ExecMainSubprocess:
             self.root.show_output()
 
     def output_context_pdf(self, cmd):
-        text = "opening pdf with {}\n".format(cmd) if cmd else "opening pdf\n"
+        if cmd:
+            text = "opening PDF with {}\n".format(cmd)
+        else:
+            text = "opening PDF\n"
         self.root.add_to_output(text, scroll_to_end=True, force=True)
 
     def kill(self):
@@ -189,6 +196,7 @@ class SimpleContextExecMainCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
     proc = None
+    output_panel_cache = ""
 
     def reload_settings(self):
         super().reload_settings()
@@ -231,6 +239,9 @@ class SimpleContextExecMainCommand(
         # Building whilst a build is already in progress does nothing. If you
         # wish to cancel it, use the proper Sublime Text way of doing that:
         # \type{Ctrl+Shift+C} is bound to cancel build by default.
+        #
+        # TODO: add an option to opt||in to this behaviour, as it can be nice
+        # and would be easy for us to do.
         if self.proc is not None:
             return
 
@@ -297,10 +308,16 @@ class SimpleContextExecMainCommand(
         self.window.run_command("show_panel", {"panel": "output.ConTeXt"})
 
     def add_to_output(self, text, clean=False, **kwargs):
+        cache = self.output_panel_cache
         dict_ = kwargs
         if clean:
             text = text.replace("\r\n", "\n").replace("\r", "\n")
-        dict_["characters"] = text
+        if text.endswith("\n"):
+            self.output_panel_cache = "\n"
+            text = text.rstrip("\n")
+        else:
+            self.output_panel_cache = ""
+        dict_["characters"] = cache + text
         self.output_view.run_command("append", dict_)
 
     def setup_output_view(
@@ -329,6 +346,7 @@ class SimpleContextExecMainCommand(
             self.output_view.assign_syntax(syntax)
 
         self.window.create_output_panel("ConTeXt")
+        self.output_panel_cache = ""
 
     def update_phantoms(self):
         pass

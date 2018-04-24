@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import subprocess
 import string
 import os
+import re
 
 from . import files
 from . import deep_dict
@@ -25,7 +26,7 @@ def parse_btx(file_name, script, opts):
     return parse_common_texlua(file_name, script, opts)
 
 
-def parse_common_texlua(file_name, script, opts):
+def parse_common_texlua(file_name, script, opts, timeout=5):
     kwargs = {
         "stdin": subprocess.PIPE,
         "stdout": subprocess.PIPE,
@@ -33,17 +34,20 @@ def parse_common_texlua(file_name, script, opts):
         "env": {"LUA_PATH": os.path.join(os.path.dirname(script), "?.lua")},
     }
     deep_dict.update(kwargs, opts)
-    proc = subprocess.Popen(("texlua", script, file_name), **kwargs)
-    output = proc.communicate(timeout=5)
-    # code = proc.returncode
-    if output:
-        try:
-            # I don't see a problem with this use of \type{eval}, as we have
-            # complete control over the string being evaluated.
-            result = eval(files.decode_bytes(output[0]))
-            return normalize_dict(result)
-        except ValueError:
+    proc = subprocess.Popen(["texlua", script, file_name], **kwargs)
+    try:
+        output = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        output = None
+    code = proc.returncode
+    if not code and output:
+        text = files.decode_bytes(output[0]).strip()
+        if text == "nil":
             return None
+        # I don't see a problem with this use of \type{eval}, as we have
+        # complete control over the string being evaluated.
+        result = eval(text)
+        return normalize_dict(result)
     return None
 
 
@@ -78,6 +82,8 @@ def parse_xml(file_name):
 
 
 def normalize_dict(data):
+    if not data:
+        return {}
     return {tag: normalize_dict_aux(entry) for tag, entry in data.items()}
 
 
@@ -92,4 +98,8 @@ def normalize_dict_aux(data):
                 v = normalize_dict_aux(v)
             result[k] = v
         return result
+    elif isinstance(data, (int, float)) and not isinstance(data, bool):
+        return str(data)
+    elif isinstance(data, str):
+        return re.sub(r"\s{2,}", " ", data).strip()
     return data

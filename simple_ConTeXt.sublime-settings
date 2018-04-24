@@ -109,7 +109,7 @@
 	// separated by the indicator '<>'. The first row is
 	// the most important one, as it is the one we order
 	// the entries by and the one that is searchable.
-	"current.citations/format": "{title}<>{author}<>{category}, {year}, {tag}",
+	"current.citations/format": "{title}<>[{category}, {year}] {author}",
 
 	// Whether to do 'key=value' style completions for
 	// ConTeXt commands; should be `true` or `false`.

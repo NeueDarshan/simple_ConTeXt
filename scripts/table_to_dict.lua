@@ -47,7 +47,7 @@ end
 
 
 local function encode_number(num)
-  return tostring(num)
+  return num
 end
 
 

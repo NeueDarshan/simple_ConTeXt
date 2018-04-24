@@ -85,7 +85,7 @@ def get_setting_location(self, opt, default=None):
         self.sublime_settings.get("program_locations.{}".format(opt), default)
 
 
-def reload_settings(self):
+def reload_settings_alt(self):
     self.sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
     self.context_path = get_path_setting(self)
@@ -302,7 +302,7 @@ class FuzzyOrderedDict:
 
 class BaseSettings:
     def reload_settings(self):
-        reload_settings(self)
+        reload_settings_alt(self)
 
     def get_setting(self, opt):
         return get_setting(self, opt)
@@ -321,40 +321,44 @@ class BaseSettings:
 
 class LocateSettings(BaseSettings):
     def reload_settings(self):
-        reload_settings(self)
+        super().reload_settings()
         try:
             file_name = self.view.file_name()
             self.base_dir = os.path.dirname(file_name) if file_name else None
         except AttributeError:
             self.base_dir = None
 
-    def locate_file_main(self, name, extensions=None):
+    def locate_file_main(self, name, extensions=None, timeout=2.5):
         extensions = extensions or ("",)
-        if self.base_dir:
-            methods = tuple(os.path.normpath(self.base_dir))
-            for f in os.listdir(os.path.normpath(self.base_dir)):
-                path = os.path.normpath(os.path.join(self.base_dir, f))
-                if os.path.isdir(path):
-                    methods += (path,)
-            methods += (os.path.normpath(os.path.join(self.base_dir, "..")),)
+        if not self.base_dir:
+            return
 
-            file_ = files.fuzzy_locate(
-                self.context_path,
-                name,
-                flags=self.flags,
-                extensions=extensions,
-                methods=methods[::-1],
-            )
-            if file_ and os.path.exists(file_):
-                return file_
+        methods = (os.path.normpath(self.base_dir),)
+        for f in os.listdir(os.path.normpath(self.base_dir)):
+            path = os.path.normpath(os.path.join(self.base_dir, f))
+            if os.path.isdir(path):
+                methods += (path,)
+        methods += (os.path.normpath(os.path.join(self.base_dir, "..")),)
 
-    def locate_file_context(self, name, extensions=None):
+        file_ = files.fuzzy_locate(
+            self.context_path,
+            name,
+            flags=self.flags,
+            extensions=extensions,
+            methods=methods[::-1],
+            timeout=timeout,
+        )
+        if file_ and os.path.exists(file_):
+            return file_
+
+    def locate_file_context(self, name, extensions=None, timeout=2.5):
         extensions = extensions or ("",)
         file_ = files.fuzzy_locate(
             self.context_path,
             name,
             flags=self.flags,
             extensions=extensions,
+            timeout=timeout,
         )
         if file_ and os.path.exists(file_):
             return file_

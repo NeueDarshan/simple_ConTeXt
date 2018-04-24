@@ -67,8 +67,12 @@ class SimpleContextRunScriptCommand(
         cmd = self.expand_variables(text.split())
         print("[simple_ConTeXt] Running: {}".format(" ".join(cmd)))
         process = subprocess.Popen(cmd, **self.options)
-        result = \
-            process.communicate(timeout=self.get_setting("script/timeout"))
+        try:
+            result = process.communicate(
+                timeout=self.get_setting("script/timeout")
+            )
+        except subprocess.TimeoutExpired:
+            result = None
         if result:
             output = files.clean_output(files.decode_bytes(result[0]))
             self.add_to_output(output)

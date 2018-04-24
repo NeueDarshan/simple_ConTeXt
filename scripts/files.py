@@ -9,19 +9,27 @@ CREATE_NO_WINDOW = 0x08000000
 
 
 @functools.lru_cache(maxsize=256)
-def fuzzy_locate(path, file_, flags=0, methods=None, extensions=None):
+def fuzzy_locate(
+    path, file_, flags=0, methods=None, extensions=None, timeout=5,
+):
     methods = methods or (None,)
     extensions = extensions or ("",)
     for method in methods:
         for ext in extensions:
-            text = locate(path, file_ + ext, flags=flags, methods=(method,))
+            text = locate(
+                path,
+                file_ + ext,
+                flags=flags,
+                methods=(method,),
+                timeout=timeout,
+            )
             if text:
                 return text
     return None
 
 
 @functools.lru_cache(maxsize=256)
-def locate(path, file_, flags=0, methods=None):
+def locate(path, file_, flags=0, methods=None, timeout=5):
     methods = methods or (None,)
     for method in methods:
         if method is None:
@@ -29,19 +37,19 @@ def locate(path, file_, flags=0, methods=None):
             environ["PATH"] = add_path(environ["PATH"], path)
             try:
                 proc = subprocess.Popen(
-                    ("mtxrun", "--locate", file_),
+                    ["mtxrun", "--locate", file_],
                     creationflags=flags,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
                     env=environ,
                 )
-                result = proc.communicate()
+                result = proc.communicate(timeout=timeout)
                 if result:
                     return clean_output(decode_bytes(result[0]))
-                return None
-            except OSError:
-                return None
+            except (subprocess.TimeoutExpired, OSError):
+                pass
+
         else:
             if os.path.sep in file_:
                 dir_, name = os.path.split(file_)

@@ -56,13 +56,15 @@ class InterfaceSaver:
         tolerant=True,
         quiet=False,
         prefix="",
-        namespace=NAMESPACE,
+        timeout=10,
+        namespace=None,
     ):
         self.path = path
         self.quiet = quiet
         self.prefix = prefix
-        self.namespace = namespace
+        self.namespace = namespace or NAMESPACE
         self.tolerant = tolerant
+        self.timeout = timeout
         self.load_definitions()
         self.load_commands(modules=modules)
 
@@ -77,7 +79,10 @@ class InterfaceSaver:
 
     def load_definitions_aux(self):
         file_ = files.locate(
-            self.path, "i-common-definitions.xml", flags=self.flags,
+            self.path,
+            "i-common-definitions.xml",
+            flags=self.flags,
+            timeout=self.timeout,
         )
         if not file_:
             raise OSError('unable to locate "i-common-definitions.xml"')
@@ -99,7 +104,9 @@ class InterfaceSaver:
                 print(self.prefix + msg)
 
     def load_definitions_aux_i(self, filename):
-        file_ = files.locate(self.path, filename, flags=self.flags)
+        file_ = files.locate(
+            self.path, filename, flags=self.flags, timeout=self.timeout,
+        )
         if not file_:
             raise OSError('unable to locate "{}"'.format(filename))
         try:
@@ -117,7 +124,9 @@ class InterfaceSaver:
     def load_commands(self, modules=True):
         self.to_load = set()
 
-        main = files.locate(self.path, "i-context.xml", flags=self.flags)
+        main = files.locate(
+            self.path, "i-context.xml", flags=self.flags, timeout=self.timeout,
+        )
         if main:
             dir_ = os.path.split(main)[0]
             for file_ in os.listdir(dir_):
@@ -126,7 +135,9 @@ class InterfaceSaver:
 
         if modules:
             # Let's use \type{t-rst.xml} as a smoking gun.
-            alt = files.locate(self.path, "t-rst.xml", flags=self.flags)
+            alt = files.locate(
+                self.path, "t-rst.xml", flags=self.flags, timeout=self.timeout,
+            )
             if alt:
                 dir_ = os.path.split(alt)[0]
                 for file_ in os.listdir(dir_):
@@ -138,9 +149,9 @@ class InterfaceSaver:
     def load_commands_aux(self, file_):
         return (
             file_.endswith(".xml") and
+            file_ != "context-en.xml" and
             not file_.startswith("i-common") and
-            not file_.startswith("i-context") and
-            file_ != "context-en.xml",
+            not file_.startswith("i-context")
         )
 
     def load_commands_aux_i(self):

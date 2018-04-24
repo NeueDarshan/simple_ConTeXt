@@ -129,7 +129,9 @@ class SimpleContextCiteEventListener(
             dict_ = {}
             for key, entry in self.bib_per_files.get(view_name, {}).items():
                 if key in possible_names:
-                    dict_.update(self.bibliographies.get(entry, {}))
+                    extra = self.bibliographies.get(entry, {})
+                    if extra:
+                        dict_.update(extra)
             self.tags = get_entries(dict_, format_str)
             window.show_quick_panel(
                 [tup[1] for tup in self.tags], self.on_done,
@@ -137,13 +139,11 @@ class SimpleContextCiteEventListener(
 
     def on_done(self, index):
         if 0 <= index < len(self.tags):
-            try:
-                tag = self.tags[index][0]
+            text = self.tags[index]
+            if text:
                 self.view.run_command(
-                    "simple_context_insert_text", {"text": tag},
+                    "simple_context_insert_text", {"text": text[0]},
                 )
-            except IndexError:
-                pass
 
     def try_parse(self, name, view_name):
         if view_name:
