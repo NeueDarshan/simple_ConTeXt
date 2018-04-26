@@ -145,7 +145,7 @@ so on.
   "args": {
     "selectors": ["definition", "file_name", "heading", "reference"],
     "active_selectors": ["definition", "file_name", "heading", "reference"],
-    "selected_index": "closest",
+    "selected_index": "closest"
   },
   "context": [
     {
