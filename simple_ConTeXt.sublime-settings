@@ -194,7 +194,7 @@
 	// }
 	// ```
 	"program_locations.ConTeXt_paths": {
-		"example": "/example/path/to/context/program",
+		"default": null,
 	},
 	// If the PDF viewer is on your 'PATH' environment
 	// variable then you can just give its name;

@@ -91,4 +91,6 @@ def add_path(old, new):
 
 
 def file_as_slug(text):
-    return hex(zlib.adler32(bytes(text, "utf-8")))
+    if isinstance(text, str):
+        return hex(zlib.adler32(bytes(text, "utf-8")))
+    return "default"
