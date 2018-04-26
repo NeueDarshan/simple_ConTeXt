@@ -77,8 +77,7 @@ def strip_tags(data):
         return tuple(strip_tags(x) for x in data)
     elif isinstance(data, dict):
         return {strip_tags(k): strip_tags(v) for k, v in data.items()}
-    else:
-        return data
+    return data
 
 
 def protect_space(text):
