@@ -1,4 +1,4 @@
-local to_dict = require "table_to_dict"
+local to_dict = require("table_to_dict")
 
 
 local function get_file()

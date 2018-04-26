@@ -195,6 +195,8 @@ BLOCK_RAW = "markup.raw.block.context"
 
 MARKUP_HEADING = "markup.heading.context"
 
+BUFFER = "meta.buffer-name.context"
+
 
 def enclosing_block(view, point, scope, end=None):
     start = stop = point

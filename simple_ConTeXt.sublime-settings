@@ -105,11 +105,11 @@
 
 	// A description of what information to display about
 	// each bibliographic entry. Fields are indicated by
-	// Python-style braces '{field name}', and rows are
+	// Python-style braces '{field-name}', and rows are
 	// separated by the indicator '<>'. The first row is
 	// the most important one, as it is the one we order
 	// the entries by and the one that is searchable.
-	"current.citations/format": "{title}<>[{category}, {year}] {author}",
+	"current.citations/format": "{title}<>{author}<>{category}, {year}, {tag}",
 
 	// Whether to do 'key=value' style completions for
 	// ConTeXt commands; should be `true` or `false`.
@@ -148,20 +148,18 @@
 	// 'current.pop_ups/methods/on_modified' is true.
 	"current.pop_ups/try_generate_on_demand": true,
 
-	// This is a less-than-elegant solution to a tricky
-	// problem. We provide the reference functionality for
-	// the usual built-ins ('\in', '\at', '\about',
-	// '\from', and '\over') that do referencing. But then
-	// what if you use '\definereferenceformat' to define,
-	// say, '\eqref' as a new reference command: how can
-	// we distinguish between referencers and normal
-	// commands? Well, any command whose name is matched
-	// by this regex we will assume is a referencer.
-	// (Remember you need to escape this string as we're
-	// in a JSON file.)
+	// We provide the reference functionality for the
+	// usual built-ins ('\in', '\at', and so on) that do
+	// referencing. But then what if you use
+	// '\definereferenceformat' (or something else) to
+	// define, say, '\eqref' as a new reference command:
+	// how can we know to treat '\eqref' as a referencer?
+	// Well, for now we keep it simple: any command whose
+	// name is matched by this regular expression we
+	// assume is a referencer.
 	//
-	// Should be a string, the default value of
-	// `[a-zA-Z]*ref` seems reasonable to me.
+	// Should be a string; watch out for trouble with
+	// string escaping.
 	"current.references/command_regex": "[a-zA-Z]*ref",
 	// Whether to bring up the list of references upon
 	// typing in the start of a reference command. For
@@ -170,9 +168,9 @@
 	"current.references/on": true,
 
 	// When using the 'simple_ConTeXt: Run a ConTeXt
-	// script' command in the Sublime Text palette, this
-	// is the timeout we use for waiting for the command
-	// to respond.
+	// script' command in the Sublime Text palette, if the
+	// process takes longer than this value to complete
+	// then cancel it.
 	//
 	// Should be either a numeric value (in seconds), or
 	// `false` to never time out.

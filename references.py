@@ -7,11 +7,9 @@ from .scripts import utilities
 from .scripts import scopes
 
 
-BUFFER = "meta.buffer-name.context"
-
 BUILT_IN_REFERENCERS = r"\A(?:about|in|at|from|over)\Z"
 
-BUILT_IN_BUFFERS = [
+BUILT_IN_BUFFERS = {
     "ctxluabuffer",
     "getbuffer",
     "savebuffer",
@@ -25,17 +23,15 @@ BUILT_IN_BUFFERS = [
     "mkvibuffer",
     "processTEXbuffer",
     "resetbuffer",
-]
+}
 
 
 def is_reference_start(text):
     return text == "["
 
 
-def is_reference_history(command):
-    if command:
-        return command[0] not in ["left_delete", "right_delete"]
-    return True
+def is_reference_history(cmd):
+    return cmd[0] not in {"left_delete", "right_delete"} if cmd else True
 
 
 class SimpleContextReferenceEventListener(
@@ -82,7 +78,7 @@ class SimpleContextReferenceEventListener(
         self.do_common(selector="reference")
 
     def do_buffer(self):
-        self.do_common(selector_raw=BUFFER)
+        self.do_common(selector_raw=scopes.BUFFER)
 
     def do_common(self, **kwargs):
         opts = {"on_choose": "insert", "selected_index": "closest"}

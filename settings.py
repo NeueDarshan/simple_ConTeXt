@@ -7,7 +7,7 @@ from .scripts import deep_dict
 
 # Bit ugly that we take this approach. We feel the need to do so because I
 # can't see how to iterate over a ST settings object.
-CURRENT_SETTINGS = (
+CURRENT_SETTINGS = {
     "buffer/on",
     "builder/behaviour/auto/after_save",
     "builder/behaviour/auto/after_time_delay",
@@ -32,7 +32,7 @@ CURRENT_SETTINGS = (
     "pop_ups/try_generate_on_demand",
     "references/command_regex",
     "references/on",
-)
+}
 
 
 def simplify(obj):
@@ -259,8 +259,7 @@ class SimpleContextSettingsControllerCommand(
     def write_settings(self):
         self.to_write = {}
         for k, v in deep_dict.iter_(self.current_settings):
-
-            for opt in ["extra_opts_for_ConTeXt", "opts_for_ConTeXt"]:
+            for opt in {"extra_opts_for_ConTeXt", "opts_for_ConTeXt"}:
                 if opt in k:
                     i = k.index(opt) + 1
                     deep_dict.set_safe(
@@ -273,7 +272,6 @@ class SimpleContextSettingsControllerCommand(
 
 class SimpleContextEditSettingsCommand(sublime_plugin.WindowCommand):
     def run(self, *args, **kwargs):
-        base_file = \
-            "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings"
+        base_file = "$packages/simple_ConTeXt/simple_ConTeXt.sublime-settings"
         args = {"base_file": base_file, "default": "{\n\t$0\n}\n"}
         sublime.run_command("edit_settings", args)

@@ -53,12 +53,11 @@ end
 
 -- Now we give the previouly declared local a proper definition.
 function encode(data)
-  local mode = type(data)
-  if mode == "string" then
+  if type(data) == "string" then
     return encode_string(data)
-  elseif mode == "number" then
+  elseif type(data) == "number" then
     return encode_number(data)
-  elseif mode == "table" then
+  elseif type(data) == "table" then
     if is_indexed_table(data) then
       return encode_indexed_tab(data)
     else

@@ -169,13 +169,13 @@ class SimpleContextMacroSignatureEventListener(
         super().reload_settings()
         self.pop_ups = {
             k.split("/")[-1]: self.get_setting("pop_ups/{}".format(k))
-            for k in [
+            for k in {
                 "line_break",
                 "methods/on_hover",
                 "methods/on_modified",
                 "show_copy_pop_up",
                 "show_source_files",
-            ]
+            }
         }
         self.name = files.file_as_slug(self.context_path)
         self.size = self.view.size()
@@ -490,11 +490,7 @@ class SimpleContextMacroSignatureEventListener(
             try_jump_to_def(view, command)
             return
 
-        msg = (
-            'Unable to locate file "{}".\n\nSearched in the TeX tree '
-            'containing "{}".'
-        )
-        sublime.message_dialog(msg.format(name, self.context_path))
+        sublime.message_dialog('Falied to locate file "{}".'.format(name))
 
     def copy(self, text):
         self.view.hide_popup()

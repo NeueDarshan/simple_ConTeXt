@@ -1,4 +1,4 @@
-local to_dict = require "table_to_dict"
+local to_dict = require("table_to_dict")
 
 
 local P, R, S, V, B = lpeg.P, lpeg.R, lpeg.S, lpeg.V, lpeg.B
@@ -9,20 +9,19 @@ local bibtex
 
 do
   local end_of_string = P(-1)
-  -- local start_of_string = B(-1)
-  local space = S " \t"
-  local line = S "\r\n\f"
-  local equal = P "="
-  local at = P "@"
-  local hash = P "#"
-  local punct = S "_-:"
-  local letter = R "az" + R "AZ"
-  local number = R "09"
-  local comma = P ","
-  local quote = P '"'
-  local l_brace = P "{"
-  local r_brace = P "}"
-  local brace = S "{}"
+  local space = S(" \t")
+  local line = S("\r\n\f\v")
+  local equal = P("=")
+  local at = P("@")
+  local hash = P("#")
+  local punct = S("_-:")
+  local letter = R("az") + R("AZ")
+  local number = R("09")
+  local comma = P(",")
+  local quote = P('"')
+  local l_brace = P("{")
+  local r_brace = P("}")
+  local brace = l_brace + r_brace
 
   local end_of_line = line + end_of_string
   local all_space = space + line
@@ -33,7 +32,7 @@ do
   local type_ = ident
   local key = ident
   local name = ident
-  local function not_(x) return P(1) - x end
+  local function not_(x) return 1 - x end
 
   -- Similar to \type{P}, but ignores case.
   local function P_(str)
@@ -46,7 +45,7 @@ do
   end
 
 
-  local quote_content = P { quote * C( not_(quote)^0 ) * quote }
+  local quote_content = quote * C( not_(quote)^0 ) * quote
   local brace_content = P { l_brace * C( (V(1) + not_(brace))^0 ) * r_brace }
   local brace_no_content = P { l_brace * (V(1) + not_(brace))^0 * r_brace }
 
@@ -85,13 +84,12 @@ do
   local main_entry =
     Ct(
       entry_start * all_spaces * (entry_tag * all_spaces)^0 * r_brace
-    )
-    / format_main_entry
+    ) / format_main_entry
 
 
   -- Let's ignore the preamble.
-  local preamble = at * P_ "preamble" * all_spaces * brace_no_content
-  local comment = at * P_ "comment" * all_spaces * brace_no_content
+  local preamble = at * P_("preamble") * all_spaces * brace_no_content
+  local comment = at * P_("comment") * all_spaces * brace_no_content
 
 
   local function format_string(tab)
@@ -105,10 +103,9 @@ do
 
   local string =
     Ct(
-      at * P_ "string" * all_spaces * l_brace * all_spaces *
+      at * P_("string") * all_spaces * l_brace * all_spaces *
       (entry_tag * all_spaces)^0 * r_brace
-    )
-    / format_string
+    ) / format_string
 
 
   local entry =
@@ -118,8 +115,7 @@ do
   local ignore_line = blank_line + comment_line
   local component = entry + ignore_line
 
-
-  bibtex = Ct(component^0 * end_of_string)
+  bibtex = Ct(component^0 * all_spaces * end_of_string)
 end
 
 
@@ -151,14 +147,12 @@ end
 local function reformat_string(tab)
   local result = {}
   for key, val in pairs(tab) do
-    local mode = type(val)
-    if mode == "string" then
+    if type(val) == "string" then
       result[key] = val
-    elseif mode == "table" then
+    elseif type(val) == "table" then
       local str = ""
       for _, v in ipairs(val) do
-        local m = type(v)
-        if m == "string" then
+        if type(v) == "string" then
           str = str .. v
         end
       end
@@ -177,20 +171,17 @@ local function reformat(tab)
   for tag, entry in pairs(details) do
     result[tag] = {}
     for key, value in pairs(entry) do
-      local type_ = type(value)
-      if type_ == "string" then
+      if type(value) == "string" then
         result[tag][key] = value
-      elseif type_ == "table" then
+      elseif type(value) == "table" then
         local str = ""
         for _, val in ipairs(value) do
-          local mode = type(val)
-          if mode == "string" then
+          if type(val) == "string" then
             str = str .. val
-          elseif mode == "table" then
-            local v = string[val[1]]
-            local m = type(v)
-            if m == "string" then
-              str = str .. v
+          elseif type(val) == "table" then
+            local s = string[val[1]]
+            if type(s) == "string" then
+              str = str .. s
             end
           end
         end
