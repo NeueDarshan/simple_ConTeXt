@@ -18,7 +18,6 @@
 - [Quick Settings](#quick-settings)
 - [Scripts](#scripts)
 - [Misc](#misc)
-- [Features To Work On](#features-to-work-on)
 - [Future Features](#future-features)
 
 <!-- /MarkdownTOC -->
@@ -299,21 +298,9 @@ Completions should play well with others, e.g. the completions provided by the
 intended for LaTeX, I still find it useful for ConTeXt as many of the command
 names are the same.)
 
-## Features To Work On
-
-Things that I'm interested in setting up, that should be relatively easy to do.
-
-- Add auto-build functionality. It should have the ability to pass different
-  options to the auto-builder, e.g. `--flags=draft`. It should have options for
-  when to run:
-  - at one or both of:
-    - on save,
-    - at regular time intervals;
-  - never.
-
 ## Future Features
 
-Features I would like to have, but may be harder to implement or lower priority.
+Features I would like to have, but may be hard to implement or lower priority.
 
 - Extend the `key=val` auto-completion stuff to include value suggestions.
 - Add support for multi file documents. This is not something I do very much,

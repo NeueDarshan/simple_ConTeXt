@@ -230,10 +230,12 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
         prefix=True,
         selected_index="closest",
     ):
-        selectors = selectors or SELECTORS.keys()
-        active_selectors = active_selectors or SELECTORS.keys()
-        selectors_raw = selectors_raw or ()
-        active_selectors_raw = active_selectors_raw or ()
+        selectors = SELECTORS.keys() if selectors is None else selectors
+        selectors_raw = () if selectors_raw is None else selectors_raw
+        active_selectors = \
+            SELECTORS.keys() if active_selectors is None else active_selectors
+        active_selectors_raw = \
+            () if active_selectors_raw is None else active_selectors_raw
 
         self.view = self.window.active_view()
         if not self.view:

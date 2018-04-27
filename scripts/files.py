@@ -12,8 +12,8 @@ CREATE_NO_WINDOW = 0x08000000
 def fuzzy_locate(
     path, file_, flags=0, methods=None, extensions=None, timeout=5,
 ):
-    methods = methods or (None,)
-    extensions = extensions or ("",)
+    methods = (None,) if methods is None else methods
+    extensions = ("",) if extensions is None else extensions
     for method in methods:
         for ext in extensions:
             text = locate(
@@ -30,7 +30,7 @@ def fuzzy_locate(
 
 @functools.lru_cache(maxsize=256)
 def locate(path, file_, flags=0, methods=None, timeout=5):
-    methods = methods or (None,)
+    methods = (None,) if methods is None else methods
     for method in methods:
         if method is None:
             environ = os.environ.copy()

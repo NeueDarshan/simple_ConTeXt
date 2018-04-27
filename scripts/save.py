@@ -62,7 +62,7 @@ class InterfaceSaver:
         self.path = path
         self.quiet = quiet
         self.prefix = prefix
-        self.namespace = namespace or NAMESPACE
+        self.namespace = NAMESPACE if namespace is None else namespace
         self.tolerant = tolerant
         self.timeout = timeout
         self.load_definitions()

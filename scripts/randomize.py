@@ -8,7 +8,7 @@ def safe_random_sample(data, size):
 
 
 def poly_biased_randint(min_, max_, power=2, ignore=None):
-    ignore = ignore or []
+    ignore = [] if ignore is None else ignore
     while True:
         x = pow(random.random(), power)
         n = min_ + round((max_ - min_) * x)

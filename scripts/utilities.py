@@ -85,7 +85,7 @@ def get_setting_location(self, opt, default=None):
         self.sublime_settings.get("program_locations.{}".format(opt), default)
 
 
-def reload_settings_alt(self):
+def _reload_settings(self):
     self.sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
     self.context_path = get_path_setting(self)
@@ -148,7 +148,7 @@ def _expand_variables(self, args, variables):
                 result.append(_expand_variables(self, x, variables))
         return result
     elif args == "$simple_context_open_pdf_after_build":
-        return bool(get_setting(self, "PDF/open_after_build"))
+        return bool(get_setting(self, "builder/normal/open_PDF_after_build"))
     return args
 
 
@@ -244,7 +244,7 @@ class LeastRecentlyUsedCache:
 
 class FuzzyOrderedDict:
     def __init__(self, iterable=None, max_size=100):
-        iterable = iterable or []
+        iterable = [] if iterable is None else iterable
         self.max_size = max_size
         self.cache = collections.deque(iterable, max_size)
 
@@ -302,7 +302,7 @@ class FuzzyOrderedDict:
 
 class BaseSettings:
     def reload_settings(self):
-        reload_settings_alt(self)
+        _reload_settings(self)
 
     def get_setting(self, opt):
         return get_setting(self, opt)
@@ -329,7 +329,7 @@ class LocateSettings(BaseSettings):
             self.base_dir = None
 
     def locate_file_main(self, name, extensions=None, timeout=2.5):
-        extensions = extensions or ("",)
+        extensions = ("",) if extensions is None else extensions
         if not self.base_dir:
             return
 
@@ -352,7 +352,7 @@ class LocateSettings(BaseSettings):
             return file_
 
     def locate_file_context(self, name, extensions=None, timeout=2.5):
-        extensions = extensions or ("",)
+        extensions = ("",) if extensions is None else extensions
         file_ = files.fuzzy_locate(
             self.context_path,
             name,

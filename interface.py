@@ -78,7 +78,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
         overwrite=False,
         file_min=20000,
     ):
-        paths = paths or []
+        paths = [] if paths is None else paths
         self.reload_settings()
         self.file_min = file_min
         if self.state == IDLE:

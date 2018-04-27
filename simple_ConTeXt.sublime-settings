@@ -1,8 +1,4 @@
 {
-	// Set to `true` or `false`. Technical note: the
-	// variable '$simple_context_open_pdf_after_build' in
-	// the ConTeXt builder gets this value assigned to it.
-	"current.PDF/open_after_build": true,
 	// The value should be one of the names in the
 	// 'program_locations.PDF_viewers' option.
 	"current.PDF/viewer": "evince",
@@ -13,50 +9,54 @@
 	// `false`.
 	"current.buffer/on": true,
 
-	// Whether to rebuild on saving: `true` or `false`.
-	"current.builder/behaviour/auto/after_save": false,
-	// Whether to rebuild forever with a time delay given
-	// by the 'current.builder/behaviour/auto/time_delay'
-	// option. Either `true` or `false`.
-	//
-	// TODO: implement this.
-	"current.builder/behaviour/auto/after_time_delay": false,
 	// Extra options to pass to the 'context' process when
 	// doing an auto-build. For example, to pass the
 	// option '--mode=draft' you could do the following.
 	//
 	// ```json
 	// {
-	//   'current.builder/behaviour/auto/extra_opts_for_ConTeXt': {
+	//   'current.builder/auto/extra_opts_for_ConTeXt': {
 	//     'mode': {
 	//       'draft': true
 	//     }
 	//   }
 	// }
 	// ```
-	//
-	// TODO: implement this.
-	"current.builder/behaviour/auto/extra_opts_for_ConTeXt": {
+	"current.builder/auto/extra_opts_for_ConTeXt": {
 		"mode": {
 			"draft": true,
 		},
 	},
-	// Time delay in seconds. Should be numeric.
-	"current.builder/behaviour/auto/time_delay": 60,
+	// Whether to rebuild on saving: `true` or `false`.
+	"current.builder/auto/on": false,
+	// Set to `true` or `false`.
+	"current.builder/auto/open_PDF_after_build": false,
+	// The options are `true`, `when_there_are_errors` and
+	// `false`. If the global Sublime Text setting
+	// 'show_panel_on_build' is set to 'false' then this
+	// setting is ignored and the build panel is never
+	// shown.
+	"current.builder/auto/output/show": false,
+	// Set to `true` or `false`; whether to show the
+	// current ConTeXt path being used in the output
+	// panel.
+	"current.builder/auto/output/show_ConTeXt_path": false,
+	// Set to `true` or `false`; whether to show the full
+	// command in the output panel.
+	"current.builder/auto/output/show_full_command": false,
+	// Should be `true` or `false`. TODO: implement this.
+	"current.builder/auto/return_focus_after_open_PDF": true,
 
-	// Whether to change window focus back to Sublime Text
-	// after opening the PDF file at the end of a
-	// successful build; `true` or `false`.
-	//
-	// TODO: implement this.
-	"current.builder/behaviour/return_focus_after_open_PDF": true,
-
+	// Set to `true` or `false`. Technical note: the
+	// variable '$simple_context_open_pdf_after_build' in
+	// the ConTeXt builder gets this value assigned to it.
+	"current.builder/normal/open_PDF_after_build": false,
 	// These options will be passed along to the 'context'
 	// process. You can simply pass a string, like so.
 	//
 	// ```json
 	// {
-	//   'current.builder/opts_for_ConTeXt':
+	//   'current.builder/normal/opts_for_ConTeXt':
 	//     '--randomseed=42 --jit'
 	// }
 	// ```
@@ -69,7 +69,7 @@
 	//
 	// ```json
 	// {
-	//   'current.builder/opts_for_ConTeXt': {
+	//   'current.builder/normal/opts_for_ConTeXt': {
 	//     'randomseed': 42,
 	//     'jit': true
 	//   }
@@ -78,24 +78,29 @@
 	//
 	// TODO: talk more about the structured approach, and
 	// improve the actual implementation.
-	"current.builder/opts_for_ConTeXt": {
+	"current.builder/normal/opts_for_ConTeXt": {
 		"autogenerate": true,
 		"jit": false,
 	},
-
-	// Set to `true` or `false`; whether to show the
-	// current ConTeXt path being used in the output
-	// panel.
-	"current.builder/output/show_ConTeXt_path": false,
-	// Set to `true` or `false`; whether to show the full
-	// command in the output panel.
-	"current.builder/output/show_full_command": false,
 	// The options are `true`, `when_there_are_errors` and
 	// `false`. If the global Sublime Text setting
 	// 'show_panel_on_build' is set to 'false' then this
 	// setting is ignored and the build panel is never
 	// shown.
-	"current.builder/output/show": true,
+	"current.builder/normal/output/show": true,
+	// Set to `true` or `false`; whether to show the
+	// current ConTeXt path being used in the output
+	// panel.
+	"current.builder/normal/output/show_ConTeXt_path": false,
+	// Set to `true` or `false`; whether to show the full
+	// command in the output panel.
+	"current.builder/normal/output/show_full_command": false,
+	// Whether to change window focus back to Sublime Text
+	// after opening the PDF file at the end of a
+	// successful build; `true` or `false`.
+	//
+	// TODO: implement this.
+	"current.builder/normal/return_focus_after_open_PDF": true,
 
 	// Whether to bring up the list of bibliographic
 	// entries upon typing in the start of a citation

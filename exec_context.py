@@ -34,10 +34,21 @@ class ExecMainSubprocess:
     killed = False
     lock = threading.Lock()
 
-    def __init__(self, sequence, root=None, working_dir=None):
+    def __init__(
+        self,
+        sequence,
+        root=None,
+        working_dir=None,
+        show_ConTeXt_path=None,
+        show_full_command=None,
+    ):
         self.sequence = sequence[::-1]
         self.root = root
         self.working_dir = working_dir
+        self.show_ConTeXt_path = \
+            False if show_ConTeXt_path is None else show_ConTeXt_path
+        self.show_full_command = \
+            False if show_full_command is None else show_full_command
 
     def start(self):
         with self.lock:
@@ -98,13 +109,13 @@ class ExecMainSubprocess:
         self.proc = subprocess.Popen(cmd, **opts)
         if output == "context":
             self.root.add_to_output("running ConTeXt\n")
-            if self.root.get_setting("builder/output/show_ConTeXt_path"):
+            if self.show_ConTeXt_path:
                 path = self.root.get_setting("path")
                 if path:
                     self.root.add_to_output(
                         "  - ConTeXt path: {}\n".format(path)
                     )
-            if self.root.get_setting("builder/output/show_full_command"):
+            if self.show_full_command:
                 self.root.add_to_output(
                     "  - full command: {}\n".format(" ".join(cmd))
                 )
@@ -209,6 +220,9 @@ class SimpleContextExecMainCommand(
     def run(
         self,
         cmd_seq=None,
+        show=None,
+        show_ConTeXt_path=None,
+        show_full_command=None,
         encoding="utf-8",
         hide_phantoms_only=False,
         kill=False,
@@ -221,8 +235,18 @@ class SimpleContextExecMainCommand(
         line_regex="",
         **kwargs
     ):
-        cmd_seq = cmd_seq or []
+        cmd_seq = [] if cmd_seq is None else cmd_seq
         self.reload_settings()
+        show = \
+            self.get_setting("builder/normal/show") if show is None else show
+        show_ConTeXt_path = (
+            self.get_setting("builder/normal/show_ConTeXt_path")
+            if show_ConTeXt_path is None else show_ConTeXt_path
+        )
+        show_full_command = (
+            self.get_setting("builder/normal/show_full_command")
+            if show_full_command is None else show_full_command
+        )
 
         if update_phantoms_only:
             if self.show_errors_inline:
@@ -261,10 +285,7 @@ class SimpleContextExecMainCommand(
             sublime.status_message("Building")
 
         self.hide_phantoms()
-        if (
-            self.show_panel_on_build and
-            self.get_setting("builder/output/show")
-        ):
+        if self.show_panel_on_build and show:
             self.show_output()
             self.show_output_on_errors = False
         else:
@@ -285,7 +306,11 @@ class SimpleContextExecMainCommand(
             sequence = self.expand_variables(cmd_seq)
             try:
                 self.proc = ExecMainSubprocess(
-                    sequence, root=self, working_dir=working_dir,
+                    sequence,
+                    root=self,
+                    working_dir=working_dir,
+                    show_ConTeXt_path=show_ConTeXt_path,
+                    show_full_command=show_full_command,
                 )
                 self.proc.start()
             except Exception as e:
