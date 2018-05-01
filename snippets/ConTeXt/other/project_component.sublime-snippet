@@ -7,6 +7,6 @@ $0
 \stopcomponent
 ]]></content>
   <tabTrigger>comp</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>component</description>
 </snippet>

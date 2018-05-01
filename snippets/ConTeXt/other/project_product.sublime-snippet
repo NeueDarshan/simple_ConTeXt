@@ -7,6 +7,6 @@ $0
 \stopproduct
 ]]></content>
   <tabTrigger>prod</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>product</description>
 </snippet>

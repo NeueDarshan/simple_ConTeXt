@@ -15,6 +15,6 @@ begins as people with many different viewpoints undertake their own
 experiments.
 ]]></content>
   <tabTrigger>knuth</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

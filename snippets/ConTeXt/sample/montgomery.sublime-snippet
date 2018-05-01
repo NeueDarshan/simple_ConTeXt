@@ -12,6 +12,6 @@ a barrel of oil; we use millions of barrels a day. There is no question that we
 will run out of oil---the only question is when.
 ]]></content>
   <tabTrigger>montgomery</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

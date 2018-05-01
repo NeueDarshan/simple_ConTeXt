@@ -208,7 +208,7 @@ def enclosing_block(view, point, scope, end=None):
         stop += 1
 
     if start < stop:
-        return (start + 1, stop)
+        return start + 1, stop
     return None
 
 
@@ -274,4 +274,4 @@ def last_block_in_region(view, begin, scope, end=None, skip=SKIP_ANYTHING):
 
     if empty:
         return None
-    return (start + 1, stop + 1)
+    return start + 1, stop + 1

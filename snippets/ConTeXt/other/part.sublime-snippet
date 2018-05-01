@@ -7,6 +7,6 @@ $0
 \stoppart
 ]]></content>
   <tabTrigger>part</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop part</description>
 </snippet>

@@ -5,6 +5,6 @@
 \stopluacode
 ]]></content>
   <tabTrigger>lua</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>block lua</description>
 </snippet>

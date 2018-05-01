@@ -9,12 +9,13 @@ file_extensions:
   - mkix
   - mkxi
 scope: text.tex.context
-first_line_match: ^\s*(?:%.*?macros\s*=\s*mk(?:[vx]i)|\\(?:start(?:text|document)|usemodule|setup[[:alpha:]]+))\b
+first_line_match: ^\s*(?:%.*?macros\s*=\s*mk(?:[vx]i)|\\(?:start(?:text|document)|usemodule|setup{{cs}}+))\b
 variables:
-  key: '[[:alpha:][:digit:].\-\+_:;!\?<>@&/]'
-  setup: '{{key}}'
-  verbatim: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
-  variable: '[[:alpha:]]'
+  argument_key: '[[:alpha:][:digit:].\-\+_:;!\?<>@&/]'
+  identifier: '{{argument_key}}'
+  verbatim_delimiter: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
+  math_variable: '[[:alpha:]]'
+  cs: '[[:alpha:]]'
 
 
 contexts:
@@ -106,48 +107,48 @@ contexts:
     - include: math.inline.control
 
   math.place:
-    - match: (\\)placeformula\b
+    - match: (\\)placeformula(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.list.reference*/
-    - match: (\\)startplaceformula\b
+    - match: (\\)startplaceformula(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list.maybe-reference*/
   math.display.control:
-    - match: (\\)startformula\b
+    - match: (\\)startformula(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push:
         - math.main.pop-if-stopformula/
         - argument.list*/
-    - match: (\\)start(display|d)math\b
+    - match: (\\)start(display|d)math(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: math.main.pop-if-stop-match-two/
-    - match: (\\)display(?:math|mathematics)\b
+    - match: (\\)display(?:math|mathematics)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.math*/
   math.inline.control:
-    - match: (\\)(?:m|math|mathematics|formula)\b
+    - match: (\\)(?:m|math|mathematics|formula)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push:
         - argument.group.math.outer*/
         - argument.list*/
-    - match: (\\)inline(?:math|mathematics)\b
+    - match: (\\)inline(?:math|mathematics)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.math.outer*/
-    - match: (\\)start(?:imath|mathmode)\b
+    - match: (\\)start(?:imath|mathmode)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -198,7 +199,7 @@ contexts:
       set: math.main.pop-if-stopformula.aux/
   math.main.pop-if-stopformula.aux/:
     - meta_content_scope: meta.environment.math.context
-    - match: (?=\\stopformula\b)
+    - match: (?=\\stopformula(?!{{cs}}))
       pop: true
     - include: math.main
   math.main.pop-if-stop-match-two/:
@@ -220,7 +221,7 @@ contexts:
     - include: generic.real
     - match: '[∞π]'
       scope: constant.other.math.context
-    - match: (\\)(?:infty|pi)\b
+    - match: (\\)(?:infty|pi)(?!{{cs}})
       captures:
         0: meta.control-word.context constant.other.math.context
         1: punctuation.definition.backslash.context
@@ -229,9 +230,9 @@ contexts:
   math.operator:
     - match: '[\+\-/\^_=<>]'
       scope: keyword.operator.context
-    - match: '[∈∉∼≁×]'
+    - match: '[∈∉∼≁×≠]'
       scope: keyword.operator.context
-    - match: (\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)\b
+    - match: (\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.operator.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
@@ -240,7 +241,7 @@ contexts:
     # I think \type{variable.other} makes the most sense logically. However,
     # in my experience few colour schemes style this scope. So let's use
     # \type{string} instead.
-    - match: '{{variable}}'
+    - match: '{{math_variable}}'
       scope: string.unquoted.math.context
 
   # In math mode, control sequences with arguments are tricky. Consider the
@@ -280,12 +281,12 @@ contexts:
     - include: control.symbol
 
   math.control.intertext:
-    - match: (\\)start(intertext)\b
+    - match: (\\)start(intertext)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: main.pop-if-stop-match-two/
-    - match: (\\)(?:inter)?text\b
+    - match: (\\)(?:inter)?text(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -293,7 +294,7 @@ contexts:
   # Understanding math vs.\ text in \type{\startcases ... \stopcases} is a
   # nice feature to have. As the code is fairly clean so far, let's keep it.
   math.control.cases:
-    - match: (\\)startcases\b
+    - match: (\\)startcases(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -302,17 +303,17 @@ contexts:
         - argument.list.adjacent*/
 
   math.cases.rows:
-    - match: (\\)NC\b
+    - match: (\\)NC(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.operator.alignment.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
       push:
-        - match: (\\)NC\b
+        - match: (\\)NC(?!{{cs}})
           captures:
             0: meta.control-word.context keyword.operator.alignment.context
             1: punctuation.definition.backslash.context punctuation.definition.keyword.context
           set: main.cases/
-        - match: (\\)MC\b
+        - match: (\\)MC(?!{{cs}})
           captures:
             0: meta.control-word.context keyword.operator.alignment.context
             1: punctuation.definition.backslash.context punctuation.definition.keyword.context
@@ -320,10 +321,10 @@ contexts:
         - include: math.main.cases/
 
   math.cases.pop-at-end/:
-    - match: (?=\\stopcases\b)
+    - match: (?=\\stopcases(?!{{cs}}))
       pop: true
   math.cases.pop-at-newrow/:
-    - match: (\\)NR\b
+    - match: (\\)NR(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.operator.alignment.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
@@ -339,29 +340,29 @@ contexts:
     - include: Lua.inline
 
   Lua.block:
-    - match: (\\)start(luacode)\b
-      embed_scope: meta.environment.lua.major.context source.lua.embedded.context
+    - embed_scope: meta.environment.lua.major.context source.lua.embedded.context
+      match: (\\)start(luacode)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: Lua.block.major.main
-      escape: (?=\s*\\stop\2)
-    - match: (\\)start(lua)\b
-      embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
+      escape: (?=\s*\\stop\2(?!{{cs}}))
+    - embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
+      match: (\\)start(lua)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: Lua.block.minor.main
-      escape: (?=\s*\\stop\2)
+      escape: (?=\s*\\stop\2(?!{{cs}}))
   Lua.inline:
-    - match: (\\)(?:late|direct)lua\b
+    - match: (\\)(?:late|direct)lua(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push:
         - argument.group.Lua*/
         - argument.integer*/
-    - match: (\\)(?:cld(?:context|command)|ctx(?:(?:direct|late)(?:lua|command)|sprint|write|command|report|lua)|(?:direct|late)?luacode)\b
+    - match: (\\)(?:cld(?:context|command)|ctx(?:(?:direct|late)(?:lua|command)|sprint|write|command|report|lua)|(?:direct|late)?luacode)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -402,14 +403,14 @@ contexts:
     - include: MetaFun.use
 
   MetaFun.use:
-    - match: (\\)(?:MPposition|reusableMP|(?:re)?useMP|uniqueMP(?:page)?)graphic\b
+    - match: (\\)(?:MPposition|reusableMP|(?:re)?useMP|uniqueMP(?:page)?)graphic(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push:
         - argument.group.with-assignments*/
         - argument.group*/
-    - match: (\\)setMPpositiongraphic\b
+    - match: (\\)setMPpositiongraphic(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -417,7 +418,7 @@ contexts:
         - argument.group.with-assignments*/
         - argument.group*/
         - argument.group*/
-    - match: (\\)setMPpositiongraphicrange\b
+    - match: (\\)setMPpositiongraphicrange(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -434,81 +435,81 @@ contexts:
     - include: MetaFun.block.d
 
   MetaFun.block.a:
-    - match: (\\)startuniqueMPgraphic\b
+    - match: (\\)startuniqueMPgraphic(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.a
-      escape: (?=\\stopuniqueMPgraphic\b)
-    - match: (\\)startuniqueMPpagegraphic\b
+      escape: (?=\\stopuniqueMPgraphic(?!{cs}))
+    - match: (\\)startuniqueMPpagegraphic(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.a
-      escape: (?=\\stopuniqueMPpagegraphic\b)
-    - match: (\\)startuseMPgraphic\b
+      escape: (?=\\stopuniqueMPpagegraphic(?!{cs}))
+    - match: (\\)startuseMPgraphic(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.a
-      escape: (?=\\stopuseMPgraphic\b)
-    - match: (\\)startusableMPgraphic\b
+      escape: (?=\\stopuseMPgraphic(?!{cs}))
+    - match: (\\)startusableMPgraphic(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.a
-      escape: (?=\\stopusableMPgraphic\b)
-    - match: (\\)startreusableMPgraphic\b
+      escape: (?=\\stopusableMPgraphic(?!{cs}))
+    - match: (\\)startreusableMPgraphic(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.a
-      escape: (?=\\stopreusableMPgraphic\b)
-    - match: (\\)startMPpositiongraphic\b
+      escape: (?=\\stopreusableMPgraphic(?!{cs}))
+    - match: (\\)startMPpositiongraphic(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.a
-      escape: (?=\\stopMPpositiongraphic\b)
+      escape: (?=\\stopMPpositiongraphic(?!{cs}))
   MetaFun.block.b:
-    - match: (\\)startstaticMPfigure\b
+    - match: (\\)startstaticMPfigure(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.b
-      escape: (?=\\stopstaticMPfigure\b)
-    - match: (\\)startMPcode\b
+      escape: (?=\\stopstaticMPfigure(?!{cs}))
+    - match: (\\)startMPcode(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.b
-      escape: (?=\\stopMPcode\b)
-    - match: (\\)startMPdefinitions\b
+      escape: (?=\\stopMPcode(?!{cs}))
+    - match: (\\)startMPdefinitions(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.b
-      escape: (?=\\stopMPdefinitions\b)
-    - match: (\\)startMPextensions\b
+      escape: (?=\\stopMPdefinitions(?!{cs}))
+    - match: (\\)startMPextensions(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.b
-      escape: (?=\\stopMPextensions\b)
+      escape: (?=\\stopMPextensions(?!{cs}))
   MetaFun.block.c:
-    - match: (\\)startMPinclusions\b
+    - match: (\\)startMPinclusions(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.c
-      escape: (?=\\stopMPinclusions\b)
+      escape: (?=\\stopMPinclusions(?!{cs}))
   MetaFun.block.d:
-    - match: (\\)startMPpage\b
+    - match: (\\)startMPpage(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: MetaFun.main.d
-      escape: (?=\\stopMPpage\b)
+      escape: (?=\\stopMPpage(?!{cs}))
 
   MetaFun.main.a:
     - match: ''
@@ -557,18 +558,18 @@ contexts:
 
 
   JavaScript:
-    - match: (\\)startJScode\b
+    - match: (\\)startJScode(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: JavaScript.main.a
-      escape: (?=\\stopJScode\b)
-    - match: (\\)startJSpreamble\b
+      escape: (?=\\stopJScode(?!{{cs}}))
+    - match: (\\)startJSpreamble(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: JavaScript.main.b
-      escape: (?=\\stopJSpreamble\b)
+      escape: (?=\\stopJSpreamble(?!{{cs}}))
 
   JavaScript.main.a:
     - match: ''
@@ -617,7 +618,7 @@ contexts:
     - include: markup.quote.block
 
   markup.quote.inline:
-    - match: (\\)(?:quote|blockquote|quotation|aside|speech)\b
+    - match: (\\)(?:quote|blockquote|quotation|aside|speech)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -626,7 +627,7 @@ contexts:
         - argument.list*/
 
   markup.quote.block:
-    - match: (\\)startquote\b
+    - match: (\\)startquote(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -635,7 +636,7 @@ contexts:
         - argument.list*/
         - argument.list*/
 
-    - match: (\\)startblockquote\b
+    - match: (\\)startblockquote(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -644,7 +645,7 @@ contexts:
         - argument.list*/
         - argument.list*/
 
-    - match: (\\)startquotation\b
+    - match: (\\)startquotation(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -653,7 +654,7 @@ contexts:
         - argument.list*/
         - argument.list*/
 
-    - match: (\\)startaside\b
+    - match: (\\)startaside(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -662,7 +663,7 @@ contexts:
         - argument.list*/
         - argument.list*/
 
-    - match: (\\)startspeech\b
+    - match: (\\)startspeech(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -742,53 +743,53 @@ contexts:
     - include: scoping.markup
 
   markup.command:
-    - match: (\\)emph\b
+    - match: (\\)emph(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.emphasis*/
-    - match: (\\)(?:small)?bold\b
+    - match: (\\)(?:small)?bold(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.boldface*/
-    - match: (\\)italic\b
+    - match: (\\)italic(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.italic*/
-    - match: (\\)(?:small)?slanted\b
+    - match: (\\)(?:small)?slanted(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.slanted*/
-    - match: (\\)(?:small)?(?:bolditalic|italicbold)\b
+    - match: (\\)(?:small)?(?:bolditalic|italicbold)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.bold-italic*/
-    - match: (\\)(?:small)?(?:boldslanted|slantedbold)\b
+    - match: (\\)(?:small)?(?:boldslanted|slantedbold)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.bold-slanted*/
-    - match: (\\)sansbold\b
+    - match: (\\)sansbold(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.sans-bold*/
-    - match: (\\)mono\b
+    - match: (\\)mono(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.typewriter*/
-    - match: (\\)monobold\b
+    - match: (\\)monobold(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.typewriter-bold*/
   cite:
-    - match: (\\)usebtxdataset\b
+    - match: (\\)usebtxdataset(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -799,21 +800,21 @@ contexts:
 
 
   table:
-    - match: (\\)start(?:table|tabulate)\b
+    - match: (\\)start(?:table|tabulate)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push:
         - argument.list*/
         - argument.list.template-or-name*/
-    - match: (\\)(?:REF|ReFormat)\b
+    - match: (\\)(?:REF|ReFormat)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push:
         - argument.group*/
         - argument.list.template*/
-    - match: (\\)Use\b
+    - match: (\\)Use(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -824,17 +825,17 @@ contexts:
 
 
   list:
-    - match: (\\)item\b
+    - match: (\\)item(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.list.reference*/
-    - match: (\\)startitem\b
+    - match: (\\)startitem(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list.reference*/
-    - match: (\\)starthead\b
+    - match: (\\)starthead(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -850,19 +851,19 @@ contexts:
     - include: verbatim.hiding
 
   verbatim.inline:
-    - match: (\\)type?\b
+    - match: (\\)type?(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push:
         - argument.group-or-angles-or-delim.verbatim*/
         - argument.list*/
-    - match: (\\)(?:tex|arg|mat|dis|astype|filename|verbatim)\b
+    - match: (\\)(?:tex|arg|mat|dis|astype|filename|verbatim)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.verbatim*/
-    - match: (\\)(?:inline|type)[[:upper:]]+\b
+    - match: (\\)(?:inline|type)[[:upper:]]+(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -871,127 +872,133 @@ contexts:
         - argument.list*/
 
   verbatim.block:
-    - match: (\\)starttyping\b
+    - match: (\\)starttyping(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.typing
-      escape: (?=\\stoptyping\b)
-    - match: (\\)startTEX\b
+      escape: (?=\\stoptyping(?!{cs}))
+    - match: (\\)startTEX(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.TEX
-      escape: (?=\\stopTEX\b)
-    - match: (\\)startLUA\b
+      escape: (?=\\stopTEX(?!{cs}))
+    - match: (\\)startLUA(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.LUA
-      escape: (?=\\stopLUA\b)
-    - match: (\\)startXML\b
+      escape: (?=\\stopLUA(?!{cs}))
+    - match: (\\)startXML(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.XML
-      escape: (?=\\stopXML\b)
-    - match: (\\)startPARSEDXML\b
+      escape: (?=\\stopXML(?!{cs}))
+    - match: (\\)startPARSEDXML(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.PARSEDXML
-      escape: (?=\\stopPARSEDXML\b)
-    - match: (\\)startMP\b
+      escape: (?=\\stopPARSEDXML(?!{cs}))
+    - match: (\\)startMP(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.MP
-      escape: (?=\\stopMP\b)
+      escape: (?=\\stopMP(?!{cs}))
   verbatim.main.typing:
     - match: ''
       push:
         - verbatim.main.typing.aux/
-        - argument.list*/
+        - argument.list.close*/
   verbatim.main.TEX:
     - match: ''
       push:
         - verbatim.main.TEX.aux/
-        - argument.list*/
+        - argument.list.close*/
   verbatim.main.LUA:
     - match: ''
       push:
         - verbatim.main.LUA.aux/
-        - argument.list*/
+        - argument.list.close*/
   verbatim.main.XML:
     - match: ''
       push:
         - verbatim.main.XML.aux/
-        - argument.list*/
+        - argument.list.close*/
   verbatim.main.PARSEDXML:
     - match: ''
       push:
         - verbatim.main.PARSEDXML.aux/
-        - argument.list*/
+        - argument.list.close*/
   verbatim.main.MP:
     - match: ''
       push:
         - verbatim.main.MP.aux/
-        - argument.list*/
+        - argument.list.close*/
   verbatim.main.typing.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: markup.raw.block.context
   verbatim.main.TEX.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: text.tex.embedded.context
         - include: scope:text.tex
   verbatim.main.LUA.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: source.lua.embedded.context
         - include: scope:source.lua
   verbatim.main.XML.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: text.xml.embedded.context
         - include: scope:text.xml
-  # I don't know what PARSEDXML is, I assume it is some form of XML.
+  # I don't know what \type{PARSEDXML} is; I assume it is some form of
+  # \type{XML}.
   verbatim.main.PARSEDXML.aux/:
     - include: verbatim.main.XML.aux/
   verbatim.main.MP.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: source.metapost.embedded.context
         - include: scope:source.metapost
 
 
   verbatim.buffer:
-    - match: (\\)startbuffer\b
+    - match: (\\)startbuffer(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.buffer/
-      escape: (?=\\stopbuffer\b)
+      escape: (?=\\stopbuffer(?!{{cs}}))
   verbatim.main.buffer/:
     - match: ''
       push:
         - verbatim.main.buffer.aux/
-        - argument.list.buffer*/
+        - argument.list.buffer.close*/
   verbatim.main.buffer.aux/:
     - match: ''
       set:
-        - meta_scope: meta.environment.buffer.context markup.raw.block.context
         - meta_include_prototype: false
+        - meta_scope: meta.environment.buffer.context markup.raw.block.context
 
   verbatim.hiding:
-    - match: (\\)starthiding\b
-      embed_scope: comment.block.hiding.context
+    - embed_scope: comment.block.hiding.context
+      match: (\\)starthiding(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.hiding
-      escape: (?=\\stophiding\b)
+      escape: (?=\\stophiding(?!{{cs}}))
   verbatim.main.hiding:
     - meta_include_prototype: false
 
@@ -1001,7 +1008,7 @@ contexts:
     - include: heading.block
 
   heading.inline:
-    - match: (\\)part\b
+    - match: (\\)part(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1019,7 +1026,7 @@ contexts:
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
 
-    - match: (\\)(?:chapter|title)\b
+    - match: (\\)(?:chapter|title)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1037,7 +1044,7 @@ contexts:
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
 
-    - match: (\\)(?:section|subject)\b
+    - match: (\\)(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1055,7 +1062,7 @@ contexts:
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
 
-    - match: (\\)sub(?:section|subject)\b
+    - match: (\\)sub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1073,7 +1080,7 @@ contexts:
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
 
-    - match: (\\)subsub(?:section|subject)\b
+    - match: (\\)subsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1091,7 +1098,7 @@ contexts:
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
 
-    - match: (\\)subsubsub(?:section|subject)\b
+    - match: (\\)subsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1109,7 +1116,7 @@ contexts:
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
 
-    - match: (\\)subsubsubsub(?:section|subject)\b
+    - match: (\\)subsubsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1135,13 +1142,13 @@ contexts:
     # Okay, \quote{document} isn't technically a \quote{section}, but it can
     # be nice to give it some similar functionality, e.g.\ showing up in the
     # symbol list. There's not really any harm in adding it in here.
-    - match: (\\)startdocument\b
+    - match: (\\)startdocument(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list.document*/
   heading.block.b:
-    - match: (\\)startpart\b
+    - match: (\\)startpart(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1150,7 +1157,7 @@ contexts:
         - argument.list.part*/
 
 
-    - match: (\\)start(?:chapter|title)\b
+    - match: (\\)start(?:chapter|title)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1159,7 +1166,7 @@ contexts:
         - argument.list.chapter*/
 
 
-    - match: (\\)start(?:section|subject)\b
+    - match: (\\)start(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1168,7 +1175,7 @@ contexts:
         - argument.list.section*/
 
 
-    - match: (\\)startsub(?:section|subject)\b
+    - match: (\\)startsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1177,7 +1184,7 @@ contexts:
         - argument.list.subsection*/
 
 
-    - match: (\\)startsubsub(?:section|subject)\b
+    - match: (\\)startsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1186,7 +1193,7 @@ contexts:
         - argument.list.sub2section*/
 
 
-    - match: (\\)startsubsubsub(?:section|subject)\b
+    - match: (\\)startsubsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1195,7 +1202,7 @@ contexts:
         - argument.list.sub3section*/
 
 
-    - match: (\\)startsubsubsubsub(?:section|subject)\b
+    - match: (\\)startsubsubsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1210,12 +1217,12 @@ contexts:
     - include: file.module
 
   file.module:
-    - match: (\\)useluamodule\b
+    - match: (\\)useluamodule(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.control.import.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
       push: argument.list*/
-    - match: (\\)use(?:tex)?module\b
+    - match: (\\)use(?:tex)?module(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.control.import.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
@@ -1224,29 +1231,29 @@ contexts:
         - argument.list*/
         - argument.list*/
   file.project:
-    - match: (\\)(?:component|environment|product|project)\b
+    - match: (\\)(?:component|environment|product|project)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.list-or-name.file*/
-    - match: (\\)use(?:component|environment|product|project)\b
+    - match: (\\)use(?:component|environment|product|project)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.list.file*/
-    - match: (\\)start(?:component|environment|product|project)\b
+    - match: (\\)start(?:component|environment|product|project)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.list-or-name.this-file*/
   file.input:
-    - match: (\\)input\b
+    - match: (\\)input(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group-or-name.file*/
   link:
-    - match: (\\)useURL\b
+    - match: (\\)useURL(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1258,7 +1265,7 @@ contexts:
 
 
   process:
-    - match: (\\)(?:process(?:action|(firstaction|allactions)inset)|rawprocessaction)\b
+    - match: (\\)(?:process(?:action|(firstaction|allactions)inset)|rawprocessaction)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1280,7 +1287,7 @@ contexts:
       scope: variable.parameter.preprocessor.context
 
   definition.texdef:
-    - match: (\\)starttexdefinition\b
+    - match: (\\)starttexdefinition(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1291,12 +1298,12 @@ contexts:
         - argument.unexpanded*/
         - argument.global*/
         - argument.spaces*/
-    - match: (\\)stoptexdefinition\b
+    - match: (\\)stoptexdefinition(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.stop.context keyword.control.context
         1: punctuation.definition.backslash.context
   definition.define:
-    - match: (\\)define(?:expandable)?\b
+    - match: (\\)define(?:expandable)?(?!{{cs}})
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
@@ -1315,12 +1322,12 @@ contexts:
     - include: low-level.constant
 
   low-level.tex:
-    - match: (\\)(?:u?[egx]?|toks|(?:math)?char|count|dimen|(?:mu)?skip)def\b
+    - match: (\\)(?:u?[egx]?|toks|(?:math)?char|count|dimen|(?:mu)?skip)def(?!{{cs}})
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
       push: argument.control-sequence.definition*/
-    - match: (\\)(?:g|global)?let\b
+    - match: (\\)(?:g|global)?let(?!{{cs}})
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
@@ -1328,23 +1335,23 @@ contexts:
         - argument.equals*/
         - argument.control-sequence.definition*/
   low-level.modifier:
-    - match: (\\)(?:long|outer|global|unexpanded|immediate|the|normalprotected)\b
+    - match: (\\)(?:long|outer|global|unexpanded|immediate|the|normalprotected)(?!{{cs}})
       captures:
         0: meta.control-word.context storage.modifier.context
         1: punctuation.definition.backslash.context
   low-level.type:
-    - match: (\\)new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|write|marks|insert|language|fam(?:ily)?|help)\b
+    - match: (\\)new(?:mode|signal|count|systemmode|catcodetable|toks|dimen|box|if|conditional|macro|fraction|every|constant|(?:mu)?skip|read|write|marks|insert|language|fam(?:ily)?|help)(?!{{cs}})
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
       push: argument.control-sequence.definition*/
-    - match: (\\)setnew(?:constant|macro)\b
+    - match: (\\)setnew(?:constant|macro)(?!{{cs}})
       captures:
         0: meta.control-word.context storage.type.context
         1: punctuation.definition.backslash.context
       push: argument.control-sequence.definition*/
   low-level.constant:
-    - match: (\\)(?:zerocount|minus(?:one|two)|plus(?:one|two|three|four|five|six|seven|eight|nine|ten|sixteen|hundred|twohundred|cxxvii|cxxviii|cclv|cclvi|thousand|tenthousand|twentythousand)|zeroskip|(?:zero|one|halfa?|onebase|scaled|thousand)point|points|(?:up|down|right|left)rotationangle|empty|relax|maxdimen|maxcount|(?:zero|one)muskip|muquad|(?:escape|begingroup|endgroup|mathshift|alignment|endofline|parameter|superscript|subscript|ignore|space|letter|other|active|comment|invalid)catcode|(?:bottomlevel|simple|hbox|adjustedhbox|vbox|vtop|align|noalign|output|math|discretionary|insert|vcenter|mathchoice|semisimple|mathshift|mathleft|vadjust)groupcode|(?:char|cat|num|dim|odd|vmode|hmode|mmode|inner|void|hbox|vbox|x|eof|true|false|case|defined|csname|fontchar)ifcode|(?:batch|nonstop|scroll|errorstop)modecode|(?:char|hlist|vlist|rule|insert|mark|adjust|ligature|discretionary|whatsit|math|glue|kern|penalty|unset|maths)nodecode|emptytoks|voidbox|(?:big|med|small)skipamount)\b
+    - match: (\\)(?:zerocount|minus(?:one|two)|plus(?:one|two|three|four|five|six|seven|eight|nine|ten|sixteen|hundred|twohundred|cxxvii|cxxviii|cclv|cclvi|thousand|tenthousand|twentythousand)|zeroskip|(?:zero|one|halfa?|onebase|scaled|thousand)point|points|(?:up|down|right|left)rotationangle|empty|relax|maxdimen|maxcount|(?:zero|one)muskip|muquad|(?:escape|begingroup|endgroup|mathshift|alignment|endofline|parameter|superscript|subscript|ignore|space|letter|other|active|comment|invalid)catcode|(?:bottomlevel|simple|hbox|adjustedhbox|vbox|vtop|align|noalign|output|math|discretionary|insert|vcenter|mathchoice|semisimple|mathshift|mathleft|vadjust)groupcode|(?:char|cat|num|dim|odd|vmode|hmode|mmode|inner|void|hbox|vbox|x|eof|true|false|case|defined|csname|fontchar)ifcode|(?:batch|nonstop|scroll|errorstop)modecode|(?:char|hlist|vlist|rule|insert|mark|adjust|ligature|discretionary|whatsit|math|glue|kern|penalty|unset|maths)nodecode|emptytoks|voidbox|(?:big|med|small)skipamount)(?!{{cs}})
       captures:
         0: meta.control-word.context constant.language.context
         1: punctuation.definition.backslash.context
@@ -1377,60 +1384,40 @@ contexts:
   # What scope should alignment things have? I suppose \type{keyword} is the
   # best choice.
   control.word.alignment.adjacent:
-    - match: (\\)(?:[BCHNMR]C|N[BNDGL]|[BCFHLMTV]L|C[MT]|[EHR]Q|[ACFHLMNS]R)\b
+    - match: (\\)(?:[BCHNMR]C|N[BNDGL]|[BCFHLMTV]L|C[MT]|[EHR]Q|[ACFHLMNS]R)(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.operator.alignment.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
       push: argument.list.maybe-reference.adjacent*/
   control.word.conditional:
-    - match: (\\)(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|[[:alpha:]]*doif(?:else)?[[:alpha:]]*)\b
+    - match: (\\)(?:{{cs}}*doif{{cs}}*(?:else)?|{{cs}}*doif(?:else)?{{cs}}*)(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.control.conditional.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
       push: argument.lists-or-groups*/
     - include: control.word.conditional.common
   control.word.conditional.adjacent:
-    - match: (\\)(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|[[:alpha:]]*doif(?:else)?[[:alpha:]]*)\b
+    - match: (\\)(?:{{cs}}*doif{{cs}}*(?:else)?|{{cs}}*doif(?:else)?{{cs}}*)(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.control.conditional.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
       push: argument.lists-or-groups.adjacent*/
     - include: control.word.conditional.common
   control.word.conditional.common:
-    - match: (\\)(?:if[[:alpha:]]*|[[:alpha:]]*(?:true|false)|loop|repeat|then|or|else|fi)\b
+    - match: (\\)(?:if{{cs}}*|{{cs}}*(?:true|false)|loop|repeat|then|or|else|fi)(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.control.conditional.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
 
-  # # Experiment, I don't completely understand what naming conventions are used
-  # # in the \ConTeXt\ core. Perhaps these are reasonable definitions?
-  # control.word.protect.special:
-  #   - match: '(\\)c![[:alpha:]_@?!]*'
-  #     captures:
-  #       0: meta.control-word.context variable.parameter.context
-  #       1: punctuation.definition.backslash.context
-  #   - match: '(\\)v![[:alpha:]_@?!]*'
-  #     captures:
-  #       0: meta.control-word.context string.quoted.other.control-word.context
-  #       1: punctuation.definition.backslash.context
-  #   - match: '(\\)s![[:alpha:]_@?!]*'
-  #     captures:
-  #       0:
-  #         meta.control-word.context string.quoted.other.control-word.context
-  #       # constant.language.context
-  #       1: punctuation.definition.backslash.context
-
-  # The pattern \type{(\\)define[[:alpha:]]*} works remarkably well in almost
-  # all cases. However it is not foolproof. For the moment, we use the below
-  # work around for some known edge cases. If the number of edge cases grows
-  # significantly, then we will need to reconsider this approach.
+  # The pattern \type{(\\)define{{cs}}*} works remarkably well in almost
+  # all cases. Indeed, the only exception seems to be \type{\definedfont}.
   control.word.generic:
-    - match: (\\)start[[:alpha:]]*\b
+    - match: (\\)start{{cs}}*(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups*/
-    - match: (\\)define(?!dfont\b)[[:alpha:]]*\b
+    - match: (\\)define(?!dfont(?!{{cs}})){{cs}}*(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1438,18 +1425,18 @@ contexts:
         - argument.lists-or-groups*/
         - argument.list.definition*/
     - include: control.word.generic.common
-    - match: (\\)[[:alpha:]]+\b
+    - match: (\\){{cs}}+(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups*/
   control.word.generic.adjacent:
-    - match: (\\)start[[:alpha:]]*\b
+    - match: (\\)start{{cs}}*(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.adjacent*/
-    - match: (\\)define(?!dfont)[[:alpha:]_@?!]*\b
+    - match: (\\)define(?!dfont){{cs}}*(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1457,7 +1444,7 @@ contexts:
         - argument.lists-or-groups.adjacent*/
         - argument.list.definition.adjacent*/
     - include: control.word.generic.common
-    - match: (\\)[[:alpha:]]+\b
+    - match: (\\){{cs}}+(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1468,24 +1455,24 @@ contexts:
   # lists we can have assignments as in text||mode but everything else in math
   # mode. I think this is the better option overall.
   control.word.generic.math.adjacent:
-    - match: (\\)start[[:alpha:]]*\b
+    - match: (\\)start{{cs}}*(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.math.adjacent*/
     # - !control_sequence
-    #     name: define(?!dfont)[[:alpha:]]*
+    #     name: define(?!dfont(?!{{cs}})){{cs}}*
     #     push:
     #       - argument.lists-or-groups.math.adjacent*/,
     #       - argument.list.definition.adjacent*/,
     - include: control.word.generic.common
-    - match: (\\)[[:alpha:]]+\b
+    - match: (\\){{cs}}+(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.math.adjacent*/
   control.word.generic.common:
-    - match: (\\)stop[[:alpha:]]*\b
+    - match: (\\)stop{{cs}}*(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.stop.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1553,20 +1540,18 @@ contexts:
   scoping.group:
     - match: \{
       scope: punctuation.section.braces.begin.context
-      push: scoping.group.main/
-  scoping.group.main/:
-    - meta_scope: meta.braces.context
-    - include: generic.pop-at-group-end/
-    - include: main
+      push:
+        - meta_scope: meta.braces.context
+        - include: generic.pop-at-group-end/
+        - include: main
 
   scoping.group.math:
     - match: \{
       scope: punctuation.section.braces.begin.context
-      push: scoping.group.math.main/
-  scoping.group.math.main/:
-    - meta_scope: meta.braces.context
-    - include: generic.pop-at-group-end/
-    - include: math.main
+      push:
+        - meta_scope: meta.braces.context
+        - include: generic.pop-at-group-end/
+        - include: math.main
 
   scoping.group.Lua:
     - match: \{
@@ -1991,6 +1976,9 @@ contexts:
     - include: generic.pop-if-whitespace/
     - include: argument.list/
     - include: generic.pop/
+  argument.list.close*/:
+    - include: argument.list/
+    - include: generic.pop-if-no-close-list/
   argument.lists*/:
     - include: argument.list
     - include: generic.pop-if-no-nearby-list/
@@ -2071,6 +2059,9 @@ contexts:
   argument.list.buffer*/:
     - include: argument.list.buffer/
     - include: generic.pop-if-no-nearby-list/
+  argument.list.buffer.close*/:
+    - include: argument.list.buffer/
+    - include: generic.pop-if-no-close-list/
   argument.list.buffer.main/:
     - meta_scope: meta.brackets.context meta.environment.argument.context
     - meta_content_scope: meta.buffer-name.context
@@ -2330,7 +2321,7 @@ contexts:
     - match: '[wp]'
       scope: variable.parameter.table.context
     # push: argument.parens.with-dimensions*/
-    # The space is important, apparently.
+    # The space is important.
     - match: '([nNqQ])\s*([[:digit:]]+)\.([[:digit:]]+) '
       captures:
         1: variable.parameter.table.context
@@ -2338,7 +2329,7 @@ contexts:
         3: constant.numeric.context
     - match: (?:[mM]|[BISRT])
       scope: keyword.other.table.context
-    - match: '[f]'
+    - match: f
       scope: keyword.other.table.context
       push: argument.group*/
     - match: ([sojk])\s*([[:digit:]])
@@ -2378,19 +2369,19 @@ contexts:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - match: (?=\{)
       set: argument.group.file*/
-    - match: (?=.)
+    - match: ''
       set: argument.name.file*/
   argument.list-or-name.file*/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - match: (?=\[)
       set: argument.list.file*/
-    - match: (?=.)
+    - match: ''
       set: argument.name.file*/
   argument.list-or-name.this-file*/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - match: (?=\[)
       set: argument.list.this-file*/
-    - match: (?=.)
+    - match: ''
       set: argument.name.this-file*/
 
   argument.angles.verbatim/:
@@ -2406,7 +2397,7 @@ contexts:
       pop: true
 
   argument.delim.verbatim/:
-    - match: ({{verbatim}})
+    - match: ({{verbatim_delimiter}})
       scope: punctuation.section.delim.begin.context
       set: argument.delim.verbatim.main/
   argument.delim.verbatim.main/:
@@ -2428,9 +2419,9 @@ contexts:
   # Therefore, we do {\em not} count this as a (re)definition of
   # \type{\csname}. Similarly for some other common \TeX\ primitives.
   argument.control-word.definition/:
-    - match: (?=\\(?:csname|expandafter|fi|recurselevel)\b)
+    - match: (?=\\(?:csname|expandafter|fi|recurselevel)(?!{{cs}}))
       pop: true
-    - match: (\\)[[:alpha:]]+
+    - match: (\\){{cs}}+
       captures:
         0: meta.control-word.context entity.name.function.context
         1: punctuation.definition.backslash.context
@@ -2485,31 +2476,31 @@ contexts:
       scope: storage.modifier.n-tuple.context
       pop: true
   argument.name.def/:
-    - match: '{{setup}}+'
+    - match: '{{identifier}}+'
       scope: entity.name.function.context
       pop: true
   argument.name.file/:
-    - match: '{{setup}}+'
+    - match: '{{identifier}}+'
       scope: meta.file-name.context
       pop: true
   argument.name.this-file/:
-    - match: '{{setup}}+'
+    - match: '{{identifier}}+'
       scope: meta.this-file-name.context
       pop: true
 
   argument.name/:
-    - match: '{{setup}}+'
+    - match: '{{identifier}}+'
       pop: true
   argument.later-or-now/:
     - match: \b(?:later|now)\b
       scope: constant.language.context
       pop: true
   argument.name-not-used.def/:
-    - match: (?!used\b){{setup}}+
+    - match: (?!used\b){{identifier}}+
       scope: entity.name.function.context
       pop: true
   argument.name-not-uses.def/:
-    - match: (?!uses\b){{setup}}+
+    - match: (?!uses\b){{identifier}}+
       scope: entity.name.function.context
       pop: true
   argument.used/:
@@ -2584,6 +2575,10 @@ contexts:
   generic.pop-if-blank-line/:
     - match: (?=^\s*$\n?)
       pop: true
+  generic.pop-if-new-line/:
+    - match: (?=$\n?)
+    # - match: '$\n?'
+      pop: true
   generic.pop-if-whitespace/:
     - match: (?=\s)
       pop: true
@@ -2591,14 +2586,19 @@ contexts:
     - match: ''
       pop: true
   generic.pop-if-stop-match-two/:
-    - match: (?=\\stop\2\b)
+    - match: (?=\\stop\2(?!{{cs}}))
       pop: true
 
   generic.gobble-whitespace:
     - match: \s+
+  generic.gobble-nonline-whitespace:
+    - match: '[^\S\n]+'
   generic.gobble-whitespace-or-pop-if-blank-line/:
     - include: generic.pop-if-blank-line/
     - include: generic.gobble-whitespace
+  generic.gobble-whitespace-or-pop-if-new-line/:
+    - include: generic.pop-if-new-line/
+    - include: generic.gobble-nonline-whitespace
   generic.gobble-whitespace-or-pop/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - include: generic.pop/
@@ -2608,6 +2608,9 @@ contexts:
     - include: generic.pop-if-no-group/
   generic.pop-if-no-nearby-list/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop-if-no-list/
+  generic.pop-if-no-close-list/:
+    - include: generic.gobble-whitespace-or-pop-if-new-line/
     - include: generic.pop-if-no-list/
   generic.pop-if-no-nearby-list-or-group/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
@@ -2684,7 +2687,7 @@ contexts:
         - meta_content_scope: meta.value.context entity.name.label.reference.context
         - include: generic.list.pop-at-end-of-assignment/
         - include: main
-    - match: ({{key}}*)\s*(=)
+    - match: ({{argument_key}}*)\s*(=)
       captures:
         1: variable.parameter.context
         2: keyword.operator.assignment.context
@@ -2696,7 +2699,7 @@ contexts:
     - include: generic.assignment.comma
 
   generic.list.processors:
-    - match: ({{key}}*)\s*(=>)
+    - match: ({{argument_key}}*)\s*(=>)
       captures:
         1: variable.parameter.context
         2: keyword.operator.assignment.context
@@ -2708,7 +2711,7 @@ contexts:
     - include: generic.assignment.comma
 
   generic.group.assignments:
-    - match: ({{key}}*)\s*(=)
+    - match: ({{argument_key}}*)\s*(=)
       captures:
         1: variable.parameter.context
         2: keyword.operator.assignment.context

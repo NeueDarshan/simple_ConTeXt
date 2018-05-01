@@ -9,6 +9,6 @@
 \stopplaceformula
 ]]></content>
   <tabTrigger>pforma</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>place display math aligned</description>
 </snippet>

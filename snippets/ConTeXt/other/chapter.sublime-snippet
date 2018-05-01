@@ -7,6 +7,6 @@ $0
 \stopchapter
 ]]></content>
   <tabTrigger>chap</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop chapter</description>
 </snippet>

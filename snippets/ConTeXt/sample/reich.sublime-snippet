@@ -13,6 +13,6 @@
 \quotation{Stand by}
 ]]></content>
   <tabTrigger>reich</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

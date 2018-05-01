@@ -128,6 +128,16 @@
 	// a reasonable default) or `false` which turns
 	// line-breaking off entirely.
 	"current.pop_ups/line_break": 65,
+	// Set to `true` or `false`. Controls whether or not
+	// to align the equals signs in a key-value argument.
+	"current.pop_ups/match_indentation": false,
+	// Set to `true` or `false`. Suppose the value in a
+	// key-value argument is too long to fit on a line of
+	// length 'current.pop_ups/line_break'. When we break
+	// it up, this controls whether to place additional
+	// lines after the equals sign, or else simply at the
+	// start of the new line.
+	"current.pop_ups/hang_indentation": false,
 	// Whether to show pop-ups when you hover over a
 	// command name '\foo'. Should be `true` or `false`.
 	"current.pop_ups/methods/on_hover": true,

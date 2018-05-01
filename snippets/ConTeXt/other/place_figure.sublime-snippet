@@ -5,6 +5,6 @@
 \stopplacefigure
 ]]></content>
   <tabTrigger>pfig</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>place figure</description>
 </snippet>

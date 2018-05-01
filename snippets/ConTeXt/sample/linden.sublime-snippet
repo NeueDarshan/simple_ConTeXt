@@ -10,6 +10,6 @@ and because of its unique characteristics it has particular salience to the
 fortunes of many civilizations.
 ]]></content>
   <tabTrigger>linden</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

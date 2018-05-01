@@ -5,6 +5,6 @@
 \stopplace$1
 ]]></content>
   <tabTrigger>place</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>place float</description>
 </snippet>

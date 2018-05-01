@@ -14,6 +14,6 @@ to try to improve function by changing proteins. Proteins, you see, are the
 Mary Poppins of the cell. They are \quote{practically perfect in every way}.
 ]]></content>
   <tabTrigger>carey</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

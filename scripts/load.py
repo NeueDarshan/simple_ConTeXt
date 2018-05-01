@@ -1,19 +1,22 @@
 from . import html_css
 
 
-def format_template(n, align="<", min_=None):
+def format_template(n, align="<", min_=None, line_up=True):
+    if not line_up:
+        return "{text:%s}" % align
     if align == "^" and (not min_ or n > min_):
         return " {text:%s%s}" % (align, n - 1)
     return "{text:%s%s}" % (align, n)
 
 
-def normal_format(text, n, align="<", min_=None):
-    template = format_template(n, align=align, min_=min_)
+def normal_format(text, n, align="<", min_=None, line_up=True):
+    template = format_template(n, align=align, min_=min_, line_up=line_up)
     return template.format(text=text)
 
 
-def tagged_format(text, tag, n, align="<", min_=None):
-    init = format_template(n, align=align, min_=min_).format(text=text)
+def tagged_format(text, tag, n, align="<", min_=None, line_up=True):
+    temp = format_template(n, align=align, min_=min_, line_up=line_up)
+    init = temp.format(text=text)
     total = len(init)
     left = total - len(init.lstrip())
     right = total - len(init.rstrip())
@@ -64,6 +67,8 @@ class InterfaceLoader:
     def render(self, name, list_, **kwargs):
         self.kwargs = kwargs
         self.name = name
+        self.match_indentation = self.kwargs.get("match_indentation", True)
+        self.hang_indentation = self.kwargs.get("hang_indentation", True)
         parts = []
         files = set()
 
@@ -238,7 +243,7 @@ class InterfaceLoader:
         line_break = self.kwargs.get("line_break", 65)
         len_ = max(len(html_css.strip_tags(k)) for k in self._content)
 
-        if isinstance(line_break, int):
+        if isinstance(line_break, int) and not isinstance(line_break, bool):
             return self.docstring_dict_break(len_, line_break)
         return self.docstring_dict_nobreak(len_)
 
@@ -249,19 +254,32 @@ class InterfaceLoader:
 
         while keys:
             k = keys.pop()
+            k_len = len(k)
             v = self._content[k]
-            lines.append(self.assignments_guide(len_, key=k, num=init))
+            lines.append(
+                self.assignments_guide(
+                    len_ if self.match_indentation else k_len, key=k, num=init,
+                )
+            )
             init = False
 
             if isinstance(v, str):
                 lines[-1] += " " + v
             elif isinstance(v, list):
                 for s in nice_sorted(v):
-                    next_len = \
-                        len(html_css.strip_tags(lines[-1] + s)) + 1
+                    next_len = len(html_css.strip_tags(lines[-1] + s)) + 1
                     if next_len > line_break:
-                        lines.append(self.assignments_guide(len_, num=init))
-                        lines[-1] += " " + s
+                        if self.hang_indentation:
+                            lines.append(
+                                self.assignments_guide(
+                                    len_ if self.match_indentation else k_len,
+                                    num=init,
+                                )
+                            )
+                            lines[-1] += " " + s
+                        else:
+                            lines.append(self.assignments_guide(0, num=init))
+                            lines[-1] += s
                     else:
                         lines[-1] += " " + s
 
@@ -284,5 +302,7 @@ class InterfaceLoader:
         start = self.guide(num=num)
         if key:
             len_ += len(key) - len(html_css.strip_tags(key))
-            return start + tagged_format(key, "key", len_) + " <equ>=</equ>"
+            text = \
+                tagged_format(key, "key", len_, line_up=self.match_indentation)
+            return start + text + " <equ>=</equ>"
         return start + (" " * (len_ + 2))

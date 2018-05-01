@@ -152,6 +152,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             tolerant=True,
             quiet=True,
             prefix="[simple_ConTeXt] ",
+            start_stop=False,
         )
         stop_msg = (
             '[simple_ConTeXt] finished generating interface files (for "{}") '

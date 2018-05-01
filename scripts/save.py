@@ -58,10 +58,12 @@ class InterfaceSaver:
         prefix="",
         timeout=10,
         namespace=None,
+        start_stop=False,
     ):
         self.path = path
         self.quiet = quiet
         self.prefix = prefix
+        self.start_stop = start_stop
         self.namespace = NAMESPACE if namespace is None else namespace
         self.tolerant = tolerant
         self.timeout = timeout
@@ -256,11 +258,12 @@ class InterfaceSaver:
             end = self.clean_name(attrib.get("end", "stop") + name)
             node_copy = copy.deepcopy(node)
             args = self.find(node_copy, "arguments")
-            if args:
-                args.append(self.dots_node())
-                args.append(self.delim_node(end))
-            else:
-                node_copy.append(self.tail_args_node(end))
+            if self.start_stop:
+                if args:
+                    args.append(self.dots_node())
+                    args.append(self.delim_node(end))
+                else:
+                    node_copy.append(self.tail_args_node(end))
             self.do_command_aux_i(begin, node_copy)
             # We could signal primitives in a better way. For now they are
             # implicitly signalled by setting file equal to \type{None}.

@@ -5,6 +5,6 @@
 \stop${1:environment}
 ]]></content>
   <tabTrigger>start</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop</description>
 </snippet>

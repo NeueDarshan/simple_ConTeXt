@@ -20,6 +20,6 @@ beginning endless forms most beautiful and most wonderful have been, and are
 being, evolved.
 ]]></content>
   <tabTrigger>darwin</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

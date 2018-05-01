@@ -12,6 +12,6 @@
 \eTABLE
 ]]></content>
   <tabTrigger>tabn</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>natural table</description>
 </snippet>

@@ -10,6 +10,6 @@ their PC's tricks, and think that a widely||praised program, called up on the
 screen, will make everything automatic from now on.
 ]]></content>
   <tabTrigger>zapf</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

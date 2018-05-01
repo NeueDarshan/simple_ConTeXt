@@ -6,6 +6,6 @@ vision --- which allows these primates to detect food, mates, and danger with
 visual cues --- has reduced their reliance on the sense of smell.
 ]]></content>
   <tabTrigger>carrol</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

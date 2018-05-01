@@ -27,11 +27,14 @@ do
   local all_space = space + line
   local spaces = space^0
   local all_spaces = all_space^0
-  local ident = (letter + number) * (letter + number + punct)^0
+  local al_num = letter + number
+  local al_num_pun = al_num + punct
+  -- local identifier = al_num * al_num_pun^0
+  local identifier = al_num_pun^1
   local integer = number^1
-  local type_ = ident
-  local key = ident
-  local name = ident
+  local entry_type = identifier
+  local entry_key = identifier
+  local entry_name = identifier
   local function not_(x) return 1 - x end
 
   -- Similar to \type{P}, but ignores case.
@@ -50,7 +53,7 @@ do
   local brace_no_content = P { l_brace * (V(1) + not_(brace))^0 * r_brace }
 
   -- We take some care to keep track of abbreviations.
-  local string_name = ident
+  local string_name = identifier
   local function indicate_string(x) return {x} end
 
   local content_part =
@@ -61,12 +64,12 @@ do
 
 
   local entry_start =
-    at * C(type_) * all_spaces * l_brace * all_spaces * C(key) * all_spaces *
-    comma
+    at * C(entry_type) * all_spaces * l_brace * all_spaces * C(entry_key) *
+    all_spaces * comma
 
   local entry_tag =
     Ct(
-      C(name) * all_spaces * equal * all_spaces * content *
+      C(entry_name) * all_spaces * equal * all_spaces * content *
       (all_spaces * comma)^-1
     )
 

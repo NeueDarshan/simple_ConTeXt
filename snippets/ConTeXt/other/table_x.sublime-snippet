@@ -12,6 +12,6 @@
 \stopxtable
 ]]></content>
   <tabTrigger>tabx</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>xtable</description>
 </snippet>

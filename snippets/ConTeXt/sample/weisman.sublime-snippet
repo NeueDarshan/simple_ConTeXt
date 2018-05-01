@@ -7,6 +7,6 @@ plants and animals, where they're intended to do exactly the same thing: copy
 themselves, over and over.
 ]]></content>
   <tabTrigger>weisman</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

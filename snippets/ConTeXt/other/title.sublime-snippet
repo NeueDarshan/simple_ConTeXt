@@ -7,6 +7,6 @@ $0
 \stoptitle
 ]]></content>
   <tabTrigger>title</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop title</description>
 </snippet>

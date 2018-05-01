@@ -7,6 +7,6 @@ $0
 \stopsubsection
 ]]></content>
   <tabTrigger>sec2</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop subsection</description>
 </snippet>

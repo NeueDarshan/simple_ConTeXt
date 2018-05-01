@@ -5,6 +5,6 @@
 \stopitem
 ]]></content>
   <tabTrigger>item</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop item</description>
 </snippet>

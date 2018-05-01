@@ -7,6 +7,6 @@ $0
 \stopsubject
 ]]></content>
   <tabTrigger>sub</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop subject</description>
 </snippet>

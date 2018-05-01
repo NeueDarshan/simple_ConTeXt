@@ -6,6 +6,6 @@ the lines, and set your letter|-|spacing closely. Now {\em that} is the way to
 make the script shine!
 ]]></content>
   <tabTrigger>khatt</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

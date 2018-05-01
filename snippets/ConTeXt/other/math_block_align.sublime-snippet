@@ -7,6 +7,6 @@
 \stopformula
 ]]></content>
   <tabTrigger>forma</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>display math aligned</description>
 </snippet>

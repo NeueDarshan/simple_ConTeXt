@@ -12,6 +12,6 @@ realised in nature and that we necessarily live in one of the few where the
 constants are \quote{just right}, is surely a fascinating idea worth pursuing.
 ]]></content>
   <tabTrigger>waltham</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

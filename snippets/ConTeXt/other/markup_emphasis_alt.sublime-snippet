@@ -3,6 +3,6 @@
 \emph{$1} $0
 ]]></content>
   <tabTrigger>emph</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>emphasis</description>
 </snippet>

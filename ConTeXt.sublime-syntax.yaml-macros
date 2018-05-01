@@ -12,12 +12,13 @@ file_extensions:
 scope: text.tex.context
 first_line_match:
   "^\\s*(?:%.*?macros\\s*=\\s*mk(?:[vx]i)|\\\\(?:start(?:text|document)|\
-   usemodule|setup[[:alpha:]]+))\\b"
+   usemodule|setup{{cs}}+))\\b"
 variables:
-  key: '[[:alpha:][:digit:].\-\+_:;!\?<>@&/]'
-  setup: '{{key}}'
-  verbatim: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
-  variable: '[[:alpha:]]'
+  argument_key: '[[:alpha:][:digit:].\-\+_:;!\?<>@&/]'
+  identifier: '{{argument_key}}'
+  verbatim_delimiter: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
+  math_variable: '[[:alpha:]]'
+  cs: '[[:alpha:]]'
 
 
 contexts:
@@ -196,7 +197,7 @@ contexts:
       set: math.main.pop-if-stopformula.aux/
   math.main.pop-if-stopformula.aux/:
     - meta_content_scope: meta.environment.math.context
-    - match: '(?=\\stopformula\b)'
+    - match: '(?=\\stopformula(?!{{cs}}))'
       pop: true
     - include: math.main
   math.main.pop-if-stop-match-two/:
@@ -218,7 +219,7 @@ contexts:
     - include: generic.real
     - match: '[∞π]'
       scope: constant.other.math.context
-    - match: '(\\)(?:infty|pi)\b'
+    - match: '(\\)(?:infty|pi)(?!{{cs}})'
       captures:
         0: meta.control-word.context constant.other.math.context
         1: punctuation.definition.backslash.context
@@ -227,9 +228,9 @@ contexts:
   math.operator:
     - match: '[\+\-/\^_=<>]'
       scope: keyword.operator.context
-    - match: '[∈∉∼≁×]'
+    - match: '[∈∉∼≁×≠]'
       scope: keyword.operator.context
-    - match: '(\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)\b'
+    - match: '(\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)(?!{{cs}})'
       captures:
         0: meta.control-word.context keyword.operator.context
         1:
@@ -240,7 +241,7 @@ contexts:
     # I think \type{variable.other} makes the most sense logically. However,
     # in my experience few colour schemes style this scope. So let's use
     # \type{string} instead.
-    - match: '{{variable}}'
+    - match: '{{math_variable}}'
       scope: string.unquoted.math.context
 
   # In math mode, control sequences with arguments are tricky. Consider the
@@ -309,7 +310,7 @@ contexts:
           - include: math.main.cases/
 
   math.cases.pop-at-end/:
-    - match: '(?=\\stopcases\b)'
+    - match: '(?=\\stopcases(?!{{cs}}))'
       pop: true
   math.cases.pop-at-newrow/:
     - !control_sequence_align
@@ -333,13 +334,13 @@ contexts:
         embed: Lua.block.major.main
         embed_scope:
           meta.environment.lua.major.context source.lua.embedded.context
-        escape: (?=\s*\\stop\2)
+        escape: (?=\s*\\stop\2(?!{{cs}}))
     - !control_sequence_start
         name: (lua)
         embed: Lua.block.minor.main
         embed_scope:
           meta.environment.lua.minor.context source.lua.embedded.context
-        escape: (?=\s*\\stop\2)
+        escape: (?=\s*\\stop\2(?!{{cs}}))
 
   Lua.inline:
     - !control_sequence
@@ -426,7 +427,7 @@ contexts:
       - !control_sequence_start
           name: !argument value
           embed: MetaFun.main.a
-          escape: !format '(?=\\stop{value}\b)'
+          escape: !format '(?=\\stop{value}(?!{{cs}}))'
   MetaFun.block.b:
     !foreach
       - - staticMPfigure
@@ -436,17 +437,17 @@ contexts:
       - !control_sequence_start
           name: !argument value
           embed: MetaFun.main.b
-          escape: !format '(?=\\stop{value}\b)'
+          escape: !format '(?=\\stop{value}(?!{{cs}}))'
   MetaFun.block.c:
     - !control_sequence_start
         name: MPinclusions
         embed: MetaFun.main.c
-        escape: !format '(?=\\stopMPinclusions\b)'
+        escape: !format '(?=\\stopMPinclusions(?!{{cs}}))'
   MetaFun.block.d:
     - !control_sequence_start
         name: MPpage
         embed: MetaFun.main.d
-        escape: !format '(?=\\stopMPpage\b)'
+        escape: !format '(?=\\stopMPpage(?!{{cs}}))'
 
   MetaFun.main.a:
     - match: ''
@@ -498,11 +499,11 @@ contexts:
     - !control_sequence_start
         name: JScode
         embed: JavaScript.main.a
-        escape: '(?=\\stopJScode\b)'
+        escape: '(?=\\stopJScode(?!{{cs}}))'
     - !control_sequence_start
         name: JSpreamble
         embed: JavaScript.main.b
-        escape: '(?=\\stopJSpreamble\b)'
+        escape: '(?=\\stopJSpreamble(?!{{cs}}))'
 
   JavaScript.main.a:
     - match: ''
@@ -708,7 +709,7 @@ contexts:
       - !control_sequence_start
           name: !argument value
           embed: !format 'verbatim.main.{value}'
-          escape: !format '(?=\\stop{value}\b)'
+          escape: !format '(?=\\stop{value}(?!{{cs}}))'
 
   # For fun, we could try and get stuff like
   # \type{\starttyping[option=lua] ... \stoptyping} to actually work. I'm
@@ -740,28 +741,34 @@ contexts:
   verbatim.main.typing.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: markup.raw.block.context
   verbatim.main.TEX.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: text.tex.embedded.context
         - include: scope:text.tex
   verbatim.main.LUA.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: source.lua.embedded.context
         - include: scope:source.lua
   verbatim.main.XML.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: text.xml.embedded.context
         - include: scope:text.xml
-  # I don't know what PARSEDXML is, I assume it is some form of XML.
+  # I don't know what \type{PARSEDXML} is; I assume it is some form of
+  # \type{XML}.
   verbatim.main.PARSEDXML.aux/:
     - include: verbatim.main.XML.aux/
   verbatim.main.MP.aux/:
     - match: ''
       set:
+        - meta_include_prototype: false
         - meta_scope: source.metapost.embedded.context
         - include: scope:source.metapost
 
@@ -770,7 +777,7 @@ contexts:
     - !control_sequence_start
         name: buffer
         embed: verbatim.main.buffer/
-        escape: '(?=\\stopbuffer\b)'
+        escape: '(?=\\stopbuffer(?!{{cs}}))'
   verbatim.main.buffer/:
     - !verbatim_helper
         name: buffer
@@ -778,15 +785,15 @@ contexts:
   verbatim.main.buffer.aux/:
     - match: ''
       set:
-        - meta_scope: meta.environment.buffer.context markup.raw.block.context
         - meta_include_prototype: false
+        - meta_scope: meta.environment.buffer.context markup.raw.block.context
 
   verbatim.hiding:
     - !control_sequence_start
         name: hiding
         embed: verbatim.main.hiding
         embed_scope: comment.block.hiding.context
-        escape: '(?=\\stophiding\b)'
+        escape: '(?=\\stophiding(?!{{cs}}))'
   verbatim.main.hiding:
     - meta_include_prototype: false
 
@@ -981,7 +988,7 @@ contexts:
          (?:batch|nonstop|scroll|errorstop)modecode|(?:char|hlist|vlist|rule|\
          insert|mark|adjust|ligature|discretionary|whatsit|math|glue|kern|\
          penalty|unset|maths)nodecode|emptytoks|voidbox|(?:big|med|small)\
-         skipamount)\\b"
+         skipamount)(?!{{cs}})"
       captures:
         0: meta.control-word.context constant.language.context
         1: punctuation.definition.backslash.context
@@ -1021,70 +1028,50 @@ contexts:
   control.word.conditional:
     - !control_sequence_conditional
         name:
-          "(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
-           [[:alpha:]]*doif(?:else)?[[:alpha:]]*)"
+          "(?:{{cs}}*doif{{cs}}*(?:else)?|\
+           {{cs}}*doif(?:else)?{{cs}}*)"
         push: argument.lists-or-groups*/
     - include: control.word.conditional.common
   control.word.conditional.adjacent:
     - !control_sequence_conditional
         name:
-          "(?:[[:alpha:]]*doif[[:alpha:]]*(?:else)?|\
-           [[:alpha:]]*doif(?:else)?[[:alpha:]]*)"
+          "(?:{{cs}}*doif{{cs}}*(?:else)?|\
+           {{cs}}*doif(?:else)?{{cs}}*)"
         push: argument.lists-or-groups.adjacent*/
     - include: control.word.conditional.common
   control.word.conditional.common:
     - !control_sequence_conditional
         name:
-          "(?:if[[:alpha:]]*|[[:alpha:]]*(?:true|false)|loop|repeat|then|\
+          "(?:if{{cs}}*|{{cs}}*(?:true|false)|loop|repeat|then|\
            or|else|fi)"
 
-  # # Experiment, I don't completely understand what naming conventions are used
-  # # in the \ConTeXt\ core. Perhaps these are reasonable definitions?
-  # control.word.protect.special:
-  #   - match: '(\\)c![[:alpha:]_@?!]*'
-  #     captures:
-  #       0: meta.control-word.context variable.parameter.context
-  #       1: punctuation.definition.backslash.context
-  #   - match: '(\\)v![[:alpha:]_@?!]*'
-  #     captures:
-  #       0: meta.control-word.context string.quoted.other.control-word.context
-  #       1: punctuation.definition.backslash.context
-  #   - match: '(\\)s![[:alpha:]_@?!]*'
-  #     captures:
-  #       0:
-  #         meta.control-word.context string.quoted.other.control-word.context
-  #       # constant.language.context
-  #       1: punctuation.definition.backslash.context
-
-  # The pattern \type{(\\)define[[:alpha:]]*} works remarkably well in almost
-  # all cases. However it is not foolproof. For the moment, we use the below
-  # work around for some known edge cases. If the number of edge cases grows
-  # significantly, then we will need to reconsider this approach.
+  # The pattern \type{(\\)define{{cs}}*} works remarkably well in almost
+  # all cases. Indeed, the only exception seems to be \type{\definedfont}.
   control.word.generic:
     - !control_sequence_start
-        name: '[[:alpha:]]*'
+        name: '{{cs}}*'
         push: argument.lists-or-groups*/
     - !control_sequence
-        name: define(?!dfont\b)[[:alpha:]]*
+        name: define(?!dfont(?!{{cs}})){{cs}}*
         push:
           - argument.lists-or-groups*/
           - argument.list.definition*/
     - include: control.word.generic.common
     - !control_sequence
-        name: '[[:alpha:]]+'
+        name: '{{cs}}+'
         push: argument.lists-or-groups*/
   control.word.generic.adjacent:
     - !control_sequence_start
-        name: '[[:alpha:]]*'
+        name: '{{cs}}*'
         push: argument.lists-or-groups.adjacent*/
     - !control_sequence
-        name: define(?!dfont)[[:alpha:]_@?!]*
+        name: define(?!dfont){{cs}}*
         push:
           - argument.lists-or-groups.adjacent*/
           - argument.list.definition.adjacent*/
     - include: control.word.generic.common
     - !control_sequence
-        name: '[[:alpha:]]+'
+        name: '{{cs}}+'
         push: argument.lists-or-groups.adjacent*/
   # Hmm, how should we handle arguments? The context
   # \type{argument.lists-or-groups.math.adjacent*/} goes for a compromise:
@@ -1093,20 +1080,20 @@ contexts:
   # mode. I think this is the better option overall.
   control.word.generic.math.adjacent:
     - !control_sequence_start
-        name: '[[:alpha:]]*'
+        name: '{{cs}}*'
         push: argument.lists-or-groups.math.adjacent*/
     # - !control_sequence
-    #     name: define(?!dfont)[[:alpha:]]*
+    #     name: define(?!dfont(?!{{cs}})){{cs}}*
     #     push:
     #       - argument.lists-or-groups.math.adjacent*/,
     #       - argument.list.definition.adjacent*/,
     - include: control.word.generic.common
     - !control_sequence
-        name: '[[:alpha:]]+'
+        name: '{{cs}}+'
         push: argument.lists-or-groups.math.adjacent*/
   control.word.generic.common:
     - !control_sequence_stop
-        name: '[[:alpha:]]*'
+        name: '{{cs}}*'
 
   control.symbol:
     - match: '(\\)(?:[^[:alpha:]]|$)'
@@ -1171,20 +1158,18 @@ contexts:
   scoping.group:
     - match: '\{'
       scope: punctuation.section.braces.begin.context
-      push: scoping.group.main/
-  scoping.group.main/:
-    - meta_scope: meta.braces.context
-    - include: generic.pop-at-group-end/
-    - include: main
+      push:
+        - meta_scope: meta.braces.context
+        - include: generic.pop-at-group-end/
+        - include: main
 
   scoping.group.math:
     - match: '\{'
       scope: punctuation.section.braces.begin.context
-      push: scoping.group.math.main/
-  scoping.group.math.main/:
-    - meta_scope: meta.braces.context
-    - include: generic.pop-at-group-end/
-    - include: math.main
+      push:
+        - meta_scope: meta.braces.context
+        - include: generic.pop-at-group-end/
+        - include: math.main
 
   scoping.group.Lua:
     - match: '\{'
@@ -1483,6 +1468,9 @@ contexts:
     - include: generic.pop-if-whitespace/
     - include: argument.list/
     - include: generic.pop/
+  argument.list.close*/:
+    - include: argument.list/
+    - include: generic.pop-if-no-close-list/
   argument.lists*/:
     - include: argument.list
     - include: generic.pop-if-no-nearby-list/
@@ -1563,6 +1551,9 @@ contexts:
   argument.list.buffer*/:
     - include: argument.list.buffer/
     - include: generic.pop-if-no-nearby-list/
+  argument.list.buffer.close*/:
+    - include: argument.list.buffer/
+    - include: generic.pop-if-no-close-list/
   argument.list.buffer.main/:
     - meta_scope: meta.brackets.context meta.environment.argument.context
     - meta_content_scope: meta.buffer-name.context
@@ -1718,7 +1709,7 @@ contexts:
     - match: '[wp]'
       scope: variable.parameter.table.context
     # push: argument.parens.with-dimensions*/
-    # The space is important, apparently.
+    # The space is important.
     - match: '([nNqQ])\s*([[:digit:]]+)\.([[:digit:]]+) '
       captures:
         1: variable.parameter.table.context
@@ -1726,7 +1717,7 @@ contexts:
         3: constant.numeric.context
     - match: '(?:[mM]|[BISRT])'
       scope: keyword.other.table.context
-    - match: '[f]'
+    - match: 'f'
       scope: keyword.other.table.context
       push: argument.group*/
     - match: '([sojk])\s*([[:digit:]])'
@@ -1766,19 +1757,19 @@ contexts:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - match: '(?=\{)'
       set: argument.group.file*/
-    - match: '(?=.)'
+    - match: ''
       set: argument.name.file*/
   argument.list-or-name.file*/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - match: '(?=\[)'
       set: argument.list.file*/
-    - match: '(?=.)'
+    - match: ''
       set: argument.name.file*/
   argument.list-or-name.this-file*/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - match: '(?=\[)'
       set: argument.list.this-file*/
-    - match: '(?=.)'
+    - match: ''
       set: argument.name.this-file*/
 
   argument.angles.verbatim/:
@@ -1794,7 +1785,7 @@ contexts:
       pop: true
 
   argument.delim.verbatim/:
-    - match: '({{verbatim}})'
+    - match: '({{verbatim_delimiter}})'
       scope: punctuation.section.delim.begin.context
       set: argument.delim.verbatim.main/
   argument.delim.verbatim.main/:
@@ -1816,9 +1807,9 @@ contexts:
   # Therefore, we do {\em not} count this as a (re)definition of
   # \type{\csname}. Similarly for some other common \TeX\ primitives.
   argument.control-word.definition/:
-    - match: '(?=\\(?:csname|expandafter|fi|recurselevel)\b)'
+    - match: '(?=\\(?:csname|expandafter|fi|recurselevel)(?!{{cs}}))'
       pop: true
-    - match: '(\\)[[:alpha:]]+'
+    - match: '(\\){{cs}}+'
       captures:
         0: meta.control-word.context entity.name.function.context
         1: punctuation.definition.backslash.context
@@ -1875,31 +1866,31 @@ contexts:
       scope: storage.modifier.n-tuple.context
       pop: true
   argument.name.def/:
-    - match: '{{setup}}+'
+    - match: '{{identifier}}+'
       scope: entity.name.function.context
       pop: true
   argument.name.file/:
-    - match: '{{setup}}+'
+    - match: '{{identifier}}+'
       scope: meta.file-name.context
       pop: true
   argument.name.this-file/:
-    - match: '{{setup}}+'
+    - match: '{{identifier}}+'
       scope: meta.this-file-name.context
       pop: true
 
   argument.name/:
-    - match: '{{setup}}+'
+    - match: '{{identifier}}+'
       pop: true
   argument.later-or-now/:
     - match: '\b(?:later|now)\b'
       scope: constant.language.context
       pop: true
   argument.name-not-used.def/:
-    - match: '(?!used\b){{setup}}+'
+    - match: '(?!used\b){{identifier}}+'
       scope: entity.name.function.context
       pop: true
   argument.name-not-uses.def/:
-    - match: '(?!uses\b){{setup}}+'
+    - match: '(?!uses\b){{identifier}}+'
       scope: entity.name.function.context
       pop: true
   argument.used/:
@@ -1974,6 +1965,10 @@ contexts:
   generic.pop-if-blank-line/:
     - match: '(?=^\s*$\n?)'
       pop: true
+  generic.pop-if-new-line/:
+    # - match: '$\n?'
+    - match: '(?=$\n?)'
+      pop: true
   generic.pop-if-whitespace/:
     - match: '(?=\s)'
       pop: true
@@ -1981,14 +1976,19 @@ contexts:
     - match: ''
       pop: true
   generic.pop-if-stop-match-two/:
-    - match: '(?=\\stop\2\b)'
+    - match: '(?=\\stop\2(?!{{cs}}))'
       pop: true
 
   generic.gobble-whitespace:
     - match: '\s+'
+  generic.gobble-nonline-whitespace:
+    - match: '[^\S\n]+'
   generic.gobble-whitespace-or-pop-if-blank-line/:
     - include: generic.pop-if-blank-line/
     - include: generic.gobble-whitespace
+  generic.gobble-whitespace-or-pop-if-new-line/:
+    - include: generic.pop-if-new-line/
+    - include: generic.gobble-nonline-whitespace
   generic.gobble-whitespace-or-pop/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
     - include: generic.pop/
@@ -1998,6 +1998,9 @@ contexts:
     - include: generic.pop-if-no-group/
   generic.pop-if-no-nearby-list/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/
+    - include: generic.pop-if-no-list/
+  generic.pop-if-no-close-list/:
+    - include: generic.gobble-whitespace-or-pop-if-new-line/
     - include: generic.pop-if-no-list/
   generic.pop-if-no-nearby-list-or-group/:
     - include: generic.gobble-whitespace-or-pop-if-blank-line/

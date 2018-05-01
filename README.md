@@ -202,8 +202,8 @@ support for ConTeXt start/stop commands.
 }
 ```
 
-The file `context_environments.py` simply checks that the start and stop tags
-match.
+The file `context_environments.py` pointed to here under the `plugin_library`
+key simply checks that the start and stop tags match.
 
 ## Builders
 
@@ -300,7 +300,8 @@ names are the same.)
 
 ## Future Features
 
-Features I would like to have, but may be hard to implement or lower priority.
+A couple of features that I think would be nice to have. Of course, we can go
+and on imagining things to add/improve.
 
 - Extend the `key=val` auto-completion stuff to include value suggestions.
 - Add support for multi file documents. This is not something I do very much,

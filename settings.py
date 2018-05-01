@@ -28,6 +28,8 @@ CURRENT_SETTINGS = {
     "path",
     "PDF/viewer",
     "pop_ups/line_break",
+    "pop_ups/match_indentation",
+    "pop_ups/hang_indentation",
     "pop_ups/methods/on_hover",
     "pop_ups/methods/on_modified",
     "pop_ups/show_copy_pop_up",

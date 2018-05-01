@@ -171,6 +171,8 @@ class SimpleContextMacroSignatureEventListener(
             k.split("/")[-1]: self.get_setting("pop_ups/{}".format(k))
             for k in {
                 "line_break",
+                "match_indentation",
+                "hang_indentation",
                 "methods/on_hover",
                 "methods/on_modified",
                 "show_copy_pop_up",
@@ -269,6 +271,8 @@ class SimpleContextMacroSignatureEventListener(
             if not isinstance(var, dict):
                 continue
             content = var.get("con")
+            if isinstance(content, dict):
+                content = [content]
             if not isinstance(content, list) or not content:
                 continue
             for arg in content:

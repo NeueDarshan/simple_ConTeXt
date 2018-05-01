@@ -7,6 +7,6 @@ $0
 \stopdocument
 ]]></content>
   <tabTrigger>doc</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop document</description>
 </snippet>

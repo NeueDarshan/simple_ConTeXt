@@ -12,6 +12,6 @@ glean, synopsize, winnow the wheat from the chaff and separate the sheep from
 the goats.
 ]]></content>
   <tabTrigger>tufte</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

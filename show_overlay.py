@@ -1,4 +1,3 @@
-import collections
 import re
 
 import sublime
@@ -8,8 +7,16 @@ from .scripts import scopes
 
 
 SELECTORS = {
-    "reference": (
-        ("¶ ", "", scopes.REFERENCE),
+    "buffer_name": (
+        ("🗌 ", "", scopes.BUFFER),
+    ),
+    "definition": (
+        # ("→" , "", scopes.DEFINE),
+        ("→ ", "", scopes.DEFINE_TEX),
+        ("→ ", "", scopes.DEFINE_CONTEXT),
+    ),
+    "file_name": (
+        ("🔗 ", "", scopes.FILE_NAME),
     ),
     "heading": (
         # ("§ ", "  " * 0, scopes.HEADING),
@@ -23,13 +30,8 @@ SELECTORS = {
         ("§ ", "  " * 5, scopes.SUB3SECTION),
         ("§ ", "  " * 6, scopes.SUB4SECTION),
     ),
-    "definition": (
-        # ("→" , "", scopes.DEFINE),
-        ("→ ", "", scopes.DEFINE_TEX),
-        ("→ ", "", scopes.DEFINE_CONTEXT),
-    ),
-    "file_name": (
-        ("🔗 ", "", scopes.FILE_NAME),
+    "reference": (
+        ("¶ ", "", scopes.REFERENCE),
     ),
 }
 
@@ -97,7 +99,10 @@ class SimpleContextUnHighlightSelectionCommand(sublime_plugin.TextCommand):
 
 class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
-        return scopes.is_context(self.view)
+        return (
+            scopes.is_context(self.window.active_view())
+            if self.window else False
+        )
 
     # For our use, we give a descriptive name as a \type{selector}. But you can
     # override this by providing a \type{selector_raw} instead.
@@ -133,17 +138,12 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
             data = []
             for pre, space, sel in SELECTORS[selector]:
                 for region in self.view.find_by_selector(sel):
-                    data.append(
-                        (
-                            region.begin(),
-                            region.end(),
-                            (pre if prefix else "") + space +
-                            clean(self.view.substr(region)),
-                        )
-                    )
+                    text = pre if prefix else ""
+                    text += space + clean(self.view.substr(region))
+                    data.append((region.begin(), region.end(), text))
             data = sorted(data, key=lambda tup: tup[0])
-            self.matches = [tup[:2] for tup in data]
             matches = [tup[2] for tup in data]
+            self.matches = [tup[:2] for tup in data]
         else:
             return
 
@@ -163,7 +163,7 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
                 index = max(seq, key=self.key_function(mid)) if seq else 0
             else:
                 index = 0
-        elif isinstance(sel_index, int):
+        elif isinstance(sel_index, int) and not isinstance(sel_index, bool):
             index = sel_index
         else:
             index = 0
@@ -182,6 +182,7 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
         self.view = self.window.active_view()
         if not self.view:
             return
+
         # self.view.run_command("simple_context_un_highlight_selection")
         if 0 <= index < len(self.matches):
             tup = self.matches[index]
@@ -215,131 +216,147 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
 
 
 class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
-    last_choice = 0
+    prev_sels = None
 
     def is_visible(self):
-        return scopes.is_context(self.view)
+        return (
+            scopes.is_context(self.window.active_view())
+            if self.window else False
+        )
+
+    def update_view(self):
+        window = self.window
+        if window:
+            view = window.active_view()
+            if view:
+                self.view = view
+            else:
+                self.view = None
+        else:
+            self.view = None
 
     def run(
         self,
         selectors=None,
-        active_selectors=None,
-        selectors_raw=None,
-        active_selectors_raw=None,
+        default_selectors=None,
+        remember_previous_selectors=True,
         on_choose=None,
         prefix=True,
         selected_index="closest",
     ):
-        selectors = SELECTORS.keys() if selectors is None else selectors
-        selectors_raw = () if selectors_raw is None else selectors_raw
-        active_selectors = \
-            SELECTORS.keys() if active_selectors is None else active_selectors
-        active_selectors_raw = \
-            () if active_selectors_raw is None else active_selectors_raw
-
-        self.view = self.window.active_view()
+        self.update_view()
         if not self.view:
             return
         self.orig_sel = tuple((reg.a, reg.b) for reg in self.view.sel())
         self.on_choose = on_choose
         self.prefix = prefix
 
-        self.selectors = collections.OrderedDict()
-        self.active_selectors = set()
-        temp = {}
-        for sel in selectors_raw:
-            temp[sel] = (("", "", sel),)
-            if sel in active_selectors_raw:
-                self.active_selectors.add(sel)
-        for sel in selectors:
-            if sel in SELECTORS:
-                temp[sel] = SELECTORS[sel]
-                if sel in active_selectors:
-                    self.active_selectors.add(sel)
-        for k, v in sorted(temp.items(), key=lambda tup: tup[0]):
-            self.selectors[k] = v
+        self.init_selectors(selectors, default_selectors)
+        if remember_previous_selectors and self.prev_sels is not None:
+            self.cur_sels = self.prev_sels.copy()
+        else:
+            self.cur_sels = {k: True for k in self.def_sels}
 
-        self.selected_index = selected_index
-        self.run_panel()
+        self.compute_data()
+        self.run_panel(selected_index=selected_index)
+
+    def init_selectors(self, selectors, default_selectors):
+        if selectors is None:
+            self.selectors = sorted(SELECTORS.keys())
+        elif isinstance(selectors, list):
+            self.selectors = sorted(selectors)
+        elif isinstance(selectors, str):
+            self.selectors = [selectors]
+
+        if default_selectors is None:
+            self.def_sels = self.selectors.copy()
+        elif isinstance(default_selectors, list):
+            self.def_sels = sorted(default_selectors)
+        elif isinstance(default_selectors, str):
+            self.def_sels = [default_selectors]
 
     def run_panel(self, selected_index=None):
-        index = self.last_choice if selected_index is None else selected_index
-        self.update_data()
-        self.check_history()
+        index = 0 if selected_index is None else self.get_index(selected_index)
         self.window.show_quick_panel(
-            self.get_data() + ["Choose scopes:"],
+            ["Change scopes shown"] + self.get_current_entries(),
             self.run_handle,
             on_highlight=self.on_highlight,
             selected_index=index,
         )
 
-    def get_data(self):
-        return [tup[2] for tup in self.data]
-
-    def update_data(self):
-        selectors = []
-        for k, v in self.selectors.items():
-            if k in self.active_selectors:
-                selectors += [(k,) + tup for tup in v]
-        data = []
-        for type_, pre, space, sel in selectors:
-            clean = default_clean if type_ == "definition" else general_clean
-            for region in self.view.find_by_selector(sel):
-                data.append(
-                    (
-                        region.begin(),
-                        region.end(),
+    def compute_data(self):
+        self.update_view()
+        if not self.view:
+            return
+        self.data = {}
+        for sel in self.selectors:
+            tup = SELECTORS.get(sel)
+            clean = default_clean if sel == "definition" else general_clean
+            for pre, space, scope in tup:
+                for reg in self.view.find_by_selector(scope):
+                    text = (
                         (pre if self.prefix else "") + space +
-                        clean(self.view.substr(region)),
+                        clean(self.view.substr(reg))
                     )
-                )
-        self.data = sorted(data, key=lambda tup: tup[0])
+                    self.data[(reg.begin(), reg.end())] = (sel, text)
+        self.sorted_data = sorted(self.data.items(), key=lambda tup: tup[0])
+        self.get_current_entries(result=False)
 
-    def check_history(self):
-        self.last_choice = 0
-        if self.selected_index in {"closest", "previous", "next"}:
-            sel = self.view.sel()
-            matches = len(self.data)
-            regions = len(sel)
-            if regions and matches:
-                mid = sel[regions // 2]
-                seq = {
-                    i for i in range(matches) if filter_(
-                        self.data[i][0] - mid.begin(), self.selected_index,
-                    )
-                }
-                if seq:
-                    self.last_choice += max(seq, key=self.key_function(mid))
-        elif (
-            isinstance(self.selected_index, int) and
-            not isinstance(self.selected_index, bool)
-        ):
-            self.last_choice += self.selected_index
+    def get_current_entries(self, result=True):
+        self.current_entries = [
+            (pos, data[1]) for pos, data in self.sorted_data
+            if self.cur_sels.get(data[0])
+        ]
+        if result:
+            return [tup[1] for tup in self.current_entries]
+        return None
+
+    def get_index(self, sel_index):
+        if sel_index in {"closest", "previous", "next"}:
+            self.update_view()
+            if self.view:
+                sel = self.view.sel()
+                matches = len(self.current_entries)
+                regions = len(sel)
+                if regions and matches:
+                    mid = sel[regions // 2]
+                    seq = {
+                        i for i in range(matches) if filter_(
+                            self.current_entries[i][0][0] - mid.begin(),
+                            sel_index,
+                        )
+                    }
+                    if seq:
+                        return 1 + max(seq, key=self.key_function(mid))
+        elif isinstance(sel_index, int) and not isinstance(sel_index, bool):
+            return 1 + sel_index
+        return 1
 
     def key_function(self, region):
-        return lambda i: -abs(self.data[i][0] - region.begin())
+        return lambda i: -abs(self.current_entries[i][0][0] - region.begin())
 
     def on_highlight(self, index):
-        if 0 <= index < len(self.data):
-            tup = self.data[index][:2]
+        if 0 <= index - 1 < len(self.current_entries):
+            sel = self.current_entries[index - 1][0]
             # self.view.run_command(
-            #     "simple_context_highlight_selection", {"regions": (tup,)},
+            #     "simple_context_highlight_selection", {"regions": (sel,)},
             # )
             self.view.run_command(
-                "simple_context_show_selection", {"regions": (tup,)},
+                "simple_context_show_selection", {"regions": (sel,)},
             )
 
     def run_handle(self, index):
-        self.view = self.window.active_view()
+        self.update_view()
         if not self.view:
             return
+        if not index:
+            self.run_panel_choose()
+            return
+
         # self.view.run_command("simple_context_un_highlight_selection")
-        if index >= len(self.data):
-            self.run_panel_choose(selected_index=0)
-        elif index >= 0:
-            tup = self.data[index][:2]
+        if 0 <= index - 1 < len(self.current_entries):
+            sel, text = self.current_entries[index - 1]
             if self.on_choose == "insert":
-                text = self.view.substr(sublime.Region(*tup))
                 self.view.run_command(
                     "simple_context_show_selection",
                     {"regions": self.orig_sel},
@@ -349,7 +366,7 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
                 )
             else:
                 self.view.run_command(
-                    "simple_context_show_selection", {"regions": (tup,)},
+                    "simple_context_show_selection", {"regions": (sel,)},
                 )
         else:
             self.view.run_command(
@@ -357,37 +374,24 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
             )
 
     def run_panel_choose(self, selected_index=None):
-        index = self.last_choice if selected_index is None else selected_index
         self.window.show_quick_panel(
             [["..", "go back"]] + self.get_selectors(),
             self.run_handle_choose,
-            on_highlight=self.on_highlight_choose,
-            selected_index=index,
+            selected_index=0 if selected_index is None else selected_index,
         )
-
-    def on_highlight_choose(self, index):
-        pass
 
     def run_handle_choose(self, index):
         if index:
-            self.last_choice = index
-            index -= 1
-            if 0 <= index < len(self.selectors):
-                key = self.get_selector(index)
-                if key in self.active_selectors:
-                    self.active_selectors.remove(key)
-                else:
-                    self.active_selectors.add(key)
-                self.run_panel_choose()
+            if 0 <= index - 1 < len(self.selectors):
+                key = self.selectors[index - 1]
+                self.cur_sels[key] = not self.cur_sels.get(key)
+                self.prev_sels = self.cur_sels.copy()
+                self.run_panel_choose(selected_index=index)
         else:
-            self.run_panel()
+            self.run_panel(selected_index="closest")
 
     def get_selectors(self):
         return [
-            [k, "Yes" if k in self.active_selectors else "No"]
+            [k, "Yes" if self.cur_sels.get(k) else "No"]
             for k in self.selectors
         ]
-
-    def get_selector(self, index):
-        keys = list(self.selectors.keys())
-        return keys[index]

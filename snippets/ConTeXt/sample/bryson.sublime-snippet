@@ -10,6 +10,6 @@ that no human edifice could withstand. Even for those who have learned to live
 with it, it is often murderous substance. We call it water.
 ]]></content>
   <tabTrigger>bryson</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

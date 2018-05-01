@@ -42,7 +42,7 @@ MAPS = {
 
 def _control_sequence_aux(name, scope, backslash=scopes.BACKSLASH):
     return {
-        "match": r"(\\){}\b".format(name),
+        "match": r"(\\)%s(?!{{cs}})" % name,
         "captures": {0: scope, 1: backslash},
     }
 
@@ -233,7 +233,7 @@ def group_markup(name):
 
 def assignment(delim="=", mode="list", include_main="main"):
     return rule(
-        match="({{key}}*)\\s*(%s)" % delim,
+        match="({{argument_key}}*)\\s*(%s)" % delim,
         captures={1: scopes.KEY, 2: scopes.EQUALS},
         push=[
             rule(meta_content_scope=scopes.VALUE),
@@ -246,9 +246,9 @@ def assignment(delim="=", mode="list", include_main="main"):
 
 def verbatim_helper(name="", arg=None):
     if arg is None:
-        arg_ = "argument.list*/"
+        arg_ = "argument.list.close*/"
     else:
-        arg_ = "argument.list.{}*/".format(arg)
+        arg_ = "argument.list.{}.close*/".format(arg)
     return rule(
         match="",
         push=["verbatim.main.{}.aux/".format(name), arg_],

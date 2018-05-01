@@ -8,6 +8,6 @@ our moorings, a great many people become vulnerable to authority figures telling
 us to fear one another and relinguish our rights for the greater good.
 ]]></content>
   <tabTrigger>klein</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

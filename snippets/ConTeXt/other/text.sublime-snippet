@@ -7,6 +7,6 @@ $0
 \stoptext
 ]]></content>
   <tabTrigger>text</tabTrigger>
-  <scope>text.tex.context - source</scope>
+  <scope>text.tex.context</scope>
   <description>start/stop text</description>
 </snippet>

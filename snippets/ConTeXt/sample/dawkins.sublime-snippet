@@ -17,6 +17,6 @@ psychic, mustn't he, because he successfully influenced the coin eight times in
 a row?
 ]]></content>
   <tabTrigger>dawkins</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

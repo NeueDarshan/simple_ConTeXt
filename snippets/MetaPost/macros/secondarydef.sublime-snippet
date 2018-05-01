@@ -6,5 +6,5 @@ enddef;
 ]]></content>
   <tabTrigger>defs</tabTrigger>
   <scope>source.metapost</scope>
-  <description>macro secondarydef</description>
+  <description>2nd-def</description>
 </snippet>

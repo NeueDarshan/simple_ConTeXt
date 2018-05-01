@@ -7,6 +7,6 @@ $0
 \stopenvironment
 ]]></content>
   <tabTrigger>env</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>environment</description>
 </snippet>

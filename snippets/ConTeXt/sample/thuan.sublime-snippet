@@ -10,6 +10,6 @@ Besides, it is not at all obvious that life and conscience could even emerge in
 such a chaotic system.
 ]]></content>
   <tabTrigger>thuan</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

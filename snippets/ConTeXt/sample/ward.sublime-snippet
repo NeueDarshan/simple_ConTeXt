@@ -6,6 +6,6 @@ But our presence is like the effect of an old|-|age patient who smokes many
 packs of cigarettes per day |=| and we humans are the cigarettes.
 ]]></content>
   <tabTrigger>ward</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

@@ -5,6 +5,6 @@ by machines. The more advanced machines will be, the more human we will have to
 become.
 ]]></content>
   <tabTrigger>jojomayer</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

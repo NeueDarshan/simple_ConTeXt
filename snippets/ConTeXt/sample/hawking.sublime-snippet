@@ -8,6 +8,6 @@ exponential growth continued, there would be ten papers a second in my kind of
 theoretical physics, and no time to read them.
 ]]></content>
   <tabTrigger>hawking</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>

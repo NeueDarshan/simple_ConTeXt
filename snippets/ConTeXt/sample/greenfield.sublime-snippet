@@ -11,6 +11,6 @@ yourself: a system responding efficiently and processing information very well,
 but devoid of deeper thought.
 ]]></content>
   <tabTrigger>greenfield</tabTrigger>
-  <scope>text.tex.context - (meta.environment.math, source)</scope>
+  <scope>text.tex.context</scope>
   <description>sample</description>
 </snippet>
