@@ -141,11 +141,7 @@ so on.
 {
   "keys": ["ctrl+r"],
   "command": "simple_context_show_combined_overlay",
-  "args": {
-    "selectors": ["definition", "file_name", "heading", "reference"],
-    "active_selectors": ["definition", "file_name", "heading", "reference"],
-    "selected_index": "closest"
-  },
+  "args": {"selected_index": "closest"},
   "context": [
     {
       "key": "selector",
@@ -156,8 +152,7 @@ so on.
 }
 ```
 
-Otherwise, the default local symbol list contains all these things with suitable
-prefixes.
+Otherwise, the default local symbol list contains all these things and uses prefixes to distinguish between e.g. headings and definitions.
 
 ### Spell Checking
 
