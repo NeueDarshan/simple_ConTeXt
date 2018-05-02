@@ -4,7 +4,6 @@
 name: ConTeXt
 file_extensions:
   - tex
-  - mkii
   - mkiv
   - mkvi
   - mkix

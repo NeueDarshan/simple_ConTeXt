@@ -3,7 +3,6 @@
 name: ConTeXt
 file_extensions:
   - tex
-  - mkii
   - mkiv
   - mkvi
   - mkix
@@ -340,15 +339,15 @@ contexts:
     - include: Lua.inline
 
   Lua.block:
-    - embed_scope: meta.environment.lua.major.context source.lua.embedded.context
-      match: (\\)start(luacode)(?!{{cs}})
+    - match: (\\)start(luacode)(?!{{cs}})
+      embed_scope: meta.environment.lua.major.context source.lua.embedded.context
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: Lua.block.major.main
       escape: (?=\s*\\stop\2(?!{{cs}}))
-    - embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
-      match: (\\)start(lua)(?!{{cs}})
+    - match: (\\)start(lua)(?!{{cs}})
+      embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -992,8 +991,8 @@ contexts:
         - meta_scope: meta.environment.buffer.context markup.raw.block.context
 
   verbatim.hiding:
-    - embed_scope: comment.block.hiding.context
-      match: (\\)starthiding(?!{{cs}})
+    - match: (\\)starthiding(?!{{cs}})
+      embed_scope: comment.block.hiding.context
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -2576,8 +2575,8 @@ contexts:
     - match: (?=^\s*$\n?)
       pop: true
   generic.pop-if-new-line/:
-    - match: (?=$\n?)
     # - match: '$\n?'
+    - match: (?=$\n?)
       pop: true
   generic.pop-if-whitespace/:
     - match: (?=\s)

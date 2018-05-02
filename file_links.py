@@ -58,6 +58,8 @@ class SimpleContextFileHoverListener(
         if hover_zone != sublime.HOVER_TEXT or not self.is_visible():
             return
         self.reload_settings()
+        if not self.get_setting("file_links/on"):
+            return
 
         main = scopes.enclosing_block(
             self.view, point, scopes.FILE_NAME, end=self.size,

@@ -12,11 +12,22 @@
   - [Symbol List](#symbol-list)
   - [Spell Checking](#spell-checking)
   - [Bracket Highlighter](#bracket-highlighter)
+  - [Interface Files](#interface-files)
+- [References](#references)
+- [Citations](#citations)
+- [File Links](#file-links)
+- [Commands](#commands)
+  - [Auto-Complete](#auto-complete)
+  - [Pop-Ups](#pop-ups)
 - [Builders](#builders)
-- [Snippets](#snippets)
+  - [Normal Builders](#normal-builders)
+  - [Build on Save](#build-on-save)
 - [Key/Value Auto-Complete](#keyvalue-auto-complete)
-- [Quick Settings](#quick-settings)
+- [Settings](#settings)
+  - [Quick Settings](#quick-settings)
+  - [Manual](#manual)
 - [Scripts](#scripts)
+- [Snippets](#snippets)
 - [Misc](#misc)
 - [Future Features](#future-features)
 
@@ -43,26 +54,27 @@ Currently the features are:
 - Builder(s).
 - Command auto-completions.
 - Command pop-ups.
-- Handling of references and citations.
-- Snippets.
+- Handling of references.
+- Handling of citations.
+- Various snippets.
 - Other miscellany.
 
 (I should say that I use ConTeXt MkIV exclusively, and so the package is
 designed and tested with MkIV only. In other words, if MkII stuff works then it
 is a happy accident. That said, the syntax file should work perfectly well for
-MkII, and some of the other parts might still work or be relatively simple to
-adapt as needed.
+MkII, and I would guess that most of the other parts should be relatively
+simple to adapt as needed.
 
 Also, the multilingual interface in ConTeXt is not something I have considered.
 I only know the English interface, and have worked with it in mind; the task of
 supporting all of the different interfaces simultaneously seems rather daunting
-to me.)
+to me!)
 
 ## Installation/Setup
 
 Install via [package control][package-control], under the name `simple_ConTeXt`.
-(Alternatively, `git clone` the repository into your Sublime Text (ST) packages
-directory.) Afterwards, there are some optional things to set up.
+(Alternatively, you can just `git clone` the repository into your Sublime Text
+(ST) packages directory.) Afterwards, there are some optional things to set up.
 
 ### Builder
 
@@ -200,7 +212,171 @@ support for ConTeXt start/stop commands.
 The file `context_environments.py` pointed to here under the `plugin_library`
 key simply checks that the start and stop tags match.
 
+### Interface Files
+
+TODO: talk some about them.
+
+## References
+
+We support references, as powered by the ConTeXt syntax file. (So we know what
+things are references because the syntax file has rules that tell us so.
+Although many common cases are taken care of, I think there are still some that
+are not.) To quickly illustrate the idea, suppose you had the document
+
+```tex
+\starttext
+  \startplaceformula[reference={eq:pythag}]
+    \startformula
+      a^2 + b^2 = c^2
+    \stopformula
+  \stopplaceformula
+
+  Lorem ipsum ...
+\stoptext
+```
+
+If you were to type `\in{equation}[`, say, then a quick-panel would pop up
+showing every reference in the file (just the one in this case, `eq:pythag`).
+Selecting an entry will type it in automatically.
+
+You can turn this functionality on or off completely with the setting
+`current.references/on`. To add new reference commands (in addition to the
+built-ins `\in` and friends) into the system (e.g. `\eqref`) there is the option
+`current.references/command_regex`.
+
+## Citations
+
+We provide some support for citations, in the new MkIV style. (For reference,
+see the manual 'Bibliographies: The ConTeXt Way' (a.k.a.
+`mkiv-publications.pdf`)). We can parse bibliographic databases in the
+traditional BibTeX format, as well as in the Lua and XML formats. As a quick
+intro/example, suppose the file `example.bib` looks like
+
+```bib
+@book{foo-bar,
+  title  = "Foo Bar",
+  author = "A. U. Thor",
+}
+```
+
+and in the same directory we have a file as follows.
+
+```tex
+\usebtxdataset[example.bib]
+\starttext
+  Lorem ipsum dolor sit amet, ...
+\stoptext
+```
+
+If we type `\cite[` somewhere in this document, then a quick-panel will pop up
+listing every entry in `example.bib`, so in this case just the single book 'Foo
+Bar'. Selecting an entry from the list will then input the tag associated to
+that entry.
+
+This functionality can be turned on or off with the setting
+`current.citations/on`. To control what information we show in the quick-panel,
+there is the setting `current.citations/format`. It's default value is the
+string
+
+```
+{title}<>{author}<>{category}, {year}, {tag}
+```
+
+The braces `{...}` indicate a bibliographic field name, and the sequence `<>`
+indicates the start of a new row.
+
+To demonstrate the other formats, here is what the equivalent `example.lua`
+might look like:
+
+```lua
+return {
+  ["foo-bar"] = {
+    category = "book",
+    title    = "Foo Bar",
+    author   = "A. U. Thor",
+  }
+}
+```
+
+Finally, compare the same data in XML format.
+
+```xml
+<bibtex>
+  <entry tag="foo-bar" category="book">
+    <field name="title">Foo Bar</field>
+    <field name="author">A. U. Thor</field>
+  </entry>
+</bibtex>
+```
+
+## File Links
+
+Some commands involve another file (e.g. `\input`), and for some of these we can
+show a hyperlink to that file. For example, consider the document
+
+```tex
+\environment example-style
+\usebtxdataset[samples.bib]
+\starttext
+  \input knuth
+\stoptext
+```
+
+Hovering over `example-style`, `samples.bib`, or `knuth` will do this.
+
+As for what the link points to: we try to find the file in and around a given
+documents location in the file tree (more precisely: we look in the directory
+it's located at, as well as all sub-directories and it's parent directory), and
+if that fails we ask `context` (well, `mtxrun`) if it knows where that file is
+on the TeX tree. While doing this we consider typical extensions, so for example
+when looking for `knuth` we also look for a `knuth.tex`.
+
+You can turn this feature on or off with the setting `current.file_links/on`.
+
+## Commands
+
+### Auto-Complete
+
+Provided you tell ST to do so as in [this section][#auto-completion], when
+typing a backslash <kbd>\\</kbd> there will appear a list of all known command
+names, as well as an indicator of how many arguments each command takes.
+
+### Pop-Ups
+
+When you type in a full command name, e.g. `\setupcolors`, or if you hover over
+a full command name, a pop-up will appear. They look something like this:
+
+```tex
+                   1
+\setupcolors [..,..=..,..]
+
+1   cmyk           = no yes
+    conversion     = always no yes
+    expansion      = no yes
+    factor         = no yes
+    intent         = knockout none overprint
+    pagecolormodel = auto none NAME
+    rgb            = no yes
+    spot           = no yes
+    state          = start stop
+    textcolor      = COLOR
+
+colo-ini.mkiv
+```
+
+The formatting should be fairly self-explanatory. A couple of notes: default
+values are indicated by underlines, and upper-case values (e.g. `COLOR`)
+indicate you can pass a value of that type (a 'color'). At the end there can be
+a hyperlink to a file name (`colo-ini.mkiv` here) where the command is defined.
+
+There are a few options in the settings to tweak their appearance, and you can
+toggle whether they are shown at all by typing/hovering with the settings
+`current.pop_ups/methods/on_modified` and `current.pop_ups/methods/on_hover`
+respectively.
+
 ## Builders
+
+### Normal Builders
 
 The main builder is of course the ConTeXt one, that is a wrapper around the
 `context` binary. In order to find `context` it consults the path specified in
@@ -216,27 +392,9 @@ As it's relatively easy to do so, there are a couple other builders:
 
 Both of these rely on the setting `current.path` to find the relevant programs.
 
-## Snippets
+### Build on Save
 
-There are various snippets for ConTeXt (and a couple for MetaPost as well). You
-can find these by typing `snippet` in the command palette in a ConTeXt file, but
-here is a quick summary.
-
-- Samples, analogous to the built-in snippet `lorem`. These are: `bryson`,
-  `carey`, `carrol`, `darwin`, `davis`, `dawkins`, `douglas`, `greenfield`,
-  `hawking`, `jojomayer`, `khatt`, `klein`, `knuth`, `linden`, `montgomery`,
-  `reich`, `sapolsky`, `thuan`, `tufte`, `waltham`, `ward`, `weisman`, and
-  `zapf`.
-- Headings, for part/chapter/section and so on: `chap`, `part`, `title`, `sec`,
-  `sub`, `sec2`, `sub2`, `sec3` and `sub3`.
-- For item groups: `items` and `item`
-- For mark-up: `bf`, `em`, `emph`, `it`, and `sl`.
-- For tables: `tabn`, `tabln`, `tabu`, and `tabx`.
-- For math: `align`, `form`, `forma`, `pform`, `pforma`, and `math`.
-- For Lua: `lua`, `ctx`, and `lmx`.
-- For projects/modules: `mod`, `comp`, `env`, and `prod`.
-- For placing things: `place`,  `pfig`, and `ptab`.
-- Others: `start`, `text`, `doc`, and `page`.
+TODO: explain some.
 
 ## Key/Value Auto-Complete
 
@@ -250,13 +408,25 @@ command `\foo`, suggest any keys from key-value options that `\foo` has itself,
 in addition to (in a recursive manner) any keys from key-value commands that
 `\foo` inherits.)
 
-## Quick Settings
+## Settings
+
+### Quick Settings
 
 In the command palette there is a command called
 `simple_ConTeXt: Quick change the settings`. It brings up an interactive menu
 for browsing and modifying the current settings. Some things (e.g. adding new
 settings) need to be done by opening up the settings the traditional ST way, but
 especially for modifying existing options this command can be a nice time saver.
+
+### Manual
+
+If you do need to manually edit the settings, then you can do so via
+`Preferences: simple_ConTeXt Settings` in the command palette or
+`Preferences ▶ Package Settings ▶ simple_ConTeXt ▶ Settings` from the menu bar.
+All the options have some documentation in the default settings file.
+
+Care has been taken to play nice with the autocomplete/pop-up functionality from
+the great [Package Dev][package-dev] package.
 
 ## Scripts
 
@@ -286,6 +456,28 @@ mtxrun --script font --list --pattern=*latinmodern* --all
 
 to look up all the Latin Modern fonts that ConTeXt is aware of.
 
+## Snippets
+
+There are various snippets for ConTeXt (and a couple for MetaPost as well). You
+can find these by typing `snippet` in the command palette in a ConTeXt file, but
+here is a quick summary.
+
+- Samples, analogous to the built-in snippet `lorem`. These are: `bryson`,
+  `carey`, `carrol`, `darwin`, `davis`, `dawkins`, `douglas`, `greenfield`,
+  `hawking`, `jojomayer`, `khatt`, `klein`, `knuth`, `linden`, `montgomery`,
+  `reich`, `sapolsky`, `thuan`, `tufte`, `waltham`, `ward`, `weisman`, and
+  `zapf`.
+- Headings, for part/chapter/section and so on: `chap`, `part`, `title`, `sec`,
+  `sub`, `sec2`, `sub2`, `sec3` and `sub3`.
+- For item groups: `items` and `item`
+- For mark-up: `bf`, `em`, `emph`, `it`, and `sl`.
+- For tables: `tabn`, `tabln`, `tabu`, and `tabx`.
+- For math: `align`, `form`, `forma`, `pform`, `pforma`, and `math`.
+- For Lua: `lua`, `ctx`, and `lmx`.
+- For projects/modules: `mod`, `comp`, `env`, and `prod`.
+- For placing things: `place`,  `pfig`, and `ptab`.
+- Others: `start`, `text`, `doc`, and `page`.
+
 ## Misc
 
 Completions should play well with others, e.g. the completions provided by the
@@ -304,10 +496,13 @@ and on imagining things to add/improve.
   master file? What other things would be useful?
 - Add support for the syntax `\start[foo] ... \stop` as a valid alternative to
   `\startfoo ... \stopfoo`. Again, not something I use, is this a sensible idea?
-- Add option for return focus to ST after opening PDF on build.
+- Implement option for return focus to ST after opening PDF on build.
 - SyncTeX support. (Forward and backward jump to PDF.) What's the situation
   with SyncTeX in ConTeXt?
-- Code formatter.
+- Code formatter. (The ST syntax engine already does the hard work of parsing
+  ConTeXt files, in quite some detail. This should make it relatively easy to do
+  some basic auto-formatting. I'd want to be as non-invasive as possible, only
+  formatting what we are certain it makes sense to do so.)
 - Extend the command auto-complete/pop-up system to allow for user-defined
   commands. Easiest would probably be to define them in the `.xml` style that
   the ConTeXt interface files use.
@@ -318,8 +513,8 @@ and on imagining things to add/improve.
   basic, last I 'checked'. I don't know that `chktex` has much ConTeXt support,
   seems to be targeted at LaTeX.)
 - Robust log parsing, esp. for reporting warnings/errors. Related to this, put
-  phantom errors back in.
-- Word count. (Could be nice to have, but lots of difficulties with it.)
+  phantom error functionality back in.
+- Word count. (Can be nice to have, but very tricky in full generality.)
 - Handle `\unprotect ... \protect` in a nice way.
 
 [context-introduction]: http://wiki.contextgarden.net/What_is_ConTeXt

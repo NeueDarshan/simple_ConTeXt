@@ -24,6 +24,7 @@ CURRENT_SETTINGS = {
     "builder/normal/return_focus_after_open_PDF",
     "citations/format",
     "citations/on",
+    "file_links/on",
     "option_completions/on",
     "path",
     "PDF/viewer",
