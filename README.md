@@ -252,7 +252,7 @@ see the manual 'Bibliographies: The ConTeXt Way' (a.k.a.
 traditional BibTeX format, as well as in the Lua and XML formats. As a quick
 intro/example, suppose the file `example.bib` looks like
 
-```bib
+```
 @book{foo-bar,
   title  = "Foo Bar",
   author = "A. U. Thor",
@@ -346,7 +346,7 @@ names, as well as an indicator of how many arguments each command takes.
 When you type in a full command name, e.g. `\setupcolors`, or if you hover over
 a full command name, a pop-up will appear. They look something like this:
 
-```tex
+```
                    1
 \setupcolors [..,..=..,..]
 
