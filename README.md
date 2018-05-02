@@ -346,7 +346,10 @@ names, as well as an indicator of how many arguments each command takes.
 When you type in a full command name, e.g. `\setupcolors`, or if you hover over
 a full command name, a pop-up will appear. They look something like this:
 
-```
+<!-- This doesn't come out right on Package Control, not sure what to do about
+     that. -->
+
+```tex
                    1
 \setupcolors [..,..=..,..]
 
@@ -394,7 +397,39 @@ Both of these rely on the setting `current.path` to find the relevant programs.
 
 ### Build on Save
 
-TODO: explain some.
+There is an auto-build functionality: I'm not sure how useful it is, you can try
+it out if you like. You can turn it on by setting `current.builder/auto/on` to
+`true`. Then, whenever you save a ConTeXt file (i.e. a view in ST that has the
+'ConTeXt' syntax) we run the ConTeXt builder.
+
+There a couple of options related to this, all starting with the string
+`current.builder/auto/`. Of particular interest is
+`current.builder/auto/extra_opts_for_ConTeXt`, which you can use to pass along
+different options to the `context` process from the manual builder. The use-case
+I imagine is: suppose you have some slow-to-build graphics that you would like
+to skip while drafting a document. Then you can set
+
+```json
+{
+  "current.builder/auto/extra_opts_for_ConTeXt": {
+    "mode": {
+      "draft": true
+    }
+  }
+}
+```
+
+and in the document use commands like `\doifmodeelse` to conditionally execute
+certain code:
+
+```tex
+\doifmodeelse {draft}
+  {slow branch ...}
+  {quick branch ...}
+```
+
+(Currently we just pass along any extra options on top of the default options;
+maybe we should look at merging them instead.)
 
 ## Key/Value Auto-Complete
 
@@ -443,14 +478,14 @@ This can be a convenience if you have multiple installations of ConTeXt on one
 machine, as it takes care of setting up your `PATH` for you. Then you can do
 things like
 
-```shell
+```sh
 mtxrun --generate --force
 ```
 
 to (re)generate the file database for the version of ConTeXt currently active in
 simple ConTeXt (typically takes a few seconds), and
 
-```shell
+```sh
 mtxrun --script font --list --pattern=*latinmodern* --all
 ```
 
