@@ -237,14 +237,16 @@ class SimpleContextExecMainCommand(
     ):
         cmd_seq = [] if cmd_seq is None else cmd_seq
         self.reload_settings()
-        show = \
-            self.get_setting("builder/normal/show") if show is None else show
+        show = (
+            self.get_setting("builder/normal/output/show")
+            if show is None else show
+        )
         show_ConTeXt_path = (
-            self.get_setting("builder/normal/show_ConTeXt_path")
+            self.get_setting("builder/normal/output/show_ConTeXt_path")
             if show_ConTeXt_path is None else show_ConTeXt_path
         )
         show_full_command = (
-            self.get_setting("builder/normal/show_full_command")
+            self.get_setting("builder/normal/output/show_full_command")
             if show_full_command is None else show_full_command
         )
 
