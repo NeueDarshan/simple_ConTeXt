@@ -251,12 +251,12 @@
 	// references on/off respectively.
 	"setting_groups": {
 		"verbose_builder_on": {
-			"builder/output/show_full_command": true,
-			"builder/output/show_ConTeXt_path": true,
+			"builder/normal/output/show_full_command": true,
+			"builder/normal/output/show_ConTeXt_path": true,
 		},
 		"verbose_builder_off": {
-			"builder/output/show_full_command": false,
-			"builder/output/show_ConTeXt_path": false,
+			"builder/normal/output/show_full_command": false,
+			"builder/normal/output/show_ConTeXt_path": false,
 		},
 	},
 }

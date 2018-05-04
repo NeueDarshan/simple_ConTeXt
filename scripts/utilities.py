@@ -141,7 +141,7 @@ def _expand_variables(self, args, variables):
             if x == "$simple_context_insert_options":
                 result += process_options(
                     self,
-                    get_setting(self, "builder/opts_for_ConTeXt"),
+                    get_setting(self, "builder/normal/opts_for_ConTeXt"),
                     variables,
                 )
             else:

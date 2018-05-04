@@ -294,8 +294,7 @@ class SimpleContextExecMainCommand(
             # We can be (very) forgiving to spelling errors, as the other
             # options than \type{"when_there_are_errors"} are just \type{True}
             # and \type{False}.
-            self.show_output_on_errors = \
-                isinstance(self.get_setting("builder/output/show"), str)
+            self.show_output_on_errors = isinstance(show, str)
 
         if not working_dir and self.view:
             file_ = self.view.file_name()
