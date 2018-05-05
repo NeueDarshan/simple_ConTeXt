@@ -12,13 +12,14 @@ class SimpleContextBuildOnSaveListener(
             return
 
         extra_opts_raw = \
-            self.get_setting("builder/auto/extra_opts_for_ConTeXt")
+            self.get_setting("builder/auto/extra_opts_for_ConTeXt", {})
         extra_opts = utilities.process_options(
             self, extra_opts_raw, utilities.get_variables(self),
         )
         cmd_context = \
             ["context", "$simple_context_insert_options"] + extra_opts + \
             ["$file"]
+        run_when = self.get_setting("builder/auto/open_PDF_after_build", False)
         cmd_seq = [
             {
                 "cmd": cmd_context,
@@ -28,18 +29,23 @@ class SimpleContextBuildOnSaveListener(
             {
                 "cmd": ["$simple_context_pdf_viewer", "$file_base_name.pdf"],
                 "output": "pdf",
-                "run_when": "$simple_context_open_pdf_after_build",
+                "run_when": run_when,
             },
         ]
 
+        show = self.get_setting(
+            "builder/auto/output/show", "when_there_are_errors",
+        )
+        show_ConTeXt_path = \
+            self.get_setting("builder/auto/output/show_ConTeXt_path", False)
+        show_full_command = \
+            self.get_setting("builder/auto/output/show_full_command", False)
         self.view.window().run_command(
             "simple_context_exec_main",
             {
                 "cmd_seq": cmd_seq,
-                "show": self.get_setting("builder/auto/output/show"),
-                "show_ConTeXt_path":
-                    self.get_setting("builder/auto/output/show_ConTeXt_path"),
-                "show_full_command":
-                    self.get_setting("builder/auto/output/show_full_command"),
+                "show": show,
+                "show_ConTeXt_path": show_ConTeXt_path,
+                "show_full_command": show_full_command,
             },
         )

@@ -85,7 +85,7 @@ def get_setting_location(self, opt, default=None):
         self.sublime_settings.get("program_locations.{}".format(opt), default)
 
 
-def _reload_settings(self):
+def reload_settings(self):
     self.sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
     self.context_path = get_path_setting(self)
@@ -302,10 +302,10 @@ class FuzzyOrderedDict:
 
 class BaseSettings:
     def reload_settings(self):
-        _reload_settings(self)
+        reload_settings(self)
 
-    def get_setting(self, opt):
-        return get_setting(self, opt)
+    def get_setting(self, opt, default=None):
+        return get_setting(self, opt, default=default)
 
     def is_visible_alt(self):
         if hasattr(self, "window"):
