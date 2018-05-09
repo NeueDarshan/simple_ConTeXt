@@ -102,12 +102,21 @@
 	// TODO: implement this.
 	"current.builder/normal/return_focus_after_open_PDF": true,
 
+	// Same idea as the option
+	// 'current.references/command_regex': to tell simple
+	// ConTeXt that some extra commands function as
+	// citation handlers (in addition to the usual
+	// built-ins), you can give them as a regular
+	// expression here. For example, something like the
+	// string `cite[a-zA-Z]*` might be appropriate for
+	// some circumstances. Alternatively, you can set the
+	// value as `null` to ignore this option.
+	"current.citations/command_regex": null,
 	// Whether to bring up the list of bibliographic
 	// entries upon typing in the start of a citation
 	// command. For example, typing the sequence '\cite['
 	// will trigger this. Can be `true` or `false`.
 	"current.citations/on": true,
-
 	// A description of what information to display about
 	// each bibliographic entry. Fields are indicated by
 	// Python-style braces '{field-name}', and rows are

@@ -173,7 +173,7 @@ contexts:
       push: math.main.dollar/
 
   math.main:
-    - include: math.number
+    - include: math.constant
     - include: math.operator
     - include: math.variable
     - include: math.control
@@ -216,20 +216,22 @@ contexts:
   # the more verbose \type{\alpha}), but you can lose semantic information
   # as well as the ability to easily tweak e.g.\ the spacing of \type{\int}
   # throughout the whole document. Hmm.
-  math.number:
+  math.constant:
     - include: generic.real
-    - match: '[∞π]'
+    - match: '[∞π∅]'
       scope: constant.other.math.context
     - match: (\\)(?:infty|pi)(?!{{cs}})
       captures:
         0: meta.control-word.context constant.other.math.context
         1: punctuation.definition.backslash.context
 
-  # We can make these lists more complete as time goes on.
+  # We can make these lists more complete as time goes on. Keep code ligatures
+  # in mind, especially as \ConTeXt\ can do math collapsing:
+  # \type{\setupmathematics[collapsing=...]}.
   math.operator:
-    - match: '[\+\-/\^_=<>]'
+    - match: '[+\-*/^_=<>]+'
       scope: keyword.operator.context
-    - match: '[∈∉∼≁×≠]'
+    - match: '[∈∉∼≁×≠⊊]'
       scope: keyword.operator.context
     - match: (\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)(?!{{cs}})
       captures:

@@ -11,7 +11,7 @@ from .scripts import files
 from .scripts import cite
 
 
-CITATIONS = (
+BUILT_IN_CITATIONS = (
     r"\A(?:(?:no|use|place|(?:btx)?(?:list|text|always|hidden))?"
     r"cit(?:e|ation))\Z"
 )
@@ -28,7 +28,7 @@ def is_citation_start(text):
 
 
 def is_citation_history(cmd):
-    return cmd[0] not in ("left_delete", "right_delete") if cmd else True
+    return cmd[0] not in {"left_delete", "right_delete"} if cmd else True
 
 
 @utilities.hash_first_arg
@@ -63,7 +63,7 @@ class SimpleContextCiteEventListener(
 
     def reload_settings(self):
         super().reload_settings()
-        self.file_name = self.view.file_name()
+        self.file_name = str(self.view.file_name())
         self.opts = self.expand_variables(
             {
                 "creationflags": self.flags,
@@ -115,7 +115,12 @@ class SimpleContextCiteEventListener(
 
     def is_citation_command(self, begin, end):
         name = self.view.substr(sublime.Region(begin, end)).strip()
-        return re.match(CITATIONS, name)
+        user_regex = self.get_setting("citations/command_regex")
+        if re.match(BUILT_IN_CITATIONS, name):
+            return True
+        elif user_regex and re.match(r"\A" + user_regex + r"\Z", name):
+            return True
+        return False
 
     def do_citation(self, view_name, format_str):
         regions = self.view.find_by_selector(scopes.MAYBE_CITATION)
@@ -146,8 +151,7 @@ class SimpleContextCiteEventListener(
                 )
 
     def try_parse(self, name, view_name):
-        if view_name:
-            self.bib_per_files.setdefault(view_name, {})
+        self.bib_per_files.setdefault(view_name, {})
         if name not in self.bib_per_files[view_name]:
             if view_name:
                 main = self.locate_file_main(name, extensions=self.extensions)

@@ -343,34 +343,41 @@ names, as well as an indicator of how many arguments each command takes.
 
 ### Pop-Ups
 
-When you type in a full command name, e.g. `\setupcolors`, or if you hover over
-a full command name, a pop-up will appear. They look something like this:
+When you type in a full command name, e.g. `\setupfittingpage`, or if you hover
+over a full command name, a pop-up will appear. They look something like this:
 
 <!-- This doesn't come out right on Package Control, not sure what to do about
      that. -->
 
 ```tex
-                   1
-\setupcolors [..,..=..,..]
+                      1           2
+\setupfittingpage [...,...] [..,..=..,..]
+                     OPT
 
-1   cmyk           = no yes
-    conversion     = always no yes
-    expansion      = no yes
-    factor         = no yes
-    intent         = knockout none overprint
-    pagecolormodel = auto none NAME
-    rgb            = no yes
-    spot           = no yes
-    state          = start stop
-    textcolor      = COLOR
+1   NAME
 
-colo-ini.mkiv
+2   command = \...#1
+    margin = page
+    pagestate = start stop
+    paper = auto default NAME
+    scale = NUMBER
+    inherits: \setupframed
+
+page-app.mkiv
 ```
 
-The formatting should be fairly self-explanatory. A couple of notes: default
-values are indicated by underlines, and upper-case values (e.g. `COLOR`)
-indicate you can pass a value of that type (a 'color'). At the end there can be
-a hyperlink to a file name (`colo-ini.mkiv` here) where the command is defined.
+The formatting should be fairly self-explanatory. A couple of notes:
+
+- The `OPT` here is short for 'optional argument'.
+- Default values are indicated by underlines (not shown here).
+- Upper-case values (e.g. `NUMBER`) indicate you can pass a value of that type
+  (a 'number').
+- Values like `\...#1#2` indicate you can pass a command `\foo` which expects
+  some number of arguments.
+- Sometimes there is a value `inherits: \...`, which indicates that this option
+  inherits the options of that command.
+- At the end there can be a hyperlink to a file name (`page-app.mkiv` here)
+  where the command is defined.
 
 There are a few options in the settings to tweak their appearance, and you can
 toggle whether they are shown at all by typing/hovering with the settings
@@ -525,6 +532,7 @@ names are the same.)
 A couple of features that I think would be nice to have. Of course, we can go
 and on imagining things to add/improve.
 
+- Work on the interface generator, I think there is some simplifying we can do.
 - Extend the `key=val` auto-completion stuff to include value suggestions.
 - Add support for multi file documents. This is not something I do very much,
   so I'm not sure what it should look like. Have the builder figure out the

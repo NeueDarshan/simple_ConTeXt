@@ -86,7 +86,7 @@ class SimpleContextReferenceEventListener(
         self.view.window().run_command("simple_context_show_overlay", opts)
 
     def is_reference_command(self, begin, end):
-        name = self.view.substr(sublime.Region(begin, end))
+        name = self.view.substr(sublime.Region(begin, end)).strip()
         user_regex = self.get_setting("references/command_regex")
         if re.match(BUILT_IN_REFERENCERS, name):
             return True
