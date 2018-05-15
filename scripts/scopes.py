@@ -141,6 +141,8 @@ SUPPORT_CONTROL = "support.function.context"
 
 KEYWORD_CONTROL = "keyword.control.context"
 
+KEYWORD_OPERATOR = "keyword.operator.context"
+
 ALIGN_CONTROL = "keyword.operator.alignment.context"
 
 IMPORT_CONTROL = "keyword.control.import.context"
@@ -152,6 +154,8 @@ MODIFY_CONTROL = "storage.modifier.context"
 CONDITIONAL_CONTROL = "keyword.control.conditional.context"
 
 CONTROL_WORD_NORMAL = AND(FULL_CONTROL_WORD, SUPPORT_CONTROL)
+
+CONTROL_WORD_OPERATOR = AND(FULL_CONTROL_WORD, KEYWORD_OPERATOR)
 
 CONTROL_WORD_START = ALL(FULL_CONTROL_WORD, FULL_START, KEYWORD_CONTROL)
 

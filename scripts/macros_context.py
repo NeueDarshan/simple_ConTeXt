@@ -67,8 +67,25 @@ def _control_sequence(
     return rule(**rule_base)
 
 
-def control_sequence(name="", **kwargs):
-    return _control_sequence(name, scopes.CONTROL_WORD_NORMAL, **kwargs)
+def control_sequence(name="", scope=None, **kwargs):
+    if scope is None:
+        scope = scopes.CONTROL_WORD_NORMAL
+    else:
+        scope = "meta.control-word.context {}".format(scope)
+    return _control_sequence(name, scope, **kwargs)
+
+
+def control_sequence_operator(name="", scope=None, **kwargs):
+    if scope is None:
+        scope = scopes.CONTROL_WORD_OPERATOR
+    else:
+        scope = "meta.control-word.context {}".format(scope)
+    return _control_sequence(
+        name,
+        scope,
+        backslash=scopes.KEYWORD_BACKSLASH,
+        **kwargs
+    )
 
 
 def control_sequence_start(name="", **kwargs):

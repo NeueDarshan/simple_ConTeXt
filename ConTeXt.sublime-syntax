@@ -213,36 +213,53 @@ contexts:
     - include: math.cases.rows
     - include: math.main
 
-  # Should we try to handle unicode entities? Should one write math in
-  # unicode? It's nice for some things (such as writing \type{α} instead of
-  # the more verbose \type{\alpha}), but you can lose semantic information
-  # as well as the ability to easily tweak e.g.\ the spacing of \type{\int}
-  # throughout the whole document. Hmm.
+  # Should we try to handle unicode entities? Should one write math in unicode?
+  # Hmm. Let's put some in for now, and let's distinguish between different
+  # kinds of \type{constant}s.
   math.constant:
     - include: generic.real
-    - match: '[∞π∅]'
-      scope: constant.other.math.context
+    - match: '[∞π]'
+      scope: constant.numeric.math.context
     - match: (\\)(?:infty|pi)(?!{{cs}})
+      captures:
+        0: meta.control-word.context constant.numeric.math.context
+        1: punctuation.definition.backslash.context
+    - match: '[⌀∅]'
+      scope: constant.other.math.context
+    - match: (\\)(?:varnothing|emptyset)(?!{{cs}})
       captures:
         0: meta.control-word.context constant.other.math.context
         1: punctuation.definition.backslash.context
-
   # We can make these lists more complete as time goes on. Keep code ligatures
   # in mind, especially as \ConTeXt\ can do math collapsing itself:
   # \type{\setupmathematics[collapsing=...]}.
   #
-  # NOTE: would be nice to distinguish between
-  # relations/functions/binary operators and so on.
+  # It's not essential to distinguish between different kinds of
+  # \type{operator}s here, but it does make sense and does provide potentially
+  # useful information.
   math.operator:
-    - match: '[+\-*/^_=<>]+'
-      scope: keyword.operator.context
-    - match: '[∂∈∉∼≁×≠⊂⊄⊆⊊∖]'
-      scope: keyword.operator.context
-    - match: (\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)(?!{{cs}})
+    - match: '[_^]'
+      scope: keyword.operator.script.context
+    - match: '[+\-*/]'
+      scope: keyword.operator.arithmetic.context
+    - match: (?:[=<>]+|[∈∉∼≁≠⊂⊄⊆⊊≪≫≢≡])
+      scope: keyword.operator.relation.context
+    - match: (\\)(?:[lg]eq?|(?:not)?in|n?sim|neq|ll|gg|n?equiv)(?!{{cs}})
       captures:
-        0: meta.control-word.context keyword.operator.context
+        0: meta.control-word.context keyword.operator.relation.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
-
+    - match: '[∂×∖∩∪∘]'
+      scope: keyword.operator.math.context
+    - match: (\\)(?:partial|times|setminus|c[au]p|circ)(?!{{cs}})
+      captures:
+        0: meta.control-word.context keyword.operator.math.context
+        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+    - match: '[⋂⋃∏∑∫]'
+      scope: keyword.operator.indexed.context
+    - match: (\\)(?:bigc[au]p|prod|sum|int)(?!{{cs}})
+      captures:
+        0: meta.control-word.context keyword.operator.indexed.context
+        1: punctuation.definition.backslash.context punctuation.definition.keyword.context
   math.punctuation:
     - match: ','
       scope: punctuation.separator.comma.context
@@ -328,15 +345,15 @@ contexts:
     - include: Lua.inline
 
   Lua.block:
-    - match: (\\)start(luacode)(?!{{cs}})
-      embed_scope: meta.environment.lua.major.context source.lua.embedded.context
+    - embed_scope: meta.environment.lua.major.context source.lua.embedded.context
+      match: (\\)start(luacode)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: Lua.block.major.main
       escape: (?=\s*\\stop\2(?!{{cs}}))
-    - match: (\\)start(lua)(?!{{cs}})
-      embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
+    - embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
+      match: (\\)start(lua)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -980,8 +997,8 @@ contexts:
         - meta_scope: meta.environment.buffer.context markup.raw.block.context
 
   verbatim.hiding:
-    - match: (\\)starthiding(?!{{cs}})
-      embed_scope: comment.block.hiding.context
+    - embed_scope: comment.block.hiding.context
+      match: (\\)starthiding(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context

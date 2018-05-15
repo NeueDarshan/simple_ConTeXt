@@ -211,37 +211,49 @@ contexts:
     - include: math.cases.rows
     - include: math.main
 
-  # Should we try to handle unicode entities? Should one write math in
-  # unicode? It's nice for some things (such as writing \type{α} instead of
-  # the more verbose \type{\alpha}), but you can lose semantic information
-  # as well as the ability to easily tweak e.g.\ the spacing of \type{\int}
-  # throughout the whole document. Hmm.
+  # Should we try to handle unicode entities? Should one write math in unicode?
+  # Hmm. Let's put some in for now, and let's distinguish between different
+  # kinds of \type{constant}s.
   math.constant:
     - include: generic.real
-    - match: '[∞π∅]'
+    - match: '[∞π]'
+      scope: constant.numeric.math.context
+    - !control_sequence
+        name: '(?:infty|pi)'
+        scope: constant.numeric.math.context
+    - match: '[⌀∅]'
       scope: constant.other.math.context
-    - match: '(\\)(?:infty|pi)(?!{{cs}})'
-      captures:
-        0: meta.control-word.context constant.other.math.context
-        1: punctuation.definition.backslash.context
+    - !control_sequence
+        name: (?:varnothing|emptyset)
+        scope: constant.other.math.context
 
   # We can make these lists more complete as time goes on. Keep code ligatures
   # in mind, especially as \ConTeXt\ can do math collapsing itself:
   # \type{\setupmathematics[collapsing=...]}.
   #
-  # NOTE: would be nice to distinguish between
-  # relations/functions/binary operators and so on.
+  # It's not essential to distinguish between different kinds of
+  # \type{operator}s here, but it does make sense and does provide potentially
+  # useful information.
   math.operator:
-    - match: '[+\-*/^_=<>]+'
-      scope: keyword.operator.context
-    - match: '[∂∈∉∼≁×≠⊂⊄⊆⊊∖]'
-      scope: keyword.operator.context
-    - match: '(\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)(?!{{cs}})'
-      captures:
-        0: meta.control-word.context keyword.operator.context
-        1:
-          punctuation.definition.backslash.context
-          punctuation.definition.keyword.context
+    - match: '[_^]'
+      scope: keyword.operator.script.context
+    - match: '[+\-*/]'
+      scope: keyword.operator.arithmetic.context
+    - match: '(?:[=<>]+|[∈∉∼≁≠⊂⊄⊆⊊≪≫≢≡])'
+      scope: keyword.operator.relation.context
+    - !control_sequence_operator
+        name: '(?:[lg]eq?|(?:not)?in|n?sim|neq|ll|gg|n?equiv)'
+        scope: keyword.operator.relation.context
+    - match: '[∂×∖∩∪∘]'
+      scope: keyword.operator.math.context
+    - !control_sequence_operator
+        name: (?:partial|times|setminus|c[au]p|circ)
+        scope: keyword.operator.math.context
+    - match: '[⋂⋃∏∑∫]'
+      scope: keyword.operator.indexed.context
+    - !control_sequence_operator
+        name: (?:bigc[au]p|prod|sum|int)
+        scope: keyword.operator.indexed.context
 
   math.punctuation:
     - match: ','
