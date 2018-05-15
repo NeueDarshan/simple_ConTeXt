@@ -260,35 +260,7 @@ contexts:
     - match: '{{math_variable}}'
       scope: string.unquoted.math.context
 
-  # In math mode, control sequences with arguments are tricky. Consider the
-  # following example.
-  #
-  # \startbuffer
-  # \startformula
-  #   \startalign
-  #     \NC \sqrt[3]{2} \NC > 2                        \NR
-  #     \NC [y]         \NC = \{ x \in X : x \sim y \} \NR
-  #   \stopalign
-  # \stopformula
-  # \stopbuffer
-  #
-  # \typebuffer
-  #
-  # This produces the output:
-  #
-  # \getbuffer
-  #
-  # On the one hand we have \type<<\sqrt[3]{2}>>, where the square brackets
-  # denote an optional argument. On the other we have \type<<\NC [y]>>, where
-  # the square brackets are part of the mathematical notation, and have
-  # nothing whatsoever to do with the control sequence \type<<\NC>>.
-  #
-  # If we use the same approach as in text mode, we will (wrongly) interpret
-  # the \type<<[y]>> as an optional argument to \type<<\NC>>. To address these
-  # kinds of problems, we implement a simple rule: \emph{no spaces allowed}
-  # between a control sequence and its arguments in math mode.
-  #
-  # One other thing, let's forget about active characters in math mode.
+  # Let's forget about active characters in math mode.
   math.control:
     - include: Lua
     - include: math.control.cases
