@@ -153,7 +153,10 @@ so on.
 {
   "keys": ["ctrl+r"],
   "command": "simple_context_show_combined_overlay",
-  "args": {"selected_index": "closest"},
+  "args": {
+    "selected_index": "closest",
+    "default_selectors": ["definition", "heading", "reference"]
+  },
   "context": [
     {
       "key": "selector",
@@ -164,7 +167,8 @@ so on.
 }
 ```
 
-Otherwise, the default local symbol list contains all these things and uses prefixes to distinguish between e.g. headings and definitions.
+Otherwise, the default local symbol list contains all these things and uses
+prefixes to distinguish between e.g. headings and definitions.
 
 ### Spell Checking
 
@@ -349,7 +353,7 @@ over a full command name, a pop-up will appear. They look something like this:
 <!-- This doesn't come out right on Package Control, not sure what to do about
      that. -->
 
-```tex
+```
                       1           2
 \setupfittingpage [...,...] [..,..=..,..]
                      OPT
@@ -372,8 +376,8 @@ The formatting should be fairly self-explanatory. A couple of notes:
 - Default values are indicated by underlines (not shown here).
 - Upper-case values (e.g. `NUMBER`) indicate you can pass a value of that type
   (a 'number').
-- Values like `\...#1#2` indicate you can pass a command `\foo` which expects
-  some number of arguments.
+- Values like `\...#1` indicate you can pass a command which expects some
+  number of arguments (one for `\...#1`, two for `\...#1#2`, and so on).
 - Sometimes there is a value `inherits: \...`, which indicates that this option
   inherits the options of that command.
 - At the end there can be a hyperlink to a file name (`page-app.mkiv` here)

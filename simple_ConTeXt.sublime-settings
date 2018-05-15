@@ -106,11 +106,14 @@
 	// 'current.references/command_regex': to tell simple
 	// ConTeXt that some extra commands function as
 	// citation handlers (in addition to the usual
-	// built-ins), you can give them as a regular
-	// expression here. For example, something like the
-	// string `cite[a-zA-Z]*` might be appropriate for
-	// some circumstances. Alternatively, you can set the
-	// value as `null` to ignore this option.
+	// built-ins, e.g. '\cite'), you can give them as a
+	// regular expression here.
+	//
+	// For example, something like the string
+	// `[a-zA-Z]*cit(e|ation)[a-zA-Z]*` could do the trick
+	// as a general purpose catch-all for new citation
+	// commands. Alternatively, you can set the value as
+	// `null` to ignore this option.
 	"current.citations/command_regex": null,
 	// Whether to bring up the list of bibliographic
 	// entries upon typing in the start of a citation

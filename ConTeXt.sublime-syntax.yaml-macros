@@ -18,6 +18,7 @@ variables:
   verbatim_delimiter: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
   math_variable: '[[:alpha:]]'
   cs: '[[:alpha:]]'
+  not_cs: '[^[:alpha:]]'
 
 
 contexts:
@@ -138,7 +139,7 @@ contexts:
         name: inline(?:math|mathematics)
         push: argument.group.math.outer*/
     - !control_sequence_start
-        name: (?:imath|mathmode)
+        name: (imath|mathmode)
         push: math.main.pop-if-stop-match-two/
 
   # Quoting from the \ConTeXt\ math manual:
@@ -149,8 +150,8 @@ contexts:
   #   that we want to control spacing in a consistent way.
   # \stopblockquote
   #
-  # But you can still use the double dollar \type{$$ ... $$} method if you
-  # insist, so here it is.
+  # But you can still use the double dollar \type{$$ ... $$} method if
+  # necessary, so here it is.
   math.display.double-dollar:
     - match: '\$\$'
       scope:
@@ -168,6 +169,7 @@ contexts:
   math.main:
     - include: math.constant
     - include: math.operator
+    - include: math.punctuation
     - include: math.variable
     - include: math.control
     - include: definition.parameter
@@ -226,10 +228,13 @@ contexts:
   # We can make these lists more complete as time goes on. Keep code ligatures
   # in mind, especially as \ConTeXt\ can do math collapsing itself:
   # \type{\setupmathematics[collapsing=...]}.
+  #
+  # NOTE: would be nice to distinguish between
+  # relations/functions/binary operators and so on.
   math.operator:
     - match: '[+\-*/^_=<>]+'
       scope: keyword.operator.context
-    - match: '[∈∉∼≁×≠⊊]'
+    - match: '[∂∈∉∼≁×≠⊂⊄⊆⊊∖]'
       scope: keyword.operator.context
     - match: '(\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)(?!{{cs}})'
       captures:
@@ -237,6 +242,16 @@ contexts:
         1:
           punctuation.definition.backslash.context
           punctuation.definition.keyword.context
+
+  math.punctuation:
+    - match: ','
+      scope: punctuation.separator.comma.context
+    - match: ';'
+      scope: punctuation.separator.semi-colon.context
+    - match: ':'
+      scope: punctuation.separator.colon.context
+    # - match: '[∃∀]'
+    #   scope: punctuation.definition.logical-quantifier.context
 
   math.variable:
     # I think \type{variable.other} makes the most sense logically. However,
@@ -901,7 +916,7 @@ contexts:
   process:
     - !control_sequence
         name:
-          (?:process(?:action|(firstaction|allactions)inset)|rawprocessaction)
+          (?:process(?:action|(?:firstaction|allactions)inset)|rawprocessaction)
         push:
           - argument.list.apply*/
           - argument.list*/
@@ -1097,7 +1112,7 @@ contexts:
         name: '{{cs}}*'
 
   control.symbol:
-    - match: '(\\)(?:[^[:alpha:]]|$)'
+    - match: '(\\)(?:{{not_cs}}|$)'
       captures:
         0: constant.character.escape.context
         1: punctuation.definition.backslash.context
@@ -1816,7 +1831,7 @@ contexts:
         1: punctuation.definition.backslash.context
       pop: true
   argument.control-symbol.definition/:
-    - match: '(\\)([^[:alpha:]]|$)'
+    - match: '(\\)({{not_cs}}|$)'
       captures:
         0: entity.name.function.context
         1: punctuation.definition.backslash.context

@@ -15,6 +15,7 @@ variables:
   verbatim_delimiter: '[^%$^_#,~|\[\]\{\}<>\\[:alpha:]]'
   math_variable: '[[:alpha:]]'
   cs: '[[:alpha:]]'
+  not_cs: '[^[:alpha:]]'
 
 
 contexts:
@@ -147,7 +148,7 @@ contexts:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.math.outer*/
-    - match: (\\)start(?:imath|mathmode)(?!{{cs}})
+    - match: (\\)start(imath|mathmode)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -160,8 +161,8 @@ contexts:
   #   that we want to control spacing in a consistent way.
   # \stopblockquote
   #
-  # But you can still use the double dollar \type{$$ ... $$} method if you
-  # insist, so here it is.
+  # But you can still use the double dollar \type{$$ ... $$} method if
+  # necessary, so here it is.
   math.display.double-dollar:
     - match: \$\$
       scope: punctuation.section.double-dollar.begin.context string.quoted.other.double-dollar.context
@@ -175,6 +176,7 @@ contexts:
   math.main:
     - include: math.constant
     - include: math.operator
+    - include: math.punctuation
     - include: math.variable
     - include: math.control
     - include: definition.parameter
@@ -226,17 +228,30 @@ contexts:
         1: punctuation.definition.backslash.context
 
   # We can make these lists more complete as time goes on. Keep code ligatures
-  # in mind, especially as \ConTeXt\ can do math collapsing:
+  # in mind, especially as \ConTeXt\ can do math collapsing itself:
   # \type{\setupmathematics[collapsing=...]}.
+  #
+  # NOTE: would be nice to distinguish between
+  # relations/functions/binary operators and so on.
   math.operator:
     - match: '[+\-*/^_=<>]+'
       scope: keyword.operator.context
-    - match: '[∈∉∼≁×≠⊊]'
+    - match: '[∂∈∉∼≁×≠⊂⊄⊆⊊∖]'
       scope: keyword.operator.context
     - match: (\\)(?:[lg]eq?|(not)?in|n?sim|times|ll|gg)(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.operator.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
+
+  math.punctuation:
+    - match: ','
+      scope: punctuation.separator.comma.context
+    - match: ;
+      scope: punctuation.separator.semi-colon.context
+    - match: ':'
+      scope: punctuation.separator.colon.context
+    # - match: '[∃∀]'
+    #   scope: punctuation.definition.logical-quantifier.context
 
   math.variable:
     # I think \type{variable.other} makes the most sense logically. However,
@@ -1266,7 +1281,7 @@ contexts:
 
 
   process:
-    - match: (\\)(?:process(?:action|(firstaction|allactions)inset)|rawprocessaction)(?!{{cs}})
+    - match: (\\)(?:process(?:action|(?:firstaction|allactions)inset)|rawprocessaction)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
@@ -1479,7 +1494,7 @@ contexts:
         1: punctuation.definition.backslash.context
 
   control.symbol:
-    - match: (\\)(?:[^[:alpha:]]|$)
+    - match: (\\)(?:{{not_cs}}|$)
       captures:
         0: constant.character.escape.context
         1: punctuation.definition.backslash.context
@@ -2428,7 +2443,7 @@ contexts:
         1: punctuation.definition.backslash.context
       pop: true
   argument.control-symbol.definition/:
-    - match: (\\)([^[:alpha:]]|$)
+    - match: (\\)({{not_cs}}|$)
       captures:
         0: entity.name.function.context
         1: punctuation.definition.backslash.context

@@ -156,6 +156,11 @@ class ExecMainSubprocess:
         self.root.add_to_output(text, scroll_to_end=True, force=True)
 
     def kill(self):
+        # Hmm. When we run a process \type{context ...} and then do
+        # \type{process.kill()} here, it doesn't seem to work as I would
+        # naively expect. I think that's because \type{context} is a wrapper
+        # around \LuaTeX, and so what we really wanted to kill was the
+        # \type{luatex} process.
         with self.lock:
             if self.killed:
                 return
@@ -167,11 +172,6 @@ class ExecMainSubprocess:
                         creationflags=self.flags,
                     )
                 else:
-                    # Doing \type{process.kill()} doesn't seem to work as it
-                    # should. Not sure why, maybe something to do with calls to
-                    # \type{context} invoking child processes, and then killing
-                    # the parent process not affecting the children.
-                    # Hmm\periods
                     self.proc.kill()
 
             self.killed = True

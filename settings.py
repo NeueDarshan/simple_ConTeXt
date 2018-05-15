@@ -23,6 +23,7 @@ CURRENT_SETTINGS = {
     "builder/normal/output/show_full_command",
     "builder/normal/return_focus_after_open_PDF",
     "citations/format",
+    "citations/command_regex",
     "citations/on",
     "file_links/on",
     "option_completions/on",
