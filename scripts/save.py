@@ -280,26 +280,32 @@ class InterfaceSaver:
             "content": self.do_content,
             "csname": self.do_csname,
             "delimiter": self.do_delimiter,
-            # This one is an addition of ours for convenience.
-            "dotsdelimiter": self.do_dots_delimiter,
             "index": self.do_index,
             "keywords": self.do_keywords,
             "position": self.do_position,
             "resolve": self.do_resolve,
+            "string": self.do_string,
             "template": self.do_template,
             "text": self.do_text,
             "triplet": self.do_triplet,
+            # This one is an addition of ours for convenience.
+            "dotsdelimiter": self.do_dots_delimiter,
         }
         content = []
         for child in arguments:
             if self.tag_is(child, *handlers):
                 content.append(handlers[self.raw_tag(child)](child))
             else:
-                message = \
-                    'unexpected tag, name: "{}", attrib: "{}", tag: "{}"'
-                raise UnexpectedTagError(
-                    message.format(name, child.attrib, child.tag)
-                )
+                message = 'unexpected tag, name: "{}", attrib: "{}", tag: "{}"'
+                tag, attrib = child.attrib, child.tag
+                msg = message.format(name, attrib, tag)
+                if self.tolerant:
+                    content.append(
+                        self.do_generic(tag.upper(), tag.lower(), attrib)
+                    )
+                    print(self.prefix + msg)
+                else:
+                    raise UnexpectedTagError(msg)
         self.add_cmd(
             name,
             {"con": self.flatten(content), "fil": node.attrib.get("file")},
@@ -408,6 +414,9 @@ class InterfaceSaver:
     def do_text(self, node):
         return self.do_generic("TEXT", "text", node.attrib)
 
+    def do_string(self, node):
+        return self.do_generic("STRING", "string", node.attrib)
+
     def do_index(self, node):
         return self.do_generic("INDEX", "index", node.attrib)
 
@@ -481,7 +490,7 @@ class InterfaceSaver:
             return punct.format("(") + middle + punct.format(")")
         elif mode == "csname":
             return html_css.control_sequence("...")
-        elif mode in ["content", "text"]:
+        elif mode in {"content", "text", "string"}:
             return "<pun>{</pun>...<pun>}</pun>"
         elif mode == "delimiter":
             return html_css.control_sequence(self.escape(attrib["name"]))
@@ -491,7 +500,7 @@ class InterfaceSaver:
                 raise UnexpectedModeError(msg.format(mode, attrib))
             elif not self.quiet:
                 print(self.prefix + msg.format(mode, attrib))
-            return None
+            return "..."
 
     def is_true(self, val):
         return val == "yes"

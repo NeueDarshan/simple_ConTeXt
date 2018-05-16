@@ -50,10 +50,7 @@ def arg_count_aux_i(list_):
     n = 0
     for arg in list_:
         if isinstance(arg, dict):
-            if (
-                arg.get("con") is not None or
-                arg.get("inh") is not None
-            ):
+            if arg.get("con") is not None or arg.get("inh") is not None:
                 n += 1
     return n
 
@@ -75,12 +72,14 @@ class SimpleContextRegenerateInterfaceFilesCommand(
         paths=None,
         do_all=False,
         threaded=True,
+        indent=2,
         overwrite=False,
         file_min=20000,
     ):
         paths = [] if paths is None else paths
         self.reload_settings()
         self.file_min = file_min
+        self.indent = indent
         if self.state == IDLE:
             self.state = RUNNING
 
@@ -187,5 +186,10 @@ class SimpleContextRegenerateInterfaceFilesCommand(
 
     def run_aux_v(self, data, file_):
         with open(file_, encoding="utf-8", mode="w") as f:
-            # json.dump(data, f, indent=2, sort_keys=True, ensure_ascii=False)
-            json.dump(data, f, sort_keys=True, ensure_ascii=False)
+            json.dump(
+                data,
+                f,
+                indent=self.indent,
+                sort_keys=True,
+                ensure_ascii=False,
+            )

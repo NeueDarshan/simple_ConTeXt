@@ -242,9 +242,9 @@ contexts:
       scope: keyword.operator.script.context
     - match: '[+\-*/]'
       scope: keyword.operator.arithmetic.context
-    - match: (?:[=<>]+|[∈∉∼≁≠⊂⊄⊆⊊≪≫≢≡])
+    - match: (?:[=<>]+|[≤≥≰≱⩽⩾≪≫∼≁≠⊂⊄⊆⊊⊈≡≢∈∉∋∌])
       scope: keyword.operator.relation.context
-    - match: (\\)(?:[lg]eq?|(?:not)?in|n?sim|neq|ll|gg|n?equiv)(?!{{cs}})
+    - match: (\\)(?:[lg]e(?:q(?:slant)?)?|n[lg]eq|ll|gg|n?sim|neq|n?subset(?:eq)?|subsetneq|n?equiv|(?:not)?in|n?ni)(?!{{cs}})
       captures:
         0: meta.control-word.context keyword.operator.relation.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context

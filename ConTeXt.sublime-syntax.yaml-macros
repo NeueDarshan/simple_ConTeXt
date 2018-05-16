@@ -239,10 +239,12 @@ contexts:
       scope: keyword.operator.script.context
     - match: '[+\-*/]'
       scope: keyword.operator.arithmetic.context
-    - match: '(?:[=<>]+|[∈∉∼≁≠⊂⊄⊆⊊≪≫≢≡])'
+    - match: '(?:[=<>]+|[≤≥≰≱⩽⩾≪≫∼≁≠⊂⊄⊆⊊⊈≡≢∈∉∋∌])'
       scope: keyword.operator.relation.context
     - !control_sequence_operator
-        name: '(?:[lg]eq?|(?:not)?in|n?sim|neq|ll|gg|n?equiv)'
+        name:
+          "(?:[lg]e(?:q(?:slant)?)?|n[lg]eq|ll|gg|n?sim|neq|\
+           n?subset(?:eq)?|subsetneq|n?equiv|(?:not)?in|n?ni)"
         scope: keyword.operator.relation.context
     - match: '[∂×∖∩∪∘]'
       scope: keyword.operator.math.context
