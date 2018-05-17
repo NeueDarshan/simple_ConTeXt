@@ -1,0 +1,44 @@
+{
+    "user_brackets": [
+        {
+            "name": "metapost_def",
+            "open": "\\b((?:var|(?:prim|second|terti)ary)?def)\\b",
+            "close": "\\b(enddef)\\b",
+            "style": "default",
+            "scope_exclude": ["string", "comment"],
+            "language_filter": "whitelist",
+            "language_list": ["MetaPost", "MetaFun"],
+            "enabled": true
+        },
+        {
+            "name": "metapost_env",
+            "open": "\\b(begin(?:fig|group))\\b",
+            "close": "\\b(end(?:fig|group))\\b",
+            "style": "default",
+            "scope_exclude": ["string", "comment"],
+            "language_filter": "whitelist",
+            "language_list": ["MetaPost", "MetaFun"],
+            "enabled": true
+        },
+        {
+            "name": "metapost_ctrl",
+            "open": "\\b(if)\\b",
+            "close": "\\b(fi)\\b",
+            "style": "default",
+            "scope_exclude": ["string", "comment"],
+            "language_filter": "whitelist",
+            "language_list": ["MetaPost", "MetaFun"],
+            "enabled": true
+        },
+        {
+            "name": "metapost_loop",
+            "open": "\\b(for(?:suffixes|ever)?)\\b",
+            "close": "\\b(endfor)\\b",
+            "style": "default",
+            "scope_exclude": ["string", "comment"],
+            "language_filter": "whitelist",
+            "language_list": ["MetaPost", "MetaFun"],
+            "enabled": true
+        }
+    ]
+}

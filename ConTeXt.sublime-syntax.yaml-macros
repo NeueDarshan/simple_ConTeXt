@@ -239,12 +239,20 @@ contexts:
       scope: keyword.operator.script.context
     - match: '[+\-*/]'
       scope: keyword.operator.arithmetic.context
-    - match: '(?:[=<>]+|[≤≥≰≱⩽⩾≪≫∼≁≠⊂⊄⊆⊊⊈≡≢∈∉∋∌])'
+    # Too many arrows to keep track of \periods\ we content ourselves to do
+    # some more common ones.
+    - match:
+        "(?:[=<>]+|[≤≥≰≱⩽⩾≪≫∼≁≠⊂⊄⊆⊊⊈≡≢∈∉∋∌↦⤇⟾⟼↤⤆⟻⟽↥↧\
+         ←⇐⟵⟸↚⇍→⇒⟶⟹↛⇏↑⇑↓⇓↔⇔⟷⟺↮⇎↕⇕])"
       scope: keyword.operator.relation.context
     - !control_sequence_operator
         name:
           "(?:[lg]e(?:q(?:slant)?)?|n[lg]eq|ll|gg|n?sim|neq|\
-           n?subset(?:eq)?|subsetneq|n?equiv|(?:not)?in|n?ni)"
+           n?subset(?:eq)?|subsetneq|n?equiv|(?:not)?in|n?ni|\
+           (?:[mM]|[lL]ongm)aps(?:to|from)|maps(?:up|down)|\
+           (?:n?[lL]|[lL]ongl)eftarrow|(?:n?[rR]|[lL]ongr)ightarrow|\
+           (?:[uU]p|[dD]own)arrow|(?:n?[lL]|[lL]ongl)eftrightarrow|\
+           [uU]pdownarrow)"
         scope: keyword.operator.relation.context
     - match: '[∂×∖∩∪∘]'
       scope: keyword.operator.math.context

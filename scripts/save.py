@@ -531,6 +531,12 @@ class InterfaceSaver:
         return obj
 
     def transform(self, text, escape=True):
+        """
+        This is the main place to add special formatting options. I think this
+        degree of customization is a reasonable default, but there are lots of
+        options here.
+        """
+
         f = self.escape if escape else self.identity
         if text == "cd:sign":
             return f("[+-]")
@@ -542,6 +548,15 @@ class InterfaceSaver:
                 return html_css.control_sequence("...") + "<par>#1#2</par>"
             elif rest == "threearguments":
                 return html_css.control_sequence("...") + "<par>#1#2#3</par>"
+            elif rest in {"command", "content", "text", "string"}:
+                return "<pun>{</pun>...<pun>}</pun>"
+            # These go too far?
+            # elif rest == "template":
+            #     return "<pun>|</pun>...<pun>|</pun>"
+            # elif rest == "number":
+            #     return "<num>NUMBER</num>"
+            # elif rest == "dimension":
+            #     return "<wor>DIMENSION</wor>"
             else:
                 return "<typ>" + f(rest.upper()) + "</typ>"
         return f(text)

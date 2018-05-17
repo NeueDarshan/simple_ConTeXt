@@ -190,9 +190,9 @@ places only (e.g. not in maths or code blocks).
 
 ### Bracket Highlighter
 
-If you use the excellent [BracketHighlighter][bracket-highlighter] package, then
-adding the following to the BracketHighlighter settings will provide some
-support for ConTeXt start/stop commands.
+If you use the excellent [BracketHighlighter][bracket-highlighter] (BH) package,
+then adding the following to the BH settings will provide some support for
+ConTeXt start/stop commands.
 
 ```json
 {
@@ -215,6 +215,10 @@ support for ConTeXt start/stop commands.
 
 The file `context_environments.py` pointed to here under the `plugin_library`
 key simply checks that the start and stop tags match.
+
+Included in this package is a file `bracket_highlighter/metapost_settings.json`
+which I omit here for brevity, but it shows a basic setup to get BH to highlight
+some MetaPost/MetaFun 'brackets' too.
 
 ### Interface Files
 
@@ -380,6 +384,7 @@ The formatting should be fairly self-explanatory. A couple of notes:
   number of arguments (one for `\...#1`, two for `\...#1#2`, and so on).
 - Sometimes there is a value `inherits: \...`, which indicates that this option
   inherits the options of that command.
+- Some arguments accept any 'string' as a value; we indicate this with `{...}`.
 - At the end there can be a hyperlink to a file name (`page-app.mkiv` here)
   where the command is defined.
 
@@ -537,6 +542,11 @@ A couple of features that I think would be nice to have. Of course, we can go
 and on imagining things to add/improve.
 
 - Work on the interface generator, I think there is some simplifying we can do.
+  (Thinking about optional arguments). In addition, we could pull out common
+  arguments into, say, a 'where' clause. This would be very nice when there are
+  big arguments duplicated twice or more, although it would also be a
+  significant change to the inner workings. On this note, we could tidy some
+  things up here e.g. with default values in the JSON files.
 - Extend the `key=val` auto-completion stuff to include value suggestions.
 - Add support for multi file documents. This is not something I do very much,
   so I'm not sure what it should look like. Have the builder figure out the

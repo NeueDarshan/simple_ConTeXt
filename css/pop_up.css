@@ -16,6 +16,8 @@
  *   \NC <val> \NC default value \NC\NR
  *   \NC <par> \NC argument parameter, i.e.\ something like \type{#1} \NC\NR
  *   \NC <num> \NC number \NC\NR
+ *   \NC <wor> \NC keyword, as in units e.g.\ the \type{pt} in
+ *                 \type{12pt} \NC\NR
  *   \NC <typ> \NC type name, e.g.\ \type{CSNAME} means a control sequence
  *                 name \NC\NR
  *   \NC <com> \NC comma, as in \type{key1=val1, key2=val2} \NC\NR
@@ -154,6 +156,13 @@ div.popup num {
     color: var(--numeric-color);
     font-style: var(--numeric-style);
     font-weight: var(--numeric-weight);
+}
+
+div.popup wor {
+    background-color: var(--keyword-background);
+    color: var(--keyword-color);
+    font-style: var(--keyword-style);
+    font-weight: var(--keyword-weight);
 }
 
 div.popup com {

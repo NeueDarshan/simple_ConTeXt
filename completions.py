@@ -52,6 +52,7 @@ def extra_style():
         "key": "key",
         "equ": "equals",
         "num": "numeric",
+        "wor": "keyword",
         "com": "comma",
         "par": "parameter",
     }
@@ -427,6 +428,7 @@ class SimpleContextMacroSignatureEventListener(
         key = self.view.style_for_scope("variable.parameter")
         equ = self.view.style_for_scope("keyword.operator.assignment")
         num = self.view.style_for_scope("constant.numeric")
+        wor = self.view.style_for_scope("keyword.other")
         com = self.view.style_for_scope("punctuation.separator.comma")
         par = self.view.style_for_scope("variable.parameter")
 
@@ -434,7 +436,7 @@ class SimpleContextMacroSignatureEventListener(
             "con": con, "sco": sco, "flo": flo, "sfl": sfl, "mod": mod,
             "smo": smo, "sto": sto, "sst": sst, "lan": lan, "sla": sla,
             "pun": pun, "key": key, "equ": equ, "num": num, "com": com,
-            "par": par,
+            "par": par, "wor": wor,
         }
         opts = {}
         for s, d in styles.items():
