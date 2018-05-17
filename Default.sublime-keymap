@@ -1,0 +1,17 @@
+[
+  {
+    "keys": ["ctrl+r"],
+    "command": "simple_context_show_combined_overlay",
+    "args": {
+      "selected_index": "closest",
+      "default_selectors": ["definition", "heading", "reference"]
+    },
+    "context": [
+      {
+        "key": "selector",
+        "operator": "equal",
+        "operand": "text.tex.context"
+      }
+    ]
+  }
+]

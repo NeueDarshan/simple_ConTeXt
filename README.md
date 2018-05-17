@@ -143,32 +143,10 @@ completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
 
 ### Symbol List
 
-Consider adding the following to your key bindings: it will (for ConTeXt files
-only) replace the binding for the local symbol list
-(<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom variation of it. The idea is to
-make it easier to navigate/filter between headings, definitions, references, and
-so on.
-
-```json
-{
-  "keys": ["ctrl+r"],
-  "command": "simple_context_show_combined_overlay",
-  "args": {
-    "selected_index": "closest",
-    "default_selectors": ["definition", "heading", "reference"]
-  },
-  "context": [
-    {
-      "key": "selector",
-      "operator": "equal",
-      "operand": "text.tex.context"
-    }
-  ]
-}
-```
-
-Otherwise, the default local symbol list contains all these things and uses
-prefixes to distinguish between e.g. headings and definitions.
+We overwrite the local symbol list (<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom
+variation of it (for ConTeXt files only, i.e. (in ST parlance) `view`s with the
+ConTeXt syntax). The idea is to make it easier to navigate/filter between
+headings, definitions, references, and so on.
 
 ### Spell Checking
 

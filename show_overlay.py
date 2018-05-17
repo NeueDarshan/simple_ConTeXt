@@ -276,9 +276,13 @@ class SimpleContextShowCombinedOverlayCommand(sublime_plugin.WindowCommand):
             self.def_sels = [default_selectors]
 
     def run_panel(self, selected_index=None):
-        index = 0 if selected_index is None else self.get_index(selected_index)
+        entries = self.get_current_entries()
+        if not entries or selected_index is None:
+            index = 0
+        else:
+            index = self.get_index(selected_index)
         self.window.show_quick_panel(
-            ["Change scopes shown"] + self.get_current_entries(),
+            ["Change scopes shown"] + entries,
             self.run_handle,
             on_highlight=self.on_highlight,
             selected_index=index,
