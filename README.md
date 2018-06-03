@@ -28,7 +28,6 @@
   - [Manual](#manual)
 - [Scripts](#scripts)
 - [Snippets](#snippets)
-- [Misc](#misc)
 - [Future Features](#future-features)
 
 <!-- /MarkdownTOC -->
@@ -50,13 +49,13 @@ a hobby project. Don't expect a robust, polished experience!
 
 Currently the features are:
 
-- Syntax file(s).
-- Builder(s).
-- Command auto-completions.
-- Command pop-ups.
-- Handling of references.
-- Handling of citations.
-- Various snippets.
+- Syntax file(s);
+- Builder(s);
+- Command auto-completions;
+- Command pop-ups;
+- Handling of references;
+- Handling of citations;
+- Various snippets;
 - Other miscellany.
 
 (I should say that I use ConTeXt MkIV exclusively, and so the package is
@@ -111,8 +110,8 @@ which should be the name of a key in the `program_locations.ConTeXt_paths`
 dictionary (so `example` as above). To quickly change between different versions
 of ConTeXt, you can use the [Quick Settings](#quick-settings) command.
 
-There are also some options to control how the builder functions and what output
-to report.
+There are also some options (you can check out the settings) to control how the
+builder functions and what output to report.
 
 ### PDFs
 
@@ -122,8 +121,8 @@ consulted. It should be the name of one of the keys in
 
 Similarly to the previous, the keys in `program_locations.PDF_viewers` can be
 any string, but each value should be the name of a PDF viewer program. (In the
-case of Sumatra PDF viewer, this could be simply `sumatraPDF` if it's on your
-environment path, or else an explicit path like `/usr/bin/sumatraPDF`.)
+case of the Evince PDF viewer, this could be simply `evince` if it's on your
+environment path, or else an explicit path like `/usr/bin/evince`.)
 
 ### Auto-Completion
 
@@ -179,7 +178,7 @@ ConTeXt start/stop commands.
       "name": "context_env",
       "open": "(\\\\start[a-zA-Z]*)",
       "close": "(\\\\stop[a-zA-Z]*)",
-      "style": "tag",
+      "style": "alt_tag",
       "scope_exclude": ["- meta.structure"],
       "language_filter": "whitelist",
       "language_list": ["ConTeXt"],
@@ -187,7 +186,13 @@ ConTeXt start/stop commands.
         "simple_ConTeXt.bracket_highlighter.context_environments",
       "enabled": true
     }
-  ]
+  ],
+  "user_bracket_styles": {
+    "alt_tag": {
+      "icon": "tag",
+      "color": "keyword.control"
+    }
+  }
 }
 ```
 
@@ -233,10 +238,13 @@ built-ins `\in` and friends) into the system (e.g. `\eqref`) there is the option
 ## Citations
 
 We provide some support for citations, in the new MkIV style. (For reference,
-see the manual 'Bibliographies: The ConTeXt Way' (a.k.a.
-`mkiv-publications.pdf`)). We can parse bibliographic databases in the
-traditional BibTeX format, as well as in the Lua and XML formats. As a quick
-intro/example, suppose the file `example.bib` looks like
+see the manual 'Bibliographies: The ConTeXt Way' (a.k.a. `mkiv-
+publications.pdf`)). We can parse bibliographic databases in the traditional
+BibTeX format, as well as in the Lua and XML formats. Handling the BibTeX is a
+must given its ubiquity, but I find Lua and XML to be interesting alternative
+data formats. So I make sure to support them too.
+
+As a quick intro/example, suppose the file `example.bib` looks like
 
 ```
 @book{foo-bar,
@@ -323,9 +331,14 @@ You can turn this feature on or off with the setting `current.file_links/on`.
 
 ### Auto-Complete
 
-Provided you tell ST to do so as in [this section][#auto-completion], when
+Provided you tell ST to do so as in [this section](#auto-completion), when
 typing a backslash <kbd>\\</kbd> there will appear a list of all known command
 names, as well as an indicator of how many arguments each command takes.
+
+Completions should play well with others, e.g. the completions provided by the
+[UnicodeCompletion][unicode-completion] package. (Although UnicodeCompletion is
+intended for LaTeX, I still find it useful for ConTeXt as many of the command
+names are the same.)
 
 ### Pop-Ups
 
@@ -333,7 +346,7 @@ When you type in a full command name, e.g. `\setupfittingpage`, or if you hover
 over a full command name, a pop-up will appear. They look something like this:
 
 <!-- This doesn't come out right on Package Control, not sure what to do about
-     that. -->
+     that. I think that's a bug in the Package Control markdown renderer. -->
 
 ```
                       1           2
@@ -342,11 +355,11 @@ over a full command name, a pop-up will appear. They look something like this:
 
 1   NAME
 
-2   command = \...#1
-    margin = page
+2   command   = \...#1
+    margin    = page
     pagestate = start stop
-    paper = auto default NAME
-    scale = NUMBER
+    paper     = auto default NAME
+    scale     = NUMBER
     inherits: \setupframed
 
 page-app.mkiv
@@ -393,7 +406,7 @@ Both of these rely on the setting `current.path` to find the relevant programs.
 
 There is an auto-build functionality: I'm not sure how useful it is, you can try
 it out if you like. You can turn it on by setting `current.builder/auto/on` to
-`true`. Then, whenever you save a ConTeXt file (i.e. a view in ST that has the
+`true`. Then, any time you save a ConTeXt file (i.e. a view in ST that has the
 'ConTeXt' syntax) we run the ConTeXt builder.
 
 There a couple of options related to this, all starting with the string
@@ -432,10 +445,17 @@ We added an auto-completion feature, can be turned on or off with the option
 `\setuphead[c`. Then (provided you had this option turned on) you would see a
 list of suggested options pop up: at time of writing I am suggested the options
 `catcodes`, `color`, `command`, `commandafter`, `commandbefore`, `continue`,
-`conversion`, and `coupling`. (These are provided by a simple idea: given a
-command `\foo`, suggest any keys from key-value options that `\foo` has itself,
-in addition to (in a recursive manner) any keys from key-value commands that
-`\foo` inherits.)
+`conversion`, and `coupling`.
+
+These are provided by a very simple idea: given a command `\foo`, suggest any
+keys from key-value options that `\foo` has itself, in addition to (in a
+recursive manner) any keys from key-value commands that `\foo` inherits.
+
+We don't try to keep track of which arguments take key-value options, and which
+do not: instead, we just always suggest keys. This is not ideal, but doing
+better than this would be a lot more complicated. So currently we have a kind of
+compromise between usefulness and false positives: even so, I find it to be a
+good trade-off where it is at the moment
 
 ## Settings
 
@@ -507,18 +527,49 @@ here is a quick summary.
 - For placing things: `place`,  `pfig`, and `ptab`.
 - Others: `start`, `text`, `doc`, and `page`.
 
-## Misc
+Designing good, general purpose snippets is tricky: I'm sure many of these could
+be improved, or removed for not being useful. For myself, regarding the ConTeXt
+snippets I find that:
 
-Completions should play well with others, e.g. the completions provided by the
-[UnicodeCompletion][unicode-completion] package. (Although UnicodeCompletion is
-intended for LaTeX, I still find it useful for ConTeXt as many of the command
-names are the same.)
+- `start` is very useful;
+- `text` is rarely used (once per document or so), but a nice convenience;
+- I like that `math` saves me the trouble of typing in the backslash `\` and
+  the braces `{}`, but it's a minor thing;
+- `form` (and its variations) are very convenient;
+- `item` and `items` go well together;
+- the samples are good for quickly mocking up some fake words;
+- I like that the table snippets remind me of the different syntaxes, because I
+  tend to forget the exact details of all the many tables;
+- I like how clever the project/module snippets are;
+- the mark-up snippets leave something to be desired;
+
+About the MetaPost snippets: I don't write MetaPost/MetaFun that often, but when
+I do I find the variable declaration snippets useful (`num` and `nums`, and so
+on).
 
 ## Future Features
 
 A couple of features that I think would be nice to have. Of course, we can go
 and on imagining things to add/improve.
 
+- Make the quick setting thing smarter/more functional (i.e. add more
+  functionality to it).
+- Set up file links to work for modules.
+- Allow for `current.citations/format` to be a list of strings instead of just
+  a string, and document the option.
+- On the bibliographical side, add in a command something along the lines of
+  'force re-parse bibliographic database'. Also add in some kind of way to
+  browse the current bibliographic entries (other than typing `\cite[`), and
+  consider what to do about multi-citing (by which I mean things like
+  `\cite[foo,bar]` where you cite multiple entries at one time).
+- Maybe we can abstract out the process of building the bib. database into it's
+  own ST command. I think that would be a reasonable design and allow us to
+  accomplish everything we want. Now that I think about it, this design pattern
+  gives us a sensible way to share data between different parts of the ST
+  API—something we've wanted for a while, I'm sure we could refactor some bits
+  with this approach. Having said that, how do we get the data out, as
+  `run(<command>)` doesn't return anything... set some `Settings` of the current
+  `view` or whatnot?
 - Work on the interface generator, I think there is some simplifying we can do.
   (Thinking about optional arguments). In addition, we could pull out common
   arguments into, say, a 'where' clause. This would be very nice when there are
