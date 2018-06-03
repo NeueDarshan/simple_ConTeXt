@@ -552,6 +552,8 @@ on).
 A couple of features that I think would be nice to have. Of course, we can go
 and on imagining things to add/improve.
 
+- Handle `$` in the same way as quotes & brackets by ST out-of-the-box, i.e. as
+  a delimiter. (I think it's the only such thing for us.)
 - Make the quick setting thing smarter/more functional (i.e. add more
   functionality to it).
 - Set up file links to work for modules.

@@ -1,17 +1,23 @@
 {
-	"target": "simple_context_exec_main",
-	"selector": "text.tex.context",
-	"cmd_seq": [
-		{
-			"cmd": ["context", "$simple_context_insert_options", "$file"],
-			"env": {"PATH": "$simple_context_prefixed_path"},
-			"output": "context",
-		},
-		{
-			"cmd": ["$simple_context_pdf_viewer", "$file_base_name.pdf"],
-			"output": "pdf",
-			"run_when": "$simple_context_open_pdf_after_build",
-		},
-	],
-	"cancel": {"kill": true},
+  "target": "simple_context_exec_main",
+  "selector": "text.tex.context",
+  "cmd_seq": [
+    {
+      // Prefer an equivalent \type{mtxrun} call to using \type{context}
+      // directly to minimise dependencies.
+      "cmd": [
+        "mtxrun", "--script", "context",
+        "$simple_context_insert_options",
+        "$file",
+      ],
+      "env": {"PATH": "$simple_context_prefixed_path"},
+      "output": "context",
+    },
+    {
+      "cmd": ["$simple_context_pdf_viewer", "$file_base_name.pdf"],
+      "output": "pdf",
+      "run_when": "$simple_context_open_pdf_after_build",
+    },
+  ],
+  "cancel": {"kill": true},
 }

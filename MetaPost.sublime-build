@@ -1,18 +1,18 @@
 {
-	"target": "simple_context_exec_wrapper",
-	"selector": "source.metapost",
-	"cmd": ["mpost", "$file"],
-	"env": {"PATH": "$simple_context_prefixed_path"},
-	"cancel": {"kill": true},
-	"file_regex": "^Preloading the plain mem file, version .*\\).*\\((.*\\.mp)",
-	"line_regex": "^l\\.([0-9]+)",
-	"variants": [
-		{
-			"name": "use ConTeXt and MetaFun",
-			"cmd": ["context", "$file"],
-			"cancel": {"kill": true},
-			"file_regex": "^\\((.*\\.mp)",
-			"line_regex": "^l\\.([0-9]+)",
-		},
-	],
+  "target": "simple_context_exec_wrapper",
+  "selector": "source.metapost",
+  "cmd": ["mpost", "$file"],
+  "env": {"PATH": "$simple_context_prefixed_path"},
+  "cancel": {"kill": true},
+  "file_regex": "^Preloading the plain mem file, version .*\\).*\\((.*\\.mp)",
+  "line_regex": "^l\\.([0-9]+)",
+  "variants": [
+    {
+      "name": "use ConTeXt and MetaFun",
+      "cmd": ["mtxrun", "--script", "context", "$file"],
+      "cancel": {"kill": true},
+      "file_regex": "^\\((.*\\.mp)",
+      "line_regex": "^l\\.([0-9]+)",
+    },
+  ],
 }

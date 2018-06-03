@@ -1,11 +1,14 @@
 {
-	"target": "simple_context_exec_wrapper",
-	"selector": "source.lua",
-	"cmd": ["texlua", "$file"],
-	"env": {"PATH": "$simple_context_prefixed_path"},
-	"cancel": {"kill": true},
-	// In error messages, Lua mentions the absolute file name truncated to a
-	// certain length. So matching the (possibly) truncated name is a bad idea.
-	// Instead we go in for this workaround, where we match the file name only.
-	"file_regex": "^(?:lua:)?.*$simple_context_path_sep(.*\\.lua):([0-9]+):?\\s*(.*)",
+  "target": "simple_context_exec_wrapper",
+  "selector": "source.lua",
+  // Prefer an equivalent \type{luatex} call to using \type{texlua}
+  // directly to minimise dependencies.
+  "cmd": ["luatex", "--luaonly", "$file"],
+  "env": {"PATH": "$simple_context_prefixed_path"},
+  "cancel": {"kill": true},
+  // In error messages, Lua mentions the absolute file name truncated to a
+  // certain length. So matching the (possibly) truncated name is a bad idea.
+  // Instead we go in for this workaround, where we match the file name only.
+  "file_regex":
+    "^(?:lua:)?.*$simple_context_path_sep(.*\\.lua):([0-9]+):?\\s*(.*)",
 }
