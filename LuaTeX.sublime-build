@@ -4,6 +4,7 @@
   // Prefer an equivalent \type{luatex} call to using \type{texlua}
   // directly to minimise dependencies.
   "cmd": ["luatex", "--luaonly", "$file"],
+  "shell": "$simple_context_shell",
   "env": {"PATH": "$simple_context_prefixed_path"},
   "cancel": {"kill": true},
   // In error messages, Lua mentions the absolute file name truncated to a

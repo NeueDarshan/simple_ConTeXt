@@ -37,8 +37,9 @@ class InterfaceSaver:
     cmds = {}
     to_load = []
 
-    def __init__(self, flags=0):
+    def __init__(self, flags=0, shell=False):
         self.flags = flags
+        self.shell = shell
         self.method = {
             "range": ":",
             "factor": "*",
@@ -84,6 +85,7 @@ class InterfaceSaver:
             self.path,
             "i-common-definitions.xml",
             flags=self.flags,
+            shell=self.shell,
             timeout=self.timeout,
         )
         if not file_:
@@ -107,7 +109,11 @@ class InterfaceSaver:
 
     def load_definitions_aux_i(self, filename):
         file_ = files.locate(
-            self.path, filename, flags=self.flags, timeout=self.timeout,
+            self.path,
+            filename,
+            flags=self.flags,
+            shell=self.shell,
+            timeout=self.timeout,
         )
         if not file_:
             raise OSError('unable to locate "{}"'.format(filename))
@@ -127,7 +133,11 @@ class InterfaceSaver:
         self.to_load = set()
 
         main = files.locate(
-            self.path, "i-context.xml", flags=self.flags, timeout=self.timeout,
+            self.path,
+            "i-context.xml",
+            flags=self.flags,
+            shell=self.shell,
+            timeout=self.timeout,
         )
         if main:
             dir_ = os.path.split(main)[0]
@@ -138,7 +148,11 @@ class InterfaceSaver:
         if modules:
             # Let's use \type{t-rst.xml} as a smoking gun.
             alt = files.locate(
-                self.path, "t-rst.xml", flags=self.flags, timeout=self.timeout,
+                self.path,
+                "t-rst.xml",
+                flags=self.flags,
+                shell=self.shell,
+                timeout=self.timeout,
             )
             if alt:
                 dir_ = os.path.split(alt)[0]

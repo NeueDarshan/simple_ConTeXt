@@ -30,6 +30,7 @@ PHANTOM_ERROR_TEMPLATE = """
 class ExecMainSubprocess:
     platform = sublime.platform()
     flags = files.CREATE_NO_WINDOW if platform == "windows" else 0
+    shell = True if platform == "windows" else False
     proc = None
     killed = False
     lock = threading.Lock()
@@ -80,6 +81,8 @@ class ExecMainSubprocess:
         if isinstance(cmd, str):
             cmd = cmd.split()
 
+        shell = bool(seq.get("shell"))
+
         env = os.environ.copy()
         extra_env = seq.get("env")
         if extra_env:
@@ -94,6 +97,7 @@ class ExecMainSubprocess:
                 cmd,
                 {
                     "env": env,
+                    "shell": shell,
                     "creationflags": self.flags,
                     "stdin": subprocess.PIPE,
                     "stdout": subprocess.PIPE,
@@ -108,7 +112,7 @@ class ExecMainSubprocess:
     def run_command(self, cmd, opts, output):
         self.proc = subprocess.Popen(cmd, **opts)
         if output == "context":
-            self.root.add_to_output("running ConTeXt\n")
+            self.root.add_to_output("- running ConTeXt\n")
             if self.show_ConTeXt_path:
                 path = self.root.get_setting("path")
                 if path:
@@ -149,10 +153,11 @@ class ExecMainSubprocess:
             self.root.show_output()
 
     def output_context_pdf(self, cmd):
-        if cmd:
-            text = "opening PDF with {}\n".format(cmd)
+        viewer = self.root.get_setting("PDF/viewer")
+        if viewer:
+            text = "- opening PDF with {}\n".format(viewer)
         else:
-            text = "opening PDF\n"
+            text = "- opening PDF\n"
         self.root.add_to_output(text, scroll_to_end=True, force=True)
 
     def kill(self):
@@ -170,6 +175,7 @@ class ExecMainSubprocess:
                     subprocess.Popen(
                         ["taskkill", "/t", "/f", "/pid", str(self.proc.pid)],
                         creationflags=self.flags,
+                        shell=self.shell,
                     )
                 else:
                     self.proc.kill()

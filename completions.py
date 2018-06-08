@@ -161,7 +161,7 @@ class SimpleContextMacroSignatureEventListener(
     param_char = string.ascii_letters  # + string.whitespace
     extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
     auto_complete_cmd_key = None
-    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
+    attempts = 0
 
     def is_visible(self):
         return self.is_visible_alt()
@@ -185,11 +185,13 @@ class SimpleContextMacroSignatureEventListener(
         if (
             self.state == IDLE and
             self.is_visible() and
-            self.get_setting("pop_ups/try_generate_on_demand") and
             self.name not in self.cache
         ):
-            self.state = RUNNING
-            threading.Thread(target=self.reload_settings_aux).start()
+            if self.get_setting("pop_ups/try_generate_on_demand"):
+                self.state = RUNNING
+                threading.Thread(target=self.reload_settings_aux).start()
+            else:
+                self.try_load_commands()
 
     def reload_settings_aux(self):
         self.view.window().run_command(
@@ -200,15 +202,20 @@ class SimpleContextMacroSignatureEventListener(
                 "overwrite": False,
             },
         )
-        self.load_commands(
-            os.path.join(
-                sublime.packages_path(),
-                "simple_ConTeXt",
-                "interface",
-                self.name,
-            )
-        )
+        self.try_load_commands()
         self.state = IDLE
+
+    def try_load_commands(self):
+        self.attempts += 1
+        if self.attempts < 10:
+            self.load_commands(
+                os.path.join(
+                    sublime.packages_path(),
+                    "simple_ConTeXt",
+                    "interface",
+                    self.name,
+                )
+            )
 
     def load_css(self):
         self.style = html_css.strip_css_comments(
@@ -479,7 +486,9 @@ class SimpleContextMacroSignatureEventListener(
         ).start()
 
     def on_navigate_file_aux(self, name, command):
-        main = files.locate(self.context_path, name, flags=self.flags)
+        main = files.locate(
+            self.context_path, name, flags=self.flags, shell=self.shell,
+        )
         if main and os.path.exists(main):
             view = self.view.window().open_file(main)
             try_jump_to_def(view, command)
@@ -490,6 +499,7 @@ class SimpleContextMacroSignatureEventListener(
             name,
             extensions=self.extensions,
             flags=self.flags,
+            shell=self.shell,
         )
         if other and os.path.exists(other):
             view = self.view.window().open_file(other)

@@ -36,7 +36,7 @@
   // 'show_panel_on_build' is set to 'false' then this
   // setting is ignored and the build panel is never
   // shown.
-  "current.builder/auto/output/show": false,
+  "current.builder/auto/output/show": "when_there_are_errors",
   // Set to `true` or `false`; whether to show the
   // current ConTeXt path being used in the output
   // panel.
@@ -50,7 +50,7 @@
   // Set to `true` or `false`. Technical note: the
   // variable '$simple_context_open_pdf_after_build' in
   // the ConTeXt builder gets this value assigned to it.
-  "current.builder/normal/open_PDF_after_build": false,
+  "current.builder/normal/open_PDF_after_build": true,
   // These options will be passed along to the 'context'
   // process. You can simply pass a string, like so.
   //
@@ -91,7 +91,7 @@
   // Set to `true` or `false`; whether to show the
   // current ConTeXt path being used in the output
   // panel.
-  "current.builder/normal/output/show_ConTeXt_path": false,
+  "current.builder/normal/output/show_ConTeXt_path": true,
   // Set to `true` or `false`; whether to show the full
   // command in the output panel.
   "current.builder/normal/output/show_full_command": false,
@@ -114,7 +114,7 @@
   // as a general purpose catch-all for new citation
   // commands. Alternatively, you can set the value as
   // `null` to ignore this option.
-  "current.citations/command_regex": null,
+  "current.citations/command_regex": "[a-zA-Z]*cit(e|ation)[a-zA-Z]*",
   // Whether to bring up the list of bibliographic
   // entries upon typing in the start of a citation
   // command. For example, typing the sequence '\cite['
@@ -139,7 +139,7 @@
 
   // This should be one of the keys in the
   // 'program_locations.ConTeXt_paths' option.
-  "current.path": "example",
+  "current.path": "default",
 
   // Options are either a numeric value (I find 65 to be
   // a reasonable default) or `false` which turns
@@ -147,14 +147,14 @@
   "current.pop_ups/line_break": 65,
   // Set to `true` or `false`. Controls whether or not
   // to align the equals signs in a key-value argument.
-  "current.pop_ups/match_indentation": false,
+  "current.pop_ups/match_indentation": true,
   // Set to `true` or `false`. Suppose the value in a
   // key-value argument is too long to fit on a line of
   // length 'current.pop_ups/line_break'. When we break
   // it up, this controls whether to place additional
   // lines after the equals sign, or else simply at the
   // start of the new line.
-  "current.pop_ups/hang_indentation": false,
+  "current.pop_ups/hang_indentation": true,
   // Whether to show pop-ups when you hover over a
   // command name '\foo'. Should be `true` or `false`.
   "current.pop_ups/methods/on_hover": true,

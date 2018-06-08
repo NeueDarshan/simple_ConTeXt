@@ -138,7 +138,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
                     print(text.format(e))
 
     def run_aux_iv(self, path, dir_, slug):
-        saver = save.InterfaceSaver(flags=self.flags)
+        saver = save.InterfaceSaver(flags=self.flags, shell=self.shell)
         start_msg = (
             '[simple_ConTeXt] generating interface files (in folder "{}") '
             'for "{}"'

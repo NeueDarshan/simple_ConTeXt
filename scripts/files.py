@@ -10,7 +10,13 @@ CREATE_NO_WINDOW = 0x08000000
 
 @functools.lru_cache(maxsize=256)
 def fuzzy_locate(
-    path, file_, flags=0, methods=None, extensions=None, timeout=5,
+    path,
+    file_,
+    flags=0,
+    shell=False,
+    methods=None,
+    extensions=None,
+    timeout=5,
 ):
     methods = (None,) if methods is None else methods
     extensions = ("",) if extensions is None else extensions
@@ -20,6 +26,7 @@ def fuzzy_locate(
                 path,
                 file_ + ext,
                 flags=flags,
+                shell=shell,
                 methods=(method,),
                 timeout=timeout,
             )
@@ -29,7 +36,7 @@ def fuzzy_locate(
 
 
 @functools.lru_cache(maxsize=256)
-def locate(path, file_, flags=0, methods=None, timeout=5):
+def locate(path, file_, flags=0, shell=False, methods=None, timeout=5):
     methods = (None,) if methods is None else methods
     for method in methods:
         if method is None:
@@ -39,6 +46,7 @@ def locate(path, file_, flags=0, methods=None, timeout=5):
                 proc = subprocess.Popen(
                     ["mtxrun", "--locate", file_],
                     creationflags=flags,
+                    shell=shell,
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,

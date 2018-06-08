@@ -18,15 +18,18 @@ RUNNING = 1
 class SimpleContextRunScriptCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
-    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
-    options = {
-        "creationflags": flags,
-        "stdin": subprocess.PIPE,
-        "stdout": subprocess.PIPE,
-        "stderr": subprocess.STDOUT,
-    }
     state = IDLE
-    previous_script = "context --version"
+    previous_script = "mtxrun --script context --version"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.options = {
+            "creationflags": self.flags,
+            "shell": self.shell,
+            "stdin": subprocess.PIPE,
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.STDOUT,
+        }
 
     def reload_settings(self):
         super().reload_settings()

@@ -149,6 +149,8 @@ def _expand_variables(self, args, variables):
         return result
     elif args == "$simple_context_open_pdf_after_build":
         return bool(get_setting(self, "builder/normal/open_PDF_after_build"))
+    elif args == "$simple_context_shell":
+        return bool(self.shell)
     return args
 
 
@@ -301,6 +303,10 @@ class FuzzyOrderedDict:
 
 
 class BaseSettings:
+    platform = sublime.platform()
+    flags = files.CREATE_NO_WINDOW if platform == "windows" else 0
+    shell = True if platform == "windows" else False
+
     def reload_settings(self):
         reload_settings(self)
 
@@ -344,6 +350,7 @@ class LocateSettings(BaseSettings):
             self.context_path,
             name,
             flags=self.flags,
+            shell=self.shell,
             extensions=extensions,
             methods=methods[::-1],
             timeout=timeout,
@@ -357,6 +364,7 @@ class LocateSettings(BaseSettings):
             self.context_path,
             name,
             flags=self.flags,
+            shell=self.shell,
             extensions=extensions,
             timeout=timeout,
         )

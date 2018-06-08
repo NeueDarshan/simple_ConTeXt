@@ -53,7 +53,6 @@ class SimpleContextCiteEventListener(
     utilities.LocateSettings, sublime_plugin.ViewEventListener,
 ):
     extensions = ("",) + tuple(".{}".format(s) for s in EXTENSIONS)
-    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
     bibliographies = {}
     bib_per_files = {}
     lock = threading.Lock()
@@ -67,6 +66,7 @@ class SimpleContextCiteEventListener(
         self.opts = self.expand_variables(
             {
                 "creationflags": self.flags,
+                "shell": self.shell,
                 "env": {"PATH": "$simple_context_prefixed_path"},
             }
         )
