@@ -144,13 +144,28 @@ class ExecMainSubprocess:
     def output_context(self, data, code):
         if not self.root:
             return
-        self.root.add_to_output(
-            log.parse(data, code),
-            scroll_to_end=True,
-            force=True,
-        )
-        if code and self.root.show_output_on_errors:
-            self.root.show_output()
+        result = self.root.parse_log(data)
+        errors = result.get("errors", {})
+        if errors:
+            self.root.add_to_output(
+                log.compile_errors(errors), scroll_to_end=True, force=True,
+            )
+            self.root.add_to_output(
+                "  - completed un-successfully\n",
+                scroll_to_end=True,
+                force=True,
+            )
+            if self.root.show_output_on_errors:
+                self.root.show_output()
+        else:
+            self.root.add_to_output(
+                "  - completed successfully\n",
+                scroll_to_end=True,
+                force=True,
+            )
+
+    def parse_log(self, name):
+        return log.parse(name, self.root.log_script, self.root.opts)
 
     def output_context_pdf(self, cmd):
         viewer = self.root.get_setting("PDF/viewer")
@@ -183,7 +198,7 @@ class ExecMainSubprocess:
             self.killed = True
             self.sequence = []
             self.root.add_to_output(
-                "[Cancelled in {:.1f}s]\n".format(
+                "- cancelled in {:.1f}s\n".format(
                     time.time() - self.start_time
                 )
             )
@@ -204,7 +219,7 @@ class ExecMainSubprocess:
         if not self.root:
             return
         self.root.add_to_output(
-            "[Finished in {:.1f}s]\n".format(time.time() - self.start_time)
+            "- finished in {:.1f}s\n".format(time.time() - self.start_time)
         )
         self.root.proc = None
 
@@ -222,6 +237,16 @@ class SimpleContextExecMainCommand(
         self.show_panel_on_build = sublime.load_settings(
             "Preferences.sublime-settings").get("show_panel_on_build", True)
         self.view = self.window.active_view()
+        self.opts = self.expand_variables(
+            {
+                "creationflags": self.flags,
+                "shell": self.shell,
+                "env": {"PATH": "$simple_context_prefixed_path"},
+            }
+        )
+        self.log_script = self.expand_variables(
+            "$packages/simple_ConTeXt/scripts/parse_log.lua"
+        )
 
     def run(
         self,
@@ -323,7 +348,7 @@ class SimpleContextExecMainCommand(
             except Exception as e:
                 # print("[simple_ConTeXt] {}".format(e))
                 if not self.quiet:
-                    text = "encountered error of type {}\n[Finished]\n"
+                    text = "- encountered error of type {}\n- finished\n"
                     self.add_to_output(text.format(type(e)))
 
     def kill_proc(self):
@@ -379,6 +404,9 @@ class SimpleContextExecMainCommand(
 
         self.window.create_output_panel("ConTeXt")
         self.output_panel_cache = ""
+
+    def parse_log(self, text):
+        return log.parse(text, self.log_script, self.opts)
 
     def update_phantoms(self):
         pass

@@ -7,7 +7,6 @@ import sublime_plugin
 
 from .scripts import utilities
 from .scripts import scopes
-from .scripts import files
 from .scripts import cite
 
 
@@ -157,12 +156,20 @@ class SimpleContextCiteEventListener(
                 main = self.locate_file_main(name, extensions=self.extensions)
                 if main:
                     self.bib_per_files[view_name][name] = main
-                    self.bibliographies[main] = self.try_parse_aux(name, main)
+                    bib = self.try_parse_aux(name, main)
+                    if bib is None:
+                        msg = "[simple_ConTeXt] failed to parse file {}"
+                        print(msg.format(main))
+                    self.bibliographies[main] = bib
                     return
             other = self.locate_file_context(name, extensions=self.extensions)
             if other:
                 self.bib_per_files[view_name][name] = other
-                self.bibliographies[other] = self.try_parse_aux(name, other)
+                bib = self.try_parse_aux(name, other)
+                if bib is None:
+                    msg = "[simple_ConTeXt] failed to parse file {}"
+                    print(msg.format(main))
+                self.bibliographies[other] = bib
                 return
             self.bib_per_files[view_name][name] = 0
 

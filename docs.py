@@ -1,7 +1,7 @@
 import subprocess
 import threading
 
-import sublime
+# import sublime
 import sublime_plugin
 
 from .scripts import utilities

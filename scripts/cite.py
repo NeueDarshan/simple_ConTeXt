@@ -34,7 +34,9 @@ def parse_common_texlua(file_name, script, opts, timeout=5):
         "env": {"LUA_PATH": os.path.join(os.path.dirname(script), "?.lua")},
     }
     deep_dict.update(kwargs, opts)
-    proc = subprocess.Popen(["texlua", script, file_name], **kwargs)
+    proc = subprocess.Popen(
+        ["luatex", "--luaonly", script, file_name], **kwargs
+    )
     try:
         output = proc.communicate(timeout=timeout)
     except subprocess.TimeoutExpired:

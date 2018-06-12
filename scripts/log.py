@@ -1,87 +1,56 @@
-import re
+import subprocess
+import os
+
+from . import files
+from . import deep_dict
+from . import utilities
 
 
-def translate_class(text):
-    if text == "mp":
-        return "MetaPost"
-    elif text == "tex":
-        return "TeX"
-    return text
+def parse(text, script, opts, timeout=5):
+    # text = text.decode(encoding="utf-8", errors="ignore")
+    # text = text.replace("\r\n", "\n").replace("\r", "\n")
+    kwargs = {
+        "stdin": subprocess.PIPE,
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "env": {"LUA_PATH": os.path.join(os.path.dirname(script), "?.lua")},
+    }
+    deep_dict.update(kwargs, opts)
+    proc = subprocess.Popen(
+        ["luatex", "--luaonly", script], **kwargs
+    )
+    try:
+        output = proc.communicate(input=text, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        output = None
+    code = proc.returncode
+    if not code and output:
+        text = files.decode_bytes(output[0]).strip()
+        if text == "nil":
+            return None
+        # I don't see a problem with this use of \type{eval}, as we have
+        # complete control over the string being evaluated.
+        result = eval(text)
+        return do_format(result)
+    return None
 
 
-def parse(data, code):
-    result = ""
-    success = code == 0
-    text = data.decode(encoding="utf-8", errors="ignore")
-    text = text.replace("\r\n", "\n").replace("\r", "\n")
-
-    if success:
-        result += "  - finished successfully\n"
-    else:
-        result += "  - finished unsuccessfully\n"
-
-    temp = syntax_1(text)
-    if temp:
-        result += temp
-    # else:
-    temp = syntax_2(text)
-    if temp:
-        result += temp
-    # else:
-    temp = syntax_3(text)
-    if temp:
-        result += temp
-    # else:
-    temp = syntax_4(text)
-    if temp:
-        result += temp
-
+def do_format(data):
+    result = {"main": [], "errors": []}
+    if not isinstance(data, list):
+        return result
+    errors = []
+    for entry in data:
+        if not isinstance(entry, list) or not entry:
+            continue
+        class_ = entry[0]
+        if class_.endswith("error"):
+            errors.append(entry)
+        else:
+            result["main"].append(entry)
+    result["errors"] = utilities.deduplicate_list(errors)
     return result
 
 
-def syntax_1(text):
-    match = (
-        r"^.*? error\s*> (.*?) error on line ([0-9]+) in file (.*?): ! (.*?)"
-        r"\n\nl\.[0-9]+\s*\\([^\s]+)"
-    )
-    error = re.search(match, text, flags=re.MULTILINE)
-    if error:
-        class_, line, _, desc, sub_desc = error.groups()
-        template = "  - line {}, {} error: {} \\{}\n"
-        return template.format(line, translate_class(class_), desc, sub_desc)
-    return None
-
-
-def syntax_2(text):
-    match = (
-        r"^.*? error\s*> (.*?) error on line ([0-9]+) in file (.*?):"
-        r"\n\n\[ctxlua\]:[0-9]*: (.*?)$"
-    )
-    error = re.search(match, text, flags=re.MULTILINE)
-    if error:
-        class_, line, _, desc = error.groups()
-        template = "  - line {}, {} error: {}\n"
-        return template.format(line, translate_class(class_), desc)
-    return None
-
-
-def syntax_3(text):
-    match = \
-        r"^.*? error\s*> (.*?) error on line ([0-9]+) in file (.*?): ! (.*?)$"
-    error = re.search(match, text, flags=re.MULTILINE)
-    if error:
-        class_, line, _, desc = error.groups()
-        template = "  - line {}, {} error: {}\n"
-        return template.format(line, translate_class(class_), desc)
-    return None
-
-
-def syntax_4(text):
-    match = \
-        r"^.*? error\s*> (.*?) error on line ([0-9]+) in file (.*?):$"
-    error = re.search(match, text, flags=re.MULTILINE)
-    if error:
-        class_, line, _ = error.groups()
-        template = "  - line {}, {} error\n"
-        return template.format(line, translate_class(class_))
-    return None
+def compile_errors(errors):
+    return "".join("  - {}, line {}: {}\n".format(*err) for err in errors)
