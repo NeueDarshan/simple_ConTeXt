@@ -151,28 +151,28 @@ local function with_formatting(tab)
         if type(t) == "table" then
             if #t > 2 and t[2] == UNDEF_CS_ERR then
                 result[#result + 1] = {
-                    "TeX error",
                     get_line(t[1]),
+                    "TeX error",
                     string.format(
-                        "undefined control sequence '%s'", tostring(t[#t])
+                        "undefined control sequence %s", tostring(t[#t])
                     ),
                 }
             elseif #t > 2 and t[1] == MP_ERROR then
                 result[#result + 1] = {
-                    "MetaPost error",
                     get_line(t[2]),
+                    "MetaPost error",
                     lower_first_char(t[#t]),
                 }
             elseif #t > 2 and t[1] == LUA_ERROR then
                 result[#result + 1] = {
-                    "Lua error",
                     get_line(t[2]),
+                    "Lua error",
                     lower_first_char(t[#t]),
                 }
             elseif #t > 2 and t[1] == TEX_ERROR then
                 result[#result + 1] = {
-                    "TeX error",
                     get_line(t[2]),
+                    "TeX error",
                     lower_first_char(t[#t]),
                 }
             else

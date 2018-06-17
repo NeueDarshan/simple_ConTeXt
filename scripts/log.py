@@ -43,7 +43,7 @@ def do_format(data):
     for entry in data:
         if not isinstance(entry, list) or not entry:
             continue
-        class_ = entry[0]
+        class_ = entry[1]
         if class_.endswith("error"):
             errors.append(entry)
         else:
@@ -53,4 +53,4 @@ def do_format(data):
 
 
 def compile_errors(errors):
-    return "".join("  - {}, line {}: {}\n".format(*err) for err in errors)
+    return "".join("  - line {}, {}: {}\n".format(*err) for err in errors)
