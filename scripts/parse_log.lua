@@ -5,14 +5,8 @@ local P, R, S = lpeg.P, lpeg.R, lpeg.S
 local C, Ct, match = lpeg.C, lpeg.Ct, lpeg.match
 
 
-local function CP(x)
-    return C(P(x))
-end
-
-
-local function const(x)
-    return function() return x end
-end
+local function CP(x) return C(P(x)) end
+local function const(x) return function() return x end end
 
 
 local TEX_ERROR = 1
@@ -44,26 +38,25 @@ do
     local slash = P("\\")
     local ctrl_seq = slash * letter^1
 
-    local function spaced(x)
-        return space^0 * x * space^0
-    end
+    local function spaced(x) return space^0 * x * space^0 end
+    local function spacedP(x) return spaced(P(x)) end
     local function not_prefixed_line(x)
-        return space^0 * -x * whatever^0 * line
+        return space^0 * (whatever^0 - (x * whatever^0)) * line
     end
 
     local error_snippet = (space^0 * number * whatever^0 * line)^0
-    local error_text = char^1 * space^1 * P("error")
+    local error_text = char^1 * spacedP("error")
 
     local tex_error_a =
         space^0 * P("tex error") * sep
     local tex_error_b =
-        spaced(P("on")) * C(P("line") * space^0 * number) *
-        spaced(P("in file")) * (1 - colon)^0 * colon * spaced(exclam)
+        spacedP("on") * C(P("line") * space^0 * number) *
+        spacedP("in file") * (1 - colon)^0 * colon * spaced(exclam)
     local tex_error_preamble =
         tex_error_a * CP("tex error") / const(TEX_ERROR) * tex_error_b *
         C(whatever^1) * line * blank_line^0
     local tex_error_line =
-        not_prefixed_line(P("l.") * space^0 * number)^0 * space^0 * P("l.") *
+        not_prefixed_line(spacedP("l.") * number)^0 * space^0 * P("l.") *
         spaced(number) * whatever^0 * line * non_blank_line^0 * blank_line^0
     local tex_error =
         Ct(tex_error_preamble * tex_error_line * error_snippet)
@@ -81,9 +74,8 @@ do
 
     local lua_error_preamble =
         space^0 * P("lua error") * sep * CP("lua error") / const(LUA_ERROR) *
-        spaced(P("on")) * C(P("line") * space^0 * number) *
-        spaced(P("in file")) * (1 - colon)^0 * colon * whatever^0 * line *
-        blank_line^0
+        spacedP("on") * C(P("line") * space^0 * number) * spacedP("in file") *
+        (1 - colon)^0 * colon * whatever^0 * line * blank_line^0
     local lua_error_main =
         P("[ctxlua]") * spaced(colon) * number * spaced(colon) *
         C(whatever^1) * line * non_blank_line^0 * blank_line^0
@@ -91,9 +83,8 @@ do
 
     local mp_error_preamble =
         space^0 * error_text * sep * CP("mp error") / const(MP_ERROR) *
-        spaced(P("on")) * C(P("line") * space^0 * number) *
-        spaced(P("in file")) * (1 - colon)^0 * colon * whatever^0 * line *
-        blank_line^0
+        spacedP("on") * C(P("line") * space^0 * number) * spacedP("in file") *
+        (1 - colon)^0 * colon * whatever^0 * line * blank_line^0
     local mp_error_main =
         not_prefixed_line(exclam)^0 * spaced(exclam) * C(whatever^1) * line *
         (blank_line^0 * non_blank_line^0)^-3 * blank_line^0
