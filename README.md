@@ -6,6 +6,7 @@
 
 - [Introduction](#introduction)
 - [Installation/Setup](#installationsetup)
+  - [ConTeXt](#context)
   - [Builder](#builder)
   - [PDFs](#pdfs)
   - [Auto-Completion](#auto-completion)
@@ -15,6 +16,8 @@
   - [Interface Files](#interface-files)
 - [References](#references)
 - [Citations](#citations)
+  - [Aside](#aside)
+  - [Example](#example)
 - [File Links](#file-links)
 - [Commands](#commands)
   - [Auto-Complete](#auto-complete)
@@ -61,8 +64,8 @@ Currently the features are:
 (I should say that I use ConTeXt MkIV exclusively, and so the package is
 designed and tested with MkIV only. In other words, if MkII stuff works then it
 is a happy accident. That said, the syntax file should work perfectly well for
-MkII, and I would guess that most of the other parts should be relatively
-simple to adapt as needed.
+MkII, and I would guess that most of the other parts are relatively simple to
+adapt as needed.
 
 Also, the multilingual interface in ConTeXt is not something I have considered.
 I only know the English interface, and have worked with it in mind; the task of
@@ -75,11 +78,19 @@ Install via [package control][package-control], under the name `simple_ConTeXt`.
 (Alternatively, you can just `git clone` the repository into your Sublime Text
 (ST) packages directory.) Afterwards, there are some optional things to set up.
 
+### ConTeXt
+
+As an aside, to install/update ConTeXt itself, I would recommend looking on the
+ConTeXt wiki [here][context-install] for general instructions. In particular, to
+set up a so-called Standalone/Minimals installation there is also
+[this][context-standalone] invaluable page.
+
 ### Builder
 
-To get the builder working, it needs to be able to find the `context` program on
-your machine. If you have only one version of `context` installed and it's on
-your environment `PATH` variable, then you don't need to do anything.
+To get the builder working, it needs to be able to find the `context` program
+(or `mtxrun`) on your machine. If you have only one version of `context`
+installed and it's on your environment `PATH` variable, then you don't need to
+do anything.
 
 Otherwise, you should tell simple ConTeXt where `context` is located at. To do
 so, open the simple ConTeXt settings file via
@@ -89,13 +100,13 @@ Under the `program_locations.ConTeXt_paths` key, put in a key-value entry for
 the ConTeXt installation on your machine: the key is just a convenient name for
 that installation, and the value should be the path to the `context` binaries.
 For example: if you have the `context` program located at
-`/some-path/context/tex/texmf-linux-64/bin/context` (so the ConTeXt installation
-tree's root is at `/some-path/context/`), then you should write something like
+`C:/Users/Foo/context/tex/texmf-win64/bin` (so the ConTeXt installation tree's
+root is at `C:/Users/Foo/context/`), then you should write something like
 
 ```json
 {
   "program_locations.ConTeXt_paths": {
-    "example": "/home/user-name/.local/context/tex/texmf-linux-64/bin"
+    "example": "C:/Users/Foo/context/tex/texmf-win64/bin"
   }
 }
 ```
@@ -121,8 +132,9 @@ consulted. It should be the name of one of the keys in
 
 Similarly to the previous, the keys in `program_locations.PDF_viewers` can be
 any string, but each value should be the name of a PDF viewer program. (In the
-case of the Evince PDF viewer, this could be simply `evince` if it's on your
-environment path, or else an explicit path like `/usr/bin/evince`.)
+example case of the Sumatra PDF viewer, this could be simply `sumatraPDF` if
+it's on your environment path, or else an explicit path like
+`C:/Program Files/SumatraPDF/SumatraPDF`.)
 
 ### Auto-Completion
 
@@ -211,8 +223,10 @@ TODO: talk some about them.
 
 We support references, as powered by the ConTeXt syntax file. (So we know what
 things are references because the syntax file has rules that tell us so.
-Although many common cases are taken care of, I think there are still some that
-are not.) To quickly illustrate the idea, suppose you had the document
+Although some common cases are taken care of, there are others that are not. For
+example `\placefigure` is not working (it has a tricky syntax), but
+`\startplacefigure` does work as expected.) To illustrate the idea, suppose you
+had the document
 
 ```tex
 \starttext
@@ -238,22 +252,39 @@ built-ins `\in` and friends) into the system (e.g. `\eqref`) there is the option
 ## Citations
 
 We provide some support for citations, in the new MkIV style. (For reference,
-see the manual 'Bibliographies: The ConTeXt Way' (a.k.a. `mkiv-
-publications.pdf`)). We can parse bibliographic databases in the traditional
-BibTeX format, as well as in the Lua and XML formats. Handling the BibTeX is a
-must given its ubiquity, but I find Lua and XML to be interesting alternative
-data formats. So I make sure to support them too.
+see the manual 'Bibliographies: The ConTeXt Way' (a.k.a.
+`mkiv-publications.pdf`)). We can parse bibliographic databases in the
+traditional BibTeX format: a must given its ubiquity. It can be challenging to
+do so 'in the wild'; we try to be tolerant.
+
+Additionally, the ability of ConTeXt to use Lua and XML as alternative data
+formats is very interesting to me, so I make sure to support them too. (Of
+course, Lua is *too* powerful really as a configuration language, something like
+[dhall][dhall-lang] strikes a better compromise between power and safety. Still,
+using Lua can be nice.)
+
+### Aside
+
+On the topic of working with BibTeX databases, I would recommend reading the
+aforementioned manual on bibliographies in ConTeXt when coming from LaTeX: there
+are some differences to be aware of. For example, Unicode in `.bib` files works
+out-of-the-box so ASCII-style escaping is discouraged in favour of writing
+Unicode characters literally. Also, there is no need for special care with
+upper/lower case: simply write what you mean.
+
+### Example
 
 As a quick intro/example, suppose the file `example.bib` looks like
 
 ```
-@book{foo-bar,
-  title  = "Foo Bar",
-  author = "A. U. Thor",
+@book{whatever,
+  title  = {Foo Bar},
+  author = {A. U. Thor},
+  year   = {2000},
 }
 ```
 
-and in the same directory we have a file as follows.
+and in the same directory we have a ConTeXt file as follows.
 
 ```tex
 \usebtxdataset[example.bib]
@@ -262,9 +293,9 @@ and in the same directory we have a file as follows.
 \stoptext
 ```
 
-If we type `\cite[` somewhere in this document, then a quick-panel will pop up
-listing every entry in `example.bib`, so in this case just the single book 'Foo
-Bar'. Selecting an entry from the list will then input the tag associated to
+If we type `\cite[` somewhere in this file, then a quick-panel will pop up
+listing every entry in `example.bib` (in this case just the single book 'Foo
+Bar'). Selecting an entry from the list will then input the tag associated to
 that entry.
 
 This functionality can be turned on or off with the setting
@@ -280,33 +311,35 @@ The braces `{...}` indicate a bibliographic field name, and the sequence `<>`
 indicates the start of a new row.
 
 To demonstrate the other formats, here is what the equivalent `example.lua`
-might look like:
+could look like:
 
 ```lua
 return {
-  ["foo-bar"] = {
+  whatever = {
     category = "book",
     title    = "Foo Bar",
     author   = "A. U. Thor",
+    year     = "2000",
   }
 }
 ```
 
-Finally, compare the same data in XML format.
+Lastly, here is what the same data looks like as `example.xml`.
 
 ```xml
 <bibtex>
-  <entry tag="foo-bar" category="book">
+  <entry tag="whatever" category="book">
     <field name="title">Foo Bar</field>
     <field name="author">A. U. Thor</field>
+    <field name="year">2000</field>
   </entry>
 </bibtex>
 ```
 
 ## File Links
 
-Some commands involve another file (e.g. `\input`), and for some of these we can
-show a hyperlink to that file. For example, consider the document
+Certain commands involve another file (e.g. `\input`), and for some of these we
+can generate a hyperlink to that file. For example, consider the document
 
 ```tex
 \environment example-style
@@ -316,14 +349,15 @@ show a hyperlink to that file. For example, consider the document
 \stoptext
 ```
 
-Hovering over `example-style`, `samples.bib`, or `knuth` will do this.
+Hovering over any of `example-style`, `samples.bib`, and `knuth` will produce a
+link to the respective files.
 
-As for what the link points to: we try to find the file in and around a given
-documents location in the file tree (more precisely: we look in the directory
-it's located at, as well as all sub-directories and it's parent directory), and
-if that fails we ask `context` (well, `mtxrun`) if it knows where that file is
-on the TeX tree. While doing this we consider typical extensions, so for example
-when looking for `knuth` we also look for a `knuth.tex`.
+Regarding exactly what the link points to: we try to find the file in and around
+the ConTeXt document's location in the file tree (more precisely: we look in the
+directory it's located at, as well as all sub-directories and it's parent
+directory), and if that fails we ask `context` (well, `mtxrun`) if it can find
+the file on the TeX tree. While doing this we consider typical extensions, so
+for example when looking for `knuth` we also look for a `knuth.tex`.
 
 You can turn this feature on or off with the setting `current.file_links/on`.
 
@@ -336,9 +370,9 @@ typing a backslash <kbd>\\</kbd> there will appear a list of all known command
 names, as well as an indicator of how many arguments each command takes.
 
 Completions should play well with others, e.g. the completions provided by the
-[UnicodeCompletion][unicode-completion] package. (Although UnicodeCompletion is
-intended for LaTeX, I still find it useful for ConTeXt as many of the command
-names are the same.)
+[UnicodeCompletion][unicode-completion] package. (UnicodeCompletion uses LaTeX
+command names, but nonetheless I find it useful for ConTeXt, as most of the
+included command names are compatible.)
 
 ### Pop-Ups
 
@@ -372,10 +406,16 @@ The formatting should be fairly self-explanatory. A couple of notes:
 - Upper-case values (e.g. `NUMBER`) indicate you can pass a value of that type
   (a 'number').
 - Values like `\...#1` indicate you can pass a command which expects some
-  number of arguments (one for `\...#1`, two for `\...#1#2`, and so on).
+  number of arguments. (So `\...#1` means a command with one argument,
+  `\...#1#2` means a command with two arguments, and so on). For example, you
+  could write `\overstrike` to pass a command of one argument. (This is a
+  command which ConTeXt defines out-of-the-box, that strikes things though
+  ~like this~).
 - Sometimes there is a value `inherits: \...`, which indicates that this option
   inherits the options of that command.
-- Some arguments accept any 'string' as a value; we indicate this with `{...}`.
+- Some arguments accept any 'string' as a value; we indicate this with `{...}`
+  (not shown here, as `\setupfittingpage` doesn't happen to have any such
+  arguments).
 - At the end there can be a hyperlink to a file name (`page-app.mkiv` here)
   where the command is defined.
 
@@ -431,8 +471,8 @@ certain code:
 
 ```tex
 \doifmodeelse {draft}
-  {slow branch ...}
   {quick branch ...}
+  {slow branch ...}
 ```
 
 (Currently we just pass along any extra options on top of the default options;
@@ -447,7 +487,7 @@ list of suggested options pop up: at time of writing I am suggested the options
 `catcodes`, `color`, `command`, `commandafter`, `commandbefore`, `continue`,
 `conversion`, and `coupling`.
 
-These are provided by a very simple idea: given a command `\foo`, suggest any
+These are provided by a simple algorithm: given a command `\foo`, suggest any
 keys from key-value options that `\foo` has itself, in addition to (in a
 recursive manner) any keys from key-value commands that `\foo` inherits.
 
@@ -455,7 +495,7 @@ We don't try to keep track of which arguments take key-value options, and which
 do not: instead, we just always suggest keys. This is not ideal, but doing
 better than this would be a lot more complicated. So currently we have a kind of
 compromise between usefulness and false positives: even so, I find it to be a
-good trade-off where it is at the moment
+good trade-off where it is at the moment.
 
 ## Settings
 
@@ -527,33 +567,23 @@ here is a quick summary.
 - For placing things: `place`,  `pfig`, and `ptab`.
 - Others: `start`, `text`, `doc`, and `page`.
 
-Designing good, general purpose snippets is tricky: I'm sure many of these could
-be improved, or removed for not being useful. For myself, regarding the ConTeXt
-snippets I find that:
+Designing good, general purpose snippets is tricky. These are a bit of a mixed
+bag, about which I will say (in my opinion):
 
-- `start` is very useful;
-- `text` is rarely used (once per document or so), but a nice convenience;
-- I like that `math` saves me the trouble of typing in the backslash `\` and
-  the braces `{}`, but it's a minor thing;
-- `form` (and its variations) are very convenient;
-- `item` and `items` go well together;
-- the samples are good for quickly mocking up some fake words;
-- I like that the table snippets remind me of the different syntaxes, because I
-  tend to forget the exact details of all the many tables;
-- I like how clever the project/module snippets are;
-- the mark-up snippets leave something to be desired;
-
-About the MetaPost snippets: I don't write MetaPost/MetaFun that often, but when
-I do I find the variable declaration snippets useful (`num` and `nums`, and so
-on).
+- `form` (and its variations) are quite convenient;
+- `start` is frequently useful;
+- the samples are nice for quickly mocking up some fake words;
+- the table snippets include a reminder of the different syntaxes, which can be
+  useful given the numerous table mechanisms that ConTeXt has;
+- the mark-up snippets leave something to be desired.
 
 ## Future Features
 
-A couple of features that I think would be nice to have. Of course, we can go
-and on imagining things to add/improve.
+Some things that would be nice to have. Of course, we can go and on imagining
+things to add/improve.
 
-- Handle `$` in the same way as quotes & brackets by ST out-of-the-box, i.e. as
-  a delimiter. (I think it's the only such thing for us.)
+- Handle `$` in the same way as quotes & brackets by ST, i.e. as a delimiter.
+  (I think it's the only such thing for us.)
 - Make the quick setting thing smarter/more functional (i.e. add more
   functionality to it).
 - Set up file links to work for modules.
@@ -600,14 +630,16 @@ and on imagining things to add/improve.
 - Checker/linter. (The checks provided by `mtxrun --script check` are quite
   basic, last I 'checked'. I don't know that `chktex` has much ConTeXt support,
   seems to be targeted at LaTeX.)
-- Robust log parsing, esp. for reporting warnings/errors. Related to this, put
-  phantom error functionality back in.
+- Put phantom error functionality back in.
 - Word count. (Can be nice to have, but very tricky in full generality.)
 - Handle `\unprotect ... \protect` in a nice way.
 
+[bracket-highlighter]:  https://github.com/facelessuser/BracketHighlighter
+[context-install]:      http://wiki.contextgarden.net/Installation
 [context-introduction]: http://wiki.contextgarden.net/What_is_ConTeXt
+[context-standalone]:   http://wiki.contextgarden.net/ConTeXt_Standalone
+[dhall-lang]:           https://github.com/dhall-lang/dhall-lang
 [package-control]:      https://packagecontrol.io
+[package-dev]:          https://github.com/SublimeText/PackageDev
 [sublime-text]:         https://www.sublimetext.com
 [unicode-completion]:   https://github.com/randy3k/UnicodeCompletion
-[bracket-highlighter]:  https://github.com/facelessuser/BracketHighlighter
-[package-dev]:          https://github.com/SublimeText/PackageDev
