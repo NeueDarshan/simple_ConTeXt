@@ -4,7 +4,7 @@ local encode
 
 local function is_indexed_table(tab)
     for k in pairs(tab) do
-        if type(k) == "string" then
+        if type(k) ~= "number" then
             return false
         end
     end
@@ -16,7 +16,7 @@ local function encode_indexed_tab(tab)
     local result = "["
     for i, v in ipairs(tab) do
         if i > 1 then
-            result = result .. ","
+            result = result .. ", "
         end
         result = result .. encode(v)
     end
@@ -32,9 +32,9 @@ local function encode_hashed_tab(tab)
         if first then
             first = false
         else
-            result = result .. ","
+            result = result .. ", "
         end
-        result = result .. string.format("%s:%s", encode(k), encode(v))
+        result = result .. string.format("%s: %s", encode(k), encode(v))
     end
     result = result .. "}"
     return result
@@ -42,7 +42,9 @@ end
 
 
 local function encode_string(text)
-    return string.format('r"""%s"""', text)
+    return string.format(
+        '"""%s"""', string.gsub(string.gsub(text, "\\", "\\\\"), '"', '\\"')
+    )
 end
 
 

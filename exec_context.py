@@ -145,7 +145,7 @@ class ExecMainSubprocess:
         if not self.root:
             return
         result = self.root.parse_log(data)
-        errors = result.get("errors", {})
+        errors = [] if result is None else result.get("errors", [])
         if errors:
             self.root.add_to_output(
                 log.compile_errors(errors), scroll_to_end=True, force=True,
@@ -393,6 +393,8 @@ class SimpleContextExecMainCommand(
         self.output_view.settings().set("result_base_dir", working_dir)
         self.output_view.settings().set("line_numbers", False)
         self.output_view.settings().set("gutter", False)
+        self.output_view.settings().set("draw_indent_guides", False)
+        self.output_view.settings().set("rulers", False)
         self.output_view.settings().set("spell_check", False)
         self.output_view.settings().set("scroll_past_end", False)
         if isinstance(word_wrap, bool):

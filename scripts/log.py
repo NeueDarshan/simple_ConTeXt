@@ -1,4 +1,5 @@
 import subprocess
+import errno
 import os
 
 from . import files
@@ -23,6 +24,11 @@ def parse(text, script, opts, timeout=5):
         output = proc.communicate(input=text, timeout=timeout)
     except subprocess.TimeoutExpired:
         output = None
+    except IOError as e:
+        if e.errno == errno.EPIPE:
+            output = None
+        else:
+            raise e
     code = proc.returncode
     if not code and output:
         text = files.decode_bytes(output[0]).strip()
@@ -53,4 +59,8 @@ def do_format(data):
 
 
 def compile_errors(errors):
-    return "".join("  - line {}, {}: {}\n".format(*err) for err in errors)
+    result = ""
+    for err in errors:
+        if len(err) > 2:
+            result += "".join("  - line {}, {}: {}\n".format(*err))
+    return result
