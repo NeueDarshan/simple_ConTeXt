@@ -191,5 +191,5 @@ class SimpleContextRegenerateInterfaceFilesCommand(
                 f,
                 indent=self.indent,
                 sort_keys=True,
-                ensure_ascii=False,
+                ensure_ascii=True,
             )
