@@ -136,13 +136,6 @@ completions for ConTeXt commands on typing the initial backslash <kbd>\\</kbd>.
 }
 ```
 
-### Symbol List
-
-We overwrite the local symbol list (<kbd>Ctrl</kbd>+<kbd>R</kbd>) with a custom
-variation of it (for ConTeXt files only, i.e. (in ST parlance) `view`s with the
-ConTeXt syntax). The idea is to make it easier to navigate/filter between
-headings, definitions, references, and so on.
-
 ### Spell Checking
 
 Consider adding the following to your ConTeXt syntax specific settings. (You can
@@ -615,7 +608,7 @@ things to add/improve.
   basic, last I 'checked'. I don't know that `chktex` has much ConTeXt support,
   seems to be targeted at LaTeX.)
 - Put phantom error functionality back in.
-- Word count. (Can be nice to have, but very tricky in full generality.)
+- Word count. (Can be nice to have, but rather tricky in full generality.)
 - Handle `\unprotect ... \protect` in a nice way.
 
 [bracket-highlighter]:  https://github.com/facelessuser/BracketHighlighter
