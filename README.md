@@ -2,33 +2,17 @@
 
 ## Contents
 
-<!-- MarkdownTOC autolink="true" style="unordered" -->
+<!-- MarkdownTOC autolink="true" style="unordered" levels="2" -->
 
 - [Introduction](#introduction)
 - [Installation/Setup](#installationsetup)
-  - [ConTeXt](#context)
-  - [Builder](#builder)
-  - [PDFs](#pdfs)
-  - [Auto-Completion](#auto-completion)
-  - [Symbol List](#symbol-list)
-  - [Spell Checking](#spell-checking)
-  - [Bracket Highlighter](#bracket-highlighter)
-  - [Interface Files](#interface-files)
 - [References](#references)
 - [Citations](#citations)
-  - [Aside](#aside)
-  - [Example](#example)
 - [File Links](#file-links)
 - [Commands](#commands)
-  - [Auto-Complete](#auto-complete)
-  - [Pop-Ups](#pop-ups)
 - [Builders](#builders)
-  - [Normal Builders](#normal-builders)
-  - [Build on Save](#build-on-save)
 - [Key/Value Auto-Complete](#keyvalue-auto-complete)
 - [Settings](#settings)
-  - [Quick Settings](#quick-settings)
-  - [Manual](#manual)
 - [Scripts](#scripts)
 - [Snippets](#snippets)
 - [Future Features](#future-features)
