@@ -159,7 +159,7 @@ class SimpleContextMacroSignatureEventListener(
     state = IDLE
     file_min = 20000
     param_char = string.ascii_letters  # + string.whitespace
-    extensions = [".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii"]
+    extensions = (".mkix", ".mkxi", ".mkiv", ".mkvi", ".tex", ".mkii")
     auto_complete_cmd_key = None
     attempts = 0
 
