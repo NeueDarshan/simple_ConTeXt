@@ -104,8 +104,8 @@ class VirtualCommandDict:
         self, dir_, max_size=100, local_size=10, cmds="_commands.json",
     ):
         self.dir = dir_
-        self.missing = sorted(f for f in os.listdir(self.dir) if f != cmds)
-        with open(os.path.join(self.dir, cmds)) as f:
+        self.missing = sorted(f for f in os.listdir(dir_) if f != cmds)
+        with open(os.path.join(dir_, cmds)) as f:
             self.cmds = collections.OrderedDict()
             for text in sorted(json.load(f), key=lambda s: s.split(":", 1)[1]):
                 parity, ctrl = text.split(":", 1)

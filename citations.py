@@ -136,7 +136,7 @@ class SimpleContextCiteEventListener(
             for key, entry in self.bib_per_files.get(view_name, {}).items():
                 if key in possible_names:
                     extra = self.bibliographies.get(entry, {})
-                    if extra:
+                    if isinstance(extra, dict):
                         dict_.update(extra)
             self.tags = get_entries(dict_, format_str)
             window.show_quick_panel(
