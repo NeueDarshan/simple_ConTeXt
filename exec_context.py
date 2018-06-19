@@ -242,11 +242,11 @@ class SimpleContextExecMainCommand(
             {
                 "creationflags": self.flags,
                 "shell": self.shell,
-                "env": {"PATH": "$simple_context_prefixed_path"},
+                "env": {"PATH": "${simple_context_prefixed_path}"},
             }
         )
         self.log_script = self.expand_variables(
-            "$packages/simple_ConTeXt/scripts/parse_log.lua"
+            "${packages}/simple_ConTeXt/scripts/parse_log.lua"
         )
 
     def run(

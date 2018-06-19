@@ -39,7 +39,7 @@ class SimpleContextUnpackLuaScriptsInternalCommand(
             # file.
             with open(
                 self.expand_variables(
-                    "$packages/simple_ConTeXt/{}".format(script)
+                    "${packages}/simple_ConTeXt/%s" % script
                 ),
                 mode="w",
             ) as f:

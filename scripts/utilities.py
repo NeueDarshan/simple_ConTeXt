@@ -90,7 +90,7 @@ def reload_settings(self):
         sublime.load_settings("simple_ConTeXt.sublime-settings")
     self.context_path = get_path_setting(self)
     self.prefixed_context_path = expand_variables(
-        self, "$simple_context_prefixed_path", get_variables(self),
+        self, "${simple_context_prefixed_path}", get_variables(self),
     )
 
 
@@ -138,7 +138,9 @@ def _expand_variables(self, args, variables):
     elif isinstance(args, list):
         result = []
         for x in args:
-            if x == "$simple_context_insert_options":
+            if x in [
+                s % "simple_context_insert_options" for s in ("$%s", "${%s}")
+            ]:
                 result += process_options(
                     self,
                     get_setting(self, "builder/normal/opts_for_ConTeXt"),
@@ -147,9 +149,11 @@ def _expand_variables(self, args, variables):
             else:
                 result.append(_expand_variables(self, x, variables))
         return result
-    elif args == "$simple_context_open_pdf_after_build":
+    elif args in [
+        s % "simple_context_open_pdf_after_build" for s in ("$%s", "${%s}")
+    ]:
         return bool(get_setting(self, "builder/normal/open_PDF_after_build"))
-    elif args == "$simple_context_shell":
+    elif args in [s % "simple_context_shell" for s in ("$%s", "${%s}")]:
         return bool(self.shell)
     return args
 

@@ -1,7 +1,7 @@
 <snippet>
   <content><![CDATA[
 %D \module
-%D   [     file=$TM_FILENAME,
+%D   [     file=${TM_FILENAME},
 %D      version=${1:YYYY.MM.DD},
 %D        title=${2:title},
 %D     subtitle=${3:subtitle},

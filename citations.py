@@ -68,14 +68,14 @@ class SimpleContextCiteEventListener(
             {
                 "creationflags": self.flags,
                 "shell": self.shell,
-                "env": {"PATH": "$simple_context_prefixed_path"},
+                "env": {"PATH": "${simple_context_prefixed_path}"},
             }
         )
         self.lua_script = self.expand_variables(
-            "$packages/simple_ConTeXt/scripts/parse_lua.lua"
+            "${packages}/simple_ConTeXt/scripts/parse_lua.lua"
         )
         self.btx_script = self.expand_variables(
-            "$packages/simple_ConTeXt/scripts/parse_btx.lua"
+            "${packages}/simple_ConTeXt/scripts/parse_btx.lua"
         )
 
     def on_modified_async(self):

@@ -1,16 +1,16 @@
 {
   "target": "simple_context_exec_wrapper",
   "selector": "source.metapost",
-  "cmd": ["mpost", "$file"],
-  "env": {"PATH": "$simple_context_prefixed_path"},
-  "shell": "$simple_context_shell",
+  "cmd": ["mpost", "${file}"],
+  "env": {"PATH": "${simple_context_prefixed_path}"},
+  "shell": "${simple_context_shell}",
   "cancel": {"kill": true},
   "file_regex": "^Preloading the plain mem file, version .*\\).*\\((.*\\.mp)",
   "line_regex": "^l\\.([0-9]+)",
   "variants": [
     {
       "name": "use MetaFun (ConTeXt)",
-      "cmd": ["mtxrun", "--script", "context", "$file"],
+      "cmd": ["mtxrun", "--script", "context", "${file}"],
       "file_regex": "^\\((.*\\.mp)",
     },
   ],

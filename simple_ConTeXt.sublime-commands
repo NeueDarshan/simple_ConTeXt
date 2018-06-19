@@ -24,4 +24,9 @@
       "overwrite": true,
     },
   },
+  {
+    "caption": "simple_ConTeXt: open README",
+    "command": "open_file",
+    "args": {"file": "${packages}/simple_ConTeXt/README.md"},
+  },
 ]

@@ -17,17 +17,19 @@ class SimpleContextBuildOnSaveListener(
             self, extra_opts_raw, utilities.get_variables(self),
         )
         cmd_context = \
-            ["context", "$simple_context_insert_options"] + extra_opts + \
-            ["$file"]
+            ["context", "${simple_context_insert_options}"] + extra_opts + \
+            ["${file}"]
         run_when = self.get_setting("builder/auto/open_PDF_after_build", False)
         cmd_seq = [
             {
                 "cmd": cmd_context,
-                "env": {"PATH": "$simple_context_prefixed_path"},
+                "env": {"PATH": "${simple_context_prefixed_path}"},
                 "output": "context",
             },
             {
-                "cmd": ["$simple_context_pdf_viewer", "$file_base_name.pdf"],
+                "cmd": [
+                    "${simple_context_pdf_viewer}", "${file_base_name}.pdf",
+                ],
                 "output": "pdf",
                 "run_when": run_when,
             },

@@ -279,6 +279,7 @@ class SimpleContextSettingsControllerCommand(
 
 class SimpleContextEditSettingsCommand(sublime_plugin.WindowCommand):
     def run(self, *args, **kwargs):
-        base_file = "$packages/simple_ConTeXt/simple_ConTeXt.sublime-settings"
+        base_file = \
+            "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings"
         args = {"base_file": base_file, "default": "{\n\t$0\n}\n"}
         sublime.run_command("edit_settings", args)

@@ -15,17 +15,17 @@
               {
                 "caption": "README",
                 "command": "open_file",
-                "args": {"file": "$packages/simple_ConTeXt/README.md"},
+                "args": {"file": "${packages}/simple_ConTeXt/README.md"},
               },
               {"caption": "-"},
               {
+                "caption": "Settings",
                 "command": "edit_settings",
                 "args": {
                   "base_file":
-                    "$packages/simple_ConTeXt/simple_ConTeXt.sublime-settings",
+                    "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings",
                   "default": "{\n\t$0\n}\n",
                 },
-                "caption": "Settings",
               },
             ],
           },
