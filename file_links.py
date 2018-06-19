@@ -6,7 +6,6 @@ import sublime_plugin
 from .scripts import utilities
 from .scripts import html_css
 from .scripts import scopes
-from .scripts import files
 
 
 TEMPLATE = """
@@ -36,7 +35,6 @@ class SimpleContextFileHoverListener(
 ):
     tex_extensions = ("",) + tuple(".{}".format(s) for s in TEX_EXTENSIONS)
     bib_extensions = ("",) + tuple(".{}".format(s) for s in BIB_EXTENSIONS)
-    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
     def is_visible(self):
         return self.is_visible_alt()

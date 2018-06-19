@@ -1,6 +1,7 @@
 import functools
 import threading
 import re
+import os
 
 import sublime
 import sublime_plugin
@@ -61,6 +62,7 @@ class SimpleContextCiteEventListener(
 
     def reload_settings(self):
         super().reload_settings()
+        self.view.window().run_command("simple_context_unpack_lua_scripts")
         self.file_name = str(self.view.file_name())
         self.opts = self.expand_variables(
             {
@@ -158,8 +160,8 @@ class SimpleContextCiteEventListener(
                     self.bib_per_files[view_name][name] = main
                     bib = self.try_parse_aux(name, main)
                     if bib is None:
-                        msg = "[simple_ConTeXt] failed to parse file {}"
-                        print(msg.format(main))
+                        msg = "[simple_ConTeXt] failed to parse file: {}"
+                        print(msg.format(os.path.basename(main)))
                     self.bibliographies[main] = bib
                     return
             other = self.locate_file_context(name, extensions=self.extensions)
@@ -167,8 +169,8 @@ class SimpleContextCiteEventListener(
                 self.bib_per_files[view_name][name] = other
                 bib = self.try_parse_aux(name, other)
                 if bib is None:
-                    msg = "[simple_ConTeXt] failed to parse file {}"
-                    print(msg.format(main))
+                    msg = "[simple_ConTeXt] failed to parse file: {}"
+                    print(msg.format(os.path.basename(other)))
                 self.bibliographies[other] = bib
                 return
             self.bib_per_files[view_name][name] = 0

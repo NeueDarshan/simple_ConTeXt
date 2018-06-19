@@ -60,7 +60,6 @@ class SimpleContextRegenerateInterfaceFilesCommand(
 ):
     state = IDLE
     first_error = True
-    flags = files.CREATE_NO_WINDOW if sublime.platform() == "windows" else 0
 
     def reload_settings(self):
         super().reload_settings()

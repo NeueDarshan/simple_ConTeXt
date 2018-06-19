@@ -232,6 +232,7 @@ class SimpleContextExecMainCommand(
 
     def reload_settings(self):
         super().reload_settings()
+        self.view.window().run_command("simple_context_unpack_lua_scripts")
         self.show_errors_inline = sublime.load_settings(
             "Preferences.sublime-settings").get("show_errors_inline", True)
         self.show_panel_on_build = sublime.load_settings(
