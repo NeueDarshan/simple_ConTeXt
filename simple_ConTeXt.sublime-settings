@@ -41,6 +41,12 @@
   // current ConTeXt path being used in the output
   // panel.
   "current.builder/auto/output/show_ConTeXt_path": false,
+  // Set to `true` or `false`; whether to show any errors
+  // in the output panel.
+  "current.builder/auto/output/show_errors": true,
+  // Set to `true` or `false`; whether to show any errors
+  // inline directly in the source file.
+  "current.builder/auto/output/show_errors_inline": true,
   // Set to `true` or `false`; whether to show the full
   // command in the output panel.
   "current.builder/auto/output/show_full_command": false,
@@ -92,6 +98,12 @@
   // current ConTeXt path being used in the output
   // panel.
   "current.builder/normal/output/show_ConTeXt_path": true,
+  // Set to `true` or `false`; whether to show any errors
+  // in the output panel.
+  "current.builder/normal/output/show_errors": true,
+  // Set to `true` or `false`; whether to show any errors
+  // inline directly in the source file.
+  "current.builder/normal/output/show_errors_inline": true,
   // Set to `true` or `false`; whether to show the full
   // command in the output panel.
   "current.builder/normal/output/show_full_command": false,
@@ -121,12 +133,18 @@
   // will trigger this. Can be `true` or `false`.
   "current.citations/on": true,
   // A description of what information to display about
-  // each bibliographic entry. Fields are indicated by
-  // Python-style braces '{field-name}', and rows are
-  // separated by the indicator '<>'. The first row is
-  // the most important one, as it is the one we order
-  // the entries by and the one that is searchable.
-  "current.citations/format": "{title}<>{author}<>{category}, {year}, {tag}",
+  // each bibliographic entry. There are two options: use
+  // a string where rows are separated by the indicator
+  // '<>', or just use a list of strings. Fields are
+  // indicated by Python-style braces '{field-name}'. The
+  // first row is the most important one, as it is the one
+  // we order the entries by and the one that is
+  // searchable.
+  "current.citations/format": [
+    "{title}",
+    "{author}",
+    "{category}, {year}, {tag}",
+  ],
 
   // Whether to show hyperlinks to file names in certain
   // curcumstances e.g. '\input knuth'. Should be `true`

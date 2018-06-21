@@ -25,7 +25,7 @@
     },
   },
   {
-    "caption": "simple_ConTeXt: open README",
+    "caption": "simple_ConTeXt: Open README",
     "command": "open_file",
     "args": {"file": "${packages}/simple_ConTeXt/README.md"},
   },

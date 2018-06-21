@@ -7,6 +7,7 @@ import sublime
 import sublime_plugin
 
 from .scripts import utilities
+from .scripts import html_css
 from .scripts import files
 from .scripts import log
 
@@ -42,14 +43,19 @@ class ExecMainSubprocess:
         working_dir=None,
         show_ConTeXt_path=None,
         show_full_command=None,
+        show_errors=None,
+        show_errors_inline=None,
     ):
         self.sequence = sequence[::-1]
         self.root = root
         self.working_dir = working_dir
+        self.show_errors = False if show_errors is None else show_errors
         self.show_ConTeXt_path = \
             False if show_ConTeXt_path is None else show_ConTeXt_path
         self.show_full_command = \
             False if show_full_command is None else show_full_command
+        self.show_errors_inline = \
+            False if show_errors_inline is None else show_errors_inline
 
     def start(self):
         with self.lock:
@@ -147,14 +153,15 @@ class ExecMainSubprocess:
         result = self.root.parse_log(data)
         errors = [] if result is None else result.get("errors", [])
         if errors:
-            self.root.add_to_output(
-                log.compile_errors(errors), scroll_to_end=True, force=True,
-            )
+            if self.show_errors:
+                self.root.add_to_output(log.compile_errors(errors))
             self.root.add_to_output(
                 "  - completed un-successfully\n",
                 scroll_to_end=True,
                 force=True,
             )
+            if self.root.global_show_errors_inline and self.show_errors_inline:
+                self.root.do_phantoms(errors)
             if self.root.show_output_on_errors:
                 self.root.show_output()
         else:
@@ -233,11 +240,12 @@ class SimpleContextExecMainCommand(
     def reload_settings(self):
         super().reload_settings()
         self.window.run_command("simple_context_unpack_lua_scripts")
-        self.show_errors_inline = sublime.load_settings(
+        self.global_show_errors_inline = sublime.load_settings(
             "Preferences.sublime-settings").get("show_errors_inline", True)
         self.show_panel_on_build = sublime.load_settings(
             "Preferences.sublime-settings").get("show_panel_on_build", True)
         self.view = self.window.active_view()
+        self.phantom_set = sublime.PhantomSet(self.view, key="simple_ConTeXt")
         self.opts = self.expand_variables(
             {
                 "creationflags": self.flags,
@@ -248,12 +256,23 @@ class SimpleContextExecMainCommand(
         self.log_script = self.expand_variables(
             "${packages}/simple_ConTeXt/scripts/parse_log.lua"
         )
+        if not hasattr(self, "style"):
+            self.load_css()
+
+    def load_css(self):
+        self.style = html_css.strip_css_comments(
+            sublime.load_resource(
+                "Packages/simple_ConTeXt/css/phantom_error.css"
+            )
+        )
 
     def run(
         self,
         cmd_seq=None,
         show=None,
         show_ConTeXt_path=None,
+        show_errors=None,
+        show_errors_inline=None,
         show_full_command=None,
         encoding="utf-8",
         hide_phantoms_only=False,
@@ -281,9 +300,17 @@ class SimpleContextExecMainCommand(
             self.get_setting("builder/normal/output/show_full_command")
             if show_full_command is None else show_full_command
         )
+        show_errors = (
+            self.get_setting("builder/normal/output/show_errors")
+            if show_errors is None else show_errors
+        )
+        show_errors_inline = (
+            self.get_setting("builder/normal/output/show_errors_inline")
+            if show_errors_inline is None else show_errors_inline
+        )
 
         if update_phantoms_only:
-            if self.show_errors_inline:
+            if self.global_show_errors_inline:
                 self.update_phantoms()
             return
         if hide_phantoms_only:
@@ -343,6 +370,8 @@ class SimpleContextExecMainCommand(
                     root=self,
                     working_dir=working_dir,
                     show_ConTeXt_path=show_ConTeXt_path,
+                    show_errors=show_errors,
+                    show_errors_inline=show_errors_inline,
                     show_full_command=show_full_command,
                 )
                 self.proc.start()
@@ -411,12 +440,39 @@ class SimpleContextExecMainCommand(
     def parse_log(self, text):
         return log.parse(text, self.log_script, self.opts)
 
+    def do_phantoms(self, errors):
+        last_line = self.view.sel()[-1]
+        phantoms = []
+        for err in errors:
+            if len(err) < 2:
+                continue
+            try:
+                line = int(err[0])
+                if line < 1:
+                    line = last_line
+                else:
+                    line -= 1
+            except ValueError:
+                line = last_line
+            phantoms.append(
+                sublime.Phantom(
+                    sublime.Region(self.view.text_point(line, 0)),
+                    PHANTOM_ERROR_TEMPLATE.format(
+                        style=self.style,
+                        message=html_css.unescape("{}: {}".format(*err[1:])),
+                    ),
+                    sublime.LAYOUT_BLOCK,
+                    on_navigate=lambda href: self.hide_phantoms(),
+                )
+            )
+        self.phantom_set.update(phantoms)
+
     def update_phantoms(self):
         pass
 
     def hide_phantoms(self):
         if self.view:
-            self.view.erase_phantoms("ConTeXt")
+            self.view.erase_phantoms("simple_ConTeXt")
 
     def on_phantom_navigate(self, href):
         self.hide_phantoms()

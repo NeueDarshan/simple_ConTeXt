@@ -3,8 +3,6 @@
   "selector": "text.tex.context",
   "cmd_seq": [
     {
-      // Prefer an equivalent \type{mtxrun} call to using \type{context}
-      // directly to minimise dependencies.
       "cmd": [
         "mtxrun", "--script", "context",
         "${simple_context_insert_options}",

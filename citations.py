@@ -1,4 +1,4 @@
-import functools
+# import functools
 import threading
 import re
 import os
@@ -31,18 +31,12 @@ def is_citation_history(cmd):
     return cmd[0] not in {"left_delete", "right_delete"} if cmd else True
 
 
-@utilities.hash_first_arg
-@functools.lru_cache(maxsize=128)
-def get_entries(bibliographies, format_str):
+# @utilities.hash_first_arg
+# @functools.lru_cache(maxsize=128)
+def get_entries(bibliographies, format_):
     return sorted(
         [
-            (
-                tag,
-                [
-                    FORMAT.format(s, tag=tag, **entry)
-                    for s in format_str.split("<>")
-                ],
-            )
+            (tag, [FORMAT.format(s, tag=tag, **entry) for s in format_])
             for tag, entry in bibliographies.items()
         ],
         key=lambda tup: tup[1][0],
@@ -80,11 +74,11 @@ class SimpleContextCiteEventListener(
 
     def on_modified_async(self):
         self.reload_settings()
-        format_str = self.get_setting("citations/format")
+        format_ = self.get_setting("citations/format")
+        if isinstance(format_, str):
+            format_ = format_.split("<>")
         if not (
-            self.is_visible() and
-            self.get_setting("citations/on") and
-            format_str
+            self.is_visible() and self.get_setting("citations/on") and format_
         ):
             return
 
@@ -111,7 +105,7 @@ class SimpleContextCiteEventListener(
             self.is_citation_command(*ctrl)
         ):
             threading.Thread(
-                target=lambda: self.do_citation(self.file_name, format_str)
+                target=lambda: self.do_citation(self.file_name, format_)
             ).start()
 
     def is_citation_command(self, begin, end):
@@ -123,7 +117,7 @@ class SimpleContextCiteEventListener(
             return True
         return False
 
-    def do_citation(self, view_name, format_str):
+    def do_citation(self, view_name, format_):
         regions = self.view.find_by_selector(scopes.MAYBE_CITATION)
         possible_names = {self.view.substr(r).strip() for r in regions}
         with self.lock:
@@ -138,7 +132,7 @@ class SimpleContextCiteEventListener(
                     extra = self.bibliographies.get(entry, {})
                     if isinstance(extra, dict):
                         dict_.update(extra)
-            self.tags = get_entries(dict_, format_str)
+            self.tags = get_entries(dict_, format_)
             window.show_quick_panel(
                 [tup[1] for tup in self.tags], self.on_done,
             )

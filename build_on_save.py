@@ -42,12 +42,18 @@ class SimpleContextBuildOnSaveListener(
             self.get_setting("builder/auto/output/show_ConTeXt_path", False)
         show_full_command = \
             self.get_setting("builder/auto/output/show_full_command", False)
+        show_errors = \
+            self.get_setting("builder/auto/output/show_errors", False)
+        show_errors_inline = \
+            self.get_setting("builder/auto/output/show_errors_inline", False)
         self.view.window().run_command(
             "simple_context_exec_main",
             {
                 "cmd_seq": cmd_seq,
                 "show": show,
                 "show_ConTeXt_path": show_ConTeXt_path,
+                "show_errors": show_errors,
+                "show_errors_inline": show_errors_inline,
                 "show_full_command": show_full_command,
             },
         )
