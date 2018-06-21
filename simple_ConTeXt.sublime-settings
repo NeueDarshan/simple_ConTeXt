@@ -45,7 +45,10 @@
   // in the output panel.
   "current.builder/auto/output/show_errors": true,
   // Set to `true` or `false`; whether to show any errors
-  // inline directly in the source file.
+  // inline directly in the source file. If the global
+  // Sublime Text setting 'show_errors_inline' is set to
+  // false then that overrides this and the errors will
+  // *not* be shown inline regardless of this setting.
   "current.builder/auto/output/show_errors_inline": true,
   // Set to `true` or `false`; whether to show the full
   // command in the output panel.
@@ -102,7 +105,10 @@
   // in the output panel.
   "current.builder/normal/output/show_errors": true,
   // Set to `true` or `false`; whether to show any errors
-  // inline directly in the source file.
+  // inline directly in the source file. If the global
+  // Sublime Text setting 'show_errors_inline' is set to
+  // 'false' then that overrides this and the errors will
+  // *not* be shown inline regardless of this setting.
   "current.builder/normal/output/show_errors_inline": true,
   // Set to `true` or `false`; whether to show the full
   // command in the output panel.
