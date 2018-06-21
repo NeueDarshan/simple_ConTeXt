@@ -441,7 +441,7 @@ class SimpleContextExecMainCommand(
         return log.parse(text, self.log_script, self.opts)
 
     def do_phantoms(self, errors):
-        last_line = self.view.sel()[-1]
+        last_line = self.view.size()
         phantoms = []
         for err in errors:
             if len(err) < 2:
