@@ -1,6 +1,6 @@
-from YAMLMacros.lib.syntax import rule
 from YAMLMacros.lib.arguments import argument, foreach, format, if_
 from YAMLMacros.lib.extend import apply, merge, prepend
+from YAMLMacros.lib.syntax import rule
 
 from . import scopes
 

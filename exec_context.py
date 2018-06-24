@@ -1,15 +1,15 @@
+import os
 import subprocess
 import threading
 import time
-import os
 
 import sublime
 import sublime_plugin
 
-from .scripts import utilities
-from .scripts import html_css
 from .scripts import files
+from .scripts import html_css
 from .scripts import log
+from .scripts import utilities
 
 
 PHANTOM_ERROR_TEMPLATE = """

@@ -1,8 +1,8 @@
 import sublime
 import sublime_plugin
 
-from .scripts import utilities
 from .scripts import deep_dict
+from .scripts import utilities
 
 
 # Bit ugly that we take this approach. We feel the need to do so because I

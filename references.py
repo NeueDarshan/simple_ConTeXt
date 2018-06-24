@@ -3,8 +3,8 @@ import re
 import sublime
 import sublime_plugin
 
-from .scripts import utilities
 from .scripts import scopes
+from .scripts import utilities
 
 
 BUILT_IN_REFERENCERS = r"\A(?:about|in|at|from|over)\Z"

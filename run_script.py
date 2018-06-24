@@ -1,13 +1,13 @@
+import os
 import subprocess
 import threading
 import time
-import os
 
 # import sublime
 import sublime_plugin
 
-from .scripts import utilities
 from .scripts import files
+from .scripts import utilities
 
 
 IDLE = 0

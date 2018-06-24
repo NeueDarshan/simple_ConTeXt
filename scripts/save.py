@@ -1,11 +1,11 @@
-import xml.etree.ElementTree as ET
-import html
 import copy
+import html
 import os
+import xml.etree.ElementTree as ET
 
-from . import utilities
-from . import html_css
 from . import files
+from . import html_css
+from . import utilities
 
 
 NAMESPACE = {"cd": "http://www.pragma-ade.com/commands"}
@@ -538,8 +538,7 @@ class InterfaceSaver:
                     else:
                         result += x
                 return result
-            else:
-                return [self.flatten(x) for x in obj]
+            return [self.flatten(x) for x in obj]
         elif isinstance(obj, dict):
             return {k: self.flatten(v) for k, v in obj.items()}
         return obj
@@ -571,8 +570,7 @@ class InterfaceSaver:
             #     return "<num>NUMBER</num>"
             # elif rest == "dimension":
             #     return "<wor>DIMENSION</wor>"
-            else:
-                return "<typ>" + f(rest.upper()) + "</typ>"
+            return "<typ>" + f(rest.upper()) + "</typ>"
         return f(text)
 
     def escape(self, text):

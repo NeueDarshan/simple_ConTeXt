@@ -1,11 +1,11 @@
-import xml.etree.ElementTree as ET
-import subprocess
-import string
 import os
 import re
+import string
+import subprocess
+import xml.etree.ElementTree as ET
 
-from . import files
 from . import deep_dict
+from . import files
 
 
 class DefaultFormatter(string.Formatter):

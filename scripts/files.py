@@ -1,8 +1,8 @@
-import subprocess
 import functools
-import zlib
-import re
 import os
+import re
+import subprocess
+import zlib
 
 
 CREATE_NO_WINDOW = 0x08000000

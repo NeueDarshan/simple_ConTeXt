@@ -1,9 +1,9 @@
-import subprocess
 import errno
 import os
+import subprocess
 
-from . import files
 from . import deep_dict
+from . import files
 from . import utilities
 
 

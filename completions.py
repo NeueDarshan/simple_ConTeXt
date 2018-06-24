@@ -1,19 +1,19 @@
 import collections
-import threading
-import string
 import json
-import time
 import os
+import string
+import threading
+import time
 
 import sublime
 import sublime_plugin
 
-from .scripts import utilities
-from .scripts import randomize
-from .scripts import html_css
-from .scripts import scopes
 from .scripts import files
+from .scripts import html_css
 from .scripts import load
+from .scripts import randomize
+from .scripts import scopes
+from .scripts import utilities
 
 
 IDLE = 0

@@ -3,9 +3,9 @@ import threading
 import sublime
 import sublime_plugin
 
-from .scripts import utilities
 from .scripts import html_css
 from .scripts import scopes
+from .scripts import utilities
 
 
 TEMPLATE = """

@@ -1,13 +1,13 @@
 import collections
 import itertools
-import re
 import os
+import re
 
 import sublime
 
+from . import files
 from . import randomize
 from . import scopes
-from . import files
 
 
 class HashableDict(dict):

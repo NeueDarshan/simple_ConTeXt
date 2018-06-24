@@ -4,8 +4,8 @@ import threading
 # import sublime
 import sublime_plugin
 
-from .scripts import utilities
 from .scripts import files
+from .scripts import utilities
 
 
 DOCS = [

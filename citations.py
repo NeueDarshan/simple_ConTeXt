@@ -1,14 +1,14 @@
 # import functools
-import threading
-import re
 import os
+import re
+import threading
 
 import sublime
 import sublime_plugin
 
-from .scripts import utilities
-from .scripts import scopes
 from .scripts import cite
+from .scripts import scopes
+from .scripts import utilities
 
 
 BUILT_IN_CITATIONS = (
