@@ -27,10 +27,8 @@ TEMPLATE = """
         {style}
     </style>
     <body id="simple-ConTeXt-pop-up">
-        <div class="outer">
-            <div class="inner">
-                <div class="popup">{body}</div>
-            </div>
+        <div class="popup">
+            {body}
         </div>
     </body>
 </html>

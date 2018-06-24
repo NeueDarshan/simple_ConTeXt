@@ -9,14 +9,6 @@ body {
     padding: 0;
 }
 
-.light div.error a {
-    background-color: var(--light-error-link);
-}
-
-.dark div.error a {
-    background-color: var(--dark-error-link);
-}
-
 .hook {
     border-left: 0.5rem solid var(--error-background);
     border-top: 0.4rem solid transparent;
@@ -42,4 +34,12 @@ div.error a {
     padding: 0.35rem 0.7rem 0.45rem 0.8rem;
     position: relative;
     text-decoration: inherit;
+}
+
+.light div.error a {
+    background-color: var(--light-error-link);
+}
+
+.dark div.error a {
+    background-color: var(--dark-error-link);
 }

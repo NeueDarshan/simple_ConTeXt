@@ -14,13 +14,9 @@ TEMPLATE = """
         {style}
     </style>
     <body id="simple-ConTeXt-file-link">
-        <div class="outer">
-            <div class="inner">
-                <span class="message">
-                    open file: <a href="{file}">{file}</a>
-                </span>
-            </div>
-        </div>
+        <span class="message">
+            open file: <a href="{file}">{file}</a>
+        </span>
     </body>
 </html>
 """
