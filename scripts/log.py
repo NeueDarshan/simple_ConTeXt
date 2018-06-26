@@ -1,44 +1,13 @@
-import errno
-import os
-import subprocess
-
-from . import deep_dict
-from . import files
+from . import cite
 from . import utilities
 
 
 def parse(text, script, opts, timeout=5):
     # text = text.decode(encoding="utf-8", errors="ignore")
     # text = text.replace("\r\n", "\n").replace("\r", "\n")
-    kwargs = {
-        "stdin": subprocess.PIPE,
-        "stdout": subprocess.PIPE,
-        "stderr": subprocess.STDOUT,
-        "env": {"LUA_PATH": os.path.join(os.path.dirname(script), "?.lua")},
-    }
-    deep_dict.update(kwargs, opts)
-    proc = subprocess.Popen(
-        ["luatex", "--luaonly", script], **kwargs
+    return cite.parse_common_texlua(
+        text, script, opts, input_as_stdin=True, timeout=timeout,
     )
-    try:
-        output = proc.communicate(input=text, timeout=timeout)
-    except subprocess.TimeoutExpired:
-        output = None
-    except IOError as e:
-        if e.errno == errno.EPIPE:
-            output = None
-        else:
-            raise e
-    code = proc.returncode
-    if not code and output:
-        text = files.decode_bytes(output[0]).strip()
-        if text == "nil":
-            return None
-        # I don't see a problem with this use of \type{eval}, as we have
-        # complete control over the string being evaluated.
-        result = eval(text)
-        return do_format(result)
-    return None
 
 
 def do_format(data):

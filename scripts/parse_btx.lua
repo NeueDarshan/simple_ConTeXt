@@ -1,7 +1,7 @@
 local to_dict = require("table_to_dict")
 
 
-local P, R, S, V, B = lpeg.P, lpeg.R, lpeg.S, lpeg.V, lpeg.B
+local P, R, S, V = lpeg.P, lpeg.R, lpeg.S, lpeg.V
 local C, Ct, match = lpeg.C, lpeg.Ct, lpeg.match
 
 

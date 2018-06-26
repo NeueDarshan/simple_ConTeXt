@@ -1,3 +1,5 @@
+import ast
+import errno
 import os
 import re
 import string
@@ -26,7 +28,7 @@ def parse_btx(file_name, script, opts):
     return parse_common_texlua(file_name, script, opts)
 
 
-def parse_common_texlua(file_name, script, opts, timeout=5):
+def parse_common_texlua(input_, script, opts, input_as_stdin=False, timeout=5):
     kwargs = {
         "stdin": subprocess.PIPE,
         "stdout": subprocess.PIPE,
@@ -34,22 +36,32 @@ def parse_common_texlua(file_name, script, opts, timeout=5):
         "env": {"LUA_PATH": os.path.join(os.path.dirname(script), "?.lua")},
     }
     deep_dict.update(kwargs, opts)
-    proc = subprocess.Popen(
-        ["luatex", "--luaonly", script, file_name], **kwargs
-    )
+    if input_as_stdin:
+        call = ["luatex", "--luaonly", script]
+        comm = {"timeout": timeout, "input": input_}
+    else:
+        call = ["luatex", "--luaonly", script, input_]
+        comm = {"timeout": timeout}
+    proc = subprocess.Popen(call, **kwargs)
     try:
-        output = proc.communicate(timeout=timeout)
+        output = proc.communicate(**comm)
     except subprocess.TimeoutExpired:
         output = None
+    except IOError as e:
+        if e.errno == errno.EPIPE:
+            output = None
+        else:
+            raise e
     code = proc.returncode
     if not code and output:
         text = files.decode_bytes(output[0]).strip()
         if text == "nil":
             return None
-        # I don't see a problem with this use of \type{eval}, as we have
-        # complete control over the string being evaluated.
-        result = eval(text)
-        return normalize_dict(result)
+        try:
+            result = ast.literal_eval(text)
+            return normalize_dict(result)
+        except ValueError:
+            return None
     return None
 
 
