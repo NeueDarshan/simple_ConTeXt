@@ -16,7 +16,7 @@ def match_exact(regex, text):
 # This approach is a bit odd, works reasonably well though.
 CASES = (
     {
-        # keyword.control
+        # `keyword.control`
         "tags": ("flo", "sfl"),
         "f": lambda text:
             text.startswith("start") or
@@ -27,22 +27,22 @@ CASES = (
             }),
     },
     {
-        # storage.type
+        # `storage.type`
         "tags": ("sto", "sst"),
         "f": lambda text: match_exact(r"[xge]?def|g?let|define", text),
     },
     {
-        # constant.language
+        # `constant.language`
         "tags": ("lan", "sla"),
         "f": lambda text: text == "relax",
     },
     {
-        # storage.modifier
+        # `storage.modifier`
         "tags": ("mod", "smo"),
         "f": lambda text: text in {"global", "immediate", "the", "outer"},
     },
     {
-        # support.function
+        # `support.function`
         "tags": ("con", "sco"),
         "f": lambda _: True,
     },

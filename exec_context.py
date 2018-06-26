@@ -183,11 +183,7 @@ class ExecMainSubprocess:
         self.root.add_to_output(text, scroll_to_end=True, force=True)
 
     def kill(self):
-        # Hmm. When we run a process \type{context ...} and then do
-        # \type{process.kill()} here, it doesn't seem to work as I would
-        # naively expect. I think that's because \type{context} is a wrapper
-        # around \LuaTeX, and so what we really wanted to kill was the
-        # \type{luatex} process.
+        # Hmm. This doesn't seem to work as I would expect.
         with self.lock:
             if self.killed:
                 return
@@ -321,11 +317,12 @@ class SimpleContextExecMainCommand(
             self.kill_proc()
             return
 
-        # Building whilst a build is already in progress does nothing. If you
-        # wish to cancel it, use the proper Sublime Text way of doing that:
-        # \type{Ctrl+Shift+C} is bound to cancel build by default.
+        # We make it so that building again whilst a build is already in
+        # progress does nothing. If you wish to cancel it, you can use the
+        # proper Sublime Text way of doing that: `Ctrl+Shift+C` is bound to
+        # 'cancel build' by default.
         #
-        # TODO: add an option to opt||in to this behaviour, as it can be nice
+        # TODO: add an option to opt-in to this behaviour, as it can be nice
         # and would be easy for us to do.
         if self.proc is not None:
             return
@@ -351,8 +348,8 @@ class SimpleContextExecMainCommand(
             self.show_output_on_errors = False
         else:
             # We can be (very) forgiving to spelling errors, as the other
-            # options than \type{"when_there_are_errors"} are just \type{True}
-            # and \type{False}.
+            # options than `"when_there_are_errors"` are just `True` and
+            # `False`.
             self.show_output_on_errors = isinstance(show, str)
 
         if not working_dir and self.view:

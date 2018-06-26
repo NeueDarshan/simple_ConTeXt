@@ -37,7 +37,7 @@ do
     local entry_name = identifier
     local function not_(x) return 1 - x end
 
-    -- Similar to \type{P}, but ignores case.
+    -- Similar to `P`, but ignores case.
     local function P_(str)
         local result = P ""
         for i = 1, #str do

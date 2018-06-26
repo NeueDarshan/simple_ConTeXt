@@ -104,8 +104,8 @@ class SimpleContextShowOverlayCommand(sublime_plugin.WindowCommand):
             if self.window else False
         )
 
-    # For our use, we give a descriptive name as a \type{selector}. But you can
-    # override this by providing a \type{selector_raw} instead.
+    # For our use, we give a descriptive name as a `selector`. But you can
+    # override this by providing a `selector_raw` instead.
     def run(
         self,
         prefix=False,

@@ -7,7 +7,7 @@
     "caption": "simple_ConTeXt: Quick change the settings",
     "command": "simple_context_settings_controller",
   },
-  // Not in an acceptable state at present.
+  // Not in a good state currently.
   // {
   //  "caption": "simple_ConTeXt: Open TeX/ConTeXt documentation",
   //  "command": "simple_context_find_docs",

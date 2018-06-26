@@ -146,7 +146,7 @@ class InterfaceSaver:
                     self.to_load.add(os.path.join(dir_, file_))
 
         if modules:
-            # Let's use \type{t-rst.xml} as a smoking gun.
+            # Let's use `t-rst.xml` as a smoking gun.
             alt = files.locate(
                 self.path,
                 "t-rst.xml",
@@ -280,7 +280,7 @@ class InterfaceSaver:
                     node_copy.append(self.tail_args_node(end))
             self.do_command_aux_i(begin, node_copy)
             # We could signal primitives in a better way. For now they are
-            # implicitly signalled by setting file equal to \type{None}.
+            # implicitly signalled by setting file equal to `None`.
             self.do_command_aux_i(end, self.empty_node(attrib.get("file")))
         else:
             self.do_command_aux_i(self.clean_name(name), node)
@@ -580,7 +580,7 @@ class InterfaceSaver:
         return text
 
     def clean_name(self, text):
-        return text.replace("​", "")  # remove zero||width whitespace
+        return text.replace("​", "")  # remove zero-width whitespace
 
     def empty_node(self, file_):
         return ET.fromstring((
@@ -645,7 +645,7 @@ class InterfaceSaver:
         else:
             self.cmds[name] = [obj]
 
-    # This needs re||doing.
+    # This needs re-doing.
     def simplify(self):
         for name in self.cmds:
             self.cmds[name] = self.simplify_aux(self.cmds[name])

@@ -1,29 +1,26 @@
 /* We use a couple of HTML tags. We chose short tags because it makes the
- * files|/|strings significantly shorter than using long descriptive names.
+ * files/strings significantly shorter than using long descriptive names.
  * Here are their meanings:
  *
- * \starttabulate[|rT|lp|]
- *   \NC <con> \NC control sequence \type{\foo} \NC\NR
- *   \NC <sco> \NC the backslash in a control sequence \NC\NR
- *   \NC <flo> \NC start/stop control sequence \type{\startfoo} \NC\NR
- *   \NC <sfl> \NC the backslash in a start/stop control sequence \NC\NR
- *   \NC <opt> \NC optional argument \NC\NR
- *   \NC <pun> \NC delimiters/punctuation, i.e.\ the brackets \type{[]} in
- *                 \type{[...]}; also covers braces \type{{...}} and any other
- *                 delimiters \NC\NR
- *   \NC <key> \NC key, as in \type{key=value} \NC\NR
- *   \NC <equ> \NC equals, as in \type{key=value} \NC\NR
- *   \NC <val> \NC default value \NC\NR
- *   \NC <par> \NC argument parameter, i.e.\ something like \type{#1} \NC\NR
- *   \NC <num> \NC number \NC\NR
- *   \NC <wor> \NC keyword, as in units e.g.\ the \type{pt} in
- *                 \type{12pt} \NC\NR
- *   \NC <typ> \NC type name, e.g.\ \type{CSNAME} means a control sequence
- *                 name \NC\NR
- *   \NC <com> \NC comma, as in \type{key1=val1, key2=val2} \NC\NR
- *   \NC <inh> \NC inherits (heritage), styles the bit of text
- *                 \quote{inherits:} in \type{inherits: \foo} \NC\NR
- * \stoptabulate
+ * | Tag     | Description                                                    |
+ * | ------- | -------------------------------------------------------------- |
+ * | `<con>` | control sequence `\foo`                                        |
+ * | `<sco>` | the backslash in a control sequence                            |
+ * | `<flo>` | start/stop control sequence `\startfoo`                        |
+ * | `<sfl>` | the backslash in a start/stop control sequence                 |
+ * | `<opt>` | optional argument                                              |
+ * | `<pun>` | delimiters/punctuation, i.e. the brackets `[]` in `[...]`;     |
+ * |         | also covers braces `{...}` and any other delimiters            |
+ * | `<key>` | key, as in `key=value`                                         |
+ * | `<equ>` | equals, as in `key=value`                                      |
+ * | `<val>` | default value                                                  |
+ * | `<par>` | argument parameter, i.e. something like `#1`                   |
+ * | `<num>` | number                                                         |
+ * | `<wor>` | keyword, as in units e.g. the `pt` in `12pt`                   |
+ * | `<typ>` | type name, e.g. `CSNAME` means a control sequence name         |
+ * | `<com>` | comma, as in `key1=val1, key2=val2`                            |
+ * | `<inh>` | inherits (heritage), styles the bit of text "inherits:" in     |
+ * |         | `inherits: \foo`                                               |
  *
  * The approach we take to styling elements is to provide some additional CSS
  * variables for use in this file. You can then choose to use them for whatever
@@ -43,10 +40,6 @@ body {
     margin: 0.15rem;
     padding: 0.15rem;
 }
-
-.outer { }
-
-.inner { }
 
 div.popup opt {
     font-style: italic;

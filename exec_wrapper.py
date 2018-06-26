@@ -7,8 +7,8 @@ class SimpleContextExecWrapperCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
     """
-    A simple wrapper around the built||in \\type{exec}. The only difference is
-    we provide some extra variables fetched from the simple ConTeXt settings.
+    A simple wrapper around the built-in `exec`. The only difference is we
+    provide some extra variables fetched from the simple ConTeXt settings.
     """
 
     def run(self, **kwargs):

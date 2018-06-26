@@ -40,8 +40,8 @@ class SimpleContextUnpackLuaScriptsInternalCommand(
         if not os.path.exists(location):
             os.makedirs(location)
         for script in LUA_SCRIPTS:
-            # The format that \type{sublime.load_resource} expects is with a
-            # forward slash, for some reason.
+            # The format that `sublime.load_resource` expects seems to be with
+            # a forward slash, so we set that up.
             content = sublime.load_resource(
                 os.path.join(
                     "Packages", LOCATION, script,

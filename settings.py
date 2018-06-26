@@ -56,10 +56,10 @@ def simplify(obj):
     return str(obj)
 
 
-# Would be nice to do the \type{quick_panel} in a better way, with a row for
-# each sub||option. However, I'm not sure is that's possible at the moment: it
-# seems that each entry is expected to have the same number of rows, which
-# limits our options.
+# Would be nice to do the `quick_panel` in a better way, with a row for each
+# sub-option. However, I'm not sure is that's possible at the moment: it seems
+# that each entry is expected to have the same number of rows, which limits our
+# options.
 class SimpleContextSettingsControllerCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):

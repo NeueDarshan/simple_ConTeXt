@@ -1,8 +1,6 @@
 {
   "target": "simple_context_exec_wrapper",
   "selector": "source.lua",
-  // Prefer an equivalent \type{luatex} call to using \type{texlua}
-  // directly to minimise dependencies.
   "cmd": ["luatex", "--luaonly", "${file}"],
   "shell": "${simple_context_shell}",
   "env": {"PATH": "${simple_context_prefixed_path}"},

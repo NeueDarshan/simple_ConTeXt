@@ -3,7 +3,7 @@ def is_scope(view, scope):
     try:
         return view.match_selector(sel[0].begin(), scope)
     except IndexError:
-        # If in doubt, let's return \type{False}
+        # If in doubt, let's return `False`.
         return False
 
 
@@ -218,9 +218,8 @@ def enclosing_block(view, point, scope, end=None):
 
 def left_enclosing_block(view, point, scope, end=None):
     """
-    Like \\type{enclosing_block}, but checks that \\type{point} is the
-    right||boundary of the eventual block. If not, signal an error with
-    \\type{None}.
+    Like `enclosing_block`, but checks that `point` is the right-boundary of
+    the eventual block. If not, signal an error with `None`.
     """
     if end is None:
         end = view.size()

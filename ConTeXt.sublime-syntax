@@ -62,18 +62,18 @@ contexts:
         1: punctuation.definition.comment.context
 
 
-  # In \ConTeXt\ there is some preprocessing available. One aspect of this is
-  # allowing named parameters \type{#argument} in the source code, instead of
-  # the usual \TeX\ syntax \type{#1}.
-  # \startfootnote
-  #   To activate this feature, you can add a line with the directive
-  #   \type{macros=mkvi} or \type{macros=mkxi} at the top of your source file,
-  #   or change the file extension to \type{mkvi} resp.\ \type{mkxi}. Then
-  #   named arguments will be automatically translated into the usual \TeX\
-  #   style before \TeX\ gets to see them.
-  # \stopfootnote \space
-  # Another aspect is presented here: using an XML||like syntax, you can run
-  # snippets of \Lua\ \emph{before} the main \ConTeXt\ run.
+  # In ConTeXt there is some preprocessing available. One aspect of this is
+  # allowing named parameters `#argument` in the source code, instead of the
+  # usual TeX syntax `#1`.
+  #
+  # Aside: to activate this feature, you can add a line with the directive
+  # `macros=mkvi` or `macros=mkxi` at the top of your source file, or change
+  # the file extension to `mkvi` resp. `mkxi`. Then named arguments will be
+  # automatically translated into the usual TeX style before TeX gets to see
+  # them.
+  #
+  # Another aspect is presented here: using an XML-like syntax, you can run
+  # snippets of Lua *before* the main ConTeXt run.
   template:
     - match: (<\?)(lua)\s+
       captures:
@@ -89,7 +89,7 @@ contexts:
     - include: template.Lua.functions
     - include: scope:source.lua
 
-  # See the comments on \type{Lua.functions}
+  # See the comments on `Lua.functions`
   template.Lua.functions:
     - match: \binject\b
       scope: support.function.library.lua
@@ -153,16 +153,14 @@ contexts:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       push: math.main.pop-if-stop-match-two/
-  # Quoting from the \ConTeXt\ math manual:
+  # Quoting from the ConTeXt math manual:
   #
-  # \startblockquote
-  #   The inline method [\type{$...$}] is still valid, but for display math
-  #   the \type{$$} method should not be used. This has to do with the fact
-  #   that we want to control spacing in a consistent way.
-  # \stopblockquote
+  # > The inline method [`$...$}] is still valid, but for display math the `$$`
+  # > method should not be used. This has to do with the fact that we want to
+  # > control spacing in a consistent way.
   #
-  # But you can still use the double dollar \type{$$ ... $$} method if
-  # necessary, so here it is.
+  # But you can still use the double dollar `$$ ... $$` method if necessary, so
+  # here it is.
   math.display.double-dollar:
     - match: \$\$
       scope: punctuation.section.double-dollar.begin.context string.quoted.other.double-dollar.context
@@ -215,7 +213,7 @@ contexts:
 
   # Should we try to handle unicode entities? Should one write math in unicode?
   # Hmm. Let's put some in for now, and let's distinguish between different
-  # kinds of \type{constant}s.
+  # kinds of `constant`s.
   math.constant:
     - include: generic.real
     - match: '[∞π]'
@@ -231,12 +229,12 @@ contexts:
         0: meta.control-word.context constant.other.math.context
         1: punctuation.definition.backslash.context
   # We can make these lists more complete as time goes on. Keep code ligatures
-  # in mind, especially as \ConTeXt\ can do math collapsing itself:
-  # \type{\setupmathematics[collapsing=...]}.
+  # in mind, especially as `ConTeXt` can do math collapsing itself:
+  # `\setupmathematics[collapsing=...]`.
   #
-  # It's not essential to distinguish between different kinds of
-  # \type{operator}s here, but it does make sense and does provide potentially
-  # useful information.
+  # It's not essential to distinguish between different kinds of `operator`s
+  # here, but it does make sense and does provide potentially useful
+  # information.
   math.operator:
     - match: '[_^]'
       scope: keyword.operator.script.context
@@ -246,8 +244,8 @@ contexts:
       captures:
         0: meta.control-word.context keyword.operator.arithmetic.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
-    # Too many arrows to keep track of \periods\ we content ourselves to do
-    # some more common ones.
+    # Too many arrows to keep track of ... we content ourselves to do some more
+    # common ones.
     - match: (?:[=<>]+|[≈≉≤≥≰≱⩽⩾≪≫∼≁≠⊂⊄⊆⊊⊈⊃⊅⊇⊋⊉≡≢∈∉∋∌↦⤇⟾⟼↤⤆⟻⟽↥↧←⇐⟵⟸↚⇍→⇒⟶⟹↛⇏↑⇑↓⇓↔⇔⟷⟺↮⇎↕⇕])
       scope: keyword.operator.relation.context
     - match: (\\)(?:n?approx|[lg]e(?:q(?:slant)?)?|n[lg]eq|ll|gg|n?sim|neq|n?su[bp]set(?:eq)?|su[bp]setneq|n?equiv|(?:not)?in|n?ni|(?:[mM]|[lL]ongm)aps(?:to|from)|maps(?:up|down)|(?:n?[lL]|[lL]ongl)eftarrow|(?:n?[rR]|[lL]ongr)ightarrow|(?:[uU]p|[dD]own)arrow|(?:n?[lL]|[lL]ongl)eftrightarrow|[uU]pdownarrow|iff)(?!{{cs}})
@@ -277,9 +275,9 @@ contexts:
     #   scope: punctuation.definition.logical-quantifier.context
 
   math.variable:
-    # I think \type{variable.other} makes the most sense logically. However,
-    # in my experience few colour schemes style this scope. So let's use
-    # \type{string} instead.
+    # I think `variable.other` makes the most sense logically. However, in my
+    # experience few colour schemes style this scope. So let's use `string`
+    # instead.
     - match: '{{math_variable}}'
       scope: string.unquoted.math.context
 
@@ -302,8 +300,8 @@ contexts:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.adjacent*/
-  # Understanding math vs.\ text in \type{\startcases ... \stopcases} is a
-  # nice feature to have. As the code is fairly clean so far, let's keep it.
+  # Understanding math vs. text in `\startcases ... \stopcases` is a nice
+  # feature to have. As the code is fairly clean so far, let's keep it.
   math.control.cases:
     - match: (\\)startcases(?!{{cs}})
       captures:
@@ -340,26 +338,26 @@ contexts:
         0: meta.control-word.context keyword.operator.alignment.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
       set: argument.list.reference.adjacent*/
-  # We try to keep track of catcode regimes in embedded \Lua. Of course, there
-  # is only so much we can do without implementing \TeX\ within Sublime Text,
-  # but for typical use cases we can do very well.
+  # We try to keep track of catcode regimes in embedded Lua. Of course, there is
+  # only so much we can do without implementing TeX within Sublime Text, but for
+  # typical use cases we can do very well.
   #
-  # What about the other namespaces \periods\ what is the situation with
-  # \type{\usercode{...}} and \type{\startusercode ... \stopusercode}.
+  # What about the other namespaces ... what is the situation with
+  # `\usercode{...}` and `\startusercode ... \stopusercode`.
   Lua:
     - include: Lua.block
     - include: Lua.inline
 
   Lua.block:
-    - match: (\\)start(luacode)(?!{{cs}})
-      embed_scope: meta.environment.lua.major.context source.lua.embedded.context
+    - embed_scope: meta.environment.lua.major.context source.lua.embedded.context
+      match: (\\)start(luacode)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: Lua.block.major.main
       escape: (?=\s*\\stop\2(?!{{cs}}))
-    - match: (\\)start(lua)(?!{{cs}})
-      embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
+    - embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
+      match: (\\)start(lua)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -563,7 +561,7 @@ contexts:
       embed: scope:text.tex.context
       embed_scope: text.tex.context.embedded.metafun.embedded.context
       escape: \betex\b
-      # Not sure why this repetition of the \type{embed_scope} is needed here.
+      # Not sure why this repetition of the `embed_scope` is needed here.
       escape_captures:
         0: source.metapost.metafun.embedded.context support.function.metapost
 
@@ -604,10 +602,10 @@ contexts:
         - include: scope:source.js
 
 
-  # It would be nice for commands like \type{\em} to stand out from the crowd.
-  # On the other hand, what scope can we logically apply to them besides the
-  # usual \type{support.function}? I suppose the scopes (such as
-  # \type{markup.italic}) will have to suffice.
+  # It would be nice for commands like `\em` to stand out from the crowd. On the
+  # other hand, what scope can we logically apply to them besides the usual
+  # `support.function`? I suppose the scopes (such as `markup.italic`) will have
+  # to suffice.
   markup:
     - include: markup.font
     - include: markup.quote
@@ -722,30 +720,23 @@ contexts:
         - include: main
   # We can have toggles:
   #
-  # \startitemize
-  #   \startitem
-  #     at the start of a group: \type{... {\em ...} ...},
-  #   \stopitem \startitem
-  #     in the middle of a group: \type{... {... \em ...} ...},
-  #   \stopitem \startitem
-  #     at the start of an implicit group:
-  #     \type{\bTABLE\bTR\bTC \em ... \eTC\eTR\eTABLE}.
-  #   \stopitem  \startitem
-  #     in the middle of an implicit group:
-  #     \type{\bTABLE\bTR\bTC ... \em ... \eTC\eTR\eTABLE}.
-  #   \stopitem
-  # \stopitemize
+  # - at the start of a group: `... {\em ...} ...`,
+  # - in the middle of a group: `... {... \em ...} ...`,
+  # - at the start of an implicit group:
+  #   `\bTABLE\bTR\bTC \em ... \eTC\eTR\eTABLE`.
+  # - in the middle of an implicit group:
+  #   `\bTABLE\bTR\bTC ... \em ... \eTC\eTR\eTABLE`.
   #
-  # We also have the commands \type{\emph} and co.\ which are chameleons, in
-  # that they can be used as toggles \type{{\emph ...}} or delimited as
-  # \type{\emph{...}}. And again we can have explicit grouping \type{{...}} or
-  # implicit grouping \type{\start<...> ... \stop<...>}.
+  # We also have the commands `\emph` and co. which are chameleons, in that
+  # they can be used as toggles `{\emph ...}` or delimited as `\emph{...}`. And
+  # again we can have explicit grouping `{...}` or implicit grouping
+  # `\start<...> ... \stop<...>`.
   #
   # The approach we take to handle all this variety is to keep it as simple as
   # possible, by making reasonable assumptions about common usage. So for
-  # example, whilst \type{lorem {ipsum \em dolor} sit} is possible at the
-  # \TeX\ level, we assume that you place the toggle at the start of the
-  # group \type{lorem ipsum {\em dolor} sit}.
+  # example, whilst `lorem {ipsum \em dolor} sit` is possible at the TeX level,
+  # we assume that you place the toggle at the start of the group `lorem ipsum
+  # {\em dolor} sit`.
   markup.font:
     - include: markup.command
     - include: markup.toggle
@@ -972,8 +963,7 @@ contexts:
         - meta_include_prototype: false
         - meta_scope: text.xml.embedded.context
         - include: scope:text.xml
-  # I don't know what \type{PARSEDXML} is; I assume it is some form of
-  # \type{XML}.
+  # I don't know what `PARSEDXML` is; I assume it is some form of `XML`.
   verbatim.main.PARSEDXML.aux/:
     - include: verbatim.main.XML.aux/
   verbatim.main.MP.aux/:
@@ -1003,8 +993,8 @@ contexts:
         - meta_scope: meta.environment.buffer.context markup.raw.block.context
 
   verbatim.hiding:
-    - match: (\\)starthiding(?!{{cs}})
-      embed_scope: comment.block.hiding.context
+    - embed_scope: comment.block.hiding.context
+      match: (\\)starthiding(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
@@ -1150,9 +1140,9 @@ contexts:
     - include: heading.block.b
 
   heading.block.a:
-    # Okay, \quote{document} isn't technically a \quote{section}, but it can
-    # be nice to give it some similar functionality, e.g.\ showing up in the
-    # symbol list. There's not really any harm in adding it in here.
+    # Okay, "document" isn't technically a "section", but it can be nice to
+    # give it some similar functionality, e.g. showing up in the symbol list.
+    # There's not really any harm in adding it in here.
     - match: (\\)startdocument(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -1290,7 +1280,7 @@ contexts:
     - include: definition.define
     - include: definition.parameter
 
-  # See the comments on \type{template}.
+  # See the comments on `template`.
   definition.parameter:
     - match: (?:\#|\#{2}|\#{4}|\#{8}|\#{16}|\#{32}|\#{64})[[:digit:]]
       scope: variable.parameter.context
@@ -1323,9 +1313,9 @@ contexts:
         - argument.list.with-integers-only*/
 
 
-  # In addition to supporting some high||level constructs, we also try to
-  # handle some lower||level bits and bobs. It's a bit ad hoc in places, but
-  # the results look pretty decent.
+  # In addition to supporting some high-level constructs, we also try to handle
+  # some lower-level bits and bobs. It's a bit ad hoc in places, but the
+  # results look pretty decent.
   low-level:
     - include: low-level.tex
     - include: low-level.modifier
@@ -1392,8 +1382,8 @@ contexts:
     - include: control.word.conditional.adjacent
     - include: control.word.generic.math.adjacent
 
-  # What scope should alignment things have? I suppose \type{keyword} is the
-  # best choice.
+  # What scope should alignment things have? I suppose `keyword` is the best
+  # choice.
   control.word.alignment.adjacent:
     - match: (\\)(?:[BCHNMR]C|N[BNDGL]|[BCFHLMTV]L|C[MT]|[EHR]Q|[ACFHLMNS]R)(?!{{cs}})
       captures:
@@ -1420,8 +1410,8 @@ contexts:
         0: meta.control-word.context keyword.control.conditional.context
         1: punctuation.definition.backslash.context punctuation.definition.keyword.context
 
-  # The pattern \type{(\\)define{{cs}}*} works remarkably well in almost
-  # all cases. Indeed, the only exception seems to be \type{\definedfont}.
+  # The pattern `(\\)define{{cs}}*` works remarkably well in almost all cases.
+  # Indeed, the only exception seems to be `\definedfont`.
   control.word.generic:
     - match: (\\)start{{cs}}*(?!{{cs}})
       captures:
@@ -1461,10 +1451,10 @@ contexts:
         1: punctuation.definition.backslash.context
       push: argument.lists-or-groups.adjacent*/
   # Hmm, how should we handle arguments? The context
-  # \type{argument.lists-or-groups.math.adjacent*/} goes for a compromise:
-  # groups are in math mode, while lists are in text mode. Alternatively, in
-  # lists we can have assignments as in text||mode but everything else in math
-  # mode. I think this is the better option overall.
+  # `argument.lists-or-groups.math.adjacent*/` goes for a compromise: groups
+  # are in math mode, while lists are in text mode. Alternatively, in lists we
+  # can have assignments as in text-mode but everything else in math mode. I
+  # think this is the better option overall.
   control.word.generic.math.adjacent:
     - match: (\\)start{{cs}}*(?!{{cs}})
       captures:
@@ -1512,10 +1502,10 @@ contexts:
     - include: scoping.group
   scoping.math:
     - include: scoping.group.math
-    # The idea here is that we can have all the usual math support, and
-    # {\em also} cope with situations like
+    # The idea here is that we can have all the usual math support, and *also*
+    # cope with situations like
     #
-    # \starttyping
+    # ```tex
     # \unexpanded\def\startfoo
     #   {\startimath
     #    \dosomestuff}
@@ -1525,10 +1515,10 @@ contexts:
     # \unexpanded\def\stopfoo
     #   {\dosomemorestuff
     #    \stopimath}
-    # \stoptyping
+    # ```
     #
-    # We could add the same capability to \Lua\ and to \MetaPost\ and so on.
-    # Need to mull this over some more.
+    # We could add the same capability to Lua and to MetaPost and so on. Need
+    # to mull this over some more.
     - include: generic.pop-if-group-end/
 
   scoping.Lua:
@@ -2425,10 +2415,10 @@ contexts:
     - include: argument.delim.verbatim/
     - include: generic.gobble-whitespace-or-pop/
 
-  # We shall assume that if we see something like \type{\def\csname ...} that
-  # some \TeX\ trickery is taking place with e.g.\ \type{\expandafter}.
-  # Therefore, we do {\em not} count this as a (re)definition of
-  # \type{\csname}. Similarly for some other common \TeX\ primitives.
+  # We shall assume that if we see something like `\def\csname ...` that some
+  # TeX trickery is taking place with e.g. `\expandafter`. Therefore, we do
+  # *not* count this as a (re)definition of `\csname`. Similarly for some other
+  # common TeX primitives.
   argument.control-word.definition/:
     - match: (?=\\(?:csname|expandafter|fi|recurselevel)(?!{{cs}}))
       pop: true

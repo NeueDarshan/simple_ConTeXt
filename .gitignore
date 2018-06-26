@@ -1,9 +1,6 @@
-# ignore OS stuff
+# ignore OS bookkeeping stuff
 .DS_Store
 desktop.ini
 
-# don't track package metadata
-package-metadata.json
-
-# ignore interface files
+# ignore auto-generated interface files
 /interface
