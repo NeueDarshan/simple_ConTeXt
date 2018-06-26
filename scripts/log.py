@@ -3,11 +3,10 @@ from . import utilities
 
 
 def parse(text, script, opts, timeout=5):
-    # text = text.decode(encoding="utf-8", errors="ignore")
-    # text = text.replace("\r\n", "\n").replace("\r", "\n")
-    return cite.parse_common_texlua(
+    result = cite.parse_common_texlua(
         text, script, opts, input_as_stdin=True, timeout=timeout,
     )
+    return do_format(result)
 
 
 def do_format(data):

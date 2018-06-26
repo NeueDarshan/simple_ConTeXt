@@ -21,11 +21,13 @@ class DefaultFormatter(string.Formatter):
 
 
 def parse_lua(file_name, script, opts):
-    return parse_common_texlua(file_name, script, opts)
+    result = parse_common_texlua(file_name, script, opts)
+    return normalize_dict(result)
 
 
 def parse_btx(file_name, script, opts):
-    return parse_common_texlua(file_name, script, opts)
+    result = parse_common_texlua(file_name, script, opts)
+    return normalize_dict(result)
 
 
 def parse_common_texlua(input_, script, opts, input_as_stdin=False, timeout=5):
@@ -58,8 +60,7 @@ def parse_common_texlua(input_, script, opts, input_as_stdin=False, timeout=5):
         if text == "nil":
             return None
         try:
-            result = ast.literal_eval(text)
-            return normalize_dict(result)
+            return ast.literal_eval(text)
         except ValueError:
             return None
     return None
