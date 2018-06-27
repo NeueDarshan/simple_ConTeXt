@@ -144,7 +144,7 @@ contexts:
 
   # Quoting from the ConTeXt math manual:
   #
-  # > The inline method [`$...$}] is still valid, but for display math the `$$`
+  # > The inline method [`$...$`] is still valid, but for display math the `$$`
   # > method should not be used. This has to do with the fact that we want to
   # > control spacing in a consistent way.
   #

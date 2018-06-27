@@ -4,3 +4,9 @@ desktop.ini
 
 # ignore auto-generated interface files
 /interface
+
+# ignore hypothesis test files
+/tests/.hypothesis
+
+# ignore any compiled python modules
+*.pyc
