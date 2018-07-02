@@ -24,6 +24,10 @@
       "overwrite": true,
     },
   },
+  // {
+  //   "caption": "simple_ConTeXt: Run Tests",
+  //   "command": "simple_context_run_tests",
+  // },
   {
     "caption": "simple_ConTeXt: Open README",
     "command": "open_file",

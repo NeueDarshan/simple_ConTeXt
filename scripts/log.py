@@ -3,7 +3,7 @@ from . import utilities
 
 
 def parse(text, script, opts, timeout=5):
-    result = cite.parse_common_texlua(
+    result = cite.parse_common_luatex(
         text, script, opts, input_as_stdin=True, timeout=timeout,
     )
     return do_format(result)

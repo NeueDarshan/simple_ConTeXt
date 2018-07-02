@@ -21,16 +21,16 @@ class DefaultFormatter(string.Formatter):
 
 
 def parse_lua(file_name, script, opts):
-    result = parse_common_texlua(file_name, script, opts)
+    result = parse_common_luatex(file_name, script, opts)
     return normalize_dict(result)
 
 
 def parse_btx(file_name, script, opts):
-    result = parse_common_texlua(file_name, script, opts)
+    result = parse_common_luatex(file_name, script, opts)
     return normalize_dict(result)
 
 
-def parse_common_texlua(input_, script, opts, input_as_stdin=False, timeout=5):
+def parse_common_luatex(input_, script, opts, input_as_stdin=False, timeout=5):
     kwargs = {
         "stdin": subprocess.PIPE,
         "stdout": subprocess.PIPE,

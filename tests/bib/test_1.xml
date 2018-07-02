@@ -1,0 +1,8 @@
+<!-- some comment -->
+<bibtex>
+  <entry tag="whatever" category="book">
+    <field name="title">Foo Bar</field>
+    <field name="author">A. U. Thor</field>
+    <field name="year">2000</field>
+  </entry>
+</bibtex>

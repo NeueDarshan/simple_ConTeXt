@@ -1,7 +1,10 @@
+import ast
 # import functools
+import json
 import os
 import re
 import threading
+import unittest
 
 import sublime
 import sublime_plugin
@@ -41,6 +44,17 @@ def get_entries(bibliographies, format_):
         ],
         key=lambda tup: tup[1][0],
     )
+
+
+def group_files(files):
+    grouped = {}
+    for f in files:
+        base, ext = os.path.splitext(f)
+        if base in grouped:
+            grouped[base].append(f)
+        else:
+            grouped[base] = [f]
+    return grouped
 
 
 class SimpleContextCiteEventListener(
@@ -152,7 +166,7 @@ class SimpleContextCiteEventListener(
                 main = self.locate_file_main(name, extensions=self.extensions)
                 if main:
                     self.bib_per_files[view_name][name] = main
-                    bib = self.try_parse_aux(name, main)
+                    bib = self.try_parse_aux(main)
                     if bib is None:
                         msg = "[simple_ConTeXt] failed to parse file: {}"
                         print(msg.format(os.path.basename(main)))
@@ -161,7 +175,7 @@ class SimpleContextCiteEventListener(
             other = self.locate_file_context(name, extensions=self.extensions)
             if other:
                 self.bib_per_files[view_name][name] = other
-                bib = self.try_parse_aux(name, other)
+                bib = self.try_parse_aux(other)
                 if bib is None:
                     msg = "[simple_ConTeXt] failed to parse file: {}"
                     print(msg.format(os.path.basename(other)))
@@ -169,14 +183,14 @@ class SimpleContextCiteEventListener(
                 return
             self.bib_per_files[view_name][name] = 0
 
-    def try_parse_aux(self, name, file_):
+    def try_parse_aux(self, name):
         if name.endswith(".bib"):
-            return self.parse_btx(file_)
+            return self.parse_btx(name)
         elif name.endswith(".xml"):
-            return self.parse_xml(file_)
+            return self.parse_xml(name)
         elif name.endswith(".lua"):
-            return self.parse_lua(file_)
-        return self.parse_btx(file_)
+            return self.parse_lua(name)
+        return self.parse_btx(name)
 
     def parse_lua(self, name):
         return cite.parse_lua(name, self.lua_script, self.opts)
@@ -186,3 +200,77 @@ class SimpleContextCiteEventListener(
 
     def parse_xml(self, name):
         return cite.parse_xml(name)
+
+
+class TestParseBibFiles(unittest.TestCase):
+    def __init__(self, root):
+        super().__init__()
+        self.root = root
+
+    def test__equivalent_files(self):
+        dir_ = os.path.abspath(os.path.join(os.path.curdir, "tests", "bib"))
+        tests = group_files(os.path.join(dir_, f) for f in os.listdir(dir_))
+        prev = None
+        for test, exts in tests.items():
+            for e in exts:
+                content = self.root.try_parse(e)
+                if prev is not None:
+                    self.assertEqual(content, prev)
+                prev = content
+
+
+class SimpleContextTestParseBibFilesCommand(
+    utilities.LocateSettings, sublime_plugin.WindowCommand,
+):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.test = TestParseBibFiles(self)
+
+    def run(self):
+        self.reload_settings()
+        print("[simple_ConTeXt] test equivalent bib files")
+        self.test.test__equivalent_files()
+
+    def reload_settings(self):
+        super().reload_settings()
+        self.window.run_command("simple_context_unpack_lua_scripts")
+        self.opts = self.expand_variables(
+            {
+                "creationflags": self.flags,
+                "shell": self.shell,
+                "env": {"PATH": "${simple_context_prefixed_path}"},
+            }
+        )
+        self.lua_script = self.expand_variables(
+            "${packages}/simple_ConTeXt/scripts/parse_lua.lua"
+        )
+        self.btx_script = self.expand_variables(
+            "${packages}/simple_ConTeXt/scripts/parse_btx.lua"
+        )
+        # self.test_dir = self.expand_variables(
+        #     "${packages}/simple_ConTeXt/tests/bib"
+        # )
+
+    def try_parse(self, name):
+        if name.endswith(".bib"):
+            return self.parse_btx(name)
+        elif name.endswith(".xml"):
+            return self.parse_xml(name)
+        elif name.endswith(".lua"):
+            return self.parse_lua(name)
+        elif name.endswith(".py"):
+            return self.parse_py(name)
+        return self.parse_btx(name)
+
+    def parse_lua(self, name):
+        return cite.parse_lua(name, self.lua_script, self.opts)
+
+    def parse_btx(self, name):
+        return cite.parse_btx(name, self.btx_script, self.opts)
+
+    def parse_xml(self, name):
+        return cite.parse_xml(name)
+
+    def parse_py(self, name):
+        with open(name) as f:
+            return ast.literal_eval(f.read())
