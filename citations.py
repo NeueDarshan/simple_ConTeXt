@@ -1,6 +1,5 @@
 import ast
 # import functools
-import json
 import os
 import re
 import threading
@@ -207,8 +206,7 @@ class TestParseBibFiles(unittest.TestCase):
         super().__init__()
         self.root = root
 
-    def test__equivalent_files(self):
-        dir_ = os.path.abspath(os.path.join(os.path.curdir, "tests", "bib"))
+    def test__equivalent_files(self, dir_):
         tests = group_files(os.path.join(dir_, f) for f in os.listdir(dir_))
         prev = None
         for test, exts in tests.items():
@@ -229,7 +227,7 @@ class SimpleContextTestParseBibFilesCommand(
     def run(self):
         self.reload_settings()
         print("[simple_ConTeXt] test equivalent bib files")
-        self.test.test__equivalent_files()
+        self.test.test__equivalent_files(self.test_dir)
 
     def reload_settings(self):
         super().reload_settings()
@@ -247,9 +245,9 @@ class SimpleContextTestParseBibFilesCommand(
         self.btx_script = self.expand_variables(
             "${packages}/simple_ConTeXt/scripts/parse_btx.lua"
         )
-        # self.test_dir = self.expand_variables(
-        #     "${packages}/simple_ConTeXt/tests/bib"
-        # )
+        self.test_dir = self.expand_variables(
+            "${packages}/simple_ConTeXt/tests/bib"
+        )
 
     def try_parse(self, name):
         if name.endswith(".bib"):
