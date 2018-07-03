@@ -1,5 +1,6 @@
 import ast
 # import functools
+import json
 import os
 import re
 import threading
@@ -53,7 +54,7 @@ def group_files(files):
             grouped[base].append(f)
         else:
             grouped[base] = [f]
-    return grouped
+    return {os.path.basename(k): v for k, v in grouped.items()}
 
 
 class SimpleContextCiteEventListener(
@@ -208,13 +209,18 @@ class TestParseBibFiles(unittest.TestCase):
 
     def test__equivalent_files(self, dir_):
         tests = group_files(os.path.join(dir_, f) for f in os.listdir(dir_))
-        prev = None
-        for test, exts in tests.items():
+        for test, exts in sorted(tests.items()):
+            prev = None
+            print("[simple_ConTeXt]   - test: {}".format(test))
             for e in exts:
                 content = self.root.try_parse(e)
                 if prev is not None:
-                    self.assertEqual(content, prev)
-                prev = content
+                    self.assertEqual(
+                        json.dumps(content, indent=2, sort_keys=True) + "\n",
+                        json.dumps(prev[0], indent=2, sort_keys=True) + "\n",
+                    )
+                prev = (content, e)
+        print("[simple_ConTeXt]   - passed bib parsing test")
 
 
 class SimpleContextTestParseBibFilesCommand(
@@ -226,7 +232,7 @@ class SimpleContextTestParseBibFilesCommand(
 
     def run(self):
         self.reload_settings()
-        print("[simple_ConTeXt] test equivalent bib files")
+        print("[simple_ConTeXt] - test bib parsing:")
         self.test.test__equivalent_files(self.test_dir)
 
     def reload_settings(self):

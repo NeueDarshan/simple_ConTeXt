@@ -1,0 +1,16 @@
+<bibtex>
+  <entry tag="loremIpsum" category="book">
+    <field name="title">Lorem ipsum</field>
+    <field name="author">dolor sit</field>
+    <field name="amet">consectetur adipisicing</field>
+    <field name="elit">sed do eiusmod</field>
+  </entry>
+  <entry tag="khatt" category="online">
+    <field name="title">Ubaydullāh ibn Abī Rāfi</field>
+    <field name="author">Alī ibn Abī Ṭālib</field>
+  </entry>
+  <entry tag="temporIncididunt" category="article">
+    <field name="title">ut labore et dolore magna aliqua.</field>
+    <field name="author">Ut enim ad minim veniam</field>
+  </entry>
+</bibtex>
