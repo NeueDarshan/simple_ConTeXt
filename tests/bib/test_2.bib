@@ -1,3 +1,8 @@
+@string{
+  FOO = "Ut enim ad " # "minim veniam",
+  BAR = {Ubaydullāh},
+}
+
 @book{loremIpsum,
   title  = "Lorem ipsum",
   author = {dolor sit},
@@ -6,11 +11,11 @@
 }
 
 @article{temporIncididunt,
-  title  = "ut labore et dolore magna aliqua.",
-  author = "Ut enim ad minim veniam"
+  title  = "ut labore" # { et dolore} # " magna aliqua.",
+  author = FOO,
 }
 
 @online{khatt,
-  title  = {Ubaydullāh ibn Abī Rāfi},
+  title  = BAR # { ibn Abī Rāfi},
   author = {Alī ibn Abī Ṭālib}
 }
