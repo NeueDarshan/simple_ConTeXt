@@ -276,5 +276,5 @@ class SimpleContextTestParseBibFilesCommand(
         return cite.parse_xml(name)
 
     def parse_py(self, name):
-        with open(name) as f:
+        with open(name, encoding="utf-8") as f:
             return ast.literal_eval(f.read())

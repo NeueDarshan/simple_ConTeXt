@@ -67,7 +67,7 @@ def parse_common_luatex(input_, script, opts, input_as_stdin=False, timeout=5):
 
 
 def parse_xml(file_name):
-    with open(file_name) as f:
+    with open(file_name, encoding="utf-8") as f:
         tree = ET.parse(f)
     root = tree.getroot()
     result = {}

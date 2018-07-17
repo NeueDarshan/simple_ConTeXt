@@ -103,7 +103,7 @@ class VirtualCommandDict:
     ):
         self.dir = dir_
         self.missing = sorted(f for f in os.listdir(dir_) if f != cmds)
-        with open(os.path.join(dir_, cmds)) as f:
+        with open(os.path.join(dir_, cmds), encoding="utf-8") as f:
             self.cmds = collections.OrderedDict()
             for text in sorted(json.load(f), key=lambda s: s.split(":", 1)[1]):
                 parity, ctrl = text.split(":", 1)
@@ -119,7 +119,7 @@ class VirtualCommandDict:
             if key in self.cache:
                 return self.cache[key]
             name = min(f for f in self.missing if key <= f)
-            with open(os.path.join(self.dir, name)) as f:
+            with open(os.path.join(self.dir, name), encoding="utf-8") as f:
                 data = json.load(f)
 
             sample = [

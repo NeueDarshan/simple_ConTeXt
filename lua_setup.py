@@ -50,5 +50,7 @@ class SimpleContextUnpackLuaScriptsInternalCommand(
             # Better would probably be to produce hashes to see whether the
             # source file has changed: if so, only then write to the target
             # file.
-            with open(os.path.join(location, script), mode="w") as f:
+            with open(
+                os.path.join(location, script), encoding="utf-8", mode="w",
+            ) as f:
                 f.write(content)
