@@ -277,15 +277,29 @@ that entry.
 
 This functionality can be turned on or off with the setting
 `current.citations/on`. To control what information we show in the quick-panel,
-there is the setting `current.citations/format`. It's default value is the
-string
+there is the setting `current.citations/format`. It's default value is as
+follows.
 
-```
-{title}<>{author}<>{category}, {year}, {tag}
+```json
+{
+  "current.citations/format": [
+    "{title}",
+    "{author}",
+    "{category}, {year}, {tag}"
+  ]
+}
 ```
 
-The braces `{...}` indicate a bibliographic field name, and the sequence `<>`
-indicates the start of a new row.
+The braces `{...}` indicate a bibliographic field name. Alernatively you can
+pass a string instead, using the sequence `<>` to indicate the start of a new
+row. So the previous setting could be equivalenty specified like so.
+
+```json
+{
+  "current.citations/format":
+    "{title}<>{author}<>{category}, {year}, {tag}"
+}
+```
 
 To demonstrate the other formats, here is what the equivalent `example.lua`
 could look like:
@@ -455,6 +469,11 @@ certain code:
 (Currently we just pass along any extra options on top of the default options;
 maybe we should look at merging them instead.)
 
+### Command Line
+
+If you prefer to work on a command line, then I would recommend the awesome
+[Terminus][terminus] package for an integrated terminal in Sublime Text.
+
 ## Key/Value Auto-Complete
 
 We added an auto-completion feature, can be turned on or off with the option
@@ -619,4 +638,5 @@ things to add/improve.
 [package-control]:      https://packagecontrol.io
 [package-dev]:          https://github.com/SublimeText/PackageDev
 [sublime-text]:         https://www.sublimetext.com
+[terminus]:             https://github.com/randy3k/Terminus
 [unicode-completion]:   https://github.com/randy3k/UnicodeCompletion
