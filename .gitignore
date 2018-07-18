@@ -1,12 +1,16 @@
-# ignore OS bookkeeping stuff
+# OS bookkeeping stuff
 .DS_Store
 desktop.ini
 
-# ignore auto-generated interface files
+# auto-generated interface files
 /interface
 
-# ignore hypothesis test files
+# hypothesis tests
 /tests/.hypothesis
 
-# ignore any compiled python modules
+# compiled python
 *.pyc
+
+# Sublime Text project files
+*.sublime-project
+*.sublime-workspace
