@@ -5,7 +5,7 @@ import sublime_plugin
 
 
 class SimpleContextRunTestsCommand(sublime_plugin.WindowCommand):
-    def run(self):
+    def run(self) -> None:
         self.window.run_command("simple_context_test_parse_bib_files")
         # self.window.run_command("simple_context_test_deep_dict")
 

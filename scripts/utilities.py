@@ -3,6 +3,10 @@ import itertools
 import os
 import re
 
+from typing import (  # noqa
+    Any, Callable, Dict, Iterable, List, Mapping, Optional, Set, TypeVar, Union
+)
+
 import sublime
 
 from . import files
@@ -10,8 +14,15 @@ from . import randomize
 from . import scopes
 
 
+T = TypeVar("T")
+
+K = TypeVar("K")
+
+V = TypeVar("V")
+
+
 class HashableDict(dict):
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(frozenset(self.items()))
 
 
@@ -26,19 +37,19 @@ def make_hashable(obj):
     return obj
 
 
-def hash_first_arg(func):
+def hash_first_arg(func: Callable) -> Callable:
     return lambda x, *args, **kwargs: func(make_hashable(x), *args, **kwargs)
 
 
-def deduplicate_list(list_):
-    accum = []
+def deduplicate_list(list_: List[T]) -> List[T]:
+    accum = []  # type: List[T]
     for obj in list_:
         if obj not in accum:
             accum.append(obj)
     return accum
 
 
-def get_path_var(self):
+def get_path_var(self) -> Dict[str, Any]:
     copy_ = os.environ.copy()
     if self.context_path and os.path.exists(self.context_path):
         environ = copy_
@@ -47,7 +58,7 @@ def get_path_var(self):
     return copy_
 
 
-def guess_type(obj):
+def guess_type(obj: str) -> Union[int, float, bool, str, None]:
     try:
         return int(obj)
     except ValueError:
@@ -63,7 +74,7 @@ def guess_type(obj):
             return obj
 
 
-def iter_power_set(iter_):
+def iter_power_set(iter_: Iterable[T]) -> Iterable[Iterable[T]]:
     full = tuple(iter_)
     return itertools.chain.from_iterable(
         itertools.combinations(full, n) for n in range(len(full) + 1)
@@ -76,16 +87,16 @@ def get_path_setting(self, default=None):
     return paths.get(path, default)
 
 
-def get_setting(self, opt, default=None):
+def get_setting(self, opt: str, default=None):
     return self.sublime_settings.get("current.{}".format(opt), default)
 
 
-def get_setting_location(self, opt, default=None):
+def get_setting_location(self, opt: str, default=None):
     return \
         self.sublime_settings.get("program_locations.{}".format(opt), default)
 
 
-def reload_settings(self):
+def reload_settings(self) -> None:
     self.sublime_settings = \
         sublime.load_settings("simple_ConTeXt.sublime-settings")
     self.context_path = get_path_setting(self)
@@ -94,7 +105,7 @@ def reload_settings(self):
     )
 
 
-def get_variables(self):
+def get_variables(self) -> Dict[str, Any]:
     if hasattr(self, "window"):
         variables = self.window.extract_variables()
     elif hasattr(self, "view"):
@@ -125,18 +136,18 @@ def get_variables(self):
     return variables
 
 
-def expand_variables(self, args, variables):
+def expand_variables(self, args, variables: Dict[str, Any]):
     result = _expand_variables(self, args, variables)
     return sublime.expand_variables(result, variables)
 
 
-def _expand_variables(self, args, variables):
+def _expand_variables(self, args, variables: Dict[str, Any]):
     if isinstance(args, dict):
         return {
             k: _expand_variables(self, v, variables) for k, v in args.items()
         }
     elif isinstance(args, list):
-        result = []
+        result = []  # type: list
         for x in args:
             if x in [
                 s % "simple_context_insert_options" for s in ("$%s", "${%s}")
@@ -158,7 +169,11 @@ def _expand_variables(self, args, variables):
     return args
 
 
-def process_options(self, options, variables):
+def process_options(
+    self,
+    options: Union[str, Dict[str, Any]],
+    variables: Dict[str, Any],
+) -> List[str]:
     if isinstance(options, str):
         return options.split()
 
@@ -198,11 +213,11 @@ def process_options(self, options, variables):
 
 
 class Choice:
-    def __init__(self, options, choice=0):
+    def __init__(self, options: List[T], choice: int = 0) -> None:
         self.options = sorted(options)
         self.set(choice)
 
-    def set(self, choice):
+    def set(self, choice: Union[T, int]) -> None:
         if isinstance(choice, int):
             self.choice = choice
         else:
@@ -211,66 +226,70 @@ class Choice:
             except ValueError:
                 self.choice = 0
 
-    def get(self):
+    def get(self) -> T:
         return self.options[self.choice]
 
-    def to_list(self, string=False):
-        choice = self.get()
+    def to_list(self, string: bool = False) -> List[List[Union[T, str, bool]]]:
+        choice = self.get()  # type: T
         if string:
             return [[k, str(k == choice)] for k in self.options]
         return [[k, k == choice] for k in self.options]
 
-    def __str__(self):
-        return "[" + "] [".join(self.options) + "]"
+    def __str__(self) -> str:
+        return "[" + "] [".join(str(x) for x in self.options) + "]"
 
 
 class LeastRecentlyUsedCache:
-    def __init__(self, max_size=100):
+    def __init__(self, max_size: int = 100) -> None:
         self.max_size = max_size
-        self.cache = collections.OrderedDict()
+        self.cache = collections.OrderedDict()  # type: collections.OrderedDict
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: K, value: V) -> None:
         self.cache[key] = value
         self.cache.move_to_end(key, last=False)
         while len(self.cache) > self.max_size:
             self.cache.popitem(last=True)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: K) -> V:
         return self.cache[key]
 
-    def __contains__(self, key):
+    def __contains__(self, key: K) -> bool:
         return key in self.cache
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.cache)
 
-    def clear(self):
+    def clear(self) -> None:
         self.cache.clear()
 
 
 class FuzzyOrderedDict:
-    def __init__(self, iterable=None, max_size=100):
+    def __init__(
+        self,
+        iterable: Optional[Iterable] = None,
+        max_size: int = 100,
+    ) -> None:
         iterable = [] if iterable is None else iterable
         self.max_size = max_size
         self.cache = collections.deque(iterable, max_size)
 
-    def add_left(self, *args):
+    def add_left(self, *args) -> None:
         if len(args) == 1:
             self._add_left(*args)
         elif len(args) == 2:
             self._add_left((args,))
 
-    def _add_left(self, args):
+    def _add_left(self, args) -> None:
         for k, v in reversed(args):
             self.cache.appendleft((k, v))
 
-    def fuzzy_add_right(self, *args):
+    def fuzzy_add_right(self, *args) -> None:
         if len(args) == 1:
             self._fuzzy_add_right(*args)
         elif len(args) == 2:
             self._fuzzy_add_right((args,))
 
-    def _fuzzy_add_right(self, args):
+    def _fuzzy_add_right(self, args) -> None:
         max_len = self.cache.maxlen
         cur_len = len(self.cache)
         add_len = len(args)
@@ -279,7 +298,7 @@ class FuzzyOrderedDict:
         for k, v in args[:add_amt]:
             self.cache.append((k, v))
 
-        indices = set()
+        indices = set()  # type: Set[int]
         for k, v in reversed(args[add_amt:]):
             i = max_len - 1 - randomize.poly_biased_randint(
                 0, max_len - 1, ignore=indices, power=3,
@@ -290,7 +309,7 @@ class FuzzyOrderedDict:
     def __iter__(self):
         return iter(self.cache)
 
-    def __contains__(self, key):
+    def __contains__(self, key) -> bool:
         return key in self.cache
 
     def __getitem__(self, key):
@@ -299,10 +318,10 @@ class FuzzyOrderedDict:
                 return v
         raise KeyError
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.cache)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.cache)
 
 
@@ -311,13 +330,13 @@ class BaseSettings:
     flags = files.CREATE_NO_WINDOW if platform == "windows" else 0
     shell = True if platform == "windows" else False
 
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         reload_settings(self)
 
     def get_setting(self, opt, default=None):
         return get_setting(self, opt, default=default)
 
-    def is_visible_alt(self):
+    def is_visible_alt(self) -> bool:
         if hasattr(self, "window"):
             view = self.window.active_view()
             return scopes.is_context(view) if view else False
@@ -330,7 +349,7 @@ class BaseSettings:
 
 
 class LocateSettings(BaseSettings):
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         try:
             file_name = self.view.file_name()
@@ -338,10 +357,15 @@ class LocateSettings(BaseSettings):
         except AttributeError:
             self.base_dir = None
 
-    def locate_file_main(self, name, extensions=None, timeout=2.5):
+    def locate_file_main(
+        self,
+        name: str,
+        extensions: Optional[Iterable[str]] = None,
+        timeout: float = 2.5
+    ) -> Optional[str]:
         extensions = ("",) if extensions is None else extensions
         if not self.base_dir:
-            return
+            return None
 
         methods = (os.path.normpath(self.base_dir),)
         for f in os.listdir(os.path.normpath(self.base_dir)):
@@ -362,7 +386,12 @@ class LocateSettings(BaseSettings):
         if file_ and os.path.exists(file_):
             return file_
 
-    def locate_file_context(self, name, extensions=None, timeout=2.5):
+    def locate_file_context(
+        self,
+        name: str,
+        extensions: Optional[Iterable[str]] = None,
+        timeout: float = 2.5,
+    ) -> Optional[str]:
         extensions = ("",) if extensions is None else extensions
         file_ = files.fuzzy_locate(
             self.context_path,

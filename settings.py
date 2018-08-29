@@ -1,3 +1,5 @@
+from typing import List
+
 import sublime
 import sublime_plugin
 
@@ -46,7 +48,7 @@ CURRENT_SETTINGS = {
 }
 
 
-def simplify(obj):
+def simplify(obj) -> str:
     if isinstance(obj, str):
         return obj
     elif isinstance(obj, dict):
@@ -63,19 +65,19 @@ def simplify(obj):
 class SimpleContextSettingsControllerCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         self.context_paths = \
             utilities.get_setting_location(self, "ConTeXt_paths", default={})
 
-    def update_settings(self):
+    def update_settings(self) -> None:
         self.current_settings = {}
         for k in CURRENT_SETTINGS:
             deep_dict.set_safe(
                 self.current_settings, k.split("/"), self.get_setting(k),
             )
 
-    def run(self):
+    def run(self) -> None:
         self.reload_settings()
         self.update_settings()
         self.encode_settings()
@@ -84,14 +86,14 @@ class SimpleContextSettingsControllerCommand(
         self.history = {}
         self.run_panel()
 
-    def run_panel(self):
+    def run_panel(self) -> None:
         self.window.show_quick_panel(
             self.flatten_current_level(),
             self.run_handle,
             selected_index=self.get_history(),
         )
 
-    def run_handle(self, index):
+    def run_handle(self, index: int) -> None:
         if index < 0:
             return
 
@@ -138,14 +140,14 @@ class SimpleContextSettingsControllerCommand(
             else:
                 self.run_panel()
 
-    def run_panel_scheme(self):
+    def run_panel_scheme(self) -> None:
         self.window.show_quick_panel(
             self.flatten_current_level(),
             self.run_handle_scheme,
             selected_index=self.get_history(),
         )
 
-    def run_handle_scheme(self, index):
+    def run_handle_scheme(self, index: int) -> None:
         if index < 0:
             return
 
@@ -165,14 +167,14 @@ class SimpleContextSettingsControllerCommand(
             self.save(decode=False)
             self.run_panel_scheme()
 
-    def run_panel_choice(self):
+    def run_panel_choice(self) -> None:
         self.window.show_quick_panel(
             self.flatten_current_level(),
             self.run_handle_choice,
             selected_index=self.get_history(),
         )
 
-    def run_handle_choice(self, index):
+    def run_handle_choice(self, index: int) -> None:
         if index < 0:
             return
 
@@ -189,7 +191,7 @@ class SimpleContextSettingsControllerCommand(
             self.save()
             self.run_panel_choice()
 
-    def on_done(self, text):
+    def on_done(self, text: str) -> None:
         deep_dict.set_safe(
             self.encoded_settings, self.location, utilities.guess_type(text),
         )
@@ -197,17 +199,17 @@ class SimpleContextSettingsControllerCommand(
         self.save()
         self.run_panel()
 
-    def on_change(self, text):
+    def on_change(self, text: str) -> None:
         pass
 
-    def on_cancel(self):
+    def on_cancel(self) -> None:
         self.location.pop()
         self.run_panel()
 
     def current_level(self):
         return deep_dict.get_safe(self.encoded_settings, self.location)
 
-    def flatten_current_level(self):
+    def flatten_current_level(self) -> List[List[str]]:
         if self.location and self.location[-1] == "setting_groups":
             main = [
                 [k, "[✓]" if k == self.last_scheme else "[ ]"]
@@ -227,10 +229,10 @@ class SimpleContextSettingsControllerCommand(
     def get_history(self):
         return self.history.get(len(self.location), 0)
 
-    def set_history(self, index):
+    def set_history(self, index: int) -> None:
         self.history[len(self.location)] = index
 
-    def save(self, decode=True):
+    def save(self, decode: bool = True) -> None:
         if decode:
             self.decode_settings()
         self.write_settings()
@@ -240,11 +242,12 @@ class SimpleContextSettingsControllerCommand(
         self.reload_settings()
         self.encode_settings()
 
-    def encode_settings(self):
+    def encode_settings(self) -> None:
         """
         Load the settings on file into memory, and perform some simple
         transformations to them.
         """
+
         self.encoded_settings = self.current_settings
         self.encoded_settings["path"] = utilities.Choice(
             self.context_paths, choice=self.current_settings.get("path"),
@@ -257,17 +260,18 @@ class SimpleContextSettingsControllerCommand(
         self.encoded_settings["setting_groups"] = \
             self.sublime_settings.get("setting_groups", {})
 
-    def decode_settings(self):
+    def decode_settings(self) -> None:
         """
         Write the settings in memory onto the appropriate file, undoing the
         transformations as appropriate.
         """
+
         self.current_settings["path"] = self.encoded_settings["path"].get()
         self.current_settings.get("PDF", {})["viewer"] = \
             self.encoded_settings["PDF"]["viewer"].get()
         del self.current_settings["setting_groups"]
 
-    def write_settings(self):
+    def write_settings(self) -> None:
         self.to_write = {}
         for k, v in deep_dict.iter_(self.current_settings):
             for opt in {"extra_opts_for_ConTeXt", "opts_for_ConTeXt"}:
@@ -282,8 +286,8 @@ class SimpleContextSettingsControllerCommand(
 
 
 class SimpleContextEditSettingsCommand(sublime_plugin.WindowCommand):
-    def run(self, *args, **kwargs):
+    def run(self, *args, **kwargs) -> None:
         base_file = \
             "${packages}/simple_ConTeXt/simple_ConTeXt.sublime-settings"
-        args = {"base_file": base_file, "default": "{\n\t$0\n}\n"}
-        sublime.run_command("edit_settings", args)
+        dict_ = {"base_file": base_file, "default": "{\n\t$0\n}\n"}
+        sublime.run_command("edit_settings", dict_)

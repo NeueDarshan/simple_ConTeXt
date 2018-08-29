@@ -3,6 +3,8 @@ import subprocess
 import threading
 import time
 
+from typing import Any, Dict, List, Optional
+
 import sublime
 import sublime_plugin
 
@@ -28,212 +30,13 @@ PHANTOM_ERROR_TEMPLATE = """
 """
 
 
-class ExecMainSubprocess:
-    platform = sublime.platform()
-    flags = files.CREATE_NO_WINDOW if platform == "windows" else 0
-    shell = True if platform == "windows" else False
-    proc = None
-    killed = False
-    lock = threading.Lock()
-
-    def __init__(
-        self,
-        sequence,
-        root=None,
-        working_dir=None,
-        show_ConTeXt_path=None,
-        show_full_command=None,
-        show_errors=None,
-        show_errors_inline=None,
-    ):
-        self.sequence = sequence[::-1]
-        self.root = root
-        self.working_dir = working_dir
-        self.show_errors = False if show_errors is None else show_errors
-        self.show_ConTeXt_path = \
-            False if show_ConTeXt_path is None else show_ConTeXt_path
-        self.show_full_command = \
-            False if show_full_command is None else show_full_command
-        self.show_errors_inline = \
-            False if show_errors_inline is None else show_errors_inline
-
-    def start(self):
-        with self.lock:
-            self.killed = False
-            self.start_time = time.time()
-            if self.working_dir:
-                os.chdir(self.working_dir)
-        self.proceed()
-
-    def proceed(self):
-        self.lock.acquire()
-        if not self.sequence:
-            self.lock.release()
-            self.quit()
-            return
-
-        seq = self.sequence.pop()
-        run_when = seq.get("run_when")
-        if run_when is not None and not run_when:
-            self.lock.release()
-            self.proceed()
-            return
-
-        cmd = seq.get("cmd")
-        if not cmd:
-            self.lock.release()
-            self.proceed()
-            return
-        if isinstance(cmd, str):
-            cmd = cmd.split()
-
-        shell = bool(seq.get("shell"))
-
-        env = os.environ.copy()
-        extra_env = seq.get("env")
-        if extra_env:
-            for k, v in extra_env.items():
-                env[k] = v
-        output = seq.get("output")
-
-        # print("[simple_ConTeXt] Running: {}".format(" ".join(cmd)))
-        print("Running {}".format(" ".join(cmd)))
-        thread = threading.Thread(
-            target=lambda: self.run_command(
-                cmd,
-                {
-                    "env": env,
-                    "shell": shell,
-                    "creationflags": self.flags,
-                    "stdin": subprocess.PIPE,
-                    "stdout": subprocess.PIPE,
-                    "stderr": subprocess.STDOUT,
-                },
-                output,
-            )
-        )
-        self.lock.release()
-        thread.start()
-
-    def run_command(self, cmd, opts, output):
-        self.proc = subprocess.Popen(cmd, **opts)
-        if output == "context":
-            self.root.add_to_output("- running ConTeXt\n")
-            if self.show_ConTeXt_path:
-                path = self.root.get_setting("path")
-                if path:
-                    self.root.add_to_output(
-                        "  - ConTeXt path: {}\n".format(path)
-                    )
-            if self.show_full_command:
-                self.root.add_to_output(
-                    "  - full command: {}\n".format(" ".join(cmd))
-                )
-            result = self.proc.communicate()
-            code = self.proc.returncode
-        elif output == "pdf":
-            code = 0
-        else:
-            code = 0
-
-        with self.lock:
-            if output == "context":
-                self.output_context(result[0] if result else None, code)
-            elif output == "pdf":
-                self.output_context_pdf(cmd[0] if cmd else None)
-
-        if code:
-            self.quit()
-        else:
-            self.proceed()
-
-    def output_context(self, data, code):
-        if not self.root:
-            return
-        result = self.root.parse_log(data)
-        errors = [] if result is None else result.get("errors", [])
-        if errors:
-            if self.show_errors:
-                self.root.add_to_output(log.compile_errors(errors))
-            self.root.add_to_output(
-                "  - completed un-successfully\n",
-                scroll_to_end=True,
-                force=True,
-            )
-            if self.root.global_show_errors_inline and self.show_errors_inline:
-                self.root.do_phantoms(errors)
-            if self.root.show_output_on_errors:
-                self.root.show_output()
-        else:
-            self.root.add_to_output(
-                "  - completed successfully\n",
-                scroll_to_end=True,
-                force=True,
-            )
-
-    def parse_log(self, name):
-        return log.parse(name, self.root.log_script, self.root.opts)
-
-    def output_context_pdf(self, cmd):
-        viewer = self.root.get_setting("PDF/viewer")
-        if viewer:
-            text = "- opening PDF with {}\n".format(viewer)
-        else:
-            text = "- opening PDF\n"
-        self.root.add_to_output(text, scroll_to_end=True, force=True)
-
-    def kill(self):
-        # Hmm. This doesn't seem to work as I would expect.
-        with self.lock:
-            if self.killed:
-                return
-
-            if self.proc:
-                if self.platform == "windows":
-                    subprocess.Popen(
-                        ["taskkill", "/t", "/f", "/pid", str(self.proc.pid)],
-                        creationflags=self.flags,
-                        shell=self.shell,
-                    )
-                else:
-                    self.proc.kill()
-
-            self.killed = True
-            self.sequence = []
-            self.root.add_to_output(
-                "- cancelled in {:.1f}s\n".format(
-                    time.time() - self.start_time
-                )
-            )
-            self.root.proc = None
-            self.root = None
-
-    def poll(self):
-        if self.proc:
-            return self.proc.poll() is None
-        return None
-
-    def exit_code(self):
-        if self.proc:
-            return self.proc.poll()
-        return None
-
-    def quit(self):
-        if not self.root:
-            return
-        self.root.add_to_output(
-            "- finished in {:.1f}s\n".format(time.time() - self.start_time)
-        )
-        self.root.proc = None
-
-
 class SimpleContextExecMainCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
     proc = None
     output_panel_cache = ""
 
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         self.window.run_command("simple_context_unpack_lua_scripts")
         self.global_show_errors_inline = sublime.load_settings(
@@ -255,7 +58,7 @@ class SimpleContextExecMainCommand(
         if not hasattr(self, "style"):
             self.load_css()
 
-    def load_css(self):
+    def load_css(self) -> None:
         self.style = html_css.strip_css_comments(
             sublime.load_resource(
                 "Packages/simple_ConTeXt/css/phantom_error.css"
@@ -264,22 +67,22 @@ class SimpleContextExecMainCommand(
 
     def run(
         self,
-        cmd_seq=None,
-        show=None,
-        show_ConTeXt_path=None,
-        show_errors=None,
-        show_errors_inline=None,
-        show_full_command=None,
-        encoding="utf-8",
-        hide_phantoms_only=False,
-        kill=False,
-        quiet=False,
-        syntax="Packages/Text/Plain text.tmLanguage",
-        update_phantoms_only=False,
-        word_wrap=True,
-        working_dir=None,
-        file_regex="",
-        line_regex="",
+        cmd_seq: Optional[List[Dict[str, Any]]] = None,
+        show: Optional[bool] = None,
+        show_ConTeXt_path: Optional[bool] = None,
+        show_errors: Optional[bool] = None,
+        show_errors_inline: Optional[bool] = None,
+        show_full_command: Optional[bool] = None,
+        encoding: str = "utf-8",
+        hide_phantoms_only: bool = False,
+        kill: bool = False,
+        quiet: bool = False,
+        syntax: str = "Packages/Text/Plain text.tmLanguage",
+        update_phantoms_only: bool = False,
+        word_wrap: bool = True,
+        working_dir: Optional[str] = None,
+        file_regex: str = "",
+        line_regex: str = "",
         **kwargs
     ):
         cmd_seq = [] if cmd_seq is None else cmd_seq
@@ -378,20 +181,22 @@ class SimpleContextExecMainCommand(
                     text = "- encountered error of type {}\n- finished\n"
                     self.add_to_output(text.format(type(e)))
 
-    def kill_proc(self):
+    def kill_proc(self) -> None:
         if self.proc:
             self.proc.kill()
         self.proc = None
 
-    def is_enabled(self, kill=False, **kwargs):
+    def is_enabled(self, kill: bool = False, **kwargs) -> bool:
         if kill:
             return (self.proc is not None) and self.proc.poll()
         return True
 
-    def show_output(self):
+    def show_output(self) -> None:
         self.window.run_command("show_panel", {"panel": "output.ConTeXt"})
 
-    def add_to_output(self, text, clean=False, **kwargs):
+    def add_to_output(
+        self, text: str, clean: bool = False, **kwargs: str
+    ) -> None:
         cache = self.output_panel_cache
         dict_ = kwargs
         if clean:
@@ -406,12 +211,12 @@ class SimpleContextExecMainCommand(
 
     def setup_output_view(
         self,
-        syntax="Packages/Text/Plain text.tmLanguage",
-        word_wrap=True,
-        working_dir="",
-        file_regex="",
-        line_regex="",
-    ):
+        syntax: str = "Packages/Text/Plain text.tmLanguage",
+        word_wrap: bool = True,
+        working_dir: str = "",
+        file_regex: str = "",
+        line_regex: str = "",
+    ) -> None:
         if not hasattr(self, "output_view"):
             self.output_view = self.window.create_output_panel("ConTeXt")
 
@@ -434,10 +239,10 @@ class SimpleContextExecMainCommand(
         self.window.create_output_panel("ConTeXt")
         self.output_panel_cache = ""
 
-    def parse_log(self, text):
+    def parse_log(self, text: str):
         return log.parse(text, self.log_script, self.opts)
 
-    def do_phantoms(self, errors):
+    def do_phantoms(self, errors: list) -> None:
         last_line = self.view.size()
         phantoms = []
         for err in errors:
@@ -464,12 +269,213 @@ class SimpleContextExecMainCommand(
             )
         self.phantom_set.update(phantoms)
 
-    def update_phantoms(self):
+    def update_phantoms(self) -> None:
         pass
 
-    def hide_phantoms(self):
+    def hide_phantoms(self) -> None:
         if self.view:
             self.view.erase_phantoms("simple_ConTeXt")
 
-    def on_phantom_navigate(self, href):
+    def on_phantom_navigate(self, href: str) -> None:
         self.hide_phantoms()
+
+
+class ExecMainSubprocess:
+    platform = sublime.platform()
+    flags = files.CREATE_NO_WINDOW if platform == "windows" else 0
+    shell = True if platform == "windows" else False
+    proc = None
+    killed = False
+    lock = threading.Lock()
+
+    def __init__(
+        self,
+        sequence: List[dict],
+        root: Optional[SimpleContextExecMainCommand] = None,
+        working_dir: Optional[str] = None,
+        show_ConTeXt_path: Optional[bool] = None,
+        show_full_command: Optional[bool] = None,
+        show_errors: Optional[bool] = None,
+        show_errors_inline: Optional[bool] = None,
+    ) -> None:
+        self.sequence = sequence[::-1]
+        self.root = root
+        self.working_dir = working_dir
+        self.show_errors = False if show_errors is None else show_errors
+        self.show_ConTeXt_path = \
+            False if show_ConTeXt_path is None else show_ConTeXt_path
+        self.show_full_command = \
+            False if show_full_command is None else show_full_command
+        self.show_errors_inline = \
+            False if show_errors_inline is None else show_errors_inline
+
+    def start(self) -> None:
+        with self.lock:
+            self.killed = False
+            self.start_time = time.time()
+            if self.working_dir:
+                os.chdir(self.working_dir)
+        self.proceed()
+
+    def proceed(self) -> None:
+        self.lock.acquire()
+        if not self.sequence:
+            self.lock.release()
+            self.quit()
+            return
+
+        seq = self.sequence.pop()
+        run_when = seq.get("run_when")
+        if run_when is not None and not run_when:
+            self.lock.release()
+            self.proceed()
+            return
+
+        cmd = seq.get("cmd")
+        if not cmd:
+            self.lock.release()
+            self.proceed()
+            return
+        if isinstance(cmd, str):
+            cmd = cmd.split()
+
+        shell = bool(seq.get("shell"))
+
+        env = os.environ.copy()
+        extra_env = seq.get("env")
+        if extra_env:
+            for k, v in extra_env.items():
+                env[k] = v
+        output = seq.get("output")
+
+        # print("[simple_ConTeXt] Running: {}".format(" ".join(cmd)))
+        print("Running {}".format(" ".join(cmd)))
+        thread = threading.Thread(
+            target=lambda: self.run_command(
+                cmd,
+                {
+                    "env": env,
+                    "shell": shell,
+                    "creationflags": self.flags,
+                    "stdin": subprocess.PIPE,
+                    "stdout": subprocess.PIPE,
+                    "stderr": subprocess.STDOUT,
+                },
+                output,
+            )
+        )
+        self.lock.release()
+        thread.start()
+
+    def run_command(
+        self, cmd: List[str], opts: Dict[str, Any], output: Optional[str],
+    ) -> None:
+        self.proc = subprocess.Popen(cmd, **opts)
+        if output == "context":
+            self.root.add_to_output("- running ConTeXt\n")
+            if self.show_ConTeXt_path:
+                path = self.root.get_setting("path")
+                if path:
+                    self.root.add_to_output(
+                        "  - ConTeXt path: {}\n".format(path)
+                    )
+            if self.show_full_command:
+                self.root.add_to_output(
+                    "  - full command: {}\n".format(" ".join(cmd))
+                )
+            result = self.proc.communicate()
+            code = self.proc.returncode
+        elif output == "pdf":
+            code = 0
+        else:
+            code = 0
+
+        with self.lock:
+            if output == "context":
+                self.output_context(result[0] if result else None, code)
+            elif output == "pdf":
+                self.output_context_pdf(cmd[0] if cmd else None)
+
+        if code:
+            self.quit()
+        else:
+            self.proceed()
+
+    def output_context(self, data: str, code: int) -> None:
+        if not self.root:
+            return
+        result = self.root.parse_log(data)
+        errors = [] if result is None else result.get("errors", [])
+        if errors:
+            if self.show_errors:
+                self.root.add_to_output(log.compile_errors(errors))
+            self.root.add_to_output(
+                "  - completed un-successfully\n",
+                scroll_to_end=True,
+                force=True,
+            )
+            if self.root.global_show_errors_inline and self.show_errors_inline:
+                self.root.do_phantoms(errors)
+            if self.root.show_output_on_errors:
+                self.root.show_output()
+        else:
+            self.root.add_to_output(
+                "  - completed successfully\n",
+                scroll_to_end=True,
+                force=True,
+            )
+
+    def parse_log(self, name: str) -> list:
+        return log.parse(name, self.root.log_script, self.root.opts)
+
+    def output_context_pdf(self, cmd) -> None:
+        viewer = self.root.get_setting("PDF/viewer")
+        if viewer:
+            text = "- opening PDF with {}\n".format(viewer)
+        else:
+            text = "- opening PDF\n"
+        self.root.add_to_output(text, scroll_to_end=True, force=True)
+
+    def kill(self) -> None:
+        # Hmm. This doesn't seem to work as I would expect.
+        with self.lock:
+            if self.killed:
+                return
+
+            if self.proc:
+                if self.platform == "windows":
+                    subprocess.Popen(
+                        ["taskkill", "/t", "/f", "/pid", str(self.proc.pid)],
+                        creationflags=self.flags,
+                        shell=self.shell,
+                    )
+                else:
+                    self.proc.kill()
+
+            self.killed = True
+            self.sequence = []
+            self.root.add_to_output(
+                "- cancelled in {:.1f}s\n".format(
+                    time.time() - self.start_time
+                )
+            )
+            self.root.proc = None
+            self.root = None
+
+    def poll(self) -> Optional[bool]:
+        if self.proc:
+            return self.proc.poll() is None
+        return None
+
+    def exit_code(self) -> Optional[int]:
+        if self.proc:
+            return self.proc.poll()
+        return None
+
+    def quit(self) -> None:
+        if not self.root:
+            return
+        self.root.add_to_output(
+            "- finished in {:.1f}s\n".format(time.time() - self.start_time)
+        )
+        self.root.proc = None

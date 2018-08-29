@@ -1,6 +1,8 @@
 import subprocess
 import threading
 
+from typing import List  # noqa
+
 # import sublime
 import sublime_plugin
 
@@ -51,7 +53,7 @@ DOCS = [
 class SimpleContextFindDocsCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
-    def reload_settings(self, force_reload_docs=False):
+    def reload_settings(self, force_reload_docs: bool = False) -> None:
         super().reload_settings()
         self.viewer = self.get_setting("PDF/viewer")
         if force_reload_docs:
@@ -60,8 +62,8 @@ class SimpleContextFindDocsCommand(
             if not hasattr(self, "docs"):
                 self.reload_docs()
 
-    def reload_docs(self):
-        self.docs = []
+    def reload_docs(self) -> None:
+        self.docs = []  # type: List[List[str]]
         for name, file_ in DOCS:
             path = files.locate(
                 self.context_path,
@@ -72,11 +74,11 @@ class SimpleContextFindDocsCommand(
             if path:
                 self.docs.append([name, file_, path])
 
-    def run(self):
+    def run(self) -> None:
         self.reload_settings(force_reload_docs=True)
         threading.Thread(target=self.run_panel).start()
 
-    def run_panel(self, selected_index=0):
+    def run_panel(self, selected_index: int = 0) -> None:
         self.window.show_quick_panel(
             [tup[:2] for tup in self.docs] +
             [["...", "search for other files"]],
@@ -84,7 +86,7 @@ class SimpleContextFindDocsCommand(
             selected_index=selected_index,
         )
 
-    def run_handle(self, index):
+    def run_handle(self, index: int) -> None:
         if 0 <= index < len(self.docs):
             self.open_doc(self.docs[index][2])
         elif index == len(self.docs):
@@ -92,16 +94,16 @@ class SimpleContextFindDocsCommand(
                 "name", "", self.on_done, self.on_change, self.on_cancel,
             )
 
-    def on_done(self, text):
+    def on_done(self, text: str) -> None:
         self.open_doc(text)
 
-    def on_change(self, text):
+    def on_change(self, text: str) -> None:
         pass
 
-    def on_cancel(self):
+    def on_cancel(self) -> None:
         self.run_panel(selected_index=len(self.docs))
 
-    def open_doc(self, file_):
+    def open_doc(self, file_: str) -> None:
         subprocess.Popen(
             [self.viewer, file_], creationflags=self.flags, shell=self.shell,
         )

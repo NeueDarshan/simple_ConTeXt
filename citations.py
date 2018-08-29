@@ -6,6 +6,8 @@ import re
 import threading
 import unittest
 
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+
 import sublime
 import sublime_plugin
 
@@ -21,22 +23,23 @@ BUILT_IN_CITATIONS = (
 
 EXTENSIONS = ("bib", "xml", "lua")
 
-FORMAT = cite.DefaultFormatter(
-    handler=lambda k: "????" if k == "year" else "??"
-)
+FORMAT = cite.DefaultFormatter(lookup={"year": "????"}, default="??")
 
 
-def is_citation_start(text):
+def is_citation_start(text: str) -> bool:
     return text == "["
 
 
-def is_citation_history(cmd):
+def is_citation_history(cmd: list) -> bool:
     return cmd[0] not in {"left_delete", "right_delete"} if cmd else True
 
 
 # @utilities.hash_first_arg
 # @functools.lru_cache(maxsize=128)
-def get_entries(bibliographies, format_):
+def get_entries(
+    bibliographies: Dict[str, Dict[str, Any]],
+    format_: List[str],
+) -> List[Tuple[str, List[str]]]:
     return sorted(
         [
             (tag, [FORMAT.format(s, tag=tag, **entry) for s in format_])
@@ -46,8 +49,8 @@ def get_entries(bibliographies, format_):
     )
 
 
-def group_files(files):
-    grouped = {}
+def group_files(files: Iterable[str]) -> Dict[str, List[str]]:
+    grouped = {}  # type: Dict[str, List[str]]
     for f in files:
         base, ext = os.path.splitext(f)
         if base in grouped:
@@ -61,14 +64,14 @@ class SimpleContextCiteEventListener(
     utilities.LocateSettings, sublime_plugin.ViewEventListener,
 ):
     extensions = ("",) + tuple(".{}".format(s) for s in EXTENSIONS)
-    bibliographies = {}
-    bib_per_files = {}
+    bibliographies = {}  # type: Dict[str, Optional[dict]]
+    bib_per_files = {}  # type: Dict[str, dict]
     lock = threading.Lock()
 
-    def is_visible(self):
+    def is_visible(self) -> bool:
         return self.is_visible_alt()
 
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         self.view.window().run_command("simple_context_unpack_lua_scripts")
         self.file_name = str(self.view.file_name())
@@ -86,7 +89,7 @@ class SimpleContextCiteEventListener(
             "${packages}/simple_ConTeXt/scripts/parse_btx.lua"
         )
 
-    def on_modified_async(self):
+    def on_modified_async(self) -> None:
         self.reload_settings()
         format_ = self.get_setting("citations/format")
         if isinstance(format_, str):
@@ -122,7 +125,7 @@ class SimpleContextCiteEventListener(
                 target=lambda: self.do_citation(self.file_name, format_)
             ).start()
 
-    def is_citation_command(self, begin, end):
+    def is_citation_command(self, begin: int, end: int) -> bool:
         name = self.view.substr(sublime.Region(begin, end)).strip()
         user_regex = self.get_setting("citations/command_regex")
         if re.match(BUILT_IN_CITATIONS, name):
@@ -131,7 +134,7 @@ class SimpleContextCiteEventListener(
             return True
         return False
 
-    def do_citation(self, view_name, format_):
+    def do_citation(self, view_name: str, format_: List[str]) -> None:
         regions = self.view.find_by_selector(scopes.MAYBE_CITATION)
         possible_names = {self.view.substr(r).strip() for r in regions}
         with self.lock:
@@ -151,7 +154,7 @@ class SimpleContextCiteEventListener(
                 [tup[1] for tup in self.tags], self.on_done,
             )
 
-    def on_done(self, index):
+    def on_done(self, index: int) -> None:
         if 0 <= index < len(self.tags):
             text = self.tags[index]
             if text:
@@ -159,7 +162,7 @@ class SimpleContextCiteEventListener(
                     "simple_context_insert_text", {"text": text[0]},
                 )
 
-    def try_parse(self, name, view_name):
+    def try_parse(self, name: str, view_name: str) -> None:
         self.bib_per_files.setdefault(view_name, {})
         if name not in self.bib_per_files[view_name]:
             if view_name:
@@ -183,59 +186,38 @@ class SimpleContextCiteEventListener(
                 return
             self.bib_per_files[view_name][name] = 0
 
-    def try_parse_aux(self, name):
+    def try_parse_aux(self, name: str) -> Optional[Dict[str, str]]:
         if name.endswith(".bib"):
-            return self.parse_btx(name)
+            return self.try_parse_btx(name)
         elif name.endswith(".xml"):
-            return self.parse_xml(name)
+            return self.try_parse_xml(name)
         elif name.endswith(".lua"):
-            return self.parse_lua(name)
-        return self.parse_btx(name)
+            return self.try_parse_lua(name)
+        return self.try_parse_btx(name)
 
-    def parse_lua(self, name):
+    def try_parse_lua(self, name: str) -> Optional[Dict[str, str]]:
         return cite.parse_lua(name, self.lua_script, self.opts)
 
-    def parse_btx(self, name):
+    def try_parse_btx(self, name: str) -> Optional[Dict[str, str]]:
         return cite.parse_btx(name, self.btx_script, self.opts)
 
-    def parse_xml(self, name):
+    def try_parse_xml(self, name: str) -> Optional[Dict[str, str]]:
         return cite.parse_xml(name)
-
-
-class TestParseBibFiles(unittest.TestCase):
-    def __init__(self, root):
-        super().__init__()
-        self.root = root
-
-    def test__equivalent_files(self, dir_):
-        tests = group_files(os.path.join(dir_, f) for f in os.listdir(dir_))
-        for test, exts in sorted(tests.items()):
-            prev = None
-            print("[simple_ConTeXt]   - test: {}".format(test))
-            for e in exts:
-                content = self.root.try_parse(e)
-                if prev is not None:
-                    self.assertEqual(
-                        json.dumps(content, indent=2, sort_keys=True) + "\n",
-                        json.dumps(prev[0], indent=2, sort_keys=True) + "\n",
-                    )
-                prev = (content, e)
-        print("[simple_ConTeXt]   - passed bib parsing test")
 
 
 class SimpleContextTestParseBibFilesCommand(
     utilities.LocateSettings, sublime_plugin.WindowCommand,
 ):
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super().__init__(*args)
         self.test = TestParseBibFiles(self)
 
-    def run(self):
+    def run(self) -> None:
         self.reload_settings()
         print("[simple_ConTeXt] - test bib parsing:")
         self.test.test__equivalent_files(self.test_dir)
 
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         self.window.run_command("simple_context_unpack_lua_scripts")
         self.opts = self.expand_variables(
@@ -255,26 +237,47 @@ class SimpleContextTestParseBibFilesCommand(
             "${packages}/simple_ConTeXt/tests/bib"
         )
 
-    def try_parse(self, name):
+    def try_parse(self, name: str) -> Optional[Dict[str, Any]]:
         if name.endswith(".bib"):
-            return self.parse_btx(name)
+            return self.try_parse_btx(name)
         elif name.endswith(".xml"):
-            return self.parse_xml(name)
+            return self.try_parse_xml(name)
         elif name.endswith(".lua"):
-            return self.parse_lua(name)
+            return self.try_parse_lua(name)
         elif name.endswith(".py"):
-            return self.parse_py(name)
-        return self.parse_btx(name)
+            return self.try_parse_py(name)
+        return self.try_parse_btx(name)
 
-    def parse_lua(self, name):
+    def try_parse_lua(self, name: str) -> Optional[Dict[str, Any]]:
         return cite.parse_lua(name, self.lua_script, self.opts)
 
-    def parse_btx(self, name):
+    def try_parse_btx(self, name: str) -> Optional[Dict[str, Any]]:
         return cite.parse_btx(name, self.btx_script, self.opts)
 
-    def parse_xml(self, name):
+    def try_parse_xml(self, name: str) -> Optional[Dict[str, Any]]:
         return cite.parse_xml(name)
 
-    def parse_py(self, name):
+    def try_parse_py(self, name: str) -> Optional[Dict[str, Any]]:
         with open(name, encoding="utf-8") as f:
             return ast.literal_eval(f.read())
+
+
+class TestParseBibFiles(unittest.TestCase):
+    def __init__(self, root: SimpleContextTestParseBibFilesCommand) -> None:
+        super().__init__()
+        self.root = root
+
+    def test__equivalent_files(self, dir_: str) -> None:
+        tests = group_files(os.path.join(dir_, f) for f in os.listdir(dir_))
+        for test, exts in sorted(tests.items()):
+            prev = None
+            print("[simple_ConTeXt]   - test: {}".format(test))
+            for e in exts:
+                content = self.root.try_parse(e)
+                if prev is not None:
+                    self.assertEqual(
+                        json.dumps(content, indent=2, sort_keys=True) + "\n",
+                        json.dumps(prev[0], indent=2, sort_keys=True) + "\n",
+                    )
+                prev = (content, e)
+        print("[simple_ConTeXt]   - passed bib parsing test")

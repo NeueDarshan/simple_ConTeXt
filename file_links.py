@@ -32,15 +32,15 @@ class SimpleContextFileHoverListener(
     tex_extensions = ("",) + tuple(".{}".format(s) for s in TEX_EXTENSIONS)
     bib_extensions = ("",) + tuple(".{}".format(s) for s in BIB_EXTENSIONS)
 
-    def is_visible(self):
+    def is_visible(self) -> bool:
         return self.is_visible_alt()
 
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         self.load_css()
         self.size = self.view.size()
 
-    def load_css(self):
+    def load_css(self) -> None:
         if not hasattr(self, "style"):
             self.style = html_css.strip_css_comments(
                 sublime.load_resource(
@@ -48,7 +48,7 @@ class SimpleContextFileHoverListener(
                 )
             )
 
-    def on_hover(self, point, hover_zone):
+    def on_hover(self, point: int, hover_zone) -> None:
         if hover_zone != sublime.HOVER_TEXT or not self.is_visible():
             return
         self.reload_settings()
@@ -69,7 +69,7 @@ class SimpleContextFileHoverListener(
             self.on_hover_aux(other, self.bib_extensions)
             return
 
-    def on_hover_aux(self, word, extensions):
+    def on_hover_aux(self, word, extensions) -> None:
         file_name = self.view.substr(sublime.Region(*word))
         if file_name:
             file_name = file_name.strip()
@@ -82,12 +82,12 @@ class SimpleContextFileHoverListener(
                 on_navigate=lambda href: self.on_navigate(href, extensions),
             )
 
-    def on_navigate(self, href, extensions):
+    def on_navigate(self, href: str, extensions) -> None:
         threading.Thread(
             target=lambda: self.on_navigate_aux(href, extensions)
         ).start()
 
-    def on_navigate_aux(self, name, extensions):
+    def on_navigate_aux(self, name: str, extensions) -> None:
         main = self.locate_file_main(name, extensions=extensions)
         if main:
             self.view.window().open_file(main)

@@ -3,6 +3,8 @@ import subprocess
 import threading
 import time
 
+from typing import Optional
+
 # import sublime
 import sublime_plugin
 
@@ -21,7 +23,7 @@ class SimpleContextRunScriptCommand(
     state = IDLE
     previous_script = "mtxrun --script context --version"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.options = {
             "creationflags": self.flags,
@@ -31,11 +33,11 @@ class SimpleContextRunScriptCommand(
             "stderr": subprocess.STDOUT,
         }
 
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         self.options["env"] = utilities.get_path_var(self)
 
-    def run(self, user_input=None):
+    def run(self, user_input: Optional[str] = None) -> None:
         self.reload_settings()
         self.setup_output_view()
         if self.state == IDLE:
@@ -51,7 +53,7 @@ class SimpleContextRunScriptCommand(
                     self.on_cancel,
                 )
 
-    def on_done(self, text):
+    def on_done(self, text: str) -> None:
         self.start_time = time.time()
         view = self.window.active_view()
         if view:
@@ -63,7 +65,7 @@ class SimpleContextRunScriptCommand(
             target=lambda: self.on_done_aux(text, path=path)
         ).start()
 
-    def on_done_aux(self, text, path=None):
+    def on_done_aux(self, text: str, path: Optional[str] = None) -> None:
         if path and os.path.exists(path):
             os.chdir(path)
 
@@ -86,21 +88,21 @@ class SimpleContextRunScriptCommand(
         self.previous_script = text
         self.state = IDLE
 
-    def on_change(self, text):
+    def on_change(self, text: str) -> None:
         pass
 
-    def on_cancel(self):
+    def on_cancel(self) -> None:
         self.state = IDLE
 
-    def show_output(self):
+    def show_output(self) -> None:
         self.window.run_command(
             "show_panel", {"panel": "output.ConTeXt_script"},
         )
 
-    def add_to_output(self, text):
+    def add_to_output(self, text: str) -> None:
         self.output_view.run_command("append", {"characters": text})
 
-    def setup_output_view(self):
+    def setup_output_view(self) -> None:
         if not hasattr(self, "output_view"):
             self.output_view = \
                 self.window.create_output_panel("ConTeXt_script")

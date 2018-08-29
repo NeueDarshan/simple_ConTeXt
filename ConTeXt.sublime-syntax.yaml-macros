@@ -59,10 +59,12 @@ contexts:
   comment:
     - include: comment.TeX
   comment.TeX:
-    - match: '(%).*$\n?'
-      captures:
-        0: comment.line.percentage.context
-        1: punctuation.definition.comment.context
+    - match: '%'
+      scope: comment.line.percentage.context
+      push:
+        - meta_scope: punctuation.definition.comment.context
+        - match: '$\n?'
+          pop: true
 
 
   # In ConTeXt there is some preprocessing available. One aspect of this is
@@ -773,7 +775,8 @@ contexts:
         - meta_include_prototype: false
         - meta_scope: source.metapost.embedded.context
         - include: scope:source.metapost
-
+      with_prototype:
+        - include: scope:source.metapost#comment
 
   verbatim.buffer:
     - !control_sequence_start

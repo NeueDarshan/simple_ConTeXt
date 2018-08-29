@@ -1,16 +1,20 @@
+from typing import Any, Dict, List, Optional
+
 from . import cite
 from . import utilities
 
 
-def parse(text, script, opts, timeout=5):
+def parse(
+    text: str, script: str, opts: Dict[str, Any], timeout: float = 5,
+) -> Dict[str, List[str]]:
     result = cite.parse_common_luatex(
         text, script, opts, input_as_stdin=True, timeout=timeout,
     )
     return do_format(result)
 
 
-def do_format(data):
-    result = {"main": [], "errors": []}
+def do_format(data: Optional[dict]) -> Dict[str, List[str]]:
+    result = {"main": [], "errors": []}  # type: Dict[str, List[str]]
     if not isinstance(data, list):
         return result
     errors = []
@@ -26,7 +30,7 @@ def do_format(data):
     return result
 
 
-def compile_errors(errors):
+def compile_errors(errors: List[List[str]]) -> str:
     result = ""
     for err in errors:
         if len(err) > 2:

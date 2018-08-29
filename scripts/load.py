@@ -1,7 +1,19 @@
+from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union
+
 from . import html_css
 
 
-def format_template(n, align="<", min_=None, line_up=True):
+T = TypeVar("T")
+
+BLANK_FILE_FORMAT = "<file><a>TeX primitive</a></file>"
+
+
+def format_template(
+    n: int,
+    align: str = "<",
+    min_: Optional[int] = None,
+    line_up: bool = True,
+) -> str:
     if not line_up:
         return "{text:%s}" % align
     if align == "^" and (not min_ or n > min_):
@@ -9,12 +21,25 @@ def format_template(n, align="<", min_=None, line_up=True):
     return "{text:%s%s}" % (align, n)
 
 
-def normal_format(text, n, align="<", min_=None, line_up=True):
+def normal_format(
+    text: str,
+    n: int,
+    align: str = "<",
+    min_: Optional[int] = None,
+    line_up: bool = True,
+) -> str:
     template = format_template(n, align=align, min_=min_, line_up=line_up)
     return template.format(text=text)
 
 
-def tagged_format(text, tag, n, align="<", min_=None, line_up=True):
+def tagged_format(
+    text: Union[str, int],
+    tag: str,
+    n: int,
+    align: str = "<",
+    min_: Optional[int] = None,
+    line_up: bool = True,
+) -> str:
     temp = format_template(n, align=align, min_=min_, line_up=line_up)
     init = temp.format(text=text)
     total = len(init)
@@ -27,8 +52,9 @@ def tagged_format(text, tag, n, align="<", min_=None, line_up=True):
     return template.format(tag=tag)
 
 
-def nice_sorted(list_, reverse=False):
-    main, others = [], []
+def nice_sorted(list_: List[T], reverse: bool = False) -> List[T]:
+    main = []  # type: List[str]
+    others = []  # type: List[T]
     for x in list_:
         if x is None:
             pass
@@ -53,18 +79,23 @@ def nice_sorted(list_, reverse=False):
 
 
 class InterfaceLoader:
-    def __init__(self):
+    def __init__(self) -> None:
         self.syntax = '<syntax>{syntax}</syntax>'
         self.docstring = '<docstring>{docstring}</docstring>'
         self.file = '<file><a href="file:{file}">{file}</a></file>'
 
-    def load(self, *args, **kwargs):
+    def load(self, *args, **kwargs) -> List[str]:
         raw = self.render(*args, **kwargs)
         if kwargs.get("protect_space", False):
             return [html_css.protect_space(s) for s in raw]
         return raw
 
-    def render(self, name, list_, **kwargs):
+    def render(
+        self,
+        name: str,
+        list_: List[Dict[str, Any]],
+        **kwargs: bool
+    ) -> List[str]:
         self.kwargs = kwargs
         self.name = name
         self.match_indentation = self.kwargs.get("match_indentation", True)
@@ -94,15 +125,15 @@ class InterfaceLoader:
             parts.append("\n\n".join(sig))
 
         if self.kwargs.get("show_source_files", False) and files:
-            prim, rest = [], []
+            prim, rest = 0, []
             for f in files:
                 if f is None:
-                    prim.append(f)
+                    prim += 1
                 else:
                     rest.append(f)
             source = " ".join(
                 [self.file_format(k) for k in sorted(rest)] +
-                [self.file_format(k) for k in prim]
+                [BLANK_FILE_FORMAT for _ in range(prim)]
             )
         else:
             source = ""
@@ -117,18 +148,16 @@ class InterfaceLoader:
 
         return ["\n\n".join(parts), source, copy]
 
-    def file_format(self, f):
-        if f is None:
-            return "<file><a>TeX primitive</a></file>"
+    def file_format(self, f: str) -> str:
         return self.file.format(file=f)
 
-    def render_aux(self, list_):
+    def render_aux(self, list_: list) -> Tuple[str, str]:
         self._syntax = [
             " " * (len(self.name) + 1),
             html_css.control_sequence(self.name),
             " " * (len(self.name) + 1),
         ]
-        self._docstring = []
+        self._docstring = []  # type: List[str]
         self._n = 0
 
         for arg in list_:
@@ -153,21 +182,21 @@ class InterfaceLoader:
         self.clean_syntax()
         return "\n".join(self._syntax), "\n\n".join(self._docstring)
 
-    def new_arg(self):
+    def new_arg(self) -> None:
         for i in range(3):
             self._syntax[i] += " "
 
-    def clean_syntax(self):
+    def clean_syntax(self) -> None:
         for i in range(2, -1, -1):
             if not html_css.strip_tags(self._syntax[i]).rstrip():
                 del self._syntax[i]
 
-    def blank(self):
+    def blank(self) -> None:
         self._syntax[0] += " " * self._len
         self._syntax[1] += self._rendering
         self._syntax[2] += " " * self._len
 
-    def do_syntax(self):
+    def do_syntax(self) -> None:
         if self._optional:
             for i in range(3):
                 self._syntax[i] += "<opt>"
@@ -180,7 +209,7 @@ class InterfaceLoader:
             for i in range(3):
                 self._syntax[i] += "</opt>"
 
-    def do_docstring(self):
+    def do_docstring(self) -> None:
         if isinstance(self._content, str):
             self._docstring.append(self.docstring_str())
         elif isinstance(self._content, list):
@@ -203,16 +232,16 @@ class InterfaceLoader:
             else:
                 self._docstring.append(self.guide() + inherits)
 
-    def docstring_str(self):
+    def docstring_str(self) -> str:
         return self.guide() + self._content
 
-    def docstring_list(self):
+    def docstring_list(self) -> str:
         line_break = self.kwargs.get("line_break", 65)
         if isinstance(line_break, int):
             return self.docstring_list_break(line_break)
         return self.docstring_list_nobreak()
 
-    def docstring_list_break(self, line_break):
+    def docstring_list_break(self, line_break: int) -> str:
         content = nice_sorted(self._content.copy(), reverse=True)
         lines = []
         init = True
@@ -236,10 +265,10 @@ class InterfaceLoader:
 
         return "\n".join(lines)
 
-    def docstring_list_nobreak(self):
+    def docstring_list_nobreak(self) -> str:
         return self.guide() + " ".join(self._content)
 
-    def docstring_dict(self):
+    def docstring_dict(self) -> str:
         line_break = self.kwargs.get("line_break", 65)
         len_ = max(len(html_css.strip_tags(k)) for k in self._content)
 
@@ -247,7 +276,7 @@ class InterfaceLoader:
             return self.docstring_dict_break(len_, line_break)
         return self.docstring_dict_nobreak(len_)
 
-    def docstring_dict_break(self, len_, line_break):
+    def docstring_dict_break(self, len_: int, line_break: int) -> str:
         keys = nice_sorted(self._content, reverse=True)
         lines = []
         init = True
@@ -285,7 +314,7 @@ class InterfaceLoader:
 
         return "\n".join(lines)
 
-    def docstring_dict_nobreak(self, len_):
+    def docstring_dict_nobreak(self, len_: int) -> str:
         lines = []
         for i, k in enumerate(nice_sorted(self._content)):
             v = self._content[k]
@@ -293,12 +322,17 @@ class InterfaceLoader:
             lines[-1] += " ".join(nice_sorted(v)) if isinstance(v, list) else v
         return "\n".join(lines)
 
-    def guide(self, num=True):
+    def guide(self, num: bool = True) -> str:
         if num:
             return tagged_format(self._n, "num", 4)
         return "    "
 
-    def assignments_guide(self, len_, key=None, num=True):
+    def assignments_guide(
+        self,
+        len_: int,
+        key: Optional[str] = None,
+        num: bool = True,
+    ) -> str:
         start = self.guide(num=num)
         if key:
             len_ += len(key) - len(html_css.strip_tags(key))

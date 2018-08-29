@@ -11,6 +11,6 @@ class SimpleContextExecWrapperCommand(
     provide some extra variables fetched from the simple ConTeXt settings.
     """
 
-    def run(self, **kwargs):
+    def run(self, **kwargs) -> None:
         self.reload_settings()
         self.window.run_command("exec", self.expand_variables(kwargs))

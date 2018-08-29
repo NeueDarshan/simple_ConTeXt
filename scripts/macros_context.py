@@ -1,6 +1,8 @@
-from YAMLMacros.lib.arguments import argument, foreach, format, if_
-from YAMLMacros.lib.extend import apply, merge, prepend
-from YAMLMacros.lib.syntax import rule
+from typing import Any, Dict, List, Optional, Union
+
+from YAMLMacros.lib.arguments import argument, foreach, format, if_  # noqa
+from YAMLMacros.lib.extend import apply, merge, prepend  # noqa
+from YAMLMacros.lib.syntax import rule  # noqa
 
 from . import scopes
 
@@ -40,7 +42,11 @@ MAPS = {
 }
 
 
-def _control_sequence_aux(name, scope, backslash=scopes.BACKSLASH):
+def _control_sequence_aux(
+    name: str,
+    scope: str,
+    backslash: str = scopes.BACKSLASH,
+) -> Dict[str, Union[str, Dict[int, str]]]:
     return {
         "match": r"(\\)%s(?!{{cs}})" % name,
         "captures": {0: scope, 1: backslash},
@@ -48,14 +54,14 @@ def _control_sequence_aux(name, scope, backslash=scopes.BACKSLASH):
 
 
 def _control_sequence(
-    name,
-    scope,
-    name_map=None,
-    name_pre="",
-    name_post="",
-    backslash=scopes.BACKSLASH,
+    name: str,
+    scope: str,
+    name_map: Optional[str] = None,
+    name_pre: str = "",
+    name_post: str = "",
+    backslash: str = scopes.BACKSLASH,
     **kwargs
-):
+) -> Any:
     if name_map in MAPS:
         name = MAPS[name_map].get(name, name)
     rule_base = _control_sequence_aux(
@@ -67,19 +73,23 @@ def _control_sequence(
     return rule(**rule_base)
 
 
-def control_sequence(name="", scope=None, **kwargs):
-    if scope is None:
-        scope = scopes.CONTROL_WORD_NORMAL
-    else:
-        scope = "meta.control-word.context {}".format(scope)
+def control_sequence(
+    name: str = "", scope: Optional[str] = None, **kwargs
+) -> Any:
+    scope = (
+        scopes.CONTROL_WORD_NORMAL if scope is None else
+        "meta.control-word.context {}".format(scope)
+    )
     return _control_sequence(name, scope, **kwargs)
 
 
-def control_sequence_operator(name="", scope=None, **kwargs):
-    if scope is None:
-        scope = scopes.CONTROL_WORD_OPERATOR
-    else:
-        scope = "meta.control-word.context {}".format(scope)
+def control_sequence_operator(
+    name: str = "", scope: Optional[str] = None, **kwargs
+) -> Any:
+    scope = (
+        scopes.CONTROL_WORD_OPERATOR if scope is None else
+        "meta.control-word.context {}".format(scope)
+    )
     return _control_sequence(
         name,
         scope,
@@ -88,19 +98,19 @@ def control_sequence_operator(name="", scope=None, **kwargs):
     )
 
 
-def control_sequence_start(name="", **kwargs):
+def control_sequence_start(name: str = "", **kwargs) -> Any:
     return _control_sequence(
         name, scopes.CONTROL_WORD_START, name_pre="start", **kwargs
     )
 
 
-def control_sequence_stop(name="", **kwargs):
+def control_sequence_stop(name: str = "", **kwargs) -> Any:
     return _control_sequence(
         name, scopes.CONTROL_WORD_STOP, name_pre="stop", **kwargs
     )
 
 
-def control_sequence_align(name="", **kwargs):
+def control_sequence_align(name: str = "", **kwargs) -> Any:
     return _control_sequence(
         name,
         scopes.CONTROL_WORD_ALIGN,
@@ -109,7 +119,7 @@ def control_sequence_align(name="", **kwargs):
     )
 
 
-def control_sequence_import(name="", **kwargs):
+def control_sequence_import(name: str = "", **kwargs) -> Any:
     return _control_sequence(
         name,
         scopes.CONTROL_WORD_IMPORT,
@@ -118,7 +128,7 @@ def control_sequence_import(name="", **kwargs):
     )
 
 
-def control_sequence_conditional(name="", **kwargs):
+def control_sequence_conditional(name: str = "", **kwargs) -> Any:
     return _control_sequence(
         name,
         scopes.CONTROL_WORD_CONDITIONAL,
@@ -127,15 +137,17 @@ def control_sequence_conditional(name="", **kwargs):
     )
 
 
-def control_sequence_define(name="", **kwargs):
+def control_sequence_define(name: str = "", **kwargs) -> Any:
     return _control_sequence(name, scopes.CONTROL_WORD_DEFINE, **kwargs)
 
 
-def control_sequence_modify(name="", **kwargs):
+def control_sequence_modify(name: str = "", **kwargs) -> Any:
     return _control_sequence(name, scopes.CONTROL_WORD_MODIFY, **kwargs)
 
 
-def control_sequence_group_markup(name="", push_scoping=None):
+def control_sequence_group_markup(
+    name: str = "", push_scoping: Optional[str] = None,
+) -> Any:
     rule_base = {
         "match": r"(\{)\s*((\\)%s)\b" % name,
         "captures": {
@@ -150,16 +162,16 @@ def control_sequence_group_markup(name="", push_scoping=None):
 
 
 def block_stop(
-    name="", meta_content_scope="", meta_include_prototype=None, include=None,
-):
-    if include is None:
-        include_rule = []
-    else:
-        include_rule = [rule(include=include)]
-    if meta_include_prototype is None:
-        prototype_rule = []
-    else:
-        prototype_rule = [rule(meta_include_prototype=meta_include_prototype)]
+    name: str = "",
+    meta_content_scope: str = "",
+    meta_include_prototype: Optional[bool] = None,
+    include: Optional[str] = None,
+) -> Any:
+    include_rule = [] if include is None else [rule(include=include)]
+    prototype_rule = (
+        [] if meta_include_prototype is None else
+        [rule(meta_include_prototype=meta_include_prototype)]
+    )
     return rule(
         match="",
         set=prototype_rule + [
@@ -169,13 +181,13 @@ def block_stop(
     )
 
 
-def block_stop_quote(name):
+def block_stop_quote(name: str) -> Any:
     return block_stop(
         name=name, meta_content_scope=scopes.BLOCK_QUOTE, include="main",
     )
 
 
-def block_stop_verbatim(name):
+def block_stop_verbatim(name: str) -> Any:
     return block_stop(
         name=name,
         meta_content_scope=scopes.BLOCK_RAW,
@@ -183,7 +195,7 @@ def block_stop_verbatim(name):
     )
 
 
-def list_heading(name):
+def list_heading(name: str) -> List[Any]:
     content_scope = scopes.ALL(
         scopes.VALUE,
         scopes.META_TITLE,
@@ -211,7 +223,7 @@ def list_heading(name):
     ]
 
 
-def group_heading(name):
+def group_heading(name: str) -> List[Any]:
     content_scope = scopes.ALL(
         scopes.META_TITLE,
         "entity.name.section.{}.context".format(name),
@@ -231,7 +243,7 @@ def group_heading(name):
     ]
 
 
-def group_markup(name):
+def group_markup(name: str) -> List[Any]:
     fallback = "markup.italic.{}.context".format(name)
     content_scope = MAPS["markup_group"].get(name, fallback)
     return [
@@ -248,7 +260,9 @@ def group_markup(name):
     ]
 
 
-def assignment(delim="=", mode="list", include_main="main"):
+def assignment(
+    delim: str = "=", mode: str = "list", include_main: str = "main",
+) -> Any:
     return rule(
         match="({{argument_key}}*)\\s*(%s)" % delim,
         captures={1: scopes.KEY, 2: scopes.EQUALS},
@@ -261,11 +275,11 @@ def assignment(delim="=", mode="list", include_main="main"):
     )
 
 
-def verbatim_helper(name="", arg=None):
-    if arg is None:
-        arg_ = "argument.list.close*/"
-    else:
-        arg_ = "argument.list.{}.close*/".format(arg)
+def verbatim_helper(name: str = "", arg: str = None) -> Any:
+    arg_ = (
+        "argument.list.close*/" if arg is None else
+        "argument.list.{}.close*/".format(arg)
+    )
     return rule(
         match="",
         push=["verbatim.main.{}.aux/".format(name), arg_],

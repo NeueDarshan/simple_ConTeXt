@@ -18,21 +18,21 @@ LUA_SCRIPTS = (
 class SimpleContextUnpackLuaScriptsCommand(sublime_plugin.WindowCommand):
     first = True
 
-    def run(self, force=False, **kwargs):
+    def run(self, force: bool = False, **kwargs) -> None:
         if force:
             self.run_main()
         elif self.first:
             self.run_main()
             self.first = False
 
-    def run_main(self):
+    def run_main(self) -> None:
         self.window.run_command("simple_context_unpack_lua_scripts_internal")
 
 
 class SimpleContextUnpackLuaScriptsInternalCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
-    def run(self):
+    def run(self) -> None:
         self.reload_settings()
         location = os.path.join(
             self.expand_variables("${packages}"), LOCATION,

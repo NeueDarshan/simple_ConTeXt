@@ -6,31 +6,56 @@ import string
 import subprocess
 import xml.etree.ElementTree as ET
 
+from typing import Any, Dict, Optional
+
 from . import deep_dict
 from . import files
 
 
 class DefaultFormatter(string.Formatter):
-    def __init__(self, handler=None):
-        self._handler = handler
+    def __init__(
+        self,
+        lookup: Optional[Dict[str, str]] = None,
+        default: Optional[str] = None,
+    ) -> None:
+        self._lookup = {} if lookup is None else lookup
+        self._default = default
 
-    def get_value(self, key, args, kwargs):
-        if key not in kwargs and self._handler:
-            kwargs[key] = self._handler(key)
+    def get_value(self, key, args, kwargs) -> str:
+        if key not in kwargs:
+            val = self._lookup.get(key)
+            if val is not None:
+                kwargs[key] = val
+            elif self._default is not None:
+                kwargs[key] = self._default
         return super().get_value(key, args, kwargs)
 
 
-def parse_lua(file_name, script, opts):
+def parse_lua(
+    file_name: str, script: str, opts: Dict[str, Any],
+) -> Optional[dict]:
     result = parse_common_luatex(file_name, script, opts)
+    if result is None:
+        return None
     return normalize_dict(result)
 
 
-def parse_btx(file_name, script, opts):
+def parse_btx(
+    file_name: str, script: str, opts: Dict[str, Any],
+) -> Optional[dict]:
     result = parse_common_luatex(file_name, script, opts)
+    if result is None:
+        return None
     return normalize_dict(result)
 
 
-def parse_common_luatex(input_, script, opts, input_as_stdin=False, timeout=5):
+def parse_common_luatex(
+    input_: str,
+    script: str,
+    opts: Dict[str, Any],
+    input_as_stdin: bool = False,
+    timeout: float = 5,
+) -> Optional[dict]:
     kwargs = {
         "stdin": subprocess.PIPE,
         "stdout": subprocess.PIPE,
@@ -46,17 +71,17 @@ def parse_common_luatex(input_, script, opts, input_as_stdin=False, timeout=5):
         comm = {"timeout": timeout}
     proc = subprocess.Popen(call, **kwargs)
     try:
-        output = proc.communicate(**comm)
+        out, _ = proc.communicate(**comm)
     except subprocess.TimeoutExpired:
-        output = None
+        out = None
     except IOError as e:
         if e.errno == errno.EPIPE:
-            output = None
+            out = None
         else:
             raise e
     code = proc.returncode
-    if not code and output:
-        text = files.decode_bytes(output[0]).strip()
+    if not code and out:
+        text = files.decode_bytes(out).strip()
         if text == "nil":
             return None
         try:
@@ -66,7 +91,7 @@ def parse_common_luatex(input_, script, opts, input_as_stdin=False, timeout=5):
     return None
 
 
-def parse_xml(file_name):
+def parse_xml(file_name: str) -> Optional[dict]:
     with open(file_name, encoding="utf-8") as f:
         tree = ET.parse(f)
     root = tree.getroot()
@@ -89,16 +114,16 @@ def parse_xml(file_name):
             name = sub.attrib.get("name")
             if not name:
                 continue
-            entry[name] = sub.text
+            text = sub.text
+            if text is not None:
+                entry[name] = text
 
         result[tag] = entry
 
     return normalize_dict(result)
 
 
-def normalize_dict(data):
-    if not data:
-        return {}
+def normalize_dict(data: dict) -> dict:
     return {tag: normalize_dict_aux(entry) for tag, entry in data.items()}
 
 
@@ -106,7 +131,8 @@ def normalize_dict_aux(data):
     if isinstance(data, dict):
         result = {}
         for k, v in data.items():
-            k = k.lower() if isinstance(k, str) else k
+            if isinstance(k, str):
+                k = k.lower()
             if k == "category" and isinstance(v, str):
                 v = v.lower()
             else:

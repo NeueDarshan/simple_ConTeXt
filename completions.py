@@ -5,6 +5,8 @@ import string
 import threading
 import time
 
+from typing import Dict, Iterable, List, Optional, Union  # noqa
+
 import sublime
 import sublime_plugin
 
@@ -35,7 +37,7 @@ TEMPLATE = """
 """
 
 
-def extra_style():
+def extra_style() -> str:
     result = []
     suffixes = ("style", "weight", "color", "background")
     data = {
@@ -78,11 +80,11 @@ def extra_style():
 EXTRA_STYLE = extra_style()
 
 
-def try_jump_to_def(view, command):
+def try_jump_to_def(view: sublime.View, command: str) -> None:
     threading.Thread(target=lambda: try_jump_to_def_aux(view, command)).start()
 
 
-def try_jump_to_def_aux(view, name):
+def try_jump_to_def_aux(view: sublime.View, name: str) -> None:
     start_time = time.time()
     while view.is_loading():
         time.sleep(0.01)
@@ -99,8 +101,12 @@ def try_jump_to_def_aux(view, name):
 
 class VirtualCommandDict:
     def __init__(
-        self, dir_, max_size=100, local_size=10, cmds="_commands.json",
-    ):
+        self,
+        dir_: str,
+        max_size: int = 100,
+        local_size: int = 10,
+        cmds: str = "_commands.json",
+    ) -> None:
         self.dir = dir_
         self.missing = sorted(f for f in os.listdir(dir_) if f != cmds)
         with open(os.path.join(dir_, cmds), encoding="utf-8") as f:
@@ -111,10 +117,10 @@ class VirtualCommandDict:
         self.local_size = local_size
         self.cache = utilities.FuzzyOrderedDict(max_size=max_size)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value) -> None:
         self.cache.add_left(key, value)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> None:
         if key in self:
             if key in self.cache:
                 return self.cache[key]
@@ -136,14 +142,14 @@ class VirtualCommandDict:
         else:
             raise KeyError
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.cache)
 
-    def __contains__(self, key):
+    def __contains__(self, key) -> bool:
         return key in self.cmds
 
 
-def strip_prefix(text):
+def strip_prefix(text: str) -> str:
     return "".join(text.split()[-1:])
 
 
@@ -161,10 +167,10 @@ class SimpleContextMacroSignatureEventListener(
     auto_complete_cmd_key = None
     attempts = 0
 
-    def is_visible(self):
+    def is_visible(self) -> bool:
         return self.is_visible_alt()
 
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         self.pop_ups = {
             k.split("/")[-1]: self.get_setting("pop_ups/{}".format(k))
@@ -191,7 +197,7 @@ class SimpleContextMacroSignatureEventListener(
             else:
                 self.try_load_commands()
 
-    def reload_settings_aux(self):
+    def reload_settings_aux(self) -> None:
         self.view.window().run_command(
             "simple_context_regenerate_interface_files",
             {
@@ -203,7 +209,7 @@ class SimpleContextMacroSignatureEventListener(
         self.try_load_commands()
         self.state = IDLE
 
-    def try_load_commands(self):
+    def try_load_commands(self) -> None:
         self.attempts += 1
         if self.attempts < 10:
             self.load_commands(
@@ -215,14 +221,14 @@ class SimpleContextMacroSignatureEventListener(
                 )
             )
 
-    def load_css(self):
+    def load_css(self) -> None:
         self.style = html_css.strip_css_comments(
             sublime.load_resource(
                 "Packages/simple_ConTeXt/css/pop_up.css"
             )
         )
 
-    def load_commands(self, path):
+    def load_commands(self, path: str) -> None:
         try:
             self.cache[self.name] = \
                 VirtualCommandDict(path, max_size=500, local_size=25)
@@ -231,7 +237,9 @@ class SimpleContextMacroSignatureEventListener(
         except OSError:
             pass
 
-    def on_query_completions(self, prefix, locations):
+    def on_query_completions(
+        self, prefix: str, locations: List[int],
+    ) -> Optional[List[List[str]]]:
         self.reload_settings()
         if self.state != IDLE or not self.is_visible():
             return None
@@ -246,7 +254,9 @@ class SimpleContextMacroSignatureEventListener(
 
         return None
 
-    def complete_command(self, cache, locations):
+    def complete_command(
+        self, cache: VirtualCommandDict, locations: List[int],
+    ) -> Optional[List[List[str]]]:
         for location in locations:
             if scopes.enclosing_block(
                 self.view,
@@ -266,13 +276,15 @@ class SimpleContextMacroSignatureEventListener(
         return None
 
     # Crude, does a decent job though.
-    def complete_key(self, cmd, limit=2):
+    def complete_key(self, cmd: str, limit: int = 2):
         return self.complete_key_aux(cmd, intermediate=False, limit=limit)
 
     # For now, just handle the possibility of multiple variations by
     # merging them all. Watch out for infinite recursion.
-    def complete_key_aux(self, cmd, intermediate=False, limit=2):
-        result = {}
+    def complete_key_aux(
+        self, cmd: str, intermediate: bool = False, limit: int = 3,
+    ):
+        result = {}  # type: Dict[str, List[str]]
         for var in cmd:
             if not isinstance(var, dict):
                 continue
@@ -313,7 +325,7 @@ class SimpleContextMacroSignatureEventListener(
             return result
         return sorted(result.values()) if result else None
 
-    def on_hover(self, point, hover_zone):
+    def on_hover(self, point: int, hover_zone: int) -> None:
         if not self.is_visible() or hover_zone != sublime.HOVER_TEXT:
             return
 
@@ -343,7 +355,7 @@ class SimpleContextMacroSignatureEventListener(
         else:
             self.view.hide_popup()
 
-    def on_modified_async(self):
+    def on_modified_async(self) -> None:
         self.reload_settings()
         if self.state != IDLE or not self.is_visible():
             self.view.hide_popup()
@@ -399,7 +411,7 @@ class SimpleContextMacroSignatureEventListener(
 
         self.view.hide_popup()
 
-    def get_popup_text(self, name):
+    def get_popup_text(self, name: str) -> str:
         new_pop_up_state = json.dumps(self.pop_ups, sort_keys=True)
         if not hasattr(self, "prev_pop_up_state"):
             self.prev_pop_up_state = None
@@ -422,7 +434,7 @@ class SimpleContextMacroSignatureEventListener(
             extra_style=self.get_extra_style(),
         )
 
-    def get_extra_style(self):
+    def get_extra_style(self) -> str:
         con, sco = self.styles_for_scope("support.function")
         flo, sfl = self.styles_for_scope("keyword.control")
         mod, smo = self.styles_for_scope("storage.modifier")
@@ -453,17 +465,17 @@ class SimpleContextMacroSignatureEventListener(
 
         return EXTRA_STYLE.format(**opts)
 
-    def style_for_scope_punc(self, text):
+    def style_for_scope_punc(self, text: str) -> str:
         return self.view.style_for_scope(
             "{} punctuation.definition.backslash".format(text)
         )
 
-    def styles_for_scope(self, text):
+    def styles_for_scope(self, text: str) -> List[str]:
         return [
             self.view.style_for_scope(text), self.style_for_scope_punc(text),
         ]
 
-    def on_navigate(self, href, name):
+    def on_navigate(self, href: str, name: str) -> None:
         type_, content = href[:4], href[5:]
         if type_ == "file":
             self.on_navigate_file(content, name)
@@ -478,12 +490,12 @@ class SimpleContextMacroSignatureEventListener(
             # elif content == "plain":
             #     self.copy(html_css.raw_print(text))
 
-    def on_navigate_file(self, name, command):
+    def on_navigate_file(self, name: str, command: str) -> None:
         threading.Thread(
             target=lambda: self.on_navigate_file_aux(name, command)
         ).start()
 
-    def on_navigate_file_aux(self, name, command):
+    def on_navigate_file_aux(self, name: str, command: str) -> None:
         main = files.locate(
             self.context_path, name, flags=self.flags, shell=self.shell,
         )
@@ -506,7 +518,7 @@ class SimpleContextMacroSignatureEventListener(
 
         sublime.message_dialog('Falied to locate file "{}".'.format(name))
 
-    def copy(self, text):
+    def copy(self, text: str) -> None:
         self.view.hide_popup()
         sublime.set_clipboard(text)
         sublime.status_message("Pop-up content copied to clipboard")

@@ -1,4 +1,9 @@
-def is_scope(view, scope):
+from typing import Optional, Tuple
+
+import sublime
+
+
+def is_scope(view: sublime.View, scope: str) -> bool:
     sel = view.sel()
     try:
         return view.match_selector(sel[0].begin(), scope)
@@ -7,36 +12,36 @@ def is_scope(view, scope):
         return False
 
 
-def is_context(view):
+def is_context(view: sublime.View) -> bool:
     return is_scope(view, "text.tex.context")
 
 
-def is_metapost(view):
+def is_metapost(view: sublime.View) -> bool:
     return is_scope(view, "source.metapost")
 
 
-def is_lua(view):
+def is_lua(view: sublime.View) -> bool:
     return is_scope(view, "source.lua")
 
 
 # Does order matter for scope matching? If so, then we need to rethink these.
-def AND(a, b):
+def AND(a: str, b: str) -> str:
     return ALL(a, b)
 
 
-def ALL(*args):
+def ALL(*args: str) -> str:
     return " ".join(args)
 
 
-def OR(a, b):
+def OR(a: str, b: str) -> str:
     return ANY(a, b)
 
 
-def ANY(*args):
+def ANY(*args: str) -> str:
     return ", ".join(args)
 
 
-def NOT(a):
+def NOT(a: str) -> str:
     return "- {}".format(a)
 
 
@@ -202,13 +207,14 @@ MARKUP_HEADING = "markup.heading.context"
 BUFFER = "meta.buffer-name.context"
 
 
-def enclosing_block(view, point, scope, end=None):
+def enclosing_block(
+    view: sublime.View, point: int, scope: str, end: Optional[int] = None,
+) -> Optional[Tuple[int, int]]:
     start = stop = point
     while start > 0 and view.match_selector(start, scope):
         start -= 1
-    if end is None:
-        end = view.size()
-    while stop < end and view.match_selector(stop, scope):
+    end_ = view.size() if end is None else end
+    while stop < end_ and view.match_selector(stop, scope):
         stop += 1
 
     if start < stop:
@@ -216,11 +222,14 @@ def enclosing_block(view, point, scope, end=None):
     return None
 
 
-def left_enclosing_block(view, point, scope, end=None):
+def left_enclosing_block(
+    view: sublime.View, point: int, scope: str, end: Optional[int] = None,
+) -> Optional[Tuple[int, int]]:
     """
     Like `enclosing_block`, but checks that `point` is the right-boundary of
     the eventual block. If not, signal an error with `None`.
     """
+
     if end is None:
         end = view.size()
     block = enclosing_block(view, point, scope, end=end)
@@ -229,15 +238,15 @@ def left_enclosing_block(view, point, scope, end=None):
     return None
 
 
-def do_skip_anything(view, point):
+def do_skip_anything(view: sublime.View, point: int) -> bool:
     return True
 
 
-def do_skip_nothing(view, point):
+def do_skip_nothing(view: sublime.View, point: int) -> bool:
     return False
 
 
-def do_skip_args_and_spaces(view, point):
+def do_skip_args_and_spaces(view: sublime.View, point: int) -> bool:
     if view.substr(point).isspace() or view.match_selector(point, ARGUMENT):
         return True
     return False
@@ -256,11 +265,15 @@ SKIPPERS = {
 }
 
 
-def last_block_in_region(view, begin, scope, end=None, skip=SKIP_ANYTHING):
+def last_block_in_region(
+    view: sublime.View,
+    begin: int,
+    scope: str,
+    end: Optional[int] = None,
+    skip: int = SKIP_ANYTHING,
+) -> Optional[Tuple[int, int]]:
     skipper = SKIPPERS.get(skip, do_skip_anything)
-    if end is None:
-        end = view.size()
-    stop = end
+    stop = view.size() if end is None else end
     empty = True
 
     while (

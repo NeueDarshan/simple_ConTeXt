@@ -3,6 +3,8 @@ import os
 import threading
 import time
 
+from typing import List, Optional
+
 import sublime
 import sublime_plugin
 
@@ -16,7 +18,7 @@ IDLE = 0
 RUNNING = 1
 
 
-def arg_count(cmd):
+def arg_count(cmd) -> int:
     """Return the maximum number of arguments the given command takes."""
     count = 0
     for var in cmd:
@@ -32,7 +34,7 @@ def arg_count(cmd):
     return count
 
 
-def arg_count_aux(list_):
+def arg_count_aux(list_: list) -> int:
     count = 0
     for var in list_:
         n = 0
@@ -46,7 +48,7 @@ def arg_count_aux(list_):
     return count
 
 
-def arg_count_aux_i(list_):
+def arg_count_aux_i(list_: list) -> int:
     n = 0
     for arg in list_:
         if isinstance(arg, dict):
@@ -61,20 +63,20 @@ class SimpleContextRegenerateInterfaceFilesCommand(
     state = IDLE
     first_error = True
 
-    def reload_settings(self):
+    def reload_settings(self) -> None:
         super().reload_settings()
         self.context_paths = \
             utilities.get_setting_location(self, "ConTeXt_paths", default={})
 
     def run(
         self,
-        paths=None,
-        do_all=False,
-        threaded=True,
-        indent=2,
-        overwrite=False,
-        file_min=20000,
-    ):
+        paths: Optional[List[str]] = None,
+        do_all: bool = False,
+        threaded: bool = True,
+        indent: int = 2,
+        overwrite: bool = False,
+        file_min: int = 20000,
+    ) -> None:
         paths = [] if paths is None else paths
         self.reload_settings()
         self.file_min = file_min
@@ -92,11 +94,11 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             else:
                 f()
 
-    def run_aux(self, paths, overwrite):
+    def run_aux(self, paths: List[str], overwrite: bool) -> None:
         for path in paths:
             self.run_aux_i(path, overwrite)
 
-    def run_aux_i(self, path, overwrite):
+    def run_aux_i(self, path: str, overwrite: bool) -> None:
         if path in self.context_paths:
             path = self.context_paths[path]
 
@@ -111,7 +113,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
 
         self.state = IDLE
 
-    def run_aux_ii(self, path, dir_, slug):
+    def run_aux_ii(self, path: str, dir_: str, slug: str) -> None:
         if os.path.exists(dir_):
             for f in os.listdir(dir_):
                 os.remove(os.path.join(dir_, f))
@@ -119,7 +121,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             os.makedirs(dir_)
         self.run_aux_iv(path, dir_, slug)
 
-    def run_aux_iii(self, path, dir_, slug):
+    def run_aux_iii(self, path: str, dir_: str, slug: str) -> None:
         if not os.path.exists(dir_):
             os.makedirs(dir_)
 
@@ -136,7 +138,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
                     )
                     print(text.format(e))
 
-    def run_aux_iv(self, path, dir_, slug):
+    def run_aux_iv(self, path: str, dir_: str, slug: str) -> None:
         saver = save.InterfaceSaver(flags=self.flags, shell=self.shell)
         start_msg = (
             '[simple_ConTeXt] generating interface files (in folder "{}") '
@@ -183,7 +185,7 @@ class SimpleContextRegenerateInterfaceFilesCommand(
             os.path.join(dir_, "_commands.json"),
         )
 
-    def run_aux_v(self, data, file_):
+    def run_aux_v(self, data, file_: str) -> None:
         with open(file_, encoding="utf-8", mode="w") as f:
             json.dump(
                 data,

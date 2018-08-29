@@ -31,10 +31,12 @@ contexts:
 
 
   comment:
-    - match: '(%).*$\n?'
-      captures:
-        0: comment.line.percentage.metapost
-        1: punctuation.definition.comment.metapost
+    - match: '%'
+      scope: comment.line.percentage.metapost
+      push:
+        - meta_scope: punctuation.definition.comment.metapost
+        - match: '$\n?'
+          pop: true
 
 
   constant:

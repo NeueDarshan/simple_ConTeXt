@@ -3,10 +3,16 @@ import html
 import os
 import xml.etree.ElementTree as ET
 
+from typing import (  # noqa
+    Any, Dict, Iterable, List, Optional, Set, TextIO, Tuple, TypeVar, Union
+)
+
 from . import files
 from . import html_css
 from . import utilities
 
+
+T = TypeVar("T")
 
 NAMESPACE = {"cd": "http://www.pragma-ade.com/commands"}
 
@@ -19,8 +25,10 @@ UGLY_DEF_LOOKUP = {
 class DefinitionNotFoundError(Exception):
     pass
 
+
 class UnexpectedTagError(Exception):
     pass
+
 
 class UnexpectedModeError(Exception):
     pass
@@ -33,11 +41,11 @@ class InterfaceSaver:
         "default": "[]",
         "none": None,
     }
-    defs = {}
-    cmds = {}
-    to_load = []
+    defs = {}  # type: Dict[str, Any]
+    cmds = {}  # type: Dict[str, Any]
+    to_load = set()  # type: Set[str]
 
-    def __init__(self, flags=0, shell=False):
+    def __init__(self, flags: int = 0, shell: bool = False) -> None:
         self.flags = flags
         self.shell = shell
         self.method = {
@@ -47,19 +55,19 @@ class InterfaceSaver:
             "none": None,
         }
 
-    def parse(self, file_):
+    def parse(self, file_: Union[str, TextIO]) -> ET.Element:
         return ET.parse(file_).getroot()
 
     def save(
         self,
-        path,
-        modules=True,
-        tolerant=True,
-        quiet=False,
-        prefix="",
-        timeout=10,
-        namespace=None,
-        start_stop=False,
+        path: str,
+        modules: bool = True,
+        tolerant: bool = True,
+        quiet: bool = False,
+        prefix: str = "",
+        timeout: int = 10,
+        namespace: Optional[Dict[str, str]] = None,
+        start_stop: bool = False,
     ):
         self.path = path
         self.quiet = quiet
@@ -71,16 +79,17 @@ class InterfaceSaver:
         self.load_definitions()
         self.load_commands(modules=modules)
 
-    def load_definitions(self):
+    def load_definitions(self) -> None:
         """
         To handle resolves pointing to objects not yet defined, we simply do
         two passes. Of course, it would be better to handle the dependency
         graph in one pass, but this is simpler and seems to be fast enough.
         """
+
         self.load_definitions_aux()
         self.load_definitions_aux()
 
-    def load_definitions_aux(self):
+    def load_definitions_aux(self) -> None:
         file_ = files.locate(
             self.path,
             "i-common-definitions.xml",
@@ -95,7 +104,9 @@ class InterfaceSaver:
                 root = self.parse(x)
             for child in root:
                 if self.tag_is(child, "interfacefile"):
-                    self.load_definitions_aux_i(child.attrib.get("filename"))
+                    filename = child.attrib.get("filename")
+                    if filename is not None:
+                        self.load_definitions_aux_i(filename)
                 else:
                     raise UnexpectedTagError(
                         'unexpected tag "{}"'.format(child.tag)
@@ -103,11 +114,11 @@ class InterfaceSaver:
         except (OSError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
             if not self.tolerant:
-                raise type(e)(msg)
+                raise Exception(msg)
             elif not self.quiet:
                 print(self.prefix + msg)
 
-    def load_definitions_aux_i(self, filename):
+    def load_definitions_aux_i(self, filename: str) -> None:
         file_ = files.locate(
             self.path,
             filename,
@@ -125,11 +136,11 @@ class InterfaceSaver:
         except (OSError, ET.ParseError, UnicodeDecodeError) as e:
             msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
             if not self.tolerant:
-                raise type(e)(msg)
+                raise Exception(msg)
             elif not self.quiet:
                 print(self.prefix + msg)
 
-    def load_commands(self, modules=True):
+    def load_commands(self, modules: bool = True) -> None:
         self.to_load = set()
 
         main = files.locate(
@@ -162,7 +173,7 @@ class InterfaceSaver:
 
         self.load_commands_aux_i()
 
-    def load_commands_aux(self, file_):
+    def load_commands_aux(self, file_: str) -> bool:
         return (
             file_.endswith(".xml") and
             file_ != "context-en.xml" and
@@ -170,7 +181,7 @@ class InterfaceSaver:
             not file_.startswith("i-context")
         )
 
-    def load_commands_aux_i(self):
+    def load_commands_aux_i(self) -> None:
         for file_ in self.to_load:
             try:
                 with open(file_, encoding="utf-8") as x:
@@ -189,11 +200,11 @@ class InterfaceSaver:
             except (OSError, ET.ParseError, UnicodeDecodeError) as e:
                 msg = 'in file "{}", {} error: "{}"'.format(file_, type(e), e)
                 if not self.tolerant:
-                    raise type(e)(msg)
+                    raise Exception(msg)
                 elif not self.quiet:
                     print(self.prefix + msg)
 
-    def do_define(self, node):
+    def do_define(self, node: ET.Element) -> None:
         name = node.attrib["name"]
         obj = []
         for child in node:
@@ -215,7 +226,7 @@ class InterfaceSaver:
                 )
         self.add_def(name, self.flatten(obj))
 
-    def do_command(self, node):
+    def do_command(self, node: ET.Element) -> None:
         instances = self.find(node, "instances")
         sequence = self.find(node, "sequence")
         name = node.attrib["name"]
@@ -264,7 +275,7 @@ class InterfaceSaver:
                     text = key
                 self.do_command_aux(text, node)
 
-    def do_command_aux(self, name, node):
+    def do_command_aux(self, name: str, node: ET.Element) -> None:
         attrib = node.attrib
 
         if attrib.get("type") == "environment":
@@ -285,7 +296,7 @@ class InterfaceSaver:
         else:
             self.do_command_aux_i(self.clean_name(name), node)
 
-    def do_command_aux_i(self, name, node):
+    def do_command_aux_i(self, name: str, node: ET.Element) -> None:
         arguments = self.find(node, "arguments")
         handlers = {
             "angles": self.do_angles,
@@ -325,7 +336,7 @@ class InterfaceSaver:
             {"con": self.flatten(content), "fil": node.attrib.get("file")},
         )
 
-    def do_constant(self, node):
+    def do_constant(self, node: ET.Element) -> str:
         attrib = node.attrib
         value = self.transform(attrib.get("value", ""))
         name = self.transform(attrib.get("name", ""))
@@ -341,7 +352,7 @@ class InterfaceSaver:
             value + stop
         )
 
-    def do_keywords(self, node):
+    def do_keywords(self, node: ET.Element) -> Dict[str, Any]:
         inherits = []
         content = []
         for child in node:
@@ -365,7 +376,7 @@ class InterfaceSaver:
             "opt": self.is_true(node.attrib.get("optional")),
         }
 
-    def do_assignments(self, node):
+    def do_assignments(self, node: ET.Element) -> Dict[str, Any]:
         inherits = []
         content = {}
         for child in node:
@@ -386,7 +397,7 @@ class InterfaceSaver:
             "opt": self.is_true(node.attrib.get("optional")),
         }
 
-    def do_parameter(self, node):
+    def do_parameter(self, node: ET.Element) -> List[Any]:
         content = []
         for child in node:
             if self.tag_is(child, "constant"):
@@ -405,7 +416,7 @@ class InterfaceSaver:
                 )
         return content
 
-    def do_delimiter(self, node):
+    def do_delimiter(self, node: ET.Element) -> Dict[str, Any]:
         return {
             "con": None,
             "inh": None,
@@ -413,40 +424,42 @@ class InterfaceSaver:
             "ren": self.render("delimiter", node.attrib),
         }
 
-    def do_dots_delimiter(self, node):
+    def do_dots_delimiter(self, node: ET.Element) -> Dict[str, Any]:
         return {"con": None, "inh": None, "opt": False, "ren": "..."}
 
-    def do_angles(self, node):
+    def do_angles(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("ANGLES", "angles", node.attrib)
 
-    def do_template(self, node):
+    def do_template(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("TEMPLATE", "template", node.attrib)
 
-    def do_apply(self, node):
+    def do_apply(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("APPLY", "apply", node.attrib)
 
-    def do_text(self, node):
+    def do_text(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("TEXT", "text", node.attrib)
 
-    def do_string(self, node):
+    def do_string(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("STRING", "string", node.attrib)
 
-    def do_index(self, node):
+    def do_index(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("INDEX", "index", node.attrib)
 
-    def do_position(self, node):
+    def do_position(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("POSITION", "position", node.attrib)
 
-    def do_triplet(self, node):
+    def do_triplet(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("TRIPLET", "triplet", node.attrib)
 
-    def do_csname(self, node):
+    def do_csname(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("CSNAME", "csname", node.attrib)
 
-    def do_content(self, node):
+    def do_content(self, node: ET.Element) -> Dict[str, Any]:
         return self.do_generic("CONTENT", "content", node.attrib)
 
-    def do_generic(self, type_, render, attrib):
+    def do_generic(
+        self, type_: str, render: str, attrib: Dict[str, Any],
+    ) -> Dict[str, Any]:
         return {
             "con": "<typ>{}</typ>".format(self.escape(type_)),
             "inh": None,
@@ -454,14 +467,14 @@ class InterfaceSaver:
             "ren": self.render(render, attrib),
         }
 
-    def do_resolve(self, node):
+    def do_resolve(self, node: ET.Element):
         name = node.attrib["name"]
         return self.defs.get(name)
 
-    def do_inherit(self, node):
+    def do_inherit(self, node: ET.Element) -> str:
         return node.attrib["name"]
 
-    def render(self, mode, attrib):
+    def render(self, mode: str, attrib: Dict[str, Any]) -> str:
         is_list = self.is_true(attrib.get("list"))
         delims = self.delimiters.get(attrib.get("delimiters", "default"), "[]")
         punct = "<pun>{}</pun>"
@@ -516,7 +529,7 @@ class InterfaceSaver:
                 print(self.prefix + msg.format(mode, attrib))
             return "..."
 
-    def is_true(self, val):
+    def is_true(self, val: Any) -> bool:
         return val == "yes"
 
     def flatten(self, obj):
@@ -543,7 +556,7 @@ class InterfaceSaver:
             return {k: self.flatten(v) for k, v in obj.items()}
         return obj
 
-    def transform(self, text, escape=True):
+    def transform(self, text: str, escape: bool = True) -> str:
         """
         This is the main place to add special formatting options. I think this
         degree of customization is a reasonable default, but there are lots of
@@ -573,34 +586,34 @@ class InterfaceSaver:
             return "<typ>" + f(rest.upper()) + "</typ>"
         return f(text)
 
-    def escape(self, text):
+    def escape(self, text: str) -> str:
         return html.escape(text, quote=False)
 
-    def identity(self, text):
+    def identity(self, text: str) -> str:
         return text
 
-    def clean_name(self, text):
+    def clean_name(self, text: str) -> str:
         return text.replace("​", "")  # remove zero-width whitespace
 
-    def empty_node(self, file_):
+    def empty_node(self, file_: Optional[str]) -> ET.Element:
         return ET.fromstring((
             '<cd:command xmlns:cd="http://www.pragma-ade.com/commands" '
             'file="{}" />'
         ).format(file_))
 
-    def dots_node(self):
+    def dots_node(self) -> ET.Element:
         return ET.fromstring(
             '<cd:dotsdelimiter xmlns:cd="http://www.pragma-ade.com'
             '/commands" />'
         )
 
-    def delim_node(self, name):
+    def delim_node(self, name: str) -> ET.Element:
         return ET.fromstring((
             '<cd:delimiter xmlns:cd="http://www.pragma-ade.com/commands" '
             'name="{}" />'
         ).format(name))
 
-    def tail_args_node(self, name):
+    def tail_args_node(self, name: str) -> ET.Element:
         return ET.fromstring((
             '<cd:arguments xmlns:cd="http://www.pragma-ade.com/commands">'
             '<cd:dotsdelimiter xmlns:cd="http://www.pragma-ade.com/commands" '
@@ -610,27 +623,27 @@ class InterfaceSaver:
             '</cd:arguments>'
         ).format(name))
 
-    def find(self, node, query):
+    def find(self, node: ET.Element, query: str) -> Iterable:
         result = node.find(self.get_tag(query))
         return result if result else []
 
-    def findall(self, node, query):
+    def findall(self, node: ET.Element, query: str) -> Iterable:
         result = node.findall(self.get_tag(query))
         return result if result else []
 
-    def tag_is(self, node, *tags):
+    def tag_is(self, node: ET.Element, *tags: str) -> bool:
         return node.tag in [self.get_tag(tag) for tag in tags]
 
-    def get_tag(self, tag):
+    def get_tag(self, tag: str) -> str:
         return "{%s}%s" % (self.namespace.get("cd"), tag)
 
-    def raw_tag(self, node):
+    def raw_tag(self, node: ET.Element) -> str:
         return node.tag.rsplit("}", maxsplit=1)[-1]
 
-    def add_def(self, name, obj):
+    def add_def(self, name: str, obj) -> None:
         self.defs[name] = obj
 
-    def get_def(self, name):
+    def get_def(self, name: str):
         if name in self.defs:
             return self.defs[name]
         for key, val in UGLY_DEF_LOOKUP.items():
@@ -639,18 +652,18 @@ class InterfaceSaver:
         message = "unexpected resolve, could not find '{}'"
         raise DefinitionNotFoundError(message.format(name))
 
-    def add_cmd(self, name, obj):
+    def add_cmd(self, name: str, obj) -> None:
         if name in self.cmds:
             self.cmds[name].append(obj)
         else:
             self.cmds[name] = [obj]
 
     # This needs re-doing.
-    def simplify(self):
+    def simplify(self) -> None:
         for name in self.cmds:
             self.cmds[name] = self.simplify_aux(self.cmds[name])
 
-    def simplify_aux(self, vars_):
+    def simplify_aux(self, vars_: T) -> T:
         if isinstance(vars_, list):
             return utilities.deduplicate_list(vars_)
         return vars_

@@ -4,20 +4,22 @@ import re
 import subprocess
 import zlib
 
+from typing import Iterable, Optional
+
 
 CREATE_NO_WINDOW = 0x08000000
 
 
 @functools.lru_cache(maxsize=256)
 def fuzzy_locate(
-    path,
-    file_,
-    flags=0,
-    shell=False,
-    methods=None,
-    extensions=None,
-    timeout=5,
-):
+    path: str,
+    file_: str,
+    flags: int = 0,
+    shell: bool = False,
+    methods: Optional[Iterable] = None,
+    extensions: Optional[Iterable[str]] = None,
+    timeout: int = 5,
+) -> Optional[str]:
     methods = (None,) if methods is None else methods
     extensions = ("",) if extensions is None else extensions
     for method in methods:
@@ -36,7 +38,14 @@ def fuzzy_locate(
 
 
 @functools.lru_cache(maxsize=256)
-def locate(path, file_, flags=0, shell=False, methods=None, timeout=5):
+def locate(
+    path: str,
+    file_: str,
+    flags: int = 0,
+    shell: bool = False,
+    methods: Optional[Iterable] = None,
+    timeout: int = 5,
+) -> Optional[str]:
     methods = (None,) if methods is None else methods
     for method in methods:
         if method is None:
@@ -73,18 +82,17 @@ def locate(path, file_, flags=0, shell=False, methods=None, timeout=5):
     return None
 
 
-def decode_bytes(text):
-    text = text.decode(encoding="utf-8", errors="replace")
-    text = text.replace("\r\n", "\n").replace("\r", "\n").strip()
-    return text
+def decode_bytes(by: bytes) -> str:
+    text = by.decode(encoding="utf-8", errors="replace")
+    return text.replace("\r\n", "\n").replace("\r", "\n").strip()
 
 
-def clean_output(text):
+def clean_output(text: str) -> str:
     regex = r"resolvers\s*[>|]\s*trees\s*[>|]\s*analyzing\s*'home:texmf'"
     return re.sub(regex, "", text).strip()
 
 
-def add_path(old, new):
+def add_path(old: str, new: str) -> str:
     if isinstance(new, str) and new:
         new = os.path.abspath(new)
         if os.path.exists(new):
@@ -98,7 +106,7 @@ def add_path(old, new):
     return old
 
 
-def file_as_slug(text):
+def file_as_slug(text) -> str:
     if isinstance(text, str):
         return hex(zlib.adler32(bytes(text, "utf-8")))
     return "default"

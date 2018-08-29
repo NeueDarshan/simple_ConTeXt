@@ -1,5 +1,9 @@
 import re
 
+from typing import TypeVar
+
+
+T = TypeVar("T")
 
 CONTROL_COND_A = \
     r"[a-zA-Z]*doif[a-zA-Z]*(?:else)?|[a-zA-Z]*doif(?:else)?[a-zA-Z]*"
@@ -9,51 +13,51 @@ CONTROL_COND_B = r"if[a-zA-Z]*|[a-zA-Z]*(?:true|false)"
 CONTROL_MODULE = r"use(?:lua|tex)?module"
 
 
-def match_exact(regex, text):
-    return re.match(r"(?:{})\Z".format(regex), text)
+def match_exact(regex: str, text: str) -> bool:
+    return bool(re.match(r"(?:{})\Z".format(regex), text))
 
 
 # This approach is a bit odd, works reasonably well though.
-CASES = (
-    {
+CASES = {
+    (
         # `keyword.control`
-        "tags": ("flo", "sfl"),
-        "f": lambda text:
+        ("flo", "sfl"),
+        lambda text:
             text.startswith("start") or
             text.startswith("stop") or
             text in {"loop", "repeat", "then", "or", "else", "fi"} or
             any(match_exact(regex, text) for regex in {
                 CONTROL_COND_A, CONTROL_COND_B, CONTROL_MODULE,
             }),
-    },
-    {
+    ),
+    (
         # `storage.type`
-        "tags": ("sto", "sst"),
-        "f": lambda text: match_exact(r"[xge]?def|g?let|define", text),
-    },
-    {
+        ("sto", "sst"),
+        lambda text: match_exact(r"[xge]?def|g?let|define", text),
+    ),
+    (
         # `constant.language`
-        "tags": ("lan", "sla"),
-        "f": lambda text: text == "relax",
-    },
-    {
+        ("lan", "sla"),
+        lambda text: text == "relax",
+    ),
+    (
         # `storage.modifier`
-        "tags": ("mod", "smo"),
-        "f": lambda text: text in {"global", "immediate", "the", "outer"},
-    },
-    {
+        ("mod", "smo"),
+        lambda text: text in {"global", "immediate", "the", "outer"},
+    ),
+    (
         # `support.function`
-        "tags": ("con", "sco"),
-        "f": lambda _: True,
-    },
-)
+        ("con", "sco"),
+        lambda _: True,
+    ),
+}
 
 
-def control_sequence(text):
+def control_sequence(text: str) -> str:
     try:
         for case in CASES:
-            if case["f"](text):
-                tags = case["tags"]
+            if case[1](text):
+                tags = case[0]
                 temp = "<{a}>\\</{a}><{b}>%s</{b}>"
                 return temp.format(a=tags[1], b=tags[0]) % text
         return ""
@@ -62,13 +66,12 @@ def control_sequence(text):
         raise e
 
 
-def unescape(text):
+def unescape(text: str) -> str:
     text = text.replace("&gt;", ">").replace("&lt;", "<")
-    text = text.replace("&nbsp;", " ").replace("<br>", "\n")
-    return text
+    return text.replace("&nbsp;", " ").replace("<br>", "\n")
 
 
-def strip_tags(data):
+def strip_tags(data: T) -> T:
     if isinstance(data, str):
         return re.sub("<[^<]+>", "", data)
     elif isinstance(data, list):
@@ -80,7 +83,7 @@ def strip_tags(data):
     return data
 
 
-def protect_space(text):
+def protect_space(text: str) -> str:
     result = ""
     in_tag = False
     for c in text:
@@ -97,14 +100,14 @@ def protect_space(text):
     return result.replace("\n", "<br>")
 
 
-def pretty_print(text):
+def pretty_print(text: str) -> str:
     return text.replace("&nbsp;", " ").replace("<br>", "\n")
 
 
-def raw_print(text):
+def raw_print(text: str) -> str:
     text = strip_tags(text.replace("<br>", "\n")).replace("&nbsp;", " ")
     return unescape(text)
 
 
-def strip_css_comments(text):
+def strip_css_comments(text: str) -> str:
     return re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)

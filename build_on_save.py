@@ -6,7 +6,7 @@ from .scripts import utilities
 class SimpleContextBuildOnSaveListener(
     utilities.BaseSettings, sublime_plugin.ViewEventListener,
 ):
-    def on_post_save_async(self):
+    def on_post_save_async(self) -> None:
         self.reload_settings()
         if not (self.is_visible_alt() and self.get_setting("builder/auto/on")):
             return

@@ -26,21 +26,21 @@ BUILT_IN_BUFFERS = {
 }
 
 
-def is_reference_start(text):
+def is_reference_start(text: str) -> bool:
     return text == "["
 
 
-def is_reference_history(cmd):
+def is_reference_history(cmd: list) -> bool:
     return cmd[0] not in {"left_delete", "right_delete"} if cmd else True
 
 
 class SimpleContextReferenceEventListener(
     utilities.BaseSettings, sublime_plugin.ViewEventListener,
 ):
-    def is_visible(self):
+    def is_visible(self) -> bool:
         return self.is_visible_alt()
 
-    def on_modified_async(self):
+    def on_modified_async(self) -> None:
         self.reload_settings()
         if not self.is_visible():
             return
@@ -74,18 +74,18 @@ class SimpleContextReferenceEventListener(
         elif self.get_setting("buffer/on") and self.is_buffer_command(*ctrl):
             self.do_buffer()
 
-    def do_reference(self):
+    def do_reference(self) -> None:
         self.do_common(selector="reference")
 
-    def do_buffer(self):
+    def do_buffer(self) -> None:
         self.do_common(selector_raw=scopes.BUFFER)
 
-    def do_common(self, **kwargs):
+    def do_common(self, **kwargs: str) -> None:
         opts = {"on_choose": "insert", "selected_index": "closest"}
         opts.update(kwargs)
         self.view.window().run_command("simple_context_show_overlay", opts)
 
-    def is_reference_command(self, begin, end):
+    def is_reference_command(self, begin: int, end: int) -> bool:
         name = self.view.substr(sublime.Region(begin, end)).strip()
         user_regex = self.get_setting("references/command_regex")
         if re.match(BUILT_IN_REFERENCERS, name):
@@ -94,6 +94,6 @@ class SimpleContextReferenceEventListener(
             return True
         return False
 
-    def is_buffer_command(self, begin, end):
+    def is_buffer_command(self, begin: int, end: int) -> bool:
         name = self.view.substr(sublime.Region(begin, end))
         return name in BUILT_IN_BUFFERS
