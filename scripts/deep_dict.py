@@ -34,17 +34,17 @@ def iter_(dict_: Dict[K, Any]) -> Iterable[Tuple[List[K], Any]]:
             yield [k], v
 
 
-def get(dict_: Dict[K, Any], keys: List[K]) -> Optional[Any]:
+def get(dict_: Dict[K, Any], keys: List[K]) -> Any:
     if not keys:
-        return None
+        return dict_
     elif len(keys) == 1:
         return dict_[keys[0]]
     return get(dict_[keys[0]], keys[1:])
 
 
-def get_safe(dict_: Dict[K, Any], keys: List[K]) -> Optional[Any]:
+def get_safe(dict_: Dict[K, Any], keys: List[K]) -> Any:
     if not keys:
-        return None
+        return dict_
     elif len(keys) == 1:
         return dict_.get(keys[0])
     dict_.setdefault(keys[0], {})

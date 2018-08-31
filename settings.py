@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List, Optional  # noqa
 
 import sublime
 import sublime_plugin
@@ -16,28 +16,28 @@ CURRENT_SETTINGS = {
     "builder/auto/open_PDF_after_build",
     "builder/auto/output/show",
     "builder/auto/output/show_ConTeXt_path",
-    "builder/auto/output/show_full_command",
     "builder/auto/output/show_errors",
     "builder/auto/output/show_errors_inline",
+    "builder/auto/output/show_full_command",
     "builder/auto/return_focus_after_open_PDF",
     "builder/normal/open_PDF_after_build",
     "builder/normal/opts_for_ConTeXt",
     "builder/normal/output/show",
     "builder/normal/output/show_ConTeXt_path",
-    "builder/normal/output/show_full_command",
     "builder/normal/output/show_errors",
     "builder/normal/output/show_errors_inline",
+    "builder/normal/output/show_full_command",
     "builder/normal/return_focus_after_open_PDF",
-    "citations/format",
     "citations/command_regex",
+    "citations/format",
     "citations/on",
     "file_links/on",
     "option_completions/on",
     "path",
     "PDF/viewer",
+    "pop_ups/hang_indentation",
     "pop_ups/line_break",
     "pop_ups/match_indentation",
-    "pop_ups/hang_indentation",
     "pop_ups/methods/on_hover",
     "pop_ups/methods/on_modified",
     "pop_ups/show_copy_pop_up",
@@ -45,6 +45,7 @@ CURRENT_SETTINGS = {
     "pop_ups/try_generate_on_demand",
     "references/command_regex",
     "references/on",
+    "script/timeout",
 }
 
 
@@ -71,7 +72,7 @@ class SimpleContextSettingsControllerCommand(
             utilities.get_setting_location(self, "ConTeXt_paths", default={})
 
     def update_settings(self) -> None:
-        self.current_settings = {}
+        self.current_settings = {}  # type: Dict[str, Any]
         for k in CURRENT_SETTINGS:
             deep_dict.set_safe(
                 self.current_settings, k.split("/"), self.get_setting(k),
@@ -81,9 +82,9 @@ class SimpleContextSettingsControllerCommand(
         self.reload_settings()
         self.update_settings()
         self.encode_settings()
-        self.last_scheme = None
-        self.location = []
-        self.history = {}
+        self.last_scheme = None  # type: Optional[str]
+        self.location = []  # type: List[str]
+        self.history = {}  # type: Dict[int, int]
         self.run_panel()
 
     def run_panel(self) -> None:
@@ -206,27 +207,27 @@ class SimpleContextSettingsControllerCommand(
         self.location.pop()
         self.run_panel()
 
-    def current_level(self):
+    def current_level(self) -> Any:
         return deep_dict.get_safe(self.encoded_settings, self.location)
 
     def flatten_current_level(self) -> List[List[str]]:
+        current_level = self.current_level()
         if self.location and self.location[-1] == "setting_groups":
             main = [
                 [k, "[✓]" if k == self.last_scheme else "[ ]"]
-                for k in sorted(self.current_level())
+                for k in sorted(current_level)
             ]
-        elif isinstance(self.current_level(), utilities.Choice):
-            main = self.current_level().to_list(string=True)
+        elif isinstance(current_level, utilities.Choice):
+            main = current_level.to_list(string=True)
         else:
             main = [
-                [k, simplify(self.current_level()[k])]
-                for k in sorted(self.current_level())
+                [k, simplify(current_level[k])] for k in sorted(current_level)
             ]
         if self.location:
             return [["..", "in /{}/".format("/".join(self.location))]] + main
         return main
 
-    def get_history(self):
+    def get_history(self) -> int:
         return self.history.get(len(self.location), 0)
 
     def set_history(self, index: int) -> None:
@@ -272,7 +273,7 @@ class SimpleContextSettingsControllerCommand(
         del self.current_settings["setting_groups"]
 
     def write_settings(self) -> None:
-        self.to_write = {}
+        self.to_write = {}  # type: Dict[str, Any]
         for k, v in deep_dict.iter_(self.current_settings):
             for opt in {"extra_opts_for_ConTeXt", "opts_for_ConTeXt"}:
                 if opt in k:
