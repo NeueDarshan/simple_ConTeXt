@@ -8,7 +8,7 @@ In lieu of such, we do what we can and fall back on `Any` where necessary.
 """
 
 
-from typing import Any, Dict, Iterable, List, Optional, Tuple, TypeVar
+from typing import Any, Dict, Iterable, List, Tuple, TypeVar
 
 
 K = TypeVar("K")
@@ -73,14 +73,20 @@ def in_(dict_: Dict[K, Any], keys: List[K]) -> bool:
 
 
 def del_(dict_: Dict[K, Any], keys: List[K]) -> None:
-    if len(keys) <= 1:
+    len_ = len(keys)
+    if not len_:
+        return
+    elif len_ == 1:
         del dict_[keys[0]]
     else:
         del_(dict_[keys[0]], keys[1:])
 
 
 def del_safe(dict_: Dict[K, Any], keys: List[K]) -> None:
-    if len(keys) <= 1:
+    len_ = len(keys)
+    if not len_:
+        return
+    elif len_ == 1:
         try:
             del dict_[keys[0]]
         except KeyError:

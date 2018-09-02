@@ -4,6 +4,7 @@ import json
 import os
 import re
 import threading
+import time
 import unittest
 
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -214,7 +215,6 @@ class SimpleContextTestParseBibFilesCommand(
 
     def run(self) -> None:
         self.reload_settings()
-        print("[simple_ConTeXt] - test bib parsing:")
         self.test.test__equivalent_files(self.test_dir)
 
     def reload_settings(self) -> None:
@@ -268,10 +268,14 @@ class TestParseBibFiles(unittest.TestCase):
         self.root = root
 
     def test__equivalent_files(self, dir_: str) -> None:
+        print("[simple_ConTeXt] - test bib parsing:")
+
+        start_time = time.time()
         tests = group_files(os.path.join(dir_, f) for f in os.listdir(dir_))
+
         for test, exts in sorted(tests.items()):
             prev = None
-            print("[simple_ConTeXt]   - test: {}".format(test))
+            # print("[simple_ConTeXt]   - test: {}".format(test))
             for e in exts:
                 content = self.root.try_parse(e)
                 if prev is not None:
@@ -280,4 +284,7 @@ class TestParseBibFiles(unittest.TestCase):
                         json.dumps(prev[0], indent=2, sort_keys=True) + "\n",
                     )
                 prev = (content, e)
-        print("[simple_ConTeXt]   - passed bib parsing test")
+
+        msg = "[simple_ConTeXt]   - Ran {} tests in {:.3f}s"
+        print(msg.format(len(tests), time.time() - start_time))
+        print("[simple_ConTeXt]   - OK")

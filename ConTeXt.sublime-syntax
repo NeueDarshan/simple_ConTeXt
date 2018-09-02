@@ -57,9 +57,9 @@ contexts:
     - include: comment.TeX
   comment.TeX:
     - match: '%'
-      scope: comment.line.percentage.context
+      scope: punctuation.definition.comment.context
       push:
-        - meta_scope: punctuation.definition.comment.context
+        - meta_scope: comment.line.percentage.context
         - match: $\n?
           pop: true
 
@@ -712,7 +712,7 @@ contexts:
           pop: true
         - include: main
   markup.main.speech/:
-    -                   
+    -
 
       match: ''
       set:

@@ -32,9 +32,9 @@ contexts:
 
   comment:
     - match: '%'
-      scope: comment.line.percentage.metapost
+      scope: punctuation.definition.comment.metapost
       push:
-        - meta_scope: punctuation.definition.comment.metapost
+        - meta_scope: comment.line.percentage.metapost
         - match: '$\n?'
           pop: true
 
