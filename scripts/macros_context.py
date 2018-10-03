@@ -110,6 +110,18 @@ def control_sequence_stop(name: str = "", **kwargs) -> Any:
     )
 
 
+def control_sequence_begin(name: str = "", **kwargs) -> Any:
+    return _control_sequence(
+        name, scopes.CONTROL_WORD_START, name_pre="b", **kwargs
+    )
+
+
+def control_sequence_end(name: str = "", **kwargs) -> Any:
+    return _control_sequence(
+        name, scopes.CONTROL_WORD_STOP, name_pre="e", **kwargs
+    )
+
+
 def control_sequence_align(name: str = "", **kwargs) -> Any:
     return _control_sequence(
         name,

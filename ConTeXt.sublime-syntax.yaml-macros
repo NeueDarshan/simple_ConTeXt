@@ -665,7 +665,13 @@ contexts:
           - argument.group*/
           - argument.list.template*/
           - argument.group.with-integers*/
-
+    - !control_sequence_begin
+        name: (?:T[A-Z]+[a-zA-Z]*)
+        push:
+          - argument.lists-or-groups*/
+    - !control_sequence_end
+        name: (?:T[A-Z]+[a-zA-Z]*)
+        push:
 
   list:
     - !control_sequence

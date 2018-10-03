@@ -826,7 +826,16 @@ contexts:
         - argument.group*/
         - argument.list.template*/
         - argument.group.with-integers*/
-
+    - match: (\\)b(?:T[A-Z]+[a-zA-Z]*)(?!{{cs}})
+      captures:
+        0: meta.control-word.context meta.structure.start.context keyword.control.context
+        1: punctuation.definition.backslash.context
+      push:
+        - argument.lists-or-groups*/
+    - match: (\\)e(?:T[A-Z]+[a-zA-Z]*)(?!{{cs}})
+      captures:
+        0: meta.control-word.context meta.structure.stop.context keyword.control.context
+        1: punctuation.definition.backslash.context
 
   list:
     - match: (\\)item(?!{{cs}})

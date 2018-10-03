@@ -165,8 +165,8 @@ ConTeXt start/stop commands.
   "user_brackets": [
     {
       "name": "context_env",
-      "open": "(\\\\start[a-zA-Z]*)",
-      "close": "(\\\\stop[a-zA-Z]*)",
+      "open": "(\\\\(?:start[a-zA-Z]*|bT[A-Z]+[a-zA-Z]*))",
+      "close": "(\\\\(?:stop[a-zA-Z]*|eT[A-Z]+[a-zA-Z]*))",
       "style": "alt_tag",
       "scope_exclude": ["- meta.structure"],
       "language_filter": "whitelist",
