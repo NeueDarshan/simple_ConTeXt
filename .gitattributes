@@ -1,7 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-*.py diff=python
-*.css diff=css
+*.py   diff=python
+*.css  diff=css
 *.mkiv diff=tex
-*.bib diff=bibtex
+*.bib  diff=bibtex
