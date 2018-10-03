@@ -92,7 +92,7 @@ contexts:
 
   template.Lua.main:
     - include: template.Lua.functions
-    - include: scope:source.lua
+    - include: Packages/Lua/Lua.sublime-syntax
 
   # See the comments on `Lua.functions`
   template.Lua.functions:
@@ -379,7 +379,7 @@ contexts:
   Lua.main.common:
     - include: Lua.control
     - include: Lua.functions
-    - include: scope:source.lua
+    - include: Packages/Lua/Lua.sublime-syntax
 
   Lua.control:
     - include: control.without-active-character
@@ -488,10 +488,10 @@ contexts:
   MetaFun.main.aux/:
     - match: ''
       set:
-        - meta_scope: source.metapost.metafun.embedded.context
+        - meta_scope: source.metapost.metafun
         - include: MetaFun.TeX
         - include: MetaFun.control
-        - include: scope:source.metapost.metafun
+        - include: Packages/simple_ConTeXt/MetaFun.sublime-syntax
 
   MetaFun.control:
     - include: control.without-active-character
@@ -500,12 +500,12 @@ contexts:
   MetaFun.TeX:
     - match: '\b(?:b|verbatim)tex\b'
       scope: support.function.metapost
-      embed: scope:text.tex.context
-      embed_scope: text.tex.context.embedded.metafun.embedded.context
+      embed: Packages/simple_ConTeXt/ConTeXt.sublime-syntax
+      embed_scope: text.tex.context.embedded.metafun
       escape: '\betex\b'
       # Not sure why this repetition of the `embed_scope` is needed here.
       escape_captures:
-        0: source.metapost.metafun.embedded.context support.function.metapost
+        0: source.metapost.metafun support.function.metapost
 
 
   JavaScript:
@@ -537,7 +537,7 @@ contexts:
     - match: ''
       set:
         - meta_scope: source.js.embedded.context
-        - include: scope:source.js
+        - include: Packages/JavaScript/JavaScript.sublime-syntax
 
 
   # It would be nice for commands like `\em` to stand out from the crowd. On the
@@ -759,19 +759,19 @@ contexts:
       set:
         - meta_include_prototype: false
         - meta_scope: text.tex.embedded.context
-        - include: scope:text.tex
+        - include: Packages/LaTeX/TeX.sublime-syntax
   verbatim.main.LUA.aux/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_scope: source.lua.embedded.context
-        - include: scope:source.lua
+        - include: Packages/Lua/Lua.sublime-syntax
   verbatim.main.XML.aux/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_scope: text.xml.embedded.context
-        - include: scope:text.xml
+        - include: Packages/XML/XML.sublime-syntax
   # I don't know what `PARSEDXML` is; I assume it is some form of `XML`.
   verbatim.main.PARSEDXML.aux/:
     - include: verbatim.main.XML.aux/
@@ -780,9 +780,9 @@ contexts:
       set:
         - meta_include_prototype: false
         - meta_scope: source.metapost.embedded.context
-        - include: scope:source.metapost
+        - include: Packages/simple_ConTeXt/MetaPost.sublime-syntax
       with_prototype:
-        - include: scope:source.metapost#comment
+        - include: Packages/simple_ConTeXt/MetaPost.sublime-syntax#comment
 
   verbatim.buffer:
     - !control_sequence_start

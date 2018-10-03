@@ -89,7 +89,7 @@ contexts:
 
   template.Lua.main:
     - include: template.Lua.functions
-    - include: scope:source.lua
+    - include: Packages/Lua/Lua.sublime-syntax
 
   # See the comments on `Lua.functions`
   template.Lua.functions:
@@ -352,18 +352,18 @@ contexts:
 
   Lua.block:
     - match: (\\)start(luacode)(?!{{cs}})
-      embed_scope: meta.environment.lua.major.context source.lua.embedded.context
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: Lua.block.major.main
+      embed_scope: meta.environment.lua.major.context source.lua.embedded.context
       escape: (?=\s*\\stop\2(?!{{cs}}))
     - match: (\\)start(lua)(?!{{cs}})
-      embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: Lua.block.minor.main
+      embed_scope: meta.environment.lua.minor.context source.lua.embedded.context
       escape: (?=\s*\\stop\2(?!{{cs}}))
   Lua.inline:
     - match: (\\)(?:late|direct)lua(?!{{cs}})
@@ -390,7 +390,7 @@ contexts:
   Lua.main.common:
     - include: Lua.control
     - include: Lua.functions
-    - include: scope:source.lua
+    - include: Packages/Lua/Lua.sublime-syntax
 
   Lua.control:
     - include: control.without-active-character
@@ -548,10 +548,10 @@ contexts:
   MetaFun.main.aux/:
     - match: ''
       set:
-        - meta_scope: source.metapost.metafun.embedded.context
+        - meta_scope: source.metapost.metafun
         - include: MetaFun.TeX
         - include: MetaFun.control
-        - include: scope:source.metapost.metafun
+        - include: Packages/simple_ConTeXt/MetaFun.sublime-syntax
 
   MetaFun.control:
     - include: control.without-active-character
@@ -560,12 +560,12 @@ contexts:
   MetaFun.TeX:
     - match: \b(?:b|verbatim)tex\b
       scope: support.function.metapost
-      embed: scope:text.tex.context
-      embed_scope: text.tex.context.embedded.metafun.embedded.context
+      embed: Packages/simple_ConTeXt/ConTeXt.sublime-syntax
+      embed_scope: text.tex.context.embedded.metafun
       escape: \betex\b
       # Not sure why this repetition of the `embed_scope` is needed here.
       escape_captures:
-        0: source.metapost.metafun.embedded.context support.function.metapost
+        0: source.metapost.metafun support.function.metapost
 
 
   JavaScript:
@@ -601,7 +601,7 @@ contexts:
     - match: ''
       set:
         - meta_scope: source.js.embedded.context
-        - include: scope:source.js
+        - include: Packages/JavaScript/JavaScript.sublime-syntax
 
 
   # It would be nice for commands like `\em` to stand out from the crowd. On the
@@ -646,7 +646,6 @@ contexts:
         - markup.main.quote/
         - argument.list*/
         - argument.list*/
-
     - match: (\\)startblockquote(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -655,7 +654,6 @@ contexts:
         - markup.main.blockquote/
         - argument.list*/
         - argument.list*/
-
     - match: (\\)startquotation(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -664,7 +662,6 @@ contexts:
         - markup.main.quotation/
         - argument.list*/
         - argument.list*/
-
     - match: (\\)startaside(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -673,7 +670,6 @@ contexts:
         - markup.main.aside/
         - argument.list*/
         - argument.list*/
-
     - match: (\\)startspeech(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -712,14 +708,13 @@ contexts:
           pop: true
         - include: main
   markup.main.speech/:
-    -
-
-      match: ''
+    - match: ''
       set:
         - meta_content_scope: markup.quote.block.context
         - match: (?=\\stopspeech\b)
           pop: true
         - include: main
+
   # We can have toggles:
   #
   # - at the start of a group: `... {\em ...} ...`,
@@ -792,6 +787,8 @@ contexts:
         0: meta.control-word.context support.function.context
         1: punctuation.definition.backslash.context
       push: argument.group.typewriter-bold*/
+
+
   cite:
     - match: (\\)usebtxdataset(?!{{cs}})
       captures:
@@ -836,6 +833,7 @@ contexts:
       captures:
         0: meta.control-word.context meta.structure.stop.context keyword.control.context
         1: punctuation.definition.backslash.context
+
 
   list:
     - match: (\\)item(?!{{cs}})
@@ -921,6 +919,7 @@ contexts:
         1: punctuation.definition.backslash.context
       embed: verbatim.main.MP
       escape: (?=\\stopMP(?!{cs}))
+
   verbatim.main.typing:
     - match: ''
       push:
@@ -961,19 +960,19 @@ contexts:
       set:
         - meta_include_prototype: false
         - meta_scope: text.tex.embedded.context
-        - include: scope:text.tex
+        - include: Packages/LaTeX/TeX.sublime-syntax
   verbatim.main.LUA.aux/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_scope: source.lua.embedded.context
-        - include: scope:source.lua
+        - include: Packages/Lua/Lua.sublime-syntax
   verbatim.main.XML.aux/:
     - match: ''
       set:
         - meta_include_prototype: false
         - meta_scope: text.xml.embedded.context
-        - include: scope:text.xml
+        - include: Packages/XML/XML.sublime-syntax
   # I don't know what `PARSEDXML` is; I assume it is some form of `XML`.
   verbatim.main.PARSEDXML.aux/:
     - include: verbatim.main.XML.aux/
@@ -982,9 +981,9 @@ contexts:
       set:
         - meta_include_prototype: false
         - meta_scope: source.metapost.embedded.context
-        - include: scope:source.metapost
+        - include: Packages/simple_ConTeXt/MetaPost.sublime-syntax
       with_prototype:
-        - include: scope:source.metapost#comment
+        - include: Packages/simple_ConTeXt/MetaPost.sublime-syntax#comment
 
   verbatim.buffer:
     - match: (\\)startbuffer(?!{{cs}})
@@ -1006,11 +1005,11 @@ contexts:
 
   verbatim.hiding:
     - match: (\\)starthiding(?!{{cs}})
-      embed_scope: comment.block.hiding.context
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
         1: punctuation.definition.backslash.context
       embed: verbatim.main.hiding
+      embed_scope: comment.block.hiding.context
       escape: (?=\\stophiding(?!{{cs}}))
   verbatim.main.hiding:
     - meta_include_prototype: false
@@ -1038,7 +1037,6 @@ contexts:
             - argument.group.part*/
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
-
     - match: (\\)(?:chapter|title)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
@@ -1056,7 +1054,6 @@ contexts:
             - argument.group.chapter*/
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
-
     - match: (\\)(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
@@ -1074,7 +1071,6 @@ contexts:
             - argument.group.section*/
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
-
     - match: (\\)sub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
@@ -1092,7 +1088,6 @@ contexts:
             - argument.group.subsection*/
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
-
     - match: (\\)subsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
@@ -1110,7 +1105,6 @@ contexts:
             - argument.group.sub2section*/
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
-
     - match: (\\)subsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
@@ -1128,7 +1122,6 @@ contexts:
             - argument.group.sub3section*/
             - argument.group.with-integers-only*/
         - include: generic.gobble-whitespace-or-pop/
-
     - match: (\\)subsubsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context support.function.context
@@ -1168,8 +1161,6 @@ contexts:
       push:
         - argument.list*/
         - argument.list.part*/
-
-
     - match: (\\)start(?:chapter|title)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -1177,8 +1168,6 @@ contexts:
       push:
         - argument.list*/
         - argument.list.chapter*/
-
-
     - match: (\\)start(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -1186,8 +1175,6 @@ contexts:
       push:
         - argument.list*/
         - argument.list.section*/
-
-
     - match: (\\)startsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -1195,8 +1182,6 @@ contexts:
       push:
         - argument.list*/
         - argument.list.subsection*/
-
-
     - match: (\\)startsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -1204,8 +1189,6 @@ contexts:
       push:
         - argument.list*/
         - argument.list.sub2section*/
-
-
     - match: (\\)startsubsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -1213,8 +1196,6 @@ contexts:
       push:
         - argument.list*/
         - argument.list.sub3section*/
-
-
     - match: (\\)startsubsubsubsub(?:section|subject)(?!{{cs}})
       captures:
         0: meta.control-word.context meta.structure.start.context keyword.control.context
@@ -1647,6 +1628,7 @@ contexts:
         2: meta.control-word.context support.function.context
         3: punctuation.definition.backslash.context
       push: scoping.group.typewriter-bold.main/
+
   scoping.group.emphasis.main/:
     - meta_scope: meta.braces.context
     - meta_content_scope: markup.italic.emphasis.context
@@ -1892,7 +1874,6 @@ contexts:
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
   argument.group.sub4section*/:
-
     - match: \{
       scope: punctuation.section.braces.begin.context
       set:
@@ -1901,6 +1882,7 @@ contexts:
             markup.heading.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
+
   argument.group.emphasis*/:
     - match: \{
       scope: punctuation.section.braces.begin.context
@@ -1966,7 +1948,6 @@ contexts:
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
   argument.group.typewriter-bold*/:
-
     - match: \{
       scope: punctuation.section.braces.begin.context
       set:
@@ -1974,6 +1955,7 @@ contexts:
         - meta_content_scope: markup.bold.boldface.context markup.raw.inline.context
         - include: argument.group.main/
     - include: generic.pop-if-no-nearby-group/
+
   argument.list:
     - match: \[
       scope: punctuation.section.brackets.begin.context
