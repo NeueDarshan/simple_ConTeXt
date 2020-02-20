@@ -1,7 +1,7 @@
 {
   "target": "simple_context_exec_wrapper",
   "selector": "source.lua",
-  "cmd": ["luatex", "--luaonly", "${file}"],
+  "cmd": ["luatex", "--luaonly", "\"${file}\""],
   "shell": "${simple_context_shell}",
   "env": {"PATH": "${simple_context_prefixed_path}"},
   "cancel": {"kill": true},

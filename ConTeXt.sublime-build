@@ -4,9 +4,9 @@
   "cmd_seq": [
     {
       "cmd": [
-        "mtxrun", "--script", "context",
+        "mtxrun", "--autogenerate", "--script", "context",
         "${simple_context_insert_options}",
-        "${file}",
+        "\"${file}\"",
       ],
       "env": {"PATH": "${simple_context_prefixed_path}"},
       "shell": "${simple_context_shell}",

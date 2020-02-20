@@ -21,7 +21,7 @@ class SimpleContextRunScriptCommand(
     utilities.BaseSettings, sublime_plugin.WindowCommand,
 ):
     state = IDLE
-    previous_script = "mtxrun --script context --version"
+    previous_script = "mtxrun --autogenerate --script context --version"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

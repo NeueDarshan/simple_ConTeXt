@@ -88,7 +88,6 @@
   // TODO: talk more about the structured approach, and
   // improve the actual implementation.
   "current.builder/normal/opts_for_ConTeXt": {
-    "autogenerate": true,
     "jit": false,
   },
   // The options are `true`, `when_there_are_errors` and

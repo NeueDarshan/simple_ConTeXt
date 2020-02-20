@@ -108,6 +108,42 @@ versions of ConTeXt, you can use the [Quick Settings](#quick-settings) command.
 There are also some options (you can check out the settings) to control how the
 builder functions and what output to report.
 
+#### ConTeXt LMTX
+
+If you are using ConTeXt LMTX, your `luatex` program will be named `luametatex`
+instead. Since both the ConTeXt and LuaTeX builders rely on `luatex`, you will
+need to create a symbolic link named `luatex` that points to `luametatex`.
+
+On **Linux**, open your terminal program & type the following, replacing
+`<context_path>` with the path to the root of your ConTeXt directory tree and
+`<short_name>` with either `linux`, `linux-64`, `linux-arm`, or whichever other
+folder suffix is present & matches your OS.
+```bash
+cd "<context_path>/tex/texmf-<short_name>/bin"
+ln -s luametatex luatex
+```
+
+On **Mac**, open Terminal & type the following, replacing `<context_path>` with
+the path to the root of your ConTeXt directory tree.
+```zsh
+cd "<context_path>/tex/texmf-osx-64/bin"
+ln -s luametatex luatex
+```
+
+On **Windows**, open Command Prompt & type the following, replacing
+`<context_path>` with the path to the root of your ConTeXt directory tree and
+`<short_name>` with either `win64` or `mswin` depending on whether you're
+running 64-bit or 32-bit Windows.
+```bat
+cd "<context_path>\tex\texmf-<short_name>\bin"
+mklink luatex.exe luametatex.exe
+```
+You may need to start Command Prompt as an administrator in order to use
+`mklink`. If this is the case and you cannot open it with admin privileges, it
+should be good enough to simply create a shortcut in File Explorer. Navigate to
+`<context_path>\tex\texmf-<short_name>\bin`, right click on `luametatex.exe`,
+click "Create Shortcut", then rename the shortcut `luatex.exe`.
+
 ### PDFs
 
 For opening PDFs after building a ConTeXt file the `current.PDF/viewer` entry is
