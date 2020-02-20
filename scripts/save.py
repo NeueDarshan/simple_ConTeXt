@@ -322,7 +322,7 @@ class InterfaceSaver:
                 content.append(handlers[self.raw_tag(child)](child))
             else:
                 message = 'unexpected tag, name: "{}", attrib: "{}", tag: "{}"'
-                tag, attrib = child.attrib, child.tag
+                tag, attrib = child.tag, child.attrib
                 msg = message.format(name, attrib, tag)
                 if self.tolerant:
                     content.append(

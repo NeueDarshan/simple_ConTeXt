@@ -146,9 +146,9 @@ class SimpleContextExecMainCommand(
             sublime.status_message("Building")
 
         self.hide_phantoms()
-        if self.show_panel_on_build and show is True:
+        if self.show_panel_on_build and show:
             self.show_output()
-            self.show_output_on_errors = False
+            self.show_output_on_errors = True
         else:
             # We can be (very) forgiving to spelling errors, as the other
             # options than `"when_there_are_errors"` are just `True` and
